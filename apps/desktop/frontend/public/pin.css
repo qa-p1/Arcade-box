@@ -1,0 +1,87 @@
+html, body, #app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  color: #eeeaf5;
+  background: #11121a;
+  font: 13px/1.4 Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+.pin-window {
+  display: grid;
+  grid-template-rows: 30px minmax(0, 1fr);
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid rgba(180, 157, 232, .28);
+  border-radius: 9px;
+  background: #11121a;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, .28);
+}
+
+.pin-window-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 0 9px;
+  border-bottom: 1px solid rgba(180, 157, 232, .14);
+  background: rgba(39, 35, 51, .94);
+}
+
+.pin-window-header strong {
+  overflow: hidden;
+  font-size: 10px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pin-window-header > span:last-child {
+  margin-left: auto;
+  color: #9f9aad;
+  font-size: 8px;
+}
+
+.pin-window-indicator {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #b69af4;
+  box-shadow: 0 0 8px rgba(182, 154, 244, .55);
+}
+
+.pin-image-stage {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 5px;
+  background: #0b0c11;
+}
+
+.pin-image-stage img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+
+.pin-window-error, .pin-window-loading {
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  color: #aaa4bb;
+  font-size: 10px;
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

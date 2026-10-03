@@ -1,0 +1,51 @@
+package arcade:tool@1.0.0;
+
+interface types {
+    enum value-kind {
+        text,
+        file,
+        url,
+        artifact,
+    }
+
+    record tool-value {
+        kind: value-kind,
+        /// For text/URL values, the payload. For file/artifact inputs, the host
+        /// supplies an opaque `input:<index>` token; it is never a path.
+        value: string,
+        mime: string,
+    }
+
+    record tool-request {
+        tool-id: string,
+        inputs: list<tool-value>,
+        options-json: string,
+    }
+
+    record tool-result {
+        outputs: list<tool-value>,
+        warnings: list<string>,
+        metadata-json: string,
+    }
+
+    record tool-error {
+        code: string,
+        message: string,
+    }
+}
+
+interface capabilities {
+    /// Read a bounded chunk from an input file that the user selected.
+    /// The host maps the input index to an already-open scoped handle.
+    /// Paths are never supplied to or interpreted by a plugin.
+    /// This v1 host currently grants at most 64 KiB per call. WASI filesystem
+    /// calls have no preopened directories, socket addresses are denied, and
+    /// there is no process-spawn capability.
+    read-selected-input: func(input-index: u32, offset: u64, max-bytes: u32) -> result<list<u8>, string>;
+}
+
+world arcade-tool {
+    use types.{tool-request, tool-result, tool-error};
+    import capabilities;
+    export run: func(request: tool-request) -> result<tool-result, tool-error>;
+}

@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "pinned-image",
+  "description": "No plugin or operating-system bridge permissions for the bounded pinned-image preview",
+  "windows": ["arcade-pin-*"],
+  "permissions": []
+}

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Arcade Box third-party dependency inventory",
+  "type": "object",
+  "required": ["inventoryVersion", "auditStatus", "scope", "dependencies"],
+  "properties": {
+    "inventoryVersion": { "const": 1 },
+    "auditStatus": { "enum": ["incomplete", "review-required", "approved"] },
+    "scope": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date" },
+    "resolvedDependencyClosureIncluded": { "type": "boolean" },
+    "releaseGate": { "type": "string" },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "ecosystem", "declaredVersion", "licenseExpression", "verificationStatus", "source"],
+        "properties": {
+          "name": { "type": "string" },
+          "ecosystem": { "enum": ["cargo", "npm", "provider", "other"] },
+          "declaredVersion": { "type": "string" },
+          "resolvedVersion": { "type": ["string", "null"] },
+          "licenseExpression": { "type": ["string", "null"] },
+          "verificationStatus": { "enum": ["pending", "verified-upstream", "review-required", "approved"] },
+          "source": { "type": "string", "format": "uri" },
+          "notes": { "type": "string" },
+          "noticePath": { "type": ["string", "null"] },
+          "targets": { "type": "array", "items": { "type": "string" } }
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": true
+}

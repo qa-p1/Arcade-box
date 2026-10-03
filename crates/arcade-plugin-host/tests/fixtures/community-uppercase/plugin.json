@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "toolManifest": {
+    "id": "arcade.community.uppercase",
+    "version": "0.1.0",
+    "apiVersion": "1",
+    "name": "Uppercase Text (Example Plugin)",
+    "description": "Convert one or more text inputs to uppercase.",
+    "category": "text",
+    "aliases": [
+      "uppercase text",
+      "to uppercase"
+    ],
+    "privacyClass": "LOCAL",
+    "inputs": [
+      "text/plain"
+    ],
+    "outputs": [
+      "text/plain"
+    ],
+    "providers": [],
+    "status": "implemented",
+    "platforms": {
+      "windows": "supported",
+      "macos": "supported",
+      "wayland": "supported",
+      "x11": "supported"
+    },
+    "permissions": {
+      "filesystem": {
+        "read": "none",
+        "write": "none"
+      },
+      "network": {
+        "mode": "none",
+        "domains": []
+      }
+    },
+    "execution": {
+      "runtime": "wasm"
+    },
+    "phrases": [
+      "capitalize text",
+      "uppercase selected text"
+    ],
+    "relatedTools": []
+  },
+  "package": {
+    "author": "Arcade Box SDK Examples",
+    "source": "https://github.com/arcade-box/arcade-box/tree/main/sdk/examples/community-uppercase",
+    "license": "MIT",
+    "componentSha256": "sha256:ce290ff94b5721b043cb320f73b69f22d8543562caff9d187afa9c2d31173119"
+  }
+}

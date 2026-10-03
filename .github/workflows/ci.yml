@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: apps/desktop/frontend/package-lock.json
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.13'
+      - uses: dtolnay/rust-toolchain@v1
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: Install Linux desktop dependencies
+        if: runner.os == 'Linux'
+        run: >-
+          sudo apt-get update && sudo apt-get install -y
+          libwebkit2gtk-4.1-dev build-essential file libxdo-dev libssl-dev
+          libayatana-appindicator3-dev librsvg2-dev qpdf ffmpeg libvips-tools
+      - name: Install frontend dependencies
+        working-directory: apps/desktop/frontend
+        run: npm ci
+      - name: Check frontend types and accessibility diagnostics
+        working-directory: apps/desktop/frontend
+        run: npm run check
+      - name: Build frontend
+        working-directory: apps/desktop/frontend
+        run: npm run build
+      - name: Check Rust formatting
+        run: cargo fmt --all --check
+      - name: Test shared runtime
+        run: cargo test --workspace --exclude arcade-desktop --locked
+      - name: Check desktop on target OS
+        run: cargo check -p arcade-desktop --locked
+      - name: Check tool catalog matrix
+        run: python catalog/render_tool_matrix.py --check
+      - name: Check locked license inventory
+        run: python scripts/license_inventory.py --check

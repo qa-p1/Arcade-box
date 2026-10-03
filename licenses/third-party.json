@@ -1,0 +1,595 @@
+{
+  "inventoryVersion": 1,
+  "auditStatus": "incomplete",
+  "scope": "declared direct dependencies in repository Cargo and npm manifests",
+  "generatedAt": "2026-10-03",
+  "resolvedDependencyClosureIncluded": false,
+  "releaseGate": "Resolve all Rust and npm dependency graphs for each supported target, verify every SPDX expression and distribution obligation, then regenerate this inventory and include the required notices.",
+  "dependencies": [
+    {
+      "name": "age",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.12.1",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/str4d/rage",
+      "notes": "Rust library implementing the interoperable age format. The 0.x crate is marked experimental/beta upstream; Arcade Box currently enables ASCII armor and passphrase (scrypt) workflows only. Reassess before release and audit the resolved dependency closure."
+    },
+    {
+      "name": "ashpd",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.13.13",
+      "licenseExpression": "MIT",
+      "verificationStatus": "pending",
+      "source": "https://github.com/bilelmoussaoui/ashpd",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "base64",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.23",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/marshallpierce/rust-base64",
+      "notes": "RFC 4648 base64 encoding and decoding for local data utilities."
+    },
+    {
+      "name": "blake3",
+      "ecosystem": "cargo",
+      "declaredVersion": "1.8",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/BLAKE3-team/BLAKE3",
+      "notes": "Verify resolved package metadata and source notice."
+    },
+    {
+      "name": "calamine",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.36.1",
+      "licenseExpression": "MIT",
+      "verificationStatus": "pending",
+      "source": "https://github.com/tafia/calamine",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "cap-std",
+      "ecosystem": "cargo",
+      "declaredVersion": "4.0.3",
+      "licenseExpression": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/bytecodealliance/cap-std",
+      "notes": "Capability-based filesystem API used for scoped output-directory writes; this direct package uses a permissive OR license expression."
+    },
+    {
+      "name": "chrono",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.4",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/chronotope/chrono",
+      "notes": "Local date/time parsing and conversion; clock support enabled."
+    },
+    {
+      "name": "chrono-tz",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.10",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/chronotope/chrono-tz",
+      "notes": "Bundled IANA time-zone rules for offline time-zone conversion and DST-aware scheduling."
+    },
+    {
+      "name": "clap",
+      "ecosystem": "cargo",
+      "declaredVersion": "4.5",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/clap-rs/clap",
+      "notes": "Feature-selected transitive dependencies are outside this direct-dependency snapshot."
+    },
+    {
+      "name": "csv",
+      "ecosystem": "cargo",
+      "declaredVersion": "1.4",
+      "licenseExpression": "Unlicense OR MIT",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/BurntSushi/rust-csv",
+      "notes": "CSV parser and writer for the local workbench."
+    },
+    {
+      "name": "data-encoding",
+      "ecosystem": "cargo",
+      "declaredVersion": "2.11",
+      "licenseExpression": "MIT",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/ia0/data-encoding",
+      "notes": "Base32 encoding and decoding for local data utilities."
+    },
+    {
+      "name": "directories",
+      "ecosystem": "cargo",
+      "declaredVersion": "6.0",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://crates.io/crates/directories",
+      "notes": "Verify resolved package metadata and source notice."
+    },
+    {
+      "name": "emojis",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.9.0",
+      "licenseExpression": "(MIT OR Apache-2.0) AND Unicode-3.0",
+      "verificationStatus": "pending",
+      "source": "https://github.com/rossmacarthur/emojis",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "futures-channel",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.3",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "pending",
+      "source": "https://github.com/rust-lang/futures-rs",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "futures-util",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.3",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "pending",
+      "source": "https://github.com/rust-lang/futures-rs",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "gtk",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.18",
+      "licenseExpression": "MIT",
+      "verificationStatus": "pending",
+      "source": "https://github.com/gtk-rs/gtk3-rs",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "image",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.25",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/image-rs/image",
+      "notes": "Narrow image codec feature set supports barcode image conversion; transitive codec licenses still need closure audit."
+    },
+    {
+      "name": "infer",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.22",
+      "licenseExpression": "MIT",
+      "verificationStatus": "pending",
+      "source": "https://github.com/bojand/infer",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "libc",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.2",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "pending",
+      "source": "https://github.com/rust-lang/libc",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "lopdf",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.44",
+      "licenseExpression": "MIT",
+      "verificationStatus": "pending",
+      "source": "https://github.com/J-F-Liu/lopdf",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "printpdf",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.12.8",
+      "licenseExpression": "MIT",
+      "verificationStatus": "pending",
+      "source": "https://github.com/fschutt/printpdf",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "pulldown-cmark",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.13",
+      "licenseExpression": "MIT",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/raphlinus/pulldown-cmark",
+      "notes": "CommonMark parser for local HTML preview generation; raw HTML and unsafe links are removed before rendering."
+    },
+    {
+      "name": "quick-xml",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.42",
+      "licenseExpression": "MIT",
+      "verificationStatus": "pending",
+      "source": "https://github.com/tafia/quick-xml",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "rand",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.9",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/rust-random/rand",
+      "notes": "Non-cryptographic line shuffling for the text workbench; password tools must use a dedicated cryptographic RNG."
+    },
+    {
+      "name": "regex",
+      "ecosystem": "cargo",
+      "declaredVersion": "1.13",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/rust-lang/regex",
+      "notes": "Linear-time regular expression engine used by the local regex playground."
+    },
+    {
+      "name": "roxmltree",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.21",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "pending",
+      "source": "https://github.com/RazrFalcon/roxmltree",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "rusqlite",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.40",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/rusqlite/rusqlite",
+      "notes": "The bundled SQLite feature and the SQLite amalgamation require separate distribution review."
+    },
+    {
+      "name": "rust_xlsxwriter",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.99.1",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "pending",
+      "source": "https://github.com/jmcnamara/rust_xlsxwriter",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "screencapturekit",
+      "ecosystem": "cargo",
+      "declaredVersion": "10.0.3",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/doom-fish/screencapturekit-rs",
+      "notes": "macOS ScreenCaptureKit bindings for user-initiated region capture; capture picker requires macOS 14 or later."
+    },
+    {
+      "name": "semver",
+      "ecosystem": "cargo",
+      "declaredVersion": "1.0",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/dtolnay/semver",
+      "notes": "Used to validate plugin package versions and prevent downgrades."
+    },
+    {
+      "name": "serde",
+      "ecosystem": "cargo",
+      "declaredVersion": "1.0",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/serde-rs/serde",
+      "notes": "The upstream repository offers MIT or Apache-2.0 at the recipient's option."
+    },
+    {
+      "name": "serde_json",
+      "ecosystem": "cargo",
+      "declaredVersion": "1.0",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/serde-rs/json",
+      "notes": "The upstream repository offers MIT or Apache-2.0 at the recipient's option."
+    },
+    {
+      "name": "sha2",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.10",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/RustCrypto/hashes",
+      "notes": "Used to verify plugin component SHA-256 package digests."
+    },
+    {
+      "name": "similar",
+      "ecosystem": "cargo",
+      "declaredVersion": "2.7",
+      "licenseExpression": "Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/mitsuhiko/similar",
+      "notes": "Myers text diff implementation for the local diff tool."
+    },
+    {
+      "name": "strsim",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.11",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://crates.io/crates/strsim",
+      "notes": "Verify resolved package metadata and source notice."
+    },
+    {
+      "name": "sysinfo",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.39.6",
+      "licenseExpression": "MIT",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/GuillaumeGomez/sysinfo",
+      "notes": "System information provider; minimal selected features are system, disk, and network."
+    },
+    {
+      "name": "tauri",
+      "ecosystem": "cargo",
+      "declaredVersion": "2.11",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/tauri-apps/tauri",
+      "notes": "Verify all enabled features and platform-selected dependencies."
+    },
+    {
+      "name": "tauri-build",
+      "ecosystem": "cargo",
+      "declaredVersion": "2.6",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/tauri-apps/tauri",
+      "notes": "Verify all platform-selected build dependencies."
+    },
+    {
+      "name": "tauri-plugin-clipboard-manager",
+      "ecosystem": "cargo",
+      "declaredVersion": "2.3",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/tauri-apps/plugins-workspace",
+      "notes": "Verify all platform-selected dependencies and bundled notices."
+    },
+    {
+      "name": "tauri-plugin-dialog",
+      "ecosystem": "cargo",
+      "declaredVersion": "2.7",
+      "licenseExpression": "Apache-2.0 OR MIT",
+      "verificationStatus": "pending",
+      "source": "https://github.com/tauri-apps/plugins-workspace",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "tauri-plugin-global-shortcut",
+      "ecosystem": "cargo",
+      "declaredVersion": "2.3",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/tauri-apps/plugins-workspace",
+      "notes": "Verify all platform-selected dependencies and bundled notices."
+    },
+    {
+      "name": "tauri-plugin-opener",
+      "ecosystem": "cargo",
+      "declaredVersion": "2.5",
+      "licenseExpression": "Apache-2.0 OR MIT",
+      "verificationStatus": "pending",
+      "source": "https://github.com/tauri-apps/plugins-workspace",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "tempfile",
+      "ecosystem": "cargo",
+      "declaredVersion": "3.23",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/Stebalien/tempfile",
+      "notes": "Used for private staged plugin installation."
+    },
+    {
+      "name": "thiserror",
+      "ecosystem": "cargo",
+      "declaredVersion": "2.0",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/dtolnay/thiserror",
+      "notes": "The upstream repository offers MIT or Apache-2.0 at the recipient's option."
+    },
+    {
+      "name": "tokio",
+      "ecosystem": "cargo",
+      "declaredVersion": "1",
+      "licenseExpression": "MIT",
+      "verificationStatus": "pending",
+      "source": "https://github.com/tokio-rs/tokio",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "toml",
+      "ecosystem": "cargo",
+      "declaredVersion": "1.1",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "pending",
+      "source": "https://github.com/toml-rs/toml",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "tungstenite",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.30.0",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "pending",
+      "source": "https://github.com/snapview/tungstenite-rs",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "unicode-segmentation",
+      "ecosystem": "cargo",
+      "declaredVersion": "1.13",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/unicode-rs/unicode-segmentation",
+      "notes": "Unicode word/grapheme segmentation for text statistics and character inspection."
+    },
+    {
+      "name": "url",
+      "ecosystem": "cargo",
+      "declaredVersion": "2.5",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/servo/rust-url",
+      "notes": "WHATWG URL parsing for the explicitly user-confirmed reviewed-link opener."
+    },
+    {
+      "name": "uuid",
+      "ecosystem": "cargo",
+      "declaredVersion": "1.26",
+      "licenseExpression": "Apache-2.0 OR MIT",
+      "verificationStatus": "pending",
+      "source": "https://github.com/uuid-rs/uuid",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "wasmtime",
+      "ecosystem": "cargo",
+      "declaredVersion": "48.0.2",
+      "licenseExpression": "Apache-2.0 WITH LLVM-exception",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/bytecodealliance/wasmtime",
+      "notes": "Pinned Component Model runtime; Rust 1.95 MSRV. Full transitive/native build closure audit remains pending."
+    },
+    {
+      "name": "wasmtime-wasi",
+      "ecosystem": "cargo",
+      "declaredVersion": "48.0.2",
+      "licenseExpression": "Apache-2.0 WITH LLVM-exception",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/bytecodealliance/wasmtime",
+      "notes": "Pinned WASI Preview 2 shim with an empty deny-by-default capability context; full transitive closure audit remains pending."
+    },
+    {
+      "name": "windows-capture",
+      "ecosystem": "cargo",
+      "declaredVersion": "2.0.1",
+      "licenseExpression": "MIT",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/NiiightmareXD/windows-capture",
+      "notes": "Windows Graphics Capture helper for user-authorized screen-region capture; only enabled for Windows desktop builds."
+    },
+    {
+      "name": "windows-sys",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.61",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "pending",
+      "source": "https://github.com/microsoft/windows-rs",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "wit-bindgen",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.57.1",
+      "licenseExpression": "Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/bytecodealliance/wit-bindgen",
+      "notes": "Guest-side bindings are generated from versioned WIT."
+    },
+    {
+      "name": "yaml-rust2",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.13",
+      "licenseExpression": "MIT OR Apache-2.0",
+      "verificationStatus": "pending",
+      "source": "https://github.com/Ethiraric/yaml-rust2",
+      "notes": "Declared crate metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "zxcvbn",
+      "ecosystem": "cargo",
+      "declaredVersion": "3.1.1",
+      "licenseExpression": "MIT",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/shssoichiro/zxcvbn-rs",
+      "notes": "Local password guessability estimator ported from Dropbox zxcvbn. No password data is transmitted; audit the resolved dependency closure."
+    },
+    {
+      "name": "zxing-cpp",
+      "ecosystem": "cargo",
+      "declaredVersion": "0.5.3",
+      "licenseExpression": "Apache-2.0",
+      "verificationStatus": "verified-upstream",
+      "source": "https://github.com/zxing-cpp/zxing-cpp",
+      "notes": "Bundled native ZXing-C++ barcode engine; package contains ZXing-C++ 3.1.1, also Apache-2.0. Native build requires CMake and a C++20 toolchain."
+    },
+    {
+      "name": "@sveltejs/vite-plugin-svelte",
+      "ecosystem": "npm",
+      "declaredVersion": "^7.3.0",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/sveltejs/vite-plugin-svelte",
+      "notes": "No npm lockfile was present at inventory creation."
+    },
+    {
+      "name": "@tauri-apps/api",
+      "ecosystem": "npm",
+      "declaredVersion": "^2.11.1",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/tauri-apps/tauri",
+      "notes": "No npm lockfile was present at inventory creation."
+    },
+    {
+      "name": "esbuild",
+      "ecosystem": "npm",
+      "declaredVersion": "^0.28.2",
+      "licenseExpression": "MIT",
+      "verificationStatus": "pending",
+      "source": "https://github.com/evanw/esbuild",
+      "notes": "Declared package metadata; upstream license text not yet reviewed."
+    },
+    {
+      "name": "svelte",
+      "ecosystem": "npm",
+      "declaredVersion": "^5.57.1",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/sveltejs/svelte",
+      "notes": "No npm lockfile was present at inventory creation."
+    },
+    {
+      "name": "svelte-check",
+      "ecosystem": "npm",
+      "declaredVersion": "^4.7.6",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/sveltejs/language-tools",
+      "notes": "No npm lockfile was present at inventory creation."
+    },
+    {
+      "name": "typescript",
+      "ecosystem": "npm",
+      "declaredVersion": "^5.9.3",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/microsoft/TypeScript",
+      "notes": "No npm lockfile was present at inventory creation."
+    },
+    {
+      "name": "vite",
+      "ecosystem": "npm",
+      "declaredVersion": "^8.3.0",
+      "licenseExpression": null,
+      "verificationStatus": "pending",
+      "source": "https://github.com/vitejs/vite",
+      "notes": "No npm lockfile was present at inventory creation."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+[package]
+name = "arcadebox"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[dependencies]
+arcade-contract = { path = "../../crates/arcade-contract" }
+arcade-core = { path = "../../crates/arcade-core" }
+clap = { version = "4.5", features = ["derive"] }
+directories = "6.0"
+serde_json.workspace = true
+

@@ -1,0 +1,402 @@
+schema_version: 1
+reviewed_on: "2026-10-03"
+workspace_rust_msrv: "1.95"
+application_license_candidate: "GPL-3.0-or-later"
+application_license_status: "candidate; finalize only after full release dependency audit"
+inventory_policy:
+  - "Pin exact source versions and artifact digests in release builds."
+  - "Track build flags and feature-dependent license changes."
+  - "Generate a release SBOM from the exact shipped artifacts."
+  - "Provider versions and system installations are not automatically part of Arcade Box's shipped inventory."
+
+dependencies:
+  - id: tauri
+    name: Tauri desktop framework
+    decision: selected
+    version_line: "2.x stable"
+    upstream_license: "MIT OR Apache-2.0"
+    distribution: application dependency
+    source: https://github.com/tauri-apps/tauri
+    obligations: "Retain applicable license notices; audit platform crates and plugins."
+    notes: "Tauri 3 was alpha in the reviewed release stream; use supported Tauri 2."
+
+  - id: tauri-plugin-global-shortcut
+    name: Tauri global-shortcut plugin
+    decision: selected_for_windows_macos_x11
+    version_line: "2.3.2 reviewed"
+    upstream_license: "MIT OR Apache-2.0"
+    distribution: application dependency
+    source: https://github.com/tauri-apps/plugins-workspace/tree/v2/plugins/global-shortcut
+    obligations: "Retain notices."
+    notes: "Depends on global-hotkey 0.8. Do not use as the Wayland shortcut backend."
+
+  - id: global-hotkey
+    name: global-hotkey
+    decision: transitive
+    version_line: "0.8"
+    upstream_license: "MIT OR Apache-2.0"
+    distribution: application dependency
+    source: https://github.com/tauri-apps/global-hotkey
+    obligations: "Retain notices."
+    notes: "Linux support is X11 only."
+
+  - id: svelte
+    name: Svelte
+    decision: selected
+    version_line: "5.x"
+    upstream_license: "MIT"
+    distribution: build dependency
+    source: https://github.com/sveltejs/svelte
+    obligations: "Retain license notice in applicable source/binary inventories."
+
+  - id: vite
+    name: Vite
+    decision: selected
+    version_line: "8.x"
+    upstream_license: "MIT"
+    distribution: build dependency
+    source: https://github.com/vitejs/vite
+    obligations: "Retain license notice in applicable source/binary inventories."
+
+  - id: wasmtime
+    name: Wasmtime
+    decision: selected
+    version_line: "48.x LTS reviewed"
+    upstream_license: "Apache-2.0 WITH LLVM-exception"
+    distribution: application dependency
+    source: https://github.com/bytecodealliance/wasmtime
+    obligations: "Retain Apache-2.0 license and notices; inventory full dependency tree."
+    notes: "Use Component Model and WASI Preview 2. WASI Preview 3 is explicitly experimental, unstable, and incomplete."
+
+  - id: rusqlite
+    name: rusqlite
+    decision: selected
+    version_line: "0.40.x reviewed"
+    upstream_license: "MIT"
+    distribution: application dependency
+    source: https://github.com/rusqlite/rusqlite
+    obligations: "Retain license notice."
+    notes: "Bundled SQLite feature chosen for deterministic local builds."
+
+  - id: sqlite
+    name: SQLite (bundled through libsqlite3-sys)
+    decision: selected
+    version_line: "3.53.x bundled in reviewed rusqlite line"
+    upstream_license: "LicenseRef-Public-Domain"
+    distribution: application dependency
+    source: https://www.sqlite.org/copyright.html
+    obligations: "Keep provenance in inventory; SQLite is public domain."
+
+  - id: ffmpeg
+    name: FFmpeg and ffprobe
+    decision: provider_system_first_managed_optional
+    version_line: "9.0.x current stable reviewed"
+    upstream_license: "LGPL-2.1-or-later; may become GPL-2.0-or-later or GPL-3.0-or-later depending on build"
+    distribution: provider artifact if managed
+    source: https://www.ffmpeg.org/legal.html
+    obligations: "For shipped LGPL build, include exact corresponding source, notices, build configuration, and applicable relinking/source provisions. Re-audit external libraries and codecs."
+    notes: "Do not use --enable-nonfree in redistributed providers. System installs remain separately inventoried."
+
+  - id: yt-dlp
+    name: yt-dlp
+    decision: provider_system_first_managed_optional
+    version_line: "2026.08.19 release reviewed"
+    upstream_license: "Artifact-dependent: Unlicense source/PyPI core with third-party notices; GPL-3.0-or-later for PyInstaller executables"
+    distribution: provider artifact if managed
+    source: https://github.com/yt-dlp/yt-dlp
+    obligations: "Verify signed checksum files; ship artifact-appropriate third-party notices and source. Pin and inventory yt-dlp-ejs and JS runtime requirements."
+    notes: "Full supported YouTube extraction requires yt-dlp-ejs and a supported JavaScript runtime. Do not expose plugin access to browser cookies."
+
+  - id: libvips
+    name: libvips
+    decision: provider_system_first_managed_optional
+    version_line: "8.18.x reviewed"
+    upstream_license: "LGPL-2.1-or-later"
+    distribution: provider artifact if managed
+    source: https://github.com/libvips/libvips
+    obligations: "Retain notices and corresponding source/relinking materials when redistributed; inventory optional format libraries."
+    notes: "Image format availability depends on build configuration and optional libraries."
+
+  - id: qpdf
+    name: qpdf
+    decision: provider_system_first_managed_optional
+    version_line: "12.4.x reviewed"
+    upstream_license: "Apache-2.0"
+    distribution: provider artifact if managed
+    source: https://github.com/qpdf/qpdf
+    obligations: "Retain LICENSE and NOTICE; include Artistic-2.0 notice for qtest and BSD notice for embedded SHA-2 code where shipped."
+    notes: "Supports structural operations plus capability-detected --optimize-images/--jpeg-quality recompression (qpdf 12.1+); JPEG recompression is lossy and does not downsample. Not a renderer or text extractor."
+
+  - id: printpdf
+    name: printpdf PDF writer
+    decision: selected
+    version_line: "0.12.8"
+    upstream_license: "MIT"
+    distribution: application dependency
+    source: https://github.com/fschutt/printpdf
+    obligations: "Retain the MIT license notice; include the resolved feature graph in release inventory."
+    notes: "Used with default features off and only images/JPEG/PNG enabled to create watermark overlays. Keep text_layout disabled: it pulls the MPL-2.0 azul-simplecss package through azul-layout; that package is absent from Arcade Core's normal dependency graph."
+
+  - id: pdfium
+    name: PDFium
+    decision: candidate
+    version_line: null
+    upstream_license: "BSD-3-Clause and Apache-2.0 with Chromium third-party components"
+    distribution: provider candidate
+    source: https://pdfium.googlesource.com/pdfium/
+    obligations: "Audit exact PDFium revision and every linked/bundled third-party component; generate complete notices."
+    notes: "Potential renderer/text extraction engine; Chromium build and dependency closure are substantial."
+
+  - id: mupdf
+    name: MuPDF
+    decision: rejected_as_default_candidate
+    version_line: null
+    upstream_license: "AGPL-3.0-or-later OR commercial"
+    distribution: provider candidate
+    source: https://github.com/ArtifexSoftware/mupdf
+    obligations: "Requires AGPL compliance for combined distribution or a commercial license."
+    notes: "Reconsider only after explicit legal and architecture review."
+
+  - id: tesseract
+    name: Tesseract OCR
+    decision: provider_system_first_managed_optional
+    version_line: "5.5.3 reviewed"
+    upstream_license: "Apache-2.0"
+    distribution: provider artifact if managed
+    source: https://github.com/tesseract-ocr/tesseract
+    obligations: "Retain license and notices; inventory Leptonica and language data."
+
+  - id: leptonica
+    name: Leptonica
+    decision: transitive_provider
+    version_line: null
+    upstream_license: "BSD-2-Clause"
+    distribution: provider dependency if linked/shipped
+    source: https://github.com/DanBloomberg/leptonica
+    obligations: "Retain copyright and license notice."
+
+  - id: tessdata
+    name: Tesseract language data
+    decision: separately_managed_optional
+    version_line: null
+    upstream_license: "Apache-2.0"
+    distribution: downloadable model/data package
+    source: https://github.com/tesseract-ocr/tessdata
+    obligations: "Show language pack license and preserve notices."
+
+  - id: zxing-cpp
+    name: ZXing-C++
+    decision: provider_system_first_managed_optional
+    version_line: "3.1.1 reviewed"
+    upstream_license: "Apache-2.0"
+    distribution: provider artifact if managed
+    source: https://github.com/zxing-cpp/zxing-cpp
+    obligations: "Retain license and notices."
+    notes: "New writer path may enable Zint; configure and record writer mode explicitly."
+
+  - id: zint
+    name: Zint barcode writer library
+    decision: transitive_if_new_zxing_writer_enabled
+    version_line: "2.16.x source snapshot reviewed"
+    upstream_license: "BSD-3-Clause"
+    distribution: provider dependency if linked/shipped
+    source: https://github.com/zint/zint
+    obligations: "Retain copyright and license notice. Do not accidentally include separately licensed GUI/CLI."
+
+  - id: libarchive
+    name: libarchive
+    decision: not_used
+    removal_reason: "archive tools were removed from the catalog"
+    version_line: "3.8.9 reviewed"
+    upstream_license: "BSD-2-Clause and other component-specific licenses"
+    distribution: provider artifact if managed
+    source: https://github.com/libarchive/libarchive
+    obligations: "Retain upstream notices and inventory enabled optional compression libraries."
+
+  - id: seven_zip
+    name: 7-Zip
+    decision: not_used
+    removal_reason: "archive tools were removed from the catalog"
+    version_line: "26.02 reviewed"
+    upstream_license: "LGPL-2.1-or-later; BSD-3-Clause for some components; unRAR restriction for some code"
+    distribution: provider artifact if managed
+    source: https://www.7-zip.org/license.txt
+    obligations: "Keep LGPL source/relinking materials and notices. Exclude restricted unRAR portions unless separately reviewed."
+
+  - id: age
+    name: age Rust library
+    decision: selected_for_encryption_tool
+    version_line: null
+    upstream_license: "MIT OR Apache-2.0"
+    distribution: application dependency
+    source: https://github.com/str4d/rage
+    obligations: "Retain applicable notices; audit resolved crypto dependency graph."
+    notes: "Use standard age format and streaming APIs; avoid custom cryptography."
+
+  - id: minisign_verify
+    name: minisign-verify
+    decision: candidate_for_signature_verification
+    version_line: null
+    upstream_license: "MIT"
+    distribution: application dependency candidate
+    source: https://github.com/jedisct1/rust-minisign-verify
+    obligations: "Retain MIT notice; verify compatibility against official vectors."
+
+  - id: rust_minisign
+    name: rust-minisign
+    decision: not_used
+    removal_reason: "the file-signing tool was removed from the catalog"
+    version_line: null
+    upstream_license: "MIT"
+    distribution: application dependency candidate
+    source: https://github.com/jedisct1/rust-minisign
+    obligations: "Retain MIT notice; audit dependency tree and validate against official minisign vectors."
+
+  - id: xdg_desktop_portal
+    name: XDG Desktop Portal GlobalShortcuts
+    decision: selected_for_wayland_shortcuts
+    version_line: "Interface v1 baseline; v2 additions optional"
+    upstream_license: "Interface spec; LGPL-2.1-or-later for xdg-desktop-portal implementation"
+    distribution: operating-system service
+    source: https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.GlobalShortcuts.html
+    obligations: "No portal binary is bundled; detect portal and backend capabilities at runtime."
+    notes: "GlobalShortcuts entered xdg-desktop-portal in 1.16.0. Interface availability varies by installed desktop backend."
+
+  - id: ashpd
+    name: ashpd Rust portal client
+    decision: selected_for_wayland_shortcuts
+    version_line: "0.13.13"
+    upstream_license: "MIT"
+    distribution: application dependency
+    source: https://github.com/bilelmoussaoui/ashpd
+    obligations: "Retain MIT notice; inventory zbus and other transitive crates."
+    notes: "Enable global_shortcuts Cargo feature. Requires Rust 1.87; compatible with current workspace MSRV 1.95. Keep portal API behind the platform abstraction."
+
+  - id: windows-sys
+    name: windows-sys Win32 bindings
+    decision: selected_windows_process_containment
+    version_line: "0.61.x"
+    upstream_license: "MIT OR Apache-2.0"
+    distribution: application dependency
+    source: https://github.com/microsoft/windows-rs
+    obligations: "Retain applicable license notices."
+    notes: "Provides Windows Job Object and Tool Help bindings for assigning and terminating provider process trees."
+
+  - id: gpl_reference
+    name: GNU license compatibility references
+    decision: compliance_reference
+    version_line: null
+    upstream_license: "Documentation"
+    distribution: not a software dependency
+    source: https://www.gnu.org/licenses/license-list.html
+    obligations: "Use as input to legal review, not as a substitute for one."
+
+  # Optional system providers used by the regrouped tool catalog (2026-10-03).
+  # Arcade Box discovers these on the user's system and does not redistribute them.
+  - id: imagemagick
+    name: ImageMagick 7
+    decision: provider_system_first_managed_optional
+    upstream_license: "ImageMagick"
+    distribution: system provider
+    source: https://imagemagick.org/script/license.php
+    obligations: "Retain notices if a managed build is ever shipped."
+    notes: "Combine, watermark, favicon, passport photo, and PDF signature rendering."
+
+  - id: ghostscript
+    name: Ghostscript
+    decision: provider_system_only
+    upstream_license: "AGPL-3.0-or-later (or commercial)"
+    distribution: system provider
+    source: https://www.ghostscript.com/licensing/
+    obligations: "Do not bundle without an AGPL compliance review."
+    notes: "PDF compress-to-size and OCRmyPDF."
+
+  - id: poppler
+    name: Poppler utilities
+    decision: provider_system_only
+    upstream_license: "GPL-2.0-or-later OR GPL-3.0-or-later"
+    distribution: system provider
+    source: https://poppler.freedesktop.org/
+    obligations: "Not bundled."
+    notes: "pdftoppm, pdftotext, pdfinfo, pdfimages, pdfdetach."
+
+  - id: img2pdf
+    name: img2pdf
+    decision: provider_system_only
+    upstream_license: "LGPL-3.0-or-later"
+    distribution: system provider
+    source: https://gitlab.mister-muffin.de/josch/img2pdf
+    obligations: "Not bundled."
+    notes: "Lossless images to PDF."
+
+  - id: ocrmypdf
+    name: OCRmyPDF
+    decision: provider_system_only
+    upstream_license: "MPL-2.0"
+    distribution: system provider
+    source: https://github.com/ocrmypdf/OCRmyPDF
+    obligations: "Not bundled."
+    notes: "Searchable PDF; uses Tesseract and Ghostscript."
+
+  - id: chromium
+    name: Chromium or Google Chrome
+    decision: provider_system_only
+    upstream_license: "BSD-3-Clause and bundled third-party licenses"
+    distribution: system provider
+    source: https://www.chromium.org/
+    obligations: "Not bundled."
+    notes: "Webpage to PDF and full-page screenshots over the DevTools protocol with a throwaway profile."
+
+  - id: piper
+    name: Piper text to speech and voices
+    decision: provider_user_installed
+    upstream_license: "MIT (rhasspy/piper releases); voices carry per-voice dataset licenses"
+    distribution: user-installed provider and models
+    source: https://github.com/rhasspy/piper
+    obligations: "Review each voice's MODEL_CARD before any redistribution. The newer piper1-gpl project is GPL-3.0-or-later."
+    notes: "Reused from PATH or <app data>/tools/piper; voices from <app data>/models/piper-voices."
+
+  - id: rnnoise_model
+    name: RNNoise model for FFmpeg arnndn
+    decision: model_user_installed
+    upstream_license: "BSD-3-Clause (review the specific model file)"
+    distribution: user-installed model
+    source: https://github.com/GregorR/rnnoise-models
+    obligations: "Not bundled; review before redistribution."
+    notes: "Speech noise removal reads <app data>/models/rnnoise/sh.rnnn."
+
+  - id: demucs
+    name: Demucs
+    decision: optional_provider
+    upstream_license: "MIT"
+    distribution: user-installed provider
+    source: https://github.com/adefossez/demucs
+    obligations: "Not bundled; model weights are reviewed separately."
+    notes: "Optional higher-quality vocal separation; a basic FFmpeg filter is used otherwise."
+
+  - id: rembg
+    name: rembg with U²-Net models
+    decision: provider_user_installed
+    upstream_license: "MIT (rembg); Apache-2.0 (U²-Net)"
+    distribution: user-installed provider and models
+    source: https://github.com/danielgatis/rembg
+    obligations: "Not bundled; never downloaded on first use."
+    notes: "Background removal and passport photo backgrounds."
+
+  - id: realesrgan
+    name: Real-ESRGAN NCNN Vulkan
+    decision: provider_user_installed
+    upstream_license: "BSD-3-Clause"
+    distribution: user-installed provider and models
+    source: https://github.com/xinntao/Real-ESRGAN
+    obligations: "Not bundled; model weights are reviewed separately."
+    notes: "Image upscaling."
+
+  - id: groq_whisper
+    name: Groq speech-to-text API (whisper-large-v3)
+    decision: cloud_service_user_key
+    upstream_license: "Service terms (Groq); Whisper model weights are MIT"
+    distribution: remote service
+    source: https://console.groq.com/docs/speech-to-text
+    obligations: "Disclose that audio leaves the device (CLOUD privacy class). The user supplies their own API key."
+    notes: "Transcribe, translate, auto-subtitles, and the video transcript fallback."
