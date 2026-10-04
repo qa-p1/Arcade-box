@@ -5,6 +5,11 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 
+# `arcadebox` (src/main.rs) and its canonical alias `arcade-box` (src/bin).
+[[bin]]
+name = "arcadebox"
+path = "src/main.rs"
+
 [dependencies]
 arcade-contract = { path = "../../crates/arcade-contract" }
 arcade-core = { path = "../../crates/arcade-core" }
