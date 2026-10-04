@@ -30,13 +30,24 @@ enum Command {
     Tools {
         #[arg(long)]
         all: bool,
+        /// Print a stable JSON description (with presets) for other apps.
+        #[arg(long)]
+        json: bool,
     },
     /// Search the tool catalog.
     Search { query: String },
     /// Run an implemented tool. Use '-' to read text from stdin.
     Run {
-        tool_id: String,
+        /// The tool to run (not needed with --stdin-json).
+        tool_id: Option<String>,
         input: Option<String>,
+        /// Start from one of the tool's presets; --set overrides its values.
+        #[arg(long)]
+        preset: Option<String>,
+        /// Read an Arcade Link invoke request (JSON) from stdin and print the
+        /// result as JSON.
+        #[arg(long)]
+        stdin_json: bool,
         #[arg(long)]
         file: Vec<PathBuf>,
         /// Set a tool option, e.g. `--set mode=upper` or `--set count=3`.
@@ -127,7 +138,17 @@ fn main() {
 }
 
 fn run() -> Result<(), Box<dyn std::error::Error>> {
+    // Arcade Link one-shot mode: one request on stdin, no other output.
+    if std::env::args().nth(1).as_deref() == Some(arcade_link::oneshot::FLAG) {
+        let runtime = std::sync::Arc::new(open_runtime()?);
+        std::process::exit(arcade_link::oneshot::serve(
+            &arcade_core::link::OneshotHandler { runtime },
+        ));
+    }
     let cli = Cli::parse();
+    if let Command::Tools { all, json: true } = cli.command {
+        return print_tools_json(all);
+    }
     if matches!(cli.command, Command::Providers) {
         for provider in discover_ffmpeg(None)
             .into_iter()
@@ -153,12 +174,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         }
         return Ok(());
     }
-    let project_dirs = directories::ProjectDirs::from("dev", "Arcade Box", "Arcade Box")
-        .ok_or("could not locate application data directory")?;
-    fs::create_dir_all(project_dirs.data_dir())?;
-    let runtime = Arcade::open(&project_dirs.data_dir().join("arcade.sqlite3"))?;
+    let runtime = open_runtime()?;
     match cli.command {
-        Command::Tools { all } => {
+        Command::Tools { all, .. } => {
             for tool in runtime
                 .list_tools()
                 .iter()
@@ -185,20 +203,49 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             }
         }
         Command::Run {
+            stdin_json: true, ..
+        } => {
+            let mut request = String::new();
+            io::stdin().read_to_string(&mut request)?;
+            let request: arcade_link::InvokeRequest = serde_json::from_str(&request)?;
+            let result =
+                arcade_core::link::run_blocking(&runtime, &request, &AtomicBool::new(false))
+                    .map_err(|error| error.to_string())?;
+            writeln!(
+                io::stdout().lock(),
+                "{}",
+                serde_json::to_string_pretty(&result)?
+            )?;
+        }
+        Command::Run {
             tool_id,
             input,
+            preset,
             file,
             set,
             output_name,
             options_json,
             json,
+            ..
         } => {
-            let mut options = match options_json {
-                Some(value) => {
-                    serde_json::from_str::<serde_json::Map<String, serde_json::Value>>(&value)?
-                }
-                None => serde_json::Map::new(),
-            };
+            let tool_id = tool_id.ok_or("run needs a tool ID (or --stdin-json)")?;
+            let mut options = serde_json::Map::new();
+            if let Some(preset) = preset {
+                let tool = runtime
+                    .list_tools()
+                    .into_iter()
+                    .find(|tool| tool.id == tool_id)
+                    .ok_or_else(|| format!("unknown tool {tool_id}"))?;
+                let preset = tool
+                    .preset(&preset)
+                    .ok_or_else(|| format!("{tool_id} has no preset {preset}"))?;
+                options.extend(preset.options.clone());
+            }
+            if let Some(value) = options_json {
+                options.extend(serde_json::from_str::<
+                    serde_json::Map<String, serde_json::Value>,
+                >(&value)?);
+            }
             for assignment in set {
                 let (key, value) = assignment
                     .split_once('=')
@@ -466,6 +513,47 @@ fn selected_inputs(
 
 /// Convert process-local artifact grants into stable file paths at the CLI
 /// boundary. The core contract continues to use opaque grants internally.
+fn open_runtime() -> Result<Arcade, Box<dyn std::error::Error>> {
+    let project_dirs = directories::ProjectDirs::from("dev", "Arcade Box", "Arcade Box")
+        .ok_or("could not locate application data directory")?;
+    fs::create_dir_all(project_dirs.data_dir())?;
+    Ok(Arcade::open(
+        &project_dirs.data_dir().join("arcade.sqlite3"),
+    )?)
+}
+
+/// `tools --json`: a stable description of the built-in tools and their
+/// presets, read from the embedded catalog without opening the database.
+fn print_tools_json(all: bool) -> Result<(), Box<dyn std::error::Error>> {
+    let catalog = arcade_core::builtin_catalog()?;
+    let tools: Vec<serde_json::Value> = catalog
+        .tools
+        .iter()
+        .filter(|tool| all || tool.status != arcade_contract::ImplementationStatus::Planned)
+        .map(|tool| {
+            serde_json::json!({
+                "id": tool.id,
+                "name": tool.name,
+                "description": tool.description,
+                "category": tool.category,
+                "status": tool.status,
+                "inputs": tool.inputs,
+                "outputs": tool.outputs,
+                "linkAccepts": arcade_core::link::link_accepts(tool),
+                "privacy": tool.privacy_class,
+                "presets": tool.presets,
+                "featuredFor": tool.link.as_ref().map(|link| link.featured_for.clone()).unwrap_or_default(),
+            })
+        })
+        .collect();
+    writeln!(
+        io::stdout().lock(),
+        "{}",
+        serde_json::to_string_pretty(&serde_json::json!({ "schema": 1, "tools": tools }))?
+    )?;
+    Ok(())
+}
+
 fn resolve_cli_outputs(
     runtime: &Arcade,
     outputs: &mut [ToolValue],

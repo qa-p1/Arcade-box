@@ -16,4 +16,5 @@ arcade-core = { path = "../../crates/arcade-core" }
 clap = { version = "4.5", features = ["derive"] }
 directories = "6.0"
 serde_json.workspace = true
+arcade-link.workspace = true
 
