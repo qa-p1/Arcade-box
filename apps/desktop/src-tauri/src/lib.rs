@@ -24,6 +24,7 @@ mod artifact_image;
 mod clipboard_history;
 #[cfg(target_os = "linux")]
 mod hyprland;
+mod link;
 mod media_preview;
 mod open_url;
 mod paste_plain;
@@ -106,6 +107,7 @@ fn set_shortcut(
             .storage()
             .set_setting("global_shortcut", &trigger)
             .map_err(|error| error.to_string())?;
+        link::refresh(&app);
         return Ok(shortcut_status(app));
     }
     let shortcut = trigger
@@ -136,6 +138,7 @@ fn set_shortcut(
         .storage()
         .set_setting("global_shortcut", &trigger)
         .map_err(|error| error.to_string())?;
+    link::refresh(&app);
     let status = shortcut_status(app.clone());
     let _ = app.emit("arcade://shortcut-status", status.clone());
     Ok(status)
@@ -795,6 +798,9 @@ fn island_ready(window: tauri::WebviewWindow) {
     if pending {
         show_island(&window);
     }
+    if PENDING_SETTINGS.swap(false, std::sync::atomic::Ordering::SeqCst) {
+        let _ = window.emit("arcade://open-settings", ());
+    }
 }
 
 /// Restrict pointer input to the visible surface. The transparent canvas exists
@@ -949,12 +955,74 @@ fn install_recovery_tray(app: &tauri::App) -> tauri::Result<()> {
     Ok(())
 }
 
-pub fn run() {
+/// On Windows the release build has no console; attach to the parent's so
+/// `--version` and `--arcade-manifest` print where they were asked.
+pub fn attach_console() {
+    #[cfg(windows)]
+    unsafe {
+        windows_sys::Win32::System::Console::AttachConsole(
+            windows_sys::Win32::System::Console::ATTACH_PARENT_PROCESS,
+        );
+    }
+}
+
+pub use link::print_manifest;
+
+/// `--settings` asked for before the Island's WebView was ready.
+static PENDING_SETTINGS: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+/// Opens Settings in the Island (now, or once the WebView is ready).
+fn open_settings(app: &tauri::AppHandle) {
+    let ready = ISLAND_VISIBILITY
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .ready;
+    if !ready {
+        PENDING_SETTINGS.store(true, std::sync::atomic::Ordering::SeqCst);
+    }
+    if let Some(window) = app.get_webview_window("island") {
+        show_island(&window);
+    }
+    if ready {
+        let _ = app.emit("arcade://open-settings", ());
+    }
+}
+
+/// Another launch of Arcade Box (the applications menu, `--settings`,
+/// `--quit`) talks to this instance instead of starting a second one.
+fn handle_second_instance(app: &tauri::AppHandle, argv: &[String]) {
+    let flag = argv
+        .iter()
+        .skip(1)
+        .find(|a| a.starts_with("--"))
+        .map(String::as_str);
+    match flag {
+        Some("--quit") => app.exit(0),
+        Some("--settings") => open_settings(app),
+        Some("--background") => {}
+        _ => {
+            if let Some(window) = app.get_webview_window("island") {
+                show_island(&window);
+            }
+        }
+    }
+}
+
+pub fn run(args: Vec<String>) {
+    let first_flag = args.iter().find(|a| a.starts_with("--")).cloned();
     let app = tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            handle_second_instance(app, &argv);
+        }))
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .setup(|app| {
+        .setup(move |app| {
+            // `--quit` with nothing running: exit without starting anything.
+            if first_flag.as_deref() == Some("--quit") {
+                app.handle().exit(0);
+                return Ok(());
+            }
             let db_dir = app.path().app_data_dir()?;
             std::fs::create_dir_all(&db_dir)?;
             let lock = std::fs::OpenOptions::new()
@@ -1045,6 +1113,10 @@ pub fn run() {
                     .unwrap_or(default_shortcut);
                 app.manage(register_native_shortcut(app.handle(), preferred)?);
             }
+            link::start(app.handle());
+            if first_flag.as_deref() == Some("--settings") {
+                open_settings(app.handle());
+            }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
@@ -1123,6 +1195,9 @@ pub fn run() {
         .build(tauri::generate_context!())
         .expect("Arcade Box desktop runtime failed to initialize");
     app.run(|handle, event| {
+        if let tauri::RunEvent::Exit = event {
+            link::stop();
+        }
         #[cfg(target_os = "linux")]
         if let tauri::RunEvent::Exit = event {
             if handle.try_state::<ResidentInstance>().is_some() {

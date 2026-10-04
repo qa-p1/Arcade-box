@@ -8,6 +8,7 @@ license.workspace = true
 [dependencies]
 arcade-contract = { path = "../arcade-contract" }
 arcade-plugin-host = { path = "../arcade-plugin-host", default-features = false, features = ["installer"] }
+arcade-link.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

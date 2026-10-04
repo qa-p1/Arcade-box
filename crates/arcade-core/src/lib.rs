@@ -8,6 +8,7 @@ pub mod file_tools;
 pub mod grants;
 pub mod image;
 pub mod jobs;
+pub mod link;
 mod magick;
 pub mod media;
 pub mod network;

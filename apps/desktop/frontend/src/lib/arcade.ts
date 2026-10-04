@@ -387,6 +387,12 @@ export async function watchIslandShown(handler: () => void): Promise<() => void>
   return listen('arcade://island-shown', handler);
 }
 
+/** `arcade-desktop --settings` (or another app) asked Box to open Settings. */
+export async function watchOpenSettings(handler: () => void): Promise<() => void> {
+  if (!isDesktopRuntime()) return () => {};
+  return listen('arcade://open-settings', handler);
+}
+
 // Register lifecycle listeners before acknowledging readiness, so an early
 // shortcut cannot be lost while the WebView is still loading.
 export async function islandReady(): Promise<void> {

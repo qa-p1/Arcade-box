@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "purpose": "Locked third-party dependency inventory; human license and notice review remains required",
-  "packageCount": 960,
+  "packageCount": 972,
   "unresolvedLicenseMetadata": [],
   "packages": [
     {
@@ -1866,6 +1866,16 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "doctest-file",
+      "version": "1.1.1",
+      "license": "0BSD",
+      "licenseFile": null,
+      "repository": "https://codeberg.org/Goat7658/doctest-file",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "c2db04e74f0a9a93103b50e90b96024c9b2bdca8bce6a632ec71b88736d3d359"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "dom_query",
       "version": "0.27.0",
       "license": "MIT",
@@ -2433,6 +2443,16 @@
       "repository": "https://github.com/bytecodealliance/fs-set-times",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "94e7099f6313ecacbe1256e8ff9d617b75d1bcb16a6fddef94866d225a01a14a"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "fsevent-sys",
+      "version": "4.1.0",
+      "license": "MIT",
+      "licenseFile": null,
+      "repository": "https://github.com/octplane/fsevent-rust/tree/master/fsevent-sys",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "76ee7a02da4d231650c7cea31349b889be2f45ddb3ef3032d2ec8185f6313fd2"
     },
     {
       "ecosystem": "cargo",
@@ -3296,6 +3316,26 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "inotify",
+      "version": "0.11.5",
+      "license": "ISC",
+      "licenseFile": null,
+      "repository": "https://github.com/hannobraun/inotify-rs",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "4cc00ea907cab49550b7da656f80ebb97be1b997d931fbcd28d39734e17ce592"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "inotify-sys",
+      "version": "0.1.8",
+      "license": "ISC",
+      "licenseFile": null,
+      "repository": "https://github.com/hannobraun/inotify-sys",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "c033f80b2c113cdf91ab7a33faa9cbc014726dcad99880c8609af2a370edf37d"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "inout",
       "version": "0.1.4",
       "license": "MIT OR Apache-2.0",
@@ -3323,6 +3363,16 @@
       "repository": "https://github.com/lu-zero/interpolate_name",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "c34819042dc3d3971c46c2190835914dfbe0c3c13f61449b2997f4e9722dfa60"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "interprocess",
+      "version": "2.4.4",
+      "license": "0BSD OR Apache-2.0",
+      "licenseFile": null,
+      "repository": "https://github.com/kotauskas/interprocess",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "6cb02ffbf25e8ef0f4a95bff054eef75f6d1bf16919474cf2caa63b21997478a"
     },
     {
       "ecosystem": "cargo",
@@ -3643,6 +3693,26 @@
       "repository": "https://github.com/pyfisch/keyboard-types",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "b750dcadc39a09dbadd74e118f6dd6598df77fa01df0cfcdc52c28dece74528a"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "kqueue",
+      "version": "1.2.1",
+      "license": "MIT",
+      "licenseFile": null,
+      "repository": "https://gitlab.com/rust-kqueue/rust-kqueue",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "8d763e5b24120b4ddf50de6c92308156765aabfbbccebf401da7cff2d70a41ea"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "kqueue-sys",
+      "version": "1.1.2",
+      "license": "MIT",
+      "licenseFile": null,
+      "repository": "https://gitlab.com/rust-kqueue/rust-kqueue-sys",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "07293a4e297ac234359b510362495713f75ea345d5307140414f20c69ffeb087"
     },
     {
       "ecosystem": "cargo",
@@ -4063,6 +4133,26 @@
       "repository": "https://github.com/lu-zero/noop_proc_macro",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "0676bb32a98c1a483ce53e500a81ad9c3d5b3f7c920c28c24e9cb0980d0b5bc8"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "notify",
+      "version": "8.2.0",
+      "license": "CC0-1.0",
+      "licenseFile": null,
+      "repository": "https://github.com/notify-rs/notify.git",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "4d3d07927151ff8575b7087f245456e549fea62edf0ec4e565a5ee50c8402bc3"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "notify-types",
+      "version": "2.1.0",
+      "license": "MIT OR Apache-2.0",
+      "licenseFile": null,
+      "repository": "https://github.com/notify-rs/notify.git",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "42b8cfee0e339a0337359f3c88165702ac6e600dc01c0cc9579a92d62b08477a"
     },
     {
       "ecosystem": "cargo",
@@ -5286,6 +5376,16 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "recvmsg",
+      "version": "1.0.0",
+      "license": "0BSD",
+      "licenseFile": null,
+      "repository": null,
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "d3edd4d5d42c92f0a659926464d4cce56b562761267ecf0f469d85b7de384175"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "redox_syscall",
       "version": "0.5.18",
       "license": "MIT",
@@ -6323,6 +6423,16 @@
       "repository": "https://github.com/tauri-apps/plugins-workspace",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "60d60366174b745b4ef5824b8bbc1c457fd08f0ce101ff643c0a49181a9f4e91"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "tauri-plugin-single-instance",
+      "version": "2.4.5",
+      "license": "Apache-2.0 OR MIT",
+      "licenseFile": null,
+      "repository": "https://github.com/tauri-apps/plugins-workspace",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "db817fe9295e19b7d8357e900af31edb93703dd9fb6de524b007b47b6afc63b0"
     },
     {
       "ecosystem": "cargo",
@@ -7573,6 +7683,16 @@
       "repository": "https://github.com/image-rs/weezl",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "d4ca08e5ef825b65b056d9efbd95c8750683f0a6d0466d02e96dc2e4e360f3d2"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "widestring",
+      "version": "1.2.1",
+      "license": "MIT OR Apache-2.0",
+      "licenseFile": null,
+      "repository": "https://github.com/VoidStarKat/widestring-rs",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "72069c3113ab32ab29e5584db3c6ec55d416895e60715417b5b883a357c3e471"
     },
     {
       "ecosystem": "cargo",

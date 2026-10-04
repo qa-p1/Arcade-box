@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { copyText, watchIslandShown, watchIslandHiding, watchIslandHidden, islandReady, setIslandInputRegion } from './lib/arcade';
+  import { copyText, watchIslandShown, watchIslandHiding, watchIslandHidden, watchOpenSettings, islandReady, setIslandInputRegion } from './lib/arcade';
   import { onMount, tick } from 'svelte';
   import { fade } from 'svelte/transition';
   import Icon from './lib/Icon.svelte';
@@ -260,6 +260,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
   let lastFocusedElement: HTMLElement | null = null;
   let stopWatchingHiding = () => {};
   let stopWatchingHidden = () => {};
+  let stopWatchingOpenSettings = () => {};
 
   // The pointer region follows the Island's target geometry, not each frame of
   // its height animation, so native input-shape updates happen once per change.
@@ -339,9 +340,10 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
         dismissing = true;
       }),
       watchIslandHidden(() => { surfaceVisible = false; dismissing = false; }),
-    ]).then(async ([shown, hiding, hidden]) => {
-      if (disposed) { shown(); hiding(); hidden(); return; }
-      stopWatchingShown = shown; stopWatchingHiding = hiding; stopWatchingHidden = hidden;
+      watchOpenSettings(() => openSettings()),
+    ]).then(async ([shown, hiding, hidden, settings]) => {
+      if (disposed) { shown(); hiding(); hidden(); settings(); return; }
+      stopWatchingShown = shown; stopWatchingHiding = hiding; stopWatchingHidden = hidden; stopWatchingOpenSettings = settings;
       await islandReady();
     }).catch((error) => (catalogError = messageOf(error)));
     void watchIslandFocus((isFocused) => {
@@ -358,6 +360,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       stopWatchingShown();
       stopWatchingHiding();
       stopWatchingHidden();
+      stopWatchingOpenSettings();
       stopWatchingJobs();
       stopWatchingShortcut();
       systemTheme.removeEventListener('change', onSystemThemeChange);
@@ -1180,6 +1183,17 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       case 'arcade.pdf.watermark': return 'pdf:structural';
       default: return null;
     }
+  }
+
+  function openSettings(): void {
+    releaseCurrentDirectoryGrant();
+    selectedTool = null;
+    activeJobId = '';
+    activeResult = null;
+    surface = 'dashboard';
+    catalogMode = 'settings';
+    categoryFilter = 'All tools';
+    dashboardQuery = '';
   }
 
   function openEngines(): void {
