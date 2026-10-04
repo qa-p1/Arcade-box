@@ -345,6 +345,20 @@
         "macos": "conditional",
         "wayland": "conditional",
         "x11": "conditional"
+      },
+      "presets": [
+        {
+          "id": "email",
+          "name": "Compress PDF",
+          "options": {
+            "mode": "balanced"
+          }
+        }
+      ],
+      "link": {
+        "featuredFor": [
+          "file/pdf"
+        ]
       }
     },
     {
@@ -1444,6 +1458,18 @@
             "placeholder": "document-searchable.pdf"
           }
         ]
+      },
+      "presets": [
+        {
+          "id": "default",
+          "name": "Make searchable (OCR)",
+          "options": {}
+        }
+      ],
+      "link": {
+        "featuredFor": [
+          "file/pdf"
+        ]
       }
     },
     {
@@ -1540,6 +1566,36 @@
         "macos": "conditional",
         "wayland": "conditional",
         "x11": "conditional"
+      },
+      "presets": [
+        {
+          "id": "webp",
+          "name": "Convert to WebP",
+          "options": {
+            "format": "webp",
+            "quality": 82
+          }
+        },
+        {
+          "id": "png",
+          "name": "Convert to PNG",
+          "options": {
+            "format": "png"
+          }
+        },
+        {
+          "id": "jpeg-85",
+          "name": "Convert to JPEG",
+          "options": {
+            "format": "jpeg",
+            "quality": 85
+          }
+        }
+      ],
+      "link": {
+        "featuredFor": [
+          "file/image"
+        ]
       }
     },
     {
@@ -1677,7 +1733,17 @@
         "macos": "conditional",
         "wayland": "conditional",
         "x11": "conditional"
-      }
+      },
+      "presets": [
+        {
+          "id": "half-size",
+          "name": "Resize to 50%",
+          "options": {
+            "mode": "percentage",
+            "percentage": 50
+          }
+        }
+      ]
     },
     {
       "id": "arcade.image.crop",
@@ -1947,7 +2013,17 @@
             "help": "Leave empty to name it after the input."
           }
         ]
-      }
+      },
+      "presets": [
+        {
+          "id": "web-200kb",
+          "name": "Compress image",
+          "options": {
+            "mode": "targetSize",
+            "targetKb": 200
+          }
+        }
+      ]
     },
     {
       "id": "arcade.image.background-remove",
@@ -2032,6 +2108,18 @@
         "macos": "conditional",
         "wayland": "conditional",
         "x11": "conditional"
+      },
+      "presets": [
+        {
+          "id": "default",
+          "name": "Remove background",
+          "options": {}
+        }
+      ],
+      "link": {
+        "featuredFor": [
+          "file/image"
+        ]
       }
     },
     {
@@ -2689,6 +2777,20 @@
         "macos": "conditional",
         "wayland": "conditional",
         "x11": "conditional"
+      },
+      "presets": [
+        {
+          "id": "2x",
+          "name": "Upscale 2×",
+          "options": {
+            "scale": "2"
+          }
+        }
+      ],
+      "link": {
+        "featuredFor": [
+          "file/image"
+        ]
       }
     },
     {
@@ -3623,6 +3725,29 @@
             "advanced": true
           }
         ]
+      },
+      "presets": [
+        {
+          "id": "share-25mb",
+          "name": "Compress for sharing",
+          "options": {
+            "mode": "targetSize",
+            "targetSizeMb": 25
+          }
+        },
+        {
+          "id": "half-size",
+          "name": "Compress to 720p",
+          "options": {
+            "mode": "resolution",
+            "resolution": "720"
+          }
+        }
+      ],
+      "link": {
+        "featuredFor": [
+          "file/video"
+        ]
       }
     },
     {
@@ -4544,6 +4669,20 @@
             "placeholder": "Leave blank for an automatic name",
             "advanced": true
           }
+        ]
+      },
+      "presets": [
+        {
+          "id": "mp3",
+          "name": "Extract audio",
+          "options": {
+            "format": "mp3"
+          }
+        }
+      ],
+      "link": {
+        "featuredFor": [
+          "file/video"
         ]
       }
     },
@@ -8744,6 +8883,22 @@
         "macos": "implemented",
         "wayland": "implemented",
         "x11": "implemented"
+      },
+      "presets": [
+        {
+          "id": "clean",
+          "name": "Clean text",
+          "options": {
+            "trim": true,
+            "collapse": true,
+            "removeBlank": true
+          }
+        }
+      ],
+      "link": {
+        "featuredFor": [
+          "text/plain"
+        ]
       }
     },
     {
@@ -8885,6 +9040,22 @@
         "macos": "implemented",
         "wayland": "implemented",
         "x11": "implemented"
+      },
+      "presets": [
+        {
+          "id": "format-json",
+          "name": "Format JSON",
+          "options": {
+            "from": "json",
+            "to": "json",
+            "indent": "2"
+          }
+        }
+      ],
+      "link": {
+        "featuredFor": [
+          "text/plain"
+        ]
       }
     },
     {

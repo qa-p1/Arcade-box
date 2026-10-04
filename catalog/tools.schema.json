@@ -75,9 +75,37 @@
         },
         "phrases": { "type": "array", "items": { "type": "string" } },
         "relatedTools": { "type": "array", "items": { "type": "string", "pattern": "^arcade\\." } },
-        "ui": { "$ref": "#/$defs/standardUi" }
+        "ui": { "$ref": "#/$defs/standardUi" },
+        "presets": {
+          "description": "Named option sets other Arcade apps offer as one-click actions (box:<tool-id>#<preset>).",
+          "type": "array",
+          "items": { "$ref": "#/$defs/preset" }
+        },
+        "link": {
+          "description": "How Arcade Link peers present this tool.",
+          "type": "object",
+          "properties": {
+            "featuredFor": {
+              "description": "Link content types for which peers show this tool's presets inline (3-5 per type); the rest go under \"More in Arcade Box...\".",
+              "type": "array",
+              "items": { "type": "string", "minLength": 1 },
+              "uniqueItems": true
+            }
+          },
+          "additionalProperties": false
+        }
       },
       "additionalProperties": true
+    },
+    "preset": {
+      "type": "object",
+      "required": ["id", "name", "options"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+        "name": { "type": "string", "minLength": 1 },
+        "options": { "type": "object" }
+      },
+      "additionalProperties": false
     },
     "platformStatus": {
       "type": "string",

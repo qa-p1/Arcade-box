@@ -47,6 +47,36 @@ pub struct ToolManifest {
     pub related_tools: Vec<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub ui: Option<StandardUi>,
+    /// Named option sets that other Arcade apps offer as one-click actions.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub presets: Vec<ToolPreset>,
+    /// How Arcade Link peers present this tool.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub link: Option<ToolLink>,
+}
+
+/// A named option set, exposed to other Arcade apps as `box:<tool-id>#<id>`.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ToolPreset {
+    pub id: String,
+    pub name: String,
+    #[serde(default)]
+    pub options: serde_json::Map<String, Value>,
+}
+
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ToolLink {
+    /// Link content types for which peers show this tool's presets inline.
+    #[serde(default)]
+    pub featured_for: Vec<String>,
+}
+
+impl ToolManifest {
+    pub fn preset(&self, id: &str) -> Option<&ToolPreset> {
+        self.presets.iter().find(|preset| preset.id == id)
+    }
 }
 
 /// The host-rendered form available equally to first-party and external tools.
@@ -285,6 +315,22 @@ impl ToolManifest {
         if self.outputs.is_empty() {
             return Err(ContractError::MissingOutput(self.id.clone()));
         }
+        let mut preset_ids = std::collections::HashSet::new();
+        for preset in &self.presets {
+            if preset.id.is_empty()
+                || !preset
+                    .id
+                    .chars()
+                    .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-')
+                || preset.name.trim().is_empty()
+                || !preset_ids.insert(preset.id.as_str())
+            {
+                return Err(ContractError::InvalidUi {
+                    tool: self.id.clone(),
+                    reason: format!("invalid or duplicate preset {:?}", preset.id),
+                });
+            }
+        }
         if let Some(ui) = &self.ui {
             ui.validate().map_err(|reason| ContractError::InvalidUi {
                 tool: self.id.clone(),
@@ -318,6 +364,28 @@ impl ToolManifest {
                     tool: self.id.clone(),
                     reason: "input control is incompatible with declared input types".into(),
                 });
+            }
+            for preset in &self.presets {
+                for (key, value) in &preset.options {
+                    let Some(control) = ui.controls.iter().find(|control| &control.key == key)
+                    else {
+                        return Err(ContractError::InvalidUi {
+                            tool: self.id.clone(),
+                            reason: format!("preset {} sets unknown option {key}", preset.id),
+                        });
+                    };
+                    if control.kind == UiControlKind::Select
+                        && !control
+                            .choices
+                            .iter()
+                            .any(|choice| Some(choice.value.as_str()) == value.as_str())
+                    {
+                        return Err(ContractError::InvalidUi {
+                            tool: self.id.clone(),
+                            reason: format!("preset {} sets {key} to an unknown choice", preset.id),
+                        });
+                    }
+                }
             }
             if ui
                 .controls
@@ -528,6 +596,8 @@ mod tests {
             phrases: vec![],
             related_tools: vec![],
             ui: None,
+            presets: vec![],
+            link: None,
         };
         assert!(matches!(tool.validate(), Err(ContractError::ToolId(_))));
     }

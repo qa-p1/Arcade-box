@@ -678,7 +678,15 @@ fn pipeline_manifest(pipeline: &pipeline::Pipeline, tools: &[ToolManifest]) -> T
         phrases,
         related_tools: related_tools.into_iter().collect(),
         ui: None,
+        presets: Vec::new(),
+        link: None,
     }
+}
+
+/// The built-in tool catalog, without opening any database (fast enough for
+/// `arcade-box tools --json`, which other apps call).
+pub fn builtin_catalog() -> Result<Catalog, CoreError> {
+    load_catalog()
 }
 
 fn load_catalog() -> Result<Catalog, CoreError> {
