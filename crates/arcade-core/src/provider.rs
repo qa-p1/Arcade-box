@@ -831,22 +831,25 @@ pub fn probe_vips_at(path: &Path, source: &str) -> Option<ProviderInfo> {
     if supports_resize {
         capabilities.push("image:resize".into());
     }
-    for (format, operation) in [
-        ("png", "VipsForeignSavePngFile"),
-        ("jpeg", "VipsForeignSaveJpegFile"),
-        ("webp", "VipsForeignSaveWebpFile"),
-        ("tiff", "VipsForeignSaveTiffFile"),
+    // Class names depend on the codec library libvips was built with (for
+    // example `VipsForeignSaveSpngFile` with libspng on Debian and Ubuntu), so
+    // match the stable operation nickname as well.
+    for (format, operation, nickname) in [
+        ("png", "VipsForeignSavePngFile", "(pngsave)"),
+        ("jpeg", "VipsForeignSaveJpegFile", "(jpegsave)"),
+        ("webp", "VipsForeignSaveWebpFile", "(webpsave)"),
+        ("tiff", "VipsForeignSaveTiffFile", "(tiffsave)"),
     ] {
-        if savers.contains(operation) {
+        if savers.contains(operation) || savers.contains(nickname) {
             capabilities.push(format!("image:save:{format}"));
         }
     }
-    for (format, operation) in [
-        ("heif", "VipsForeignLoadHeifFile"),
-        ("gif", "VipsForeignLoadGifFile"),
-        ("bmp", "VipsForeignLoadMagickFile"),
+    for (format, operation, nickname) in [
+        ("heif", "VipsForeignLoadHeifFile", "(heifload)"),
+        ("gif", "VipsForeignLoadGifFile", "(gifload)"),
+        ("bmp", "VipsForeignLoadMagickFile", "(magickload)"),
     ] {
-        if savers.contains(operation) {
+        if savers.contains(operation) || savers.contains(nickname) {
             capabilities.push(format!("image:load:{format}"));
         }
     }

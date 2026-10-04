@@ -11,9 +11,11 @@ use std::{
 /// fixed child is resolved through a capability for its parent, must not be a
 /// symlink, and is locked to the current user's permissions on Unix.
 pub fn prepare_private_artifact_root(parent_path: &Path) -> io::Result<PathBuf> {
+    #[cfg(unix)]
+    use cap_std::fs::DirBuilderExt;
     use cap_std::{
         ambient_authority,
-        fs::{Dir, DirBuilder, DirBuilderExt},
+        fs::{Dir, DirBuilder},
     };
 
     let parent = fs::canonicalize(parent_path)?;

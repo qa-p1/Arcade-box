@@ -20,7 +20,7 @@ pub fn capability_status() -> PastePlainStatus {
             platform: "windows",
             available: true,
             shortcut: "Ctrl+Shift+V",
-            message: "Arcade Box will request the common plain-text paste shortcut. The clipboard remains unchanged; the target app must support this shortcut.",
+            message: "Arcade Box will request the common plain-text paste shortcut. The clipboard remains unchanged; the target app must support this shortcut.".to_string(),
         };
     }
     #[cfg(target_os = "macos")]
@@ -29,7 +29,7 @@ pub fn capability_status() -> PastePlainStatus {
             platform: "macos",
             available: true,
             shortcut: "⌘+⌥+⇧+V",
-            message: "Arcade Box will request Paste and Match Style. macOS may ask for Accessibility permission, and the target app must support this shortcut.",
+            message: "Arcade Box will request Paste and Match Style. macOS may ask for Accessibility permission, and the target app must support this shortcut.".to_string(),
         };
     }
     #[cfg(target_os = "linux")]
