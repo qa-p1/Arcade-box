@@ -168,6 +168,9 @@ html[data-theme="light"] .island-shell { box-shadow: 0 0 0 1px var(--island-edge
 .clear-search { display: grid; place-items: center; flex: 0 0 auto; width: 28px; height: 28px; padding: 0; border: 0; border-radius: 8px; color: var(--ink-3); background: transparent; cursor: pointer; }
 .clear-search:hover { color: var(--ink); background: var(--surface-2); }
 .search-browse { color: var(--ink-3); }
+/* Input handed over by another Arcade app, waiting for a tool. */
+.link-pending { display: flex; align-items: center; gap: 8px; margin: 10px 12px 0 18px; padding: 6px 6px 6px 12px; border-radius: 8px; color: var(--ink-2); background: var(--surface-2); font-size: 13px; }
+.link-pending span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .search-panel, .context-panel { max-height: min(56dvh, 452px); overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; padding: 4px 8px 8px; border-top: 1px solid var(--line); animation: fade-in 140ms ease-out both; }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }

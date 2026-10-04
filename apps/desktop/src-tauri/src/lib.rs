@@ -257,10 +257,12 @@ fn run_pipeline(
 }
 
 #[tauri::command(async)]
-fn list_providers() -> Vec<ProviderInfo> {
+fn list_providers(app: tauri::AppHandle) -> Vec<ProviderInfo> {
     let mut providers = discover_ffmpeg(None);
     providers.extend(discover_qpdf(None));
     providers.extend(discover_vips(None));
+    // The user looked at their engines: refresh what other apps are offered.
+    link::providers_checked(&app);
     providers
 }
 
@@ -966,7 +968,7 @@ pub fn attach_console() {
     }
 }
 
-pub use link::print_manifest;
+pub use link::{print_manifest, serve_oneshot};
 
 /// `--settings` asked for before the Island's WebView was ready.
 static PENDING_SETTINGS: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
@@ -1063,6 +1065,7 @@ pub fn run(args: Vec<String>) {
             let jobs = JobManager::new(
                 runtime.clone(),
                 Arc::new(move |snapshot| {
+                    link::job_update(&event_app, &snapshot);
                     let _ = event_app.emit("arcade://job-update", snapshot);
                 }),
             )?;

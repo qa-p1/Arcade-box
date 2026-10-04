@@ -451,6 +451,7 @@ version = "0.1.0"
 dependencies = [
  "arcade-contract",
  "arcade-core",
+ "arcade-link",
  "clap",
  "directories",
  "serde_json",

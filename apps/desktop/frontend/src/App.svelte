@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { copyText, watchIslandShown, watchIslandHiding, watchIslandHidden, watchOpenSettings, islandReady, setIslandInputRegion } from './lib/arcade';
+  import { copyText, watchIslandShown, watchIslandHiding, watchIslandHidden, watchOpenSettings, watchLinkOpen, arcadeAppName, islandReady, setIslandInputRegion, type LinkOpenRequest } from './lib/arcade';
   import { onMount, tick } from 'svelte';
   import { fade } from 'svelte/transition';
   import Icon from './lib/Icon.svelte';
@@ -261,6 +261,9 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
   let stopWatchingHiding = () => {};
   let stopWatchingHidden = () => {};
   let stopWatchingOpenSettings = () => {};
+  let stopWatchingLinkOpen = () => {};
+  /** Input from another Arcade app waiting for the user to choose a tool. */
+  let pendingLink = $state<LinkOpenRequest | null>(null);
 
   // The pointer region follows the Island's target geometry, not each frame of
   // its height animation, so native input-shape updates happen once per change.
@@ -341,9 +344,10 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       }),
       watchIslandHidden(() => { surfaceVisible = false; dismissing = false; }),
       watchOpenSettings(() => openSettings()),
-    ]).then(async ([shown, hiding, hidden, settings]) => {
-      if (disposed) { shown(); hiding(); hidden(); settings(); return; }
-      stopWatchingShown = shown; stopWatchingHiding = hiding; stopWatchingHidden = hidden; stopWatchingOpenSettings = settings;
+      watchLinkOpen((request) => openFromLink(request)),
+    ]).then(async ([shown, hiding, hidden, settings, linkOpen]) => {
+      if (disposed) { shown(); hiding(); hidden(); settings(); linkOpen(); return; }
+      stopWatchingShown = shown; stopWatchingHiding = hiding; stopWatchingHidden = hidden; stopWatchingOpenSettings = settings; stopWatchingLinkOpen = linkOpen;
       await islandReady();
     }).catch((error) => (catalogError = messageOf(error)));
     void watchIslandFocus((isFocused) => {
@@ -361,6 +365,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       stopWatchingHiding();
       stopWatchingHidden();
       stopWatchingOpenSettings();
+      stopWatchingLinkOpen();
       stopWatchingJobs();
       stopWatchingShortcut();
       systemTheme.removeEventListener('change', onSystemThemeChange);
@@ -569,11 +574,44 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     returnToDashboard = fromDashboard;
     surface = 'island';
     focused = false;
+    if (pendingLink) {
+      applyLinkInput(pendingLink);
+      pendingLink = null;
+    }
     void tick().then(() => {
       const entry = Array.from(islandShell?.querySelectorAll<HTMLElement>('#tool-input, .granted-file-picker, .input-folder-picker button, .standard-tool-form input:not([type=checkbox]), .standard-tool-form select, .run-button') ?? []).find((element) => element.getClientRects().length && !element.hasAttribute('disabled'));
       (entry ?? selectedToolHeading)?.focus({ preventScroll: true });
       islandContent?.scrollTo({ top: 0 });
     });
+  }
+
+  /** "More in Arcade Box…" from another app: open the named tool with the
+   * input attached, or keep the input until the user chooses a tool. */
+  function openFromLink(request: LinkOpenRequest): void {
+    const tool = request.tool ? tools.find((candidate) => candidate.id === request.tool) : undefined;
+    pendingLink = request;
+    if (tool) {
+      openTool(tool);
+      return;
+    }
+    releaseCurrentDirectoryGrant();
+    selectedTool = null;
+    activeResult = null;
+    surface = 'island';
+    query = '';
+    void tick().then(() => searchInput?.focus());
+  }
+
+  function applyLinkInput(request: LinkOpenRequest): void {
+    if (request.files.length) {
+      selectedFiles = request.files;
+      textInputMode = 'file';
+    }
+    if (request.text) {
+      inputText = request.text;
+      textInputMode = 'text';
+    }
+    for (const [key, value] of Object.entries(request.options)) toolOptions[key] = String(value);
   }
 
   function defaultOptionsFor(tool: ToolSummary): Record<string, string> {
@@ -1997,6 +2035,12 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
 
         </div>
       {:else}
+        {#if pendingLink}
+          <div class="link-pending" role="status">
+            <span>From {arcadeAppName(pendingLink.source)}: {pendingLink.files.length ? `${pendingLink.files.length === 1 ? pendingLink.files[0].name : `${pendingLink.files.length} files`}` : 'text'}. Choose a tool to use it.</span>
+            <button class="clear-search" aria-label="Discard the input from the other app" onclick={() => (pendingLink = null)}><Icon name="close" size={14} /></button>
+          </div>
+        {/if}
         <div class="search-row" class:has-query={query.trim().length > 0}>
           <span class="search-leading"><Icon name="search" size={20} /></span>
           <input

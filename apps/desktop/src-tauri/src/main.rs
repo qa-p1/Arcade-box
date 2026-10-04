@@ -8,6 +8,7 @@ const HELP: &str = "Arcade Box
   arcade-desktop --quit            Quit the running instance
   arcade-desktop --version         Print the version
   arcade-desktop --arcade-manifest Print the Arcade Link manifest (no side effects)
+  arcade-desktop --arcade-invoke   Run one Arcade Link request from stdin, without any UI
 
 Terminal tools: arcade-box (alias arcadebox) --help";
 
@@ -26,6 +27,7 @@ fn main() {
             arcade_desktop::attach_console();
             arcade_desktop::print_manifest();
         }
+        Some("--arcade-invoke") => std::process::exit(arcade_desktop::serve_oneshot()),
         _ => arcade_desktop::run(args),
     }
 }

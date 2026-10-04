@@ -387,6 +387,25 @@ export async function watchIslandShown(handler: () => void): Promise<() => void>
   return listen('arcade://island-shown', handler);
 }
 
+/** Another Arcade app opened the Island with its input ("More in Arcade Box…"). */
+export interface LinkOpenRequest {
+  source: string;
+  tool: string | null;
+  files: SelectedFile[];
+  text: string | null;
+  options: Record<string, unknown>;
+}
+
+export async function watchLinkOpen(handler: (request: LinkOpenRequest) => void): Promise<() => void> {
+  if (!isDesktopRuntime()) return () => {};
+  return listen<LinkOpenRequest>('arcade://link-open', ({ payload }) => handler(payload));
+}
+
+/** Display names of the Arcade apps, for "From Arcade Look" notes. */
+export function arcadeAppName(id: string): string {
+  return ({ 'arcade.box': 'Arcade Box', 'arcade.lens': 'Arcade Lens', 'arcade.look': 'Arcade Look', 'arcade.wheel': 'Arcade Wheel', 'arcade.clipboard': 'Arcade Clipboard' } as Record<string, string>)[id] ?? 'another Arcade app';
+}
+
 /** `arcade-desktop --settings` (or another app) asked Box to open Settings. */
 export async function watchOpenSettings(handler: () => void): Promise<() => void> {
   if (!isDesktopRuntime()) return () => {};
