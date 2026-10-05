@@ -43,14 +43,19 @@ pub fn data_dir() -> Option<std::path::PathBuf> {
 }
 
 fn build(runtime: &Arcade) -> Manifest {
-    core_link::manifest(
+    let mut manifest = core_link::manifest(
         &LinkSettings::load(runtime),
         &arcade_link::manifest::current_executable(),
         env!("CARGO_PKG_VERSION"),
         Some(&effective_shortcut(runtime)),
         &runtime.list_tools(),
         core_link::load_provider_cache(runtime).as_ref(),
-    )
+    );
+    manifest.actions.extend(core_link::pipeline_actions(
+        runtime,
+        core_link::load_provider_cache(runtime).as_ref(),
+    ));
+    manifest
 }
 
 /// `--arcade-manifest`: the manifest from the saved settings. Doesn't create
@@ -246,9 +251,19 @@ impl Handler for BoxHandler {
             return self.open(request, &ctx.peer().id);
         }
         let runtime = self.runtime();
+        if request.action == "box.pipelines" {
+            return core_link::pipelines_result(&runtime).map(Reply::Done);
+        }
         let tools = runtime.list_tools();
-        let (tool, options) = core_link::resolve_action(&tools, &request)?;
         let cache = core_link::load_provider_cache(&runtime);
+        let (tool, options) = if request.action == "box.pipeline.run" {
+            (
+                core_link::resolve_pipeline(&runtime, &tools, &request, cache.as_ref())?,
+                Default::default(),
+            )
+        } else {
+            core_link::resolve_action(&tools, &request)?
+        };
         if let Some(action) = core_link::actions(std::slice::from_ref(tool), cache.as_ref())
             .into_iter()
             .find(|a| !a.available)

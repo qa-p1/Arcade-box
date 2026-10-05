@@ -223,26 +223,35 @@ fn uninstall_plugin(
         .map_err(|error| error.to_string())
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn list_pipelines(runtime: tauri::State<'_, Arc<Arcade>>) -> Result<Vec<Pipeline>, String> {
     runtime.list_pipelines().map_err(|error| error.to_string())
 }
 
-#[tauri::command]
+#[tauri::command(async)]
 fn save_pipeline(
     pipeline: Pipeline,
+    app: tauri::AppHandle,
     runtime: tauri::State<'_, Arc<Arcade>>,
 ) -> Result<Pipeline, String> {
-    runtime
+    let saved = runtime
         .save_pipeline(pipeline)
-        .map_err(|error| error.to_string())
+        .map_err(|error| error.to_string())?;
+    link::refresh(&app);
+    Ok(saved)
 }
 
-#[tauri::command]
-fn delete_pipeline(id: String, runtime: tauri::State<'_, Arc<Arcade>>) -> Result<(), String> {
+#[tauri::command(async)]
+fn delete_pipeline(
+    id: String,
+    app: tauri::AppHandle,
+    runtime: tauri::State<'_, Arc<Arcade>>,
+) -> Result<(), String> {
     runtime
         .delete_pipeline(&id)
-        .map_err(|error| error.to_string())
+        .map_err(|error| error.to_string())?;
+    link::refresh(&app);
+    Ok(())
 }
 
 #[tauri::command(async)]

@@ -13,6 +13,8 @@ installed.
 | `box:<tool-id>` | Every implemented tool, for example `box:arcade.image.convert`. Accepts the tool's input types in Link form (`file/image`, `text/plain`, …); Box's screen and clipboard inputs aren't offered (Lens and Clipboard own those verbs). |
 | `box:<tool-id>#<preset>` | A preset: a named option set from `catalog/tools.json`, e.g. `box:arcade.video.compress#share-25mb` ("Compress for sharing"). These are what other apps show as one-click entries. |
 | `box.open` | "More in Arcade Box…": opens the Island with the input attached (`options.tool` opens that tool directly). |
+| `box.pipelines` | Returns a `structured/pipelines` array of available saved pipelines: `{id, name, version, accepts, produces, effects, interactive}`. |
+| `box.pipeline.run` | Runs the saved pipeline named by `options.pipeline`, with its first stage's input in `inputs`, through the same job manager and delegated grants as a tool. |
 
 `link.featuredFor` in the catalog marks which presets a peer shows inline
 for a content type (3–5 per type); the rest go under "More in Arcade Box…".
@@ -22,6 +24,18 @@ settings table), refreshed in the background at every start and whenever the
 Engines page checks providers, so other apps never trigger a probe. A tool
 whose engine is missing is listed with `available: false` and the reason
 ("FFmpeg isn't installed"); peers hide it.
+
+Pipeline effects are the union of their stages' effects, and output types
+come from their exposed output stages. Pipelines with unavailable engines,
+unsupported sources or plugins are excluded from the consumer list; an
+explicit run still returns the reason. Saving or deleting a pipeline
+refreshes the manifest and emits `app.changed`. Pipeline node identity and
+execution remain in Box's existing versioned DAG; peer `link` nodes and
+interactive first stages will be added in Phase 6.
+
+```json
+{"action":"box.pipeline.run","options":{"pipeline":"upper-clean"},"inputs":[{"type":"text/plain","text":"hello"}]}
+```
 
 ## How requests run
 

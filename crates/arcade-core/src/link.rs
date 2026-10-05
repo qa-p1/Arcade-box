@@ -25,6 +25,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
 
 use crate::Arcade;
+use crate::pipeline::{InputSource, Pipeline};
 use crate::provider;
 
 /// Storage keys for the Connected apps settings and the provider cache.
@@ -476,6 +477,152 @@ pub fn open_action() -> Action {
         .interactive(true)
 }
 
+/// SPEC §5.4: a saved pipeline reference, independent of the node runtime.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PipelineOffer {
+    pub id: String,
+    pub name: String,
+    pub version: u32,
+    pub accepts: Vec<String>,
+    pub produces: Vec<String>,
+    pub effects: Vec<String>,
+    pub interactive: bool,
+}
+
+fn pipeline_offer(
+    runtime: &Arcade,
+    pipeline: &Pipeline,
+    cache: Option<&ProviderCache>,
+) -> Result<PipelineOffer, LinkError> {
+    let order = pipeline
+        .validate(runtime)
+        .map_err(|e| LinkError::unavailable(e.to_string()))?;
+    let first = order
+        .first()
+        .ok_or_else(|| LinkError::unavailable("the pipeline has no stages"))?;
+    let tools = runtime.list_tools();
+    let first_tool = tools.iter().find(|t| t.id == first.tool_id).unwrap();
+    let mut offer = PipelineOffer {
+        id: pipeline.id.clone(),
+        name: pipeline.name.clone(),
+        version: pipeline.version,
+        accepts: if first
+            .inputs
+            .iter()
+            .any(|i| matches!(i, InputSource::External { .. }))
+        {
+            link_accepts(first_tool)
+        } else {
+            Vec::new()
+        },
+        produces: Vec::new(),
+        effects: Vec::new(),
+        interactive: false,
+    };
+    for node in order {
+        let tool = tools.iter().find(|t| t.id == node.tool_id).unwrap();
+        if tool.status != ImplementationStatus::Implemented
+            || tool.execution.get("runtime").and_then(Value::as_str) == Some("wasm")
+            || tool.id.starts_with("arcade.pipeline.")
+            || (!tool.inputs.is_empty() && link_accepts(tool).is_empty())
+        {
+            return Err(LinkError::unavailable(format!(
+                "{} can't run through other apps",
+                tool.name
+            )));
+        }
+        if let Some(reason) = missing_provider(tool, cache) {
+            return Err(LinkError::unavailable(reason));
+        }
+        for effect in effects(tool) {
+            if !offer.effects.contains(&effect) {
+                offer.effects.push(effect);
+            }
+        }
+        if pipeline.output_nodes.contains(&node.id) {
+            for output in &tool.outputs {
+                let kind = link_type_of_output(output);
+                if !offer.produces.contains(&kind) {
+                    offer.produces.push(kind);
+                }
+            }
+        }
+    }
+    Ok(offer)
+}
+
+/// Only runnable pipelines are offered; callers never get a broken entry.
+pub fn pipelines(
+    runtime: &Arcade,
+    cache: Option<&ProviderCache>,
+) -> Result<Vec<PipelineOffer>, LinkError> {
+    Ok(runtime
+        .list_pipelines()
+        .map_err(|e| LinkError::internal(e.to_string()))?
+        .iter()
+        .filter_map(|p| pipeline_offer(runtime, p, cache).ok())
+        .collect())
+}
+
+pub fn pipeline_actions(runtime: &Arcade, cache: Option<&ProviderCache>) -> Vec<Action> {
+    let offers = pipelines(runtime, cache).unwrap_or_default();
+    let list =
+        Action::new("box.pipelines", "Saved pipelines", "list").produces(&["structured/pipelines"]);
+    let mut run = Action::new("box.pipeline.run", "Run a saved pipeline", "run");
+    for offer in &offers {
+        for (target, values) in [
+            (&mut run.accepts, &offer.accepts),
+            (&mut run.produces, &offer.produces),
+            (&mut run.effects, &offer.effects),
+        ] {
+            for value in values {
+                if !target.contains(value) {
+                    target.push(value.clone());
+                }
+            }
+        }
+        run.interactive |= offer.interactive;
+    }
+    if offers.is_empty() {
+        run.available = false;
+        run.reason = Some("No saved pipelines are available".into());
+    }
+    vec![list, run]
+}
+
+/// Resolve the stable pipeline action to its existing saved-tool executor.
+pub fn resolve_pipeline<'a>(
+    runtime: &Arcade,
+    tools: &'a [ToolManifest],
+    request: &InvokeRequest,
+    cache: Option<&ProviderCache>,
+) -> Result<&'a ToolManifest, LinkError> {
+    let id = request
+        .options
+        .get("pipeline")
+        .and_then(Value::as_str)
+        .ok_or_else(|| LinkError::unsupported("Choose a pipeline with options.pipeline"))?;
+    let pipeline = runtime
+        .list_pipelines()
+        .map_err(|e| LinkError::internal(e.to_string()))?
+        .into_iter()
+        .find(|p| p.id == id)
+        .ok_or_else(|| LinkError::unavailable(format!("pipeline {id} does not exist")))?;
+    pipeline_offer(runtime, &pipeline, cache)?;
+    tools
+        .iter()
+        .find(|t| t.id == format!("arcade.pipeline.{id}"))
+        .ok_or_else(|| LinkError::unavailable(format!("pipeline {id} does not exist")))
+}
+
+pub fn pipelines_result(runtime: &Arcade) -> Result<InvokeResult, LinkError> {
+    let offers = pipelines(runtime, load_provider_cache(runtime).as_ref())?;
+    Ok(InvokeResult {
+        outputs: vec![Content::structured("pipelines", json!(offers))],
+        ..Default::default()
+    })
+}
+
 /// Box's manifest. `executable` is the desktop app, which also serves
 /// one-shot requests (`--arcade-invoke`) without starting its UI.
 pub fn manifest(
@@ -765,7 +912,35 @@ pub fn run_blocking(
     cancelled: &AtomicBool,
 ) -> Result<InvokeResult, LinkError> {
     let tools = runtime.list_tools();
-    let (tool, options) = resolve_action(&tools, request)?;
+    if request.action == "box.pipelines" {
+        return pipelines_result(runtime);
+    }
+    let (tool, options) = if request.action == "box.pipeline.run" {
+        let mut cache = load_provider_cache(runtime).unwrap_or_default();
+        let id = request
+            .options
+            .get("pipeline")
+            .and_then(Value::as_str)
+            .unwrap_or_default();
+        if let Some(p) = runtime
+            .list_pipelines()
+            .map_err(|e| LinkError::internal(e.to_string()))?
+            .iter()
+            .find(|p| p.id == id)
+        {
+            for node in &p.nodes {
+                if let Some(tool) = tools.iter().find(|t| t.id == node.tool_id) {
+                    cache.extend(probe_for(tool));
+                }
+            }
+        }
+        (
+            resolve_pipeline(runtime, &tools, request, Some(&cache))?,
+            Map::new(),
+        )
+    } else {
+        resolve_action(&tools, request)?
+    };
     if let Some(reason) = missing_provider(tool, Some(&probe_for(tool))) {
         return Err(LinkError::unavailable(reason));
     }
@@ -784,10 +959,15 @@ pub struct OneshotHandler {
 
 impl Handler for OneshotHandler {
     fn describe(&self) -> Vec<Action> {
-        actions(
+        let mut all = actions(
             &self.runtime.list_tools(),
             load_provider_cache(&self.runtime).as_ref(),
-        )
+        );
+        all.extend(pipeline_actions(
+            &self.runtime,
+            load_provider_cache(&self.runtime).as_ref(),
+        ));
+        all
     }
 
     fn invoke(&self, request: InvokeRequest, ctx: &InvokeContext) -> Result<Reply, LinkError> {
@@ -922,5 +1102,81 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    #[test]
+    fn saved_pipeline_contract_runs_and_reports_node_effects() {
+        let (_dir, runtime) = runtime();
+        runtime.save_pipeline(serde_json::from_value(json!({
+            "id": "upper-clean", "name": "Upper and clean", "version": 1,
+            "nodes": [
+                {"id":"upper", "toolId":"arcade.text.case", "inputs":[{"kind":"external", "index":0}], "options":{"mode":"upper"}},
+                {"id":"clean", "toolId":"arcade.text.clean", "inputs":[{"kind":"node", "nodeId":"upper", "outputIndex":0}], "options":{"trim":true}}
+            ], "outputNodes":["clean"]
+        })).unwrap()).unwrap();
+        let offer = pipelines(&runtime, Some(&ProviderCache::new()))
+            .unwrap()
+            .remove(0);
+        assert_eq!(
+            json!(offer),
+            json!({"id":"upper-clean", "name":"Upper and clean", "version":1,
+            "accepts":["text/plain"], "produces":["text/plain"], "effects":[], "interactive":false})
+        );
+        let list = run_blocking(
+            &runtime,
+            &InvokeRequest::new("box.pipelines", "t"),
+            &AtomicBool::new(false),
+        )
+        .unwrap();
+        assert_eq!(list.outputs[0].kind, "structured/pipelines");
+        assert!(list.outputs[0].data.as_ref().unwrap().is_array());
+        let request = InvokeRequest::new("box.pipeline.run", "t")
+            .options(json!({"pipeline":"upper-clean"}))
+            .input(Content::plain("  hello  "));
+        let result = run_blocking(&runtime, &request, &AtomicBool::new(false)).unwrap();
+        assert_eq!(result.outputs[0].text.as_deref(), Some("HELLO"));
+        assert!(run_blocking(&runtime, &request, &AtomicBool::new(true)).is_err());
+        assert!(
+            run_blocking(
+                &runtime,
+                &InvokeRequest::new("box.pipeline.run", "t").preset(Some("upper-clean")),
+                &AtomicBool::new(false)
+            )
+            .is_err()
+        );
+        assert!(
+            run_blocking(
+                &runtime,
+                &InvokeRequest::new("box.pipeline.run", "t").options(json!({"pipeline":"missing"})),
+                &AtomicBool::new(false)
+            )
+            .is_err()
+        );
+
+        runtime.save_pipeline(serde_json::from_value(json!({
+            "id":"image-webp", "name":"WebP image", "version":1,
+            "nodes":[{"id":"convert", "toolId":"arcade.image.convert", "inputs":[{"kind":"external", "index":0}], "options":{"format":"webp"}}],
+            "outputNodes":["convert"]
+        })).unwrap()).unwrap();
+        assert_eq!(
+            pipelines(&runtime, Some(&ProviderCache::new()))
+                .unwrap()
+                .len(),
+            1,
+            "missing providers aren't offered"
+        );
+        let mut cache = ProviderCache::new();
+        cache.insert("image.vips".into(), state(true, ""));
+        let offer = pipelines(&runtime, Some(&cache))
+            .unwrap()
+            .into_iter()
+            .find(|p| p.id == "image-webp")
+            .unwrap();
+        assert_eq!(offer.effects, vec!["writes-files"]);
+        let all = pipeline_actions(&runtime, Some(&cache));
+        assert!(all[1].effects.contains(&"writes-files".into()));
+        runtime.delete_pipeline("upper-clean").unwrap();
+        runtime.delete_pipeline("image-webp").unwrap();
+        assert!(!pipeline_actions(&runtime, Some(&cache))[1].available);
     }
 }
