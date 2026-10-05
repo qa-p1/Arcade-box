@@ -36,7 +36,7 @@ use arcade_plugin_host::InstallApproval;
 use std::{
     collections::{BTreeSet, HashMap},
     path::{Path, PathBuf},
-    sync::{Arc, RwLock, atomic::AtomicBool},
+    sync::{Arc, OnceLock, RwLock, atomic::AtomicBool},
 };
 use thiserror::Error;
 
@@ -77,6 +77,7 @@ pub struct Arcade {
     artifact_staging_root: PathBuf,
     default_output_directory: String,
     plugins: plugins::PluginRuntime,
+    pub(crate) link_registry: OnceLock<arcade_link::SharedRegistry>,
     _ephemeral_data: Option<tempfile::TempDir>,
 }
 
@@ -150,6 +151,7 @@ impl Arcade {
             artifact_staging_root,
             default_output_directory,
             plugins,
+            link_registry: OnceLock::new(),
             _ephemeral_data: ephemeral_data,
         };
         runtime.refresh_plugin_catalog()?;

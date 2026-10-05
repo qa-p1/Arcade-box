@@ -12,7 +12,7 @@ use std::sync::{Arc, Mutex, OnceLock};
 
 use arcade_core::Arcade;
 use arcade_core::jobs::{JobManager, JobSnapshot, JobStatus};
-use arcade_core::link::{self as core_link, LinkSettings, Prepared, ProviderCache};
+use arcade_core::link::{self as core_link, LinkSettings, Prepared, ProviderCache, consumer};
 use arcade_link::server::{Handler, InvokeContext, Job, Reply};
 use arcade_link::{Action, InvokeRequest, InvokeResult, LinkError, Locations, Manifest, Presence};
 use serde::Serialize;
@@ -51,10 +51,12 @@ fn build(runtime: &Arcade) -> Manifest {
         &runtime.list_tools(),
         core_link::load_provider_cache(runtime).as_ref(),
     );
-    manifest.actions.extend(core_link::pipeline_actions(
-        runtime,
-        core_link::load_provider_cache(runtime).as_ref(),
-    ));
+    if manifest.settings.link_enabled {
+        manifest.actions.extend(core_link::pipeline_actions(
+            runtime,
+            core_link::load_provider_cache(runtime).as_ref(),
+        ));
+    }
     manifest
 }
 
@@ -364,6 +366,11 @@ pub fn start(app: &AppHandle) {
                 eprintln!("Arcade Link: {e}");
             }
             *slot().lock().unwrap_or_else(|e| e.into_inner()) = Some(Arc::new(p));
+            let watched_app = app.clone();
+            consumer::registry(&runtime).watch(move |_| {
+                let _ = watched_app.emit("arcade://link-changed", ());
+            });
+            let _ = app.emit("arcade://link-changed", ());
             reprobe(&runtime);
         });
 }
@@ -392,4 +399,163 @@ pub fn stop() {
     if let Some(p) = slot().lock().unwrap_or_else(|e| e.into_inner()).take() {
         p.stop();
     }
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConnectedApp {
+    id: String,
+    name: String,
+    state: String,
+    version: Option<String>,
+    enabled: bool,
+    pitch: String,
+    endpoint: String,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ConnectedApps {
+    settings: LinkSettings,
+    apps: Vec<ConnectedApp>,
+    registry_path: String,
+    endpoint_state: String,
+    last_error: Option<String>,
+}
+
+#[tauri::command(async)]
+pub fn connected_apps(runtime: tauri::State<'_, Arc<Arcade>>) -> ConnectedApps {
+    let locations = Locations::discover();
+    let registry = consumer::registry(&runtime);
+    registry.refresh();
+    let snapshot = registry.snapshot();
+    let settings = LinkSettings::load(&runtime);
+    let apps = arcade_link::ids::APPS
+        .into_iter()
+        .filter(|id| *id != arcade_link::ids::BOX)
+        .map(|id| {
+            let (state, version) =
+                match arcade_link::client::app_state(&locations, &snapshot, id, &consumer::me()) {
+                    arcade_link::AppState::Running { version } => ("Running", Some(version)),
+                    arcade_link::AppState::Installed { version } => ("Installed", Some(version)),
+                    arcade_link::AppState::NotInstalled => ("Not installed", None),
+                };
+            ConnectedApp {
+                id: id.into(),
+                name: arcade_link::manifest::app_name(id).into(),
+                state: state.into(),
+                version,
+                enabled: !settings.disabled_peers.iter().any(|p| p == id),
+                pitch: arcade_link::manifest::app_pitch(id).into(),
+                endpoint: locations.endpoint(id).display().to_string(),
+            }
+        })
+        .collect();
+    let p = slot().lock().unwrap_or_else(|e| e.into_inner()).clone();
+    ConnectedApps {
+        settings: settings.clone(),
+        apps,
+        registry_path: locations.registry.display().to_string(),
+        endpoint_state: if !settings.enabled {
+            "Disabled"
+        } else if p.as_ref().is_some_and(|p| p.last_error().is_none()) {
+            "Listening"
+        } else {
+            "Unavailable"
+        }
+        .into(),
+        last_error: p.and_then(|p| p.last_error()).map(|e| e.to_string()),
+    }
+}
+
+#[tauri::command(async)]
+pub fn set_link_settings(
+    settings: LinkSettings,
+    app: AppHandle,
+    runtime: tauri::State<'_, Arc<Arcade>>,
+) -> Result<(), String> {
+    if settings
+        .disabled_peers
+        .iter()
+        .any(|id| !arcade_link::ids::APPS.contains(&id.as_str()) || id == arcade_link::ids::BOX)
+    {
+        return Err("Unknown Arcade app".into());
+    }
+    settings.save(&runtime)?;
+    if let Some(p) = slot().lock().unwrap_or_else(|e| e.into_inner()).clone() {
+        p.update(build(&runtime));
+    }
+    let _ = app.emit("arcade://link-changed", ());
+    Ok(())
+}
+
+#[tauri::command(async)]
+pub fn get_connected_app(
+    id: String,
+    app: AppHandle,
+    runtime: tauri::State<'_, Arc<Arcade>>,
+) -> Result<(), String> {
+    if !arcade_link::ids::APPS.contains(&id.as_str()) {
+        return Err("Unknown Arcade app".into());
+    }
+    if consumer::peer_action(&runtime, arcade_link::ids::TOOLS, "tools.install").is_some() {
+        consumer::invoke(
+            &runtime,
+            arcade_link::ids::TOOLS,
+            InvokeRequest::new("tools.install", arcade_link::ids::BOX)
+                .options(serde_json::json!({"app":id})),
+            &std::sync::atomic::AtomicBool::new(false),
+        )
+        .map_err(|e| e.user_message("Arcade Tools"))?;
+        Ok(())
+    } else {
+        use tauri_plugin_opener::OpenerExt;
+        app.opener()
+            .open_url(arcade_link::manifest::releases_url(&id), None::<&str>)
+            .map_err(|e| e.to_string())
+    }
+}
+
+#[tauri::command(async)]
+pub fn result_link_actions(
+    outputs: Vec<arcade_contract::ToolValue>,
+    tool_id: String,
+    preset: Option<String>,
+    runtime: tauri::State<'_, Arc<Arcade>>,
+) -> Result<Vec<consumer::ResultOffer>, String> {
+    let tool = runtime
+        .list_tools()
+        .into_iter()
+        .find(|t| t.id == tool_id)
+        .ok_or("Unknown tool")?;
+    consumer::result_offers(&runtime, &outputs, &tool, preset.as_deref())
+        .map_err(|e| e.user_message("Arcade Box"))
+}
+
+#[tauri::command(async)]
+pub fn invoke_result_link_action(
+    key: String,
+    outputs: Vec<arcade_contract::ToolValue>,
+    tool_id: String,
+    preset: Option<String>,
+    runtime: tauri::State<'_, Arc<Arcade>>,
+) -> Result<InvokeResult, String> {
+    let tool = runtime
+        .list_tools()
+        .into_iter()
+        .find(|t| t.id == tool_id)
+        .ok_or("Unknown tool")?;
+    let (.., app, request) =
+        consumer::result_requests(&runtime, &outputs, &tool, preset.as_deref())
+            .map_err(|e| e.user_message("Arcade Box"))?
+            .into_iter()
+            .find(|(k, _, _)| k == &key)
+            .ok_or("Unknown result action")?;
+    consumer::invoke(
+        &runtime,
+        &app,
+        request,
+        &std::sync::atomic::AtomicBool::new(false),
+    )
+    .map_err(|e| e.user_message(arcade_link::manifest::app_name(&app)))
 }

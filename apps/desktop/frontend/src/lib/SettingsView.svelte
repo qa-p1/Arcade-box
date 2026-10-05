@@ -1,5 +1,6 @@
 <script lang="ts">
   import Icon from './Icon.svelte';
+  import ConnectedApps from './ConnectedApps.svelte';
   import type { ShortcutStatus } from './contracts';
   import { setShortcut } from './arcade';
 
@@ -73,6 +74,7 @@
 </script>
 
 <section class="settings-view" aria-label="Arcade Box settings">
+  <ConnectedApps />
   <section class="settings-card" aria-labelledby="appearance-heading">
     <div class="settings-card-heading"><span class="settings-symbol"><Icon name="spark" size={18} /></span><div><h2 id="appearance-heading">Appearance</h2><p>Choose how Arcade Box follows your desktop.</p></div></div>
     <fieldset class="theme-choice-group">

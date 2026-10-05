@@ -412,6 +412,36 @@ export async function watchOpenSettings(handler: () => void): Promise<() => void
   return listen('arcade://open-settings', handler);
 }
 
+export interface LinkSettings { enabled: boolean; disabledPeers: string[] }
+export interface ConnectedApp { id: string; name: string; state: string; version: string | null; enabled: boolean; pitch: string; endpoint: string }
+export interface ConnectedAppsState { settings: LinkSettings; apps: ConnectedApp[]; registryPath: string; endpointState: string; lastError: string | null }
+export interface ResultLinkAction { key: string; app: string; title: string; enabled: boolean; reason: string | null; preview: string }
+
+export async function connectedApps(): Promise<ConnectedAppsState | null> {
+  if (!isDesktopRuntime()) return null;
+  return invoke<ConnectedAppsState>('connected_apps');
+}
+export async function setLinkSettings(settings: LinkSettings): Promise<void> {
+  requireDesktopRuntime();
+  return invoke<void>('set_link_settings', { settings });
+}
+export async function getConnectedApp(id: string): Promise<void> {
+  requireDesktopRuntime();
+  return invoke<void>('get_connected_app', { id });
+}
+export async function resultLinkActions(outputs: ToolOutput[], toolId: string, preset: string | null): Promise<ResultLinkAction[]> {
+  if (!isDesktopRuntime()) return [];
+  return invoke<ResultLinkAction[]>('result_link_actions', { outputs, toolId, preset });
+}
+export async function invokeResultLinkAction(key: string, outputs: ToolOutput[], toolId: string, preset: string | null): Promise<{ message?: string }> {
+  requireDesktopRuntime();
+  return invoke<{ message?: string }>('invoke_result_link_action', { key, outputs, toolId, preset });
+}
+export async function watchLinkChanged(handler: () => void): Promise<() => void> {
+  if (!isDesktopRuntime()) return () => {};
+  return listen('arcade://link-changed', handler);
+}
+
 // Register lifecycle listeners before acknowledging readiness, so an early
 // shortcut cannot be lost while the WebView is still loading.
 export async function islandReady(): Promise<void> {

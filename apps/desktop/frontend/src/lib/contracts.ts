@@ -54,6 +54,7 @@ export interface ToolSummary {
   outputs: string[];
   status: string;
   ui?: StandardToolUi | null;
+  presets?: { id: string; name: string; options: Record<string, unknown> }[];
 }
 
 export interface ToolInput {

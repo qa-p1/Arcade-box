@@ -6,6 +6,7 @@
   import DiffInput from './lib/DiffInput.svelte';
   import ImageResult from './lib/ImageResult.svelte';
   import ToolOutputView from './lib/ToolOutputView.svelte';
+  import ResultActions from './lib/ResultActions.svelte';
   import { inputPlaceholder, runLabel } from './lib/tool-presentation';
   import StandardToolForm from './lib/StandardToolForm.svelte';
   import VideoAssist from './lib/VideoAssist.svelte';
@@ -2015,6 +2016,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
                     {#if nextTools.length}<details class="result-next-actions"><summary>Continue in another tool <span>{nextTools.length}</span></summary><div>{#each nextTools as nextTool (nextTool.id)}<button onclick={() => continueWithOutput(nextTool, output, index)}><Icon name={iconForCategory(nextTool.category)} size={13} /><span>{nextTool.name}</span></button>{/each}</div></details>{/if}
                   {/each}
                 {/if}
+                <ResultActions toolId={selectedTool.id} outputs={activeResult.outputs} presets={selectedTool.presets} />
                 {#if activeResult.message}<p class="result-message">{activeResult.message}</p>{/if}
                 {#if activeResult.warnings?.length}
                   <div class="result-warnings">{#each activeResult.warnings as warning}<span><Icon name="dots" size={13} />{warning}</span>{/each}</div>
@@ -2022,6 +2024,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
               </section>
             {/if}
           {/if}
+          {#if !activeResult}<ResultActions toolId={selectedTool.id} presets={selectedTool.presets} />{/if}
           {#if isRunnable(selectedTool)}
             <details class="alias-settings">
               <summary><Icon name="command" size={14} /><span>Set a search alias</span><Icon name="chevron" size={13} /></summary>

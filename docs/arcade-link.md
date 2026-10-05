@@ -75,6 +75,27 @@ The Link switch (`link_enabled`) and the per-app toggles
 (`link_disabled_peers`) live in the settings table. With the switch off,
 Box's manifest lists no actions and nothing listens.
 
+Settings includes **Connected apps**: a master switch, one row for Lens,
+Look, Wheel and Clipboard with installed/running state and a **Use with
+Box** toggle, Get links for missing apps, and registry/endpoint diagnostics.
+Registry and endpoint changes are watched through OS notifications; no
+polling runs while idle. Disk reads and probes run on worker threads.
+
+Island results offer **Preview** for files, **Send to my devices ↗** with a
+payload preview and an explicit Send button, **Add to Wheel**, and **Pin**
+for a single image. Device sends over 16 MiB stay disabled with the standard
+reason. Each request rechecks availability and limits before invoking the
+owner; Private mode and Lens's safety checks remain in those apps. Missing
+or disabled peers contribute no result entries. Structured results are sent
+as plain JSON text when the user chooses to send them.
+
+Add to Wheel is also offered on tools, their named presets, and saved
+pipeline cards. It uses `structured/arcade-action`; pipeline references
+carry `action: "box.pipeline.run"` and `options: {pipeline: id}`. Interactive
+screen/clipboard tools use `box.open` to open their existing Box UI. Wheel
+confirms the slot in its own Settings. A Wheel version without structured
+action support contributes no entry.
+
 ## Verification
 
 Run Box's integration checks through the isolated ecosystem runner:

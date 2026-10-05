@@ -28,13 +28,16 @@ use crate::Arcade;
 use crate::pipeline::{InputSource, Pipeline};
 use crate::provider;
 
+pub mod consumer;
+
 /// Storage keys for the Connected apps settings and the provider cache.
 pub const SETTING_ENABLED: &str = "link_enabled";
 pub const SETTING_DISABLED_PEERS: &str = "link_disabled_peers";
 pub const SETTING_PROVIDER_CACHE: &str = "link_provider_cache";
 
 /// "Connect with other Arcade apps" and the per-app toggles.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct LinkSettings {
     pub enabled: bool,
     pub disabled_peers: Vec<String>,
@@ -643,7 +646,11 @@ pub fn manifest(
         });
     }
     m.settings.link_enabled = settings.enabled;
-    m.actions = actions(tools, cache);
+    m.actions = if settings.enabled {
+        actions(tools, cache)
+    } else {
+        Vec::new()
+    };
     m
 }
 
@@ -911,6 +918,9 @@ pub fn run_blocking(
     request: &InvokeRequest,
     cancelled: &AtomicBool,
 ) -> Result<InvokeResult, LinkError> {
+    if !LinkSettings::load(runtime).enabled {
+        return Err(LinkError::denied(arcade_link::error::reason::DISABLED));
+    }
     let tools = runtime.list_tools();
     if request.action == "box.pipelines" {
         return pipelines_result(runtime);
@@ -959,6 +969,9 @@ pub struct OneshotHandler {
 
 impl Handler for OneshotHandler {
     fn describe(&self) -> Vec<Action> {
+        if !LinkSettings::load(&self.runtime).enabled {
+            return Vec::new();
+        }
         let mut all = actions(
             &self.runtime.list_tools(),
             load_provider_cache(&self.runtime).as_ref(),

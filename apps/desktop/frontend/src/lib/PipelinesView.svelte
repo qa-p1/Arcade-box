@@ -2,6 +2,7 @@
   import { copyText } from './arcade';
   import { onMount } from 'svelte';
   import Icon from './Icon.svelte';
+  import ResultActions from './ResultActions.svelte';
   import StandardToolForm from './StandardToolForm.svelte';
   import SelectedFilesInput from './SelectedFilesInput.svelte';
   import type { Pipeline, PipelineNode, SelectedFile, ToolInput, ToolOutput, ToolSummary } from './contracts';
@@ -491,6 +492,7 @@ import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem, 
             <span class="pipeline-card-icon"><Icon name="spark" size={18} /></span>
             <div class="pipeline-card-copy"><strong>{pipeline.name || humanize(pipeline.id)}</strong><span>v{pipeline.version} · {pipeline.nodes.length} {pipeline.nodes.length === 1 ? 'stage' : 'stages'}</span><small>{pipeline.nodes.map((node) => tools.find((tool) => tool.id === node.toolId)?.name || node.toolId).join(' → ')}</small></div>
             <div class="pipeline-card-actions"><button class="quiet-button" onclick={() => editPipeline(pipeline)}><Icon name="command" size={14} /><span>Edit</span></button><button class="icon-button remove-file-button" aria-label={`Delete pipeline ${pipeline.name || humanize(pipeline.id)}`} disabled={deletingId === pipeline.id} onclick={() => void removePipeline(pipeline)}><Icon name="close" size={14} /></button></div>
+            <ResultActions toolId={`arcade.pipeline.${pipeline.id}`} />
           </article>
         {/each}
       </div>

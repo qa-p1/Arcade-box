@@ -1132,6 +1132,11 @@ pub fn run(args: Vec<String>) {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            link::connected_apps,
+            link::set_link_settings,
+            link::get_connected_app,
+            link::result_link_actions,
+            link::invoke_result_link_action,
             list_tools,
             search_tools,
             choose_plugin_package,
