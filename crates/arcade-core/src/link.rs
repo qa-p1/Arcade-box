@@ -790,11 +790,19 @@ impl Handler for OneshotHandler {
         )
     }
 
-    fn invoke(&self, request: InvokeRequest, _ctx: &InvokeContext) -> Result<Reply, LinkError> {
+    fn invoke(&self, request: InvokeRequest, ctx: &InvokeContext) -> Result<Reply, LinkError> {
         if request.action == "box.open" {
             return Err(LinkError::unavailable("Arcade Box isn't running"));
         }
-        run_blocking(&self.runtime, &request, &AtomicBool::new(false)).map(Reply::Done)
+        let job = ctx.start_job();
+        let ticket = job.ticket();
+        job.progress(None, "Running in Arcade Box");
+        job.finish(run_blocking(
+            &self.runtime,
+            &request,
+            &AtomicBool::new(false),
+        ));
+        Ok(Reply::Job(ticket))
     }
 }
 
@@ -888,5 +896,31 @@ mod tests {
         assert_eq!(options.get("format"), Some(&json!("png")));
         assert_eq!(options.get("quality"), Some(&json!(50)));
         assert!(!options.contains_key("evil"));
+    }
+
+    #[test]
+    fn delegated_image_grants_are_revoked_on_success_and_rejected_input() {
+        let (dir, runtime) = runtime();
+        let path = dir.path().join("outside.png");
+        image::RgbImage::new(2, 2).save(&path).unwrap();
+        let tools = runtime.list_tools();
+        let tool = tools
+            .iter()
+            .find(|t| t.id == "arcade.image.convert")
+            .unwrap();
+        let prepared = prepare(&runtime, tool, Map::new(), &[Content::file(&path)]).unwrap();
+        let token = prepared.request.inputs[0].value.clone();
+        assert_eq!(runtime.grants().resolve(&token).unwrap(), path);
+        prepared.release(&runtime);
+        assert!(runtime.grants().resolve(&token).is_err());
+        assert!(
+            prepare(
+                &runtime,
+                tool,
+                Map::new(),
+                &[Content::file(&path), Content::plain("wrong")]
+            )
+            .is_err()
+        );
     }
 }

@@ -268,6 +268,7 @@ impl Handler for BoxHandler {
             }
         };
         let job = ctx.start_job();
+        job.progress(None, &format!("Running {}", tool.name));
         let ticket = job.ticket();
         let app = self.app.clone();
         let box_id = snapshot.id.clone();

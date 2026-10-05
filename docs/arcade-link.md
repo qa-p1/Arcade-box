@@ -61,6 +61,22 @@ The Link switch (`link_enabled`) and the per-app toggles
 (`link_disabled_peers`) live in the settings table. With the switch off,
 Box's manifest lists no actions and nothing listens.
 
+## Verification
+
+Run Box's integration checks through the isolated ecosystem runner:
+
+```sh
+E2E_VERBOSE=1 python3 ../Arcade-link/tools/e2e.py --only box
+```
+
+The checks exercise a resident preset with `job.progress` and `job.done`,
+one-shot progress without a listener or manifest, new outputs without
+overwriting the selected input, cancellation without partial outputs,
+an unavailable engine's reason, and `box.open` showing the Island. The core
+tests verify that a delegated file grant is revoked after the job and on
+input preparation failure. Runtime checks use a private D-Bus session,
+Xvfb, and temporary HOME/XDG/Arcade directories.
+
 ## Platforms
 
 | | Linux X11 | Linux Wayland | Windows | macOS |
