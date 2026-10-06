@@ -538,17 +538,51 @@ async fn save_artifact_as(
 }
 
 #[tauri::command(async)]
-async fn screen_capture_status() -> screen_capture::ScreenCaptureStatus {
-    screen_capture::capability_status().await
+async fn screen_capture_status(
+    runtime: tauri::State<'_, Arc<Arcade>>,
+) -> Result<screen_capture::ScreenCaptureStatus, String> {
+    let mut status = screen_capture::capability_status().await;
+    if arcade_core::link::consumer::peer_action(&runtime, arcade_link::ids::LENS, "lens.capture")
+        .is_some()
+    {
+        status.capture_available = true;
+        status.selection_mode = "Arcade Lens";
+        status.message = "Select a screen region locally with Arcade Lens.".into();
+    }
+    Ok(status)
 }
 
 #[tauri::command(async)]
 async fn run_screen_tool(
+    request_id: String,
     tool_id: String,
+    app: tauri::AppHandle,
     runtime: tauri::State<'_, Arc<Arcade>>,
 ) -> Result<Option<ToolResult>, String> {
     let runtime = runtime.inner().clone();
-    screen_capture::run_screen_tool(&tool_id, runtime).await
+    let active = link::OutboundRequest::begin(request_id)?;
+    let peer =
+        arcade_core::link::consumer::peer_action(&runtime, arcade_link::ids::LENS, "lens.capture")
+            .is_some();
+    let window = app.get_webview_window("main");
+    if peer {
+        if let Some(window) = &window {
+            let _ = window.hide();
+        }
+    }
+    let result = screen_capture::run_screen_tool(&tool_id, runtime, active.cancelled.clone()).await;
+    let handed_over = result
+        .as_ref()
+        .ok()
+        .and_then(|r| r.as_ref())
+        .is_some_and(|r| r.metadata.get("handedOver") == Some(&serde_json::json!(true)));
+    if peer && !handed_over {
+        if let Some(window) = window {
+            let _ = window.show();
+            let _ = window.set_focus();
+        }
+    }
+    result
 }
 
 #[tauri::command]
@@ -1143,6 +1177,9 @@ pub fn run(args: Vec<String>) {
             link::result_link_actions,
             link::invoke_result_link_action,
             link::cancel_result_link_action,
+            link::overlap_state,
+            link::shortcut_owner,
+            link::pick_peer_clipboard,
             list_tools,
             search_tools,
             choose_plugin_package,

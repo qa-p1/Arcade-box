@@ -43,7 +43,7 @@ pub fn discover_arcade(runtime: &crate::Arcade) -> Vec<ProviderInfo> {
             version: manifest.version,
             compatible: true,
             warning: None,
-            capabilities: vec![capability.replace('.', ":")],
+            capabilities: vec![capability.replacen('.', ":", 1)],
         })
     })
     .collect()

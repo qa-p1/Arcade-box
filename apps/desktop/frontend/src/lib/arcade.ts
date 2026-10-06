@@ -165,9 +165,9 @@ export async function screenCaptureStatus(): Promise<ScreenCaptureStatus> {
   return invoke<ScreenCaptureStatus>('screen_capture_status');
 }
 
-export async function runScreenTool(toolId: string): Promise<ToolResult | null> {
+export async function runScreenTool(requestId: string, toolId: string): Promise<ToolResult | null> {
   requireDesktopRuntime();
-  return invoke<ToolResult | null>('run_screen_tool', { toolId });
+  return invoke<ToolResult | null>('run_screen_tool', { requestId, toolId });
 }
 
 export async function screenImagePreview(token: string, maxEdge = 512): Promise<ScreenImagePreview> {
@@ -463,4 +463,18 @@ export async function watchIslandHidden(handler: () => void): Promise<() => void
 
 export async function setIslandInputRegion(x: number, y: number, width: number, height: number): Promise<void> {
   if (isDesktopRuntime()) await invoke<void>('set_island_input_region', { x, y, width, height });
+}
+
+export interface OverlapState { lensCapture: boolean; lensActions: boolean; clipboardPick: boolean }
+export async function overlapState(): Promise<OverlapState> {
+  if (!isDesktopRuntime()) return { lensCapture: false, lensActions: false, clipboardPick: false };
+  return invoke<OverlapState>('overlap_state');
+}
+export async function shortcutOwner(accelerator: string): Promise<string | null> {
+  if (!isDesktopRuntime()) return null;
+  return invoke<string | null>('shortcut_owner', { accelerator });
+}
+export async function pickPeerClipboard(requestId: string): Promise<ToolResult> {
+  requireDesktopRuntime();
+  return invoke<ToolResult>('pick_peer_clipboard', { requestId });
 }

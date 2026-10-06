@@ -10,6 +10,7 @@
 use std::collections::{HashMap, VecDeque};
 use std::sync::{Arc, Mutex, OnceLock};
 
+use arcade_contract::ToolResult;
 use arcade_core::Arcade;
 use arcade_core::jobs::{JobManager, JobSnapshot, JobStatus};
 use arcade_core::link::{self as core_link, LinkSettings, Prepared, ProviderCache, consumer};
@@ -565,24 +566,8 @@ pub fn invoke_result_link_action(
             .into_iter()
             .find(|(k, _, _)| k == &key)
             .ok_or("Unknown result action")?;
-    if request_id.len() > 80 || request_id.is_empty() {
-        return Err("Invalid action request".into());
-    }
-    let cancelled = Arc::new(std::sync::atomic::AtomicBool::new(false));
-    {
-        let mut requests = outbound_requests()
-            .lock()
-            .unwrap_or_else(|e| e.into_inner());
-        if requests.len() >= 32 || requests.contains_key(&request_id) {
-            return Err("Another action is already using this request".into());
-        }
-        requests.insert(request_id.clone(), cancelled.clone());
-    }
-    let result = consumer::invoke(&runtime, &app, request, &cancelled);
-    outbound_requests()
-        .lock()
-        .unwrap_or_else(|e| e.into_inner())
-        .remove(&request_id);
+    let active = OutboundRequest::begin(request_id)?;
+    let result = consumer::invoke(&runtime, &app, request, &active.cancelled);
     result.map_err(|e| e.user_message(arcade_link::manifest::app_name(&app)))
 }
 
@@ -601,4 +586,91 @@ pub fn cancel_result_link_action(request_id: String) {
     {
         cancelled.store(true, std::sync::atomic::Ordering::Release);
     }
+}
+
+/// A cancellation flag shared by peer jobs and their frontend invocation.
+pub struct OutboundRequest {
+    id: String,
+    pub cancelled: Arc<std::sync::atomic::AtomicBool>,
+}
+
+impl OutboundRequest {
+    pub fn begin(id: String) -> Result<Self, String> {
+        if id.is_empty() || id.len() > 80 {
+            return Err("Invalid action request".into());
+        }
+        let cancelled = Arc::new(std::sync::atomic::AtomicBool::new(false));
+        let mut requests = outbound_requests()
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        if requests.len() >= 32 || requests.contains_key(&id) {
+            return Err("Another action is already using this request".into());
+        }
+        requests.insert(id.clone(), cancelled.clone());
+        Ok(Self { id, cancelled })
+    }
+}
+
+impl Drop for OutboundRequest {
+    fn drop(&mut self) {
+        outbound_requests()
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .remove(&self.id);
+    }
+}
+
+#[derive(serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OverlapState {
+    lens_capture: bool,
+    lens_actions: bool,
+    clipboard_pick: bool,
+}
+
+#[tauri::command(async)]
+pub fn overlap_state(runtime: tauri::State<'_, Arc<Arcade>>) -> OverlapState {
+    OverlapState {
+        lens_capture: consumer::peer_action(&runtime, arcade_link::ids::LENS, "lens.capture")
+            .is_some(),
+        lens_actions: consumer::peer_action(
+            &runtime,
+            arcade_link::ids::LENS,
+            "lens.capture_and_act",
+        )
+        .is_some(),
+        clipboard_pick: consumer::peer_action(
+            &runtime,
+            arcade_link::ids::CLIPBOARD,
+            "clipboard.pick",
+        )
+        .is_some(),
+    }
+}
+
+#[tauri::command(async)]
+pub fn shortcut_owner(
+    accelerator: String,
+    runtime: tauri::State<'_, Arc<Arcade>>,
+) -> Option<String> {
+    consumer::registry(&runtime).with(|r| r.shortcut_owner(arcade_link::ids::BOX, &accelerator))
+}
+
+#[tauri::command(async)]
+pub fn pick_peer_clipboard(
+    request_id: String,
+    app: AppHandle,
+    runtime: tauri::State<'_, Arc<Arcade>>,
+) -> Result<ToolResult, String> {
+    let request = OutboundRequest::begin(request_id)?;
+    let window = app.get_webview_window("main");
+    if let Some(window) = &window {
+        let _ = window.hide();
+    }
+    let result = consumer::pick_clipboard(&runtime, &request.cancelled);
+    if let Some(window) = window {
+        let _ = window.show();
+        let _ = window.set_focus();
+    }
+    result
 }

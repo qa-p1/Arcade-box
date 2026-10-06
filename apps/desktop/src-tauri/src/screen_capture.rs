@@ -1596,6 +1596,7 @@ fn finish_gstreamer_process(child: &mut std::process::Child) -> Result<(), Strin
 pub async fn run_screen_tool(
     tool_id: &str,
     runtime: std::sync::Arc<Arcade>,
+    cancelled: std::sync::Arc<AtomicBool>,
 ) -> Result<Option<ToolResult>, String> {
     if !matches!(
         tool_id,
@@ -1608,8 +1609,68 @@ pub async fn run_screen_tool(
     ) {
         return Err("This screen action is not available yet".into());
     }
-    let Some(selected) = capture_screen_area(&runtime).await? else {
-        return Ok(None);
+    use arcade_core::link::consumer;
+    use arcade_link::{InvokeRequest, ids};
+    let mode = match tool_id {
+        "arcade.screen.ruler" => Some("measure"),
+        "arcade.screen.pin" => Some("pin"),
+        "arcade.screen.color" => Some("color"),
+        _ => None,
+    };
+    if let Some(mode) = mode
+        .filter(|_| consumer::peer_action(&runtime, ids::LENS, "lens.capture_and_act").is_some())
+    {
+        let worker = runtime.clone();
+        let result = tauri::async_runtime::spawn_blocking(move || {
+            consumer::invoke(
+                &worker,
+                ids::LENS,
+                InvokeRequest::new("lens.capture_and_act", ids::BOX).options(json!({"mode":mode})),
+                &cancelled,
+            )
+        })
+        .await
+        .map_err(|e| e.to_string())?
+        .map_err(|e| e.user_message("Arcade Lens"))?;
+        return Ok(Some(ToolResult {
+            tool_id: tool_id.into(),
+            status: ResultStatus::Success,
+            outputs: vec![],
+            message: result.message,
+            warnings: vec![],
+            metadata: BTreeMap::from([
+                ("providerId".into(), json!("screen.select.lens")),
+                ("handedOver".into(), json!(true)),
+            ]),
+        }));
+    }
+    let delegated = consumer::peer_action(&runtime, ids::LENS, "lens.capture").is_some();
+    let selected = if delegated {
+        let worker = runtime.clone();
+        let cancel = cancelled.clone();
+        let selected = tauri::async_runtime::spawn_blocking(move || {
+            consumer::capture_region(&worker, &cancel)
+        })
+        .await
+        .map_err(|e| e.to_string())??;
+        let path = runtime
+            .grants()
+            .resolve(&selected.token)
+            .map_err(|e| e.to_string())?;
+        let validated = validate_png_screenshot(&path);
+        let published = validated.and_then(|_| {
+            runtime
+                .publish_staged_output(None, &path, "screen-selection.png", &cancelled)
+                .map_err(|e| e.to_string())
+        });
+        runtime.grants().revoke(&selected.token);
+        let _ = fs::remove_file(path);
+        published?
+    } else {
+        let Some(selected) = capture_screen_area(&runtime).await? else {
+            return Ok(None);
+        };
+        selected
     };
 
     if tool_id == "arcade.screen.screenshot"
@@ -1637,6 +1698,14 @@ pub async fn run_screen_tool(
                 ("outputName".into(), json!(selected.name)),
                 ("outputBytes".into(), json!(selected.size)),
                 ("captureMode".into(), json!("user-selected")),
+                (
+                    "selectionProvider".into(),
+                    json!(if delegated {
+                        "screen.select.lens"
+                    } else {
+                        "native"
+                    }),
+                ),
             ]),
         }));
     }
@@ -1656,12 +1725,22 @@ pub async fn run_screen_tool(
         }],
         options: json!({}),
     };
-    let result = tauri::async_runtime::spawn_blocking(move || runtime.run_tool(request))
-        .await
-        .map_err(|error| format!("Screen QR scan stopped unexpectedly: {error}"))?
-        .map_err(|error| format!("Could not scan the selected screen content: {error}"))?;
+    let result = tauri::async_runtime::spawn_blocking(move || {
+        runtime.run_tool_with_cancel(request, &cancelled)
+    })
+    .await
+    .map_err(|error| format!("Screen QR scan stopped unexpectedly: {error}"))?
+    .map_err(|error| format!("Could not scan the selected screen content: {error}"))?;
     let mut result = result;
     result.tool_id = tool_id.into();
+    result.metadata.insert(
+        "selectionProvider".into(),
+        json!(if delegated {
+            "screen.select.lens"
+        } else {
+            "native"
+        }),
+    );
     Ok(Some(result))
 }
 

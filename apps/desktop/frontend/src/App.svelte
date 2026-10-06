@@ -7,6 +7,8 @@
   import ImageResult from './lib/ImageResult.svelte';
   import ToolOutputView from './lib/ToolOutputView.svelte';
   import ResultActions from './lib/ResultActions.svelte';
+  import ShortcutClash from './lib/ShortcutClash.svelte';
+  import { cancelResultLinkAction, overlapState, pickPeerClipboard, watchLinkChanged, type OverlapState } from './lib/arcade';
   import { inputPlaceholder, runLabel } from './lib/tool-presentation';
   import StandardToolForm from './lib/StandardToolForm.svelte';
   import VideoAssist from './lib/VideoAssist.svelte';
@@ -105,6 +107,8 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
   let history = $state<HistoryEntry[]>([]);
   let favorites = $state<string[]>([]);
   let providers = $state<ProviderInfo[]>([]);
+  let overlaps = $state<OverlapState>({ lensCapture: false, lensActions: false, clipboardPick: false });
+  let peerRequestId = $state('');
   let providersLoaded = $state(false);
   // Capabilities from compatible providers; null until detection finishes so
   // choices are never marked missing before Arcade Box has looked.
@@ -358,9 +362,13 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       }
     }).then((unlisten) => { if (disposed) unlisten(); else stopWatchingFocus = unlisten; });
     void watchJobUpdates(acceptJobSnapshot).then((unlisten) => { if (disposed) unlisten(); else stopWatchingJobs = unlisten; });
+    let stopPeers = () => {};
+    void watchLinkChanged(() => void refreshPeerState()).then((stop) => { if (disposed) stop(); else stopPeers = stop; });
     void watchShortcutStatus(acceptShortcutStatus).then((unlisten) => { if (disposed) unlisten(); else stopWatchingShortcut = unlisten; });
     return () => {
       stopWatchingFocus();
+      stopPeers();
+      if (peerRequestId) void cancelResultLinkAction(peerRequestId);
       disposed = true;
       stopWatchingShown();
       stopWatchingHiding();
@@ -421,7 +429,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       // Optional providers and desktop portals must not hold up search or onboarding.
       void listProviders().then((items) => { providers = items; providersLoaded = true; providerError = ''; })
         .catch((error) => { providerError = messageOf(error); });
-      void screenCaptureStatus().then((status) => { screenStatus = status; }).catch(() => {});
+      void refreshPeerState();
       void screenRecordingStatus().then((status) => { screenRecording = status; }).catch(() => {});
       void pastePlainStatus().then((status) => { plainPasteStatus = status; }).catch(() => {});
       void windowPinStatus().then((status) => { activeWindowPinCapability = status; }).catch(() => {});
@@ -432,6 +440,13 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     } finally {
       loadingCatalog = false;
     }
+  }
+
+  async function refreshPeerState(): Promise<void> {
+    const [state, status] = await Promise.all([overlapState(), screenCaptureStatus().catch(() => null)]);
+    overlaps = state;
+    if (status) screenStatus = status;
+    void listProviders().then((items) => { providers = items; providersLoaded = true; }).catch(() => {});
   }
 
   function hasDesktopBridge(): boolean {
@@ -552,6 +567,8 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
   }
 
   function openTool(tool: ToolSummary, fromDashboard = false): void {
+    if (peerRequestId) { void cancelResultLinkAction(peerRequestId); peerRequestId = ''; }
+    running = false;
     releaseCurrentDirectoryGrant();
     selectedTool = tool;
     activeJobId = '';
@@ -583,6 +600,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       const entry = Array.from(islandShell?.querySelectorAll<HTMLElement>('#tool-input, .granted-file-picker, .input-folder-picker button, .standard-tool-form input:not([type=checkbox]), .standard-tool-form select, .run-button') ?? []).find((element) => element.getClientRects().length && !element.hasAttribute('disabled'));
       (entry ?? selectedToolHeading)?.focus({ preventScroll: true });
       islandContent?.scrollTo({ top: 0 });
+      if (tool.id === 'arcade.system.clipboard-history' && overlaps.clipboardPick) void submitTool();
     });
   }
 
@@ -791,6 +809,12 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     if (directoryToken) pendingDirectoryTokens.add(directoryToken);
     if (inputFolderToken) pendingInputFolderTokens.add(inputFolderToken);
     try {
+      if (tool.id === 'arcade.system.clipboard-history' && overlaps.clipboardPick) {
+        peerRequestId = crypto.randomUUID();
+        const result = await pickPeerClipboard(peerRequestId);
+        if (generation === viewGeneration) activeResult = result;
+        return;
+      }
       if (isScreenRecorderTool(tool.id)) {
         const status = await startScreenRecording();
         if (status) {
@@ -820,9 +844,10 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
         return;
       }
       if (isScreenTool(tool.id)) {
-        const result = await runScreenTool(tool.id);
+        peerRequestId = crypto.randomUUID();
+        const result = await runScreenTool(peerRequestId, tool.id);
         if (result && generation === viewGeneration) {
-          if (tool.id === 'arcade.screen.pin' && result.status === 'success') {
+          if (tool.id === 'arcade.screen.pin' && result.status === 'success' && !result.metadata?.handedOver) {
             const image = result.outputs.find((output) => output.kind === 'artifact' || output.kind === 'file');
             if (!image) throw new Error('The screen capture did not return an image to pin.');
             const pinned = await pinScreenCapture(image.value);
@@ -875,7 +900,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     } catch (error) {
       if (generation === viewGeneration) runError = messageOf(error);
     } finally {
-      if (generation === viewGeneration) running = false;
+      if (generation === viewGeneration) { running = false; peerRequestId = ''; }
       if (directoryToken) {
         pendingDirectoryTokens.delete(directoryToken);
         releaseDirectoryGrantIfUnused(directoryToken, !selectedTool || toolOptions.destinationGrant !== directoryToken);
@@ -932,7 +957,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       if (generation === viewGeneration && selectedTool?.id === recordingToolId) runError = messageOf(error);
       screenRecording = await screenRecordingStatus().catch(() => screenRecording);
     } finally {
-      if (generation === viewGeneration) running = false;
+      if (generation === viewGeneration) { running = false; peerRequestId = ''; }
     }
   }
 
@@ -1011,7 +1036,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     } catch (error) {
       if (generation === viewGeneration) runError = messageOf(error);
     } finally {
-      if (generation === viewGeneration) running = false;
+      if (generation === viewGeneration) { running = false; peerRequestId = ''; }
     }
   }
 
@@ -1284,6 +1309,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
         && !screenRecording?.starting
         && !screenRecording?.finalizing;
     }
+    if (selectedTool.id === 'arcade.system.clipboard-history') return overlaps.clipboardPick;
     if (selectedTool.id === 'arcade.system.paste-plain') return plainPasteStatus?.available === true;
     if (isScreenTool(selectedTool.id) && screenStatus?.captureAvailable === false) return false;
     if (isScreenTool(selectedTool.id)) return true;
@@ -1403,7 +1429,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     screenCaptureBusy = true;
     fileSelectionError = '';
     try {
-      const capture = await runScreenTool('arcade.screen.screenshot');
+      const capture = await runScreenTool(crypto.randomUUID(), 'arcade.screen.screenshot');
       if (generation !== viewGeneration || selectedTool?.id !== tool.id) return;
       if (!capture) return;
       if (capture.status === 'error') throw new Error(capture.message || 'The screen capture could not be completed.');
@@ -1731,7 +1757,10 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
           {:else}
             <div class="input-panel">
               {#if selectedTool.id === 'arcade.system.clipboard-history'}
-                <ClipboardHistoryView />
+                {#if overlaps.clipboardPick}
+                  <p class="field-note">Choose a clip from Arcade Clipboard. Your clipboard stays unchanged.</p>
+                  <button class="run-button" disabled={running} onclick={() => void submitTool()}><Icon name="clipboard" size={15} />{running ? 'Choosing…' : 'Choose a clip'}</button>
+                {:else}<ClipboardHistoryView />{/if}
               {:else if selectedTool.id === 'arcade.utility.timer'}
                 <TimerView />
               {:else}
@@ -1861,6 +1890,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
               {/if}
             </div>
 
+            {#if running && peerRequestId && (overlaps.lensCapture || overlaps.clipboardPick)}<div class="active-job-card" role="status"><span>Waiting for your selection…</span><button class="quiet-button" onclick={() => void cancelResultLinkAction(peerRequestId)}>Cancel action</button></div>{/if}
             {#if activeJob && jobIsActive(activeJob)}
               <div class="active-job-card" role="region" aria-label="{selectedTool.name} background job">
                 <span class="sr-only" role="status" aria-live="polite" aria-atomic="true">{jobStatusText(activeJob.status)} in the background.</span>
@@ -1884,7 +1914,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
                   <span class="result-mime" title="Copy result" role="status">{copyState === 'copied' ? 'Copied' : copyState === 'error' ? 'Copy failed — try again' : `${commandKey} Shift C`}</span>
                 </div>
                 <ResultActions toolId={selectedTool.id} outputs={activeResult.outputs} presets={selectedTool.presets} />
-                {#if selectedTool.id === 'arcade.screen.color' || selectedTool.id === 'arcade.screen.ruler'}
+                {#if (selectedTool.id === 'arcade.screen.color' || selectedTool.id === 'arcade.screen.ruler') && !activeResult.metadata?.handedOver}
                   {@const screenImage = activeResult.outputs.find((output) => output.kind === 'artifact' || output.kind === 'file')}
                   {#if screenImage}
                     {#if selectedTool.id === 'arcade.screen.color'}<ScreenColorSampler token={screenImage.value} />{:else}<ScreenRuler token={screenImage.value} />{/if}
@@ -2007,7 +2037,6 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
                       <details class="technical-details"><summary>Result details</summary><ToolOutputView {output} toolId={selectedTool.id} /></details>
                     {/if}
                   {/each}
-                  {#if resultMetadataText('providerPath')}<details class="technical-details"><summary>Provider details</summary><div class="provider-footnote"><code>{resultMetadataText('providerPath')}</code></div></details>{/if}
                   {#if artifactActionError}<div class="field-error" role="alert">{artifactActionError}</div>{/if}
                   {#if artifactActionMessage}<div class="pipeline-message" role="status">{artifactActionMessage}</div>{/if}
                 {:else}
@@ -2017,6 +2046,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
                     {#if nextTools.length}<details class="result-next-actions"><summary>Continue in another tool <span>{nextTools.length}</span></summary><div>{#each nextTools as nextTool (nextTool.id)}<button onclick={() => continueWithOutput(nextTool, output, index)}><Icon name={iconForCategory(nextTool.category)} size={13} /><span>{nextTool.name}</span></button>{/each}</div></details>{/if}
                   {/each}
                 {/if}
+                {#if resultMetadataText('providerPath')}<details class="technical-details"><summary>Provider details · {resultMetadataText('providerId') === 'ocr.lens' ? 'Arcade Lens (local)' : resultMetadataText('providerId')}</summary><div class="provider-footnote"><span>{resultMetadataText('providerVersion')}</span><code>{resultMetadataText('providerPath')}</code></div></details>{/if}
                 {#if activeResult.message}<p class="result-message">{activeResult.message}</p>{/if}
                 {#if activeResult.warnings?.length}
                   <div class="result-warnings">{#each activeResult.warnings as warning}<span><Icon name="dots" size={13} />{warning}</span>{/each}</div>
@@ -2240,7 +2270,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
                   {#each providers as provider (`${provider.capability}-${provider.executablePath}`)}
                     <article class="provider-card">
                       <span class="provider-icon"><Icon name={providerIcon(provider.capability)} size={19} /></span>
-                      <div class="provider-copy"><div class="provider-title-row"><strong>{provider.capability}</strong><span class="provider-source">{provider.source === 'system' ? 'System installation' : provider.source}</span></div><span class="provider-version">Version {provider.version}</span><code>{provider.executablePath}</code>{#if provider.warning}<span class="provider-warning">{provider.warning}</span>{/if}{#if provider.capabilities?.length}<details class="provider-capabilities"><summary>Capabilities · {provider.capabilities.length}</summary><div>{#each provider.capabilities as capability}<span>{capability}</span>{/each}</div></details>{/if}</div>
+                      <div class="provider-copy"><div class="provider-title-row"><strong>{provider.capability === 'ocr.lens' ? 'Arcade Lens (local)' : provider.capability === 'screen.select.lens' ? 'Arcade Lens screen selection' : provider.capability}</strong><span class="provider-source">{provider.source === 'system' ? 'System installation' : provider.source === 'arcade-app' ? 'Local Arcade app' : provider.source}</span></div><span class="provider-version">Version {provider.version}</span><code>{provider.executablePath}</code>{#if provider.warning}<span class="provider-warning">{provider.warning}</span>{/if}{#if provider.capabilities?.length}<details class="provider-capabilities"><summary>Capabilities · {provider.capabilities.length}</summary><div>{#each provider.capabilities as capability}<span>{capability}</span>{/each}</div></details>{/if}</div>
                       <span class="provider-status" class:provider-incompatible={!provider.compatible}><span></span>{provider.compatible ? 'Compatible' : 'Needs attention'}</span>
                     </article>
                   {/each}
@@ -2313,6 +2343,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
         <div class="onboarding-shortcut-block">
           <label for="onboarding-shortcut">Global shortcut</label>
           <div class="onboarding-shortcut-input"><Icon name="command" size={17} /><input bind:this={shortcutField} bind:value={shortcutInput} id="onboarding-shortcut" autocomplete="off" spellcheck="false" aria-describedby="shortcut-status" /><span class="shortcut-edit-hint">Editable</span></div>
+          <ShortcutClash accelerator={shortcutInput} />
           <div class="shortcut-status" id="shortcut-status" class:shortcut-good={shortcutInfo?.state === 'registered'} class:shortcut-bad={shortcutInfo && shortcutInfo.state !== 'registered' && shortcutInfo.state !== 'starting' && shortcutInfo.state !== 'checking' && shortcutInfo.state !== 'updating'}><span class="runtime-dot" class:offline={shortcutInfo?.state !== 'registered'}></span><span>{shortcutInfo?.message || 'A platform default will be tested when you continue.'}</span></div>
           {#if shortcutInfo?.backend.toLowerCase().includes('portal')}
             <p class="portal-note">Wayland registers shortcuts through the XDG Desktop Portal. Your desktop may remap or decline a shortcut; if the portal is unavailable, Arcade Box will explain the limitation.</p>

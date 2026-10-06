@@ -98,6 +98,29 @@ screen/clipboard tools use `box.open` to open their existing Box UI. Wheel
 confirms the slot in its own Settings. A Wheel version without structured
 action support contributes no entry.
 
+## Local peer providers
+
+The OCR provider selector offers **Arcade Lens (local)** when the cached
+registry reports `lens.recognize` available. It requests `ocrOnly: true` and
+records the peer executable, version, provider ID and OCR engine in the result.
+Automatic selection keeps Tesseract first on Linux and prefers Lens on Windows
+and macOS. A specific Tesseract language pack still uses Tesseract.
+
+Screen screenshot, QR and OCR actions select their region with `lens.capture`
+when available. Ruler, pin and color hand over to `lens.capture_and_act` with
+`mode: measure`, `pin` or `color`. Lens handles measure directly; its current
+pin/color hints open the full Lens palette. Captured PNGs are validated, copied
+into Box's normal artifact/grant boundary, and remain local. Without Lens, the
+native platform picker and screen tools keep their existing behavior. Lens's
+v1 capture API returns still images, so screen recording retains Box's native
+stream capture on every platform.
+
+Clipboard history opens `clipboard.pick` when available; selection does not
+change the system clipboard. Without it, Box's own history view stays intact.
+The picker and peer capture calls run on workers, can be cancelled, and refresh
+from registry change events. Shortcut fields show **Used by <app name>** from
+the cached registry, without contacting the peer.
+
 ## Verification
 
 Run Box's integration checks through the isolated ecosystem runner:
@@ -119,3 +142,4 @@ Xvfb, and temporary HOME/XDG/Arcade directories.
 | | Linux X11 | Linux Wayland | Windows | macOS |
 |---|---|---|---|---|
 | Exposed actions, one-shot mode | tested | tested (headless) | build only | build only |
+| Lens/Clipboard delegation and shortcut warnings | tested under Xvfb | not run | build only | build only |

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import ShortcutClash from './ShortcutClash.svelte';
   import Icon from './Icon.svelte';
   import ConnectedApps from './ConnectedApps.svelte';
   import type { ShortcutStatus } from './contracts';
@@ -97,6 +98,7 @@
     <form class="settings-shortcut-form" onsubmit={(event) => { event.preventDefault(); void updateShortcut(); }}>
       <label for="settings-shortcut">Shortcut</label>
       <div class="settings-shortcut-row"><input id="settings-shortcut" bind:value={shortcutValue} maxlength="80" placeholder="Ctrl+Alt+Space" spellcheck="false" /><button class="pipeline-primary-button" type="submit" disabled={savingShortcut || !shortcutValue.trim()}><Icon name="check" size={14} />{savingShortcut ? 'Checking…' : 'Save shortcut'}</button></div>
+      <ShortcutClash accelerator={shortcutValue} />
       {#if localStatus}<div class="settings-shortcut-status" class:shortcut-good={localStatus.state.toLowerCase() === 'registered'} class:shortcut-bad={!['registered', 'starting', 'checking', 'updating'].includes(localStatus.state.toLowerCase())}><span class="runtime-dot" class:offline={localStatus.state.toLowerCase() !== 'registered'}></span><strong>{shortcutStateLabel(localStatus)}</strong><span>{localStatus.message}</span></div>{/if}
       {#if shortcutError}<p class="field-error" role="alert">{shortcutError}</p>{/if}
       {#if localStatus?.backend.toLowerCase().includes('portal') || localStatus?.backend.toLowerCase().includes('wayland')}<p class="settings-note">On Wayland, global shortcuts depend on your desktop's GlobalShortcuts portal. A portal permission prompt may appear when you save.</p>{/if}
