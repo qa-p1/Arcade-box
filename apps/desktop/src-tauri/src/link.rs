@@ -663,7 +663,7 @@ pub fn pick_peer_clipboard(
     runtime: tauri::State<'_, Arc<Arcade>>,
 ) -> Result<ToolResult, String> {
     let request = OutboundRequest::begin(request_id)?;
-    let window = app.get_webview_window("main");
+    let window = app.get_webview_window("island");
     if let Some(window) = &window {
         let _ = window.hide();
     }
