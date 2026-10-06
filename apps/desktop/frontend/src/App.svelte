@@ -1883,6 +1883,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
                   <div class="result-label"><span class="result-check"><Icon name={activeResult.status === 'success' ? 'check' : 'close'} size={14} /></span><div><strong>{activeResult.status === 'success' ? 'Done' : 'Couldn’t finish'}</strong><span>{activeResult.outputs.length} {activeResult.outputs.length === 1 ? 'result' : 'results'}</span></div></div>
                   <span class="result-mime" title="Copy result" role="status">{copyState === 'copied' ? 'Copied' : copyState === 'error' ? 'Copy failed — try again' : `${commandKey} Shift C`}</span>
                 </div>
+                <ResultActions toolId={selectedTool.id} outputs={activeResult.outputs} presets={selectedTool.presets} />
                 {#if selectedTool.id === 'arcade.screen.color' || selectedTool.id === 'arcade.screen.ruler'}
                   {@const screenImage = activeResult.outputs.find((output) => output.kind === 'artifact' || output.kind === 'file')}
                   {#if screenImage}
@@ -2016,7 +2017,6 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
                     {#if nextTools.length}<details class="result-next-actions"><summary>Continue in another tool <span>{nextTools.length}</span></summary><div>{#each nextTools as nextTool (nextTool.id)}<button onclick={() => continueWithOutput(nextTool, output, index)}><Icon name={iconForCategory(nextTool.category)} size={13} /><span>{nextTool.name}</span></button>{/each}</div></details>{/if}
                   {/each}
                 {/if}
-                <ResultActions toolId={selectedTool.id} outputs={activeResult.outputs} presets={selectedTool.presets} />
                 {#if activeResult.message}<p class="result-message">{activeResult.message}</p>{/if}
                 {#if activeResult.warnings?.length}
                   <div class="result-warnings">{#each activeResult.warnings as warning}<span><Icon name="dots" size={13} />{warning}</span>{/each}</div>

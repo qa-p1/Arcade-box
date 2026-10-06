@@ -202,6 +202,156 @@ pub fn output_content(runtime: &Arcade, output: &ToolValue) -> Result<Content, L
     }
 }
 
+pub fn recognize_image(
+    runtime: &Arcade,
+    tool: &ToolManifest,
+    path: &std::path::Path,
+    language: &str,
+    cancelled: &AtomicBool,
+) -> Result<arcade_contract::ToolResult, String> {
+    if language != "eng" {
+        return Err("Arcade Lens uses its own OCR language settings. Choose Tesseract for a specific language pack.".into());
+    }
+    let peer = peer_action(runtime, ids::LENS, "lens.recognize")
+        .ok_or_else(|| "Arcade Lens OCR isn't available".to_string())?
+        .0;
+    let result = invoke(
+        runtime,
+        ids::LENS,
+        InvokeRequest::new("lens.recognize", ids::BOX)
+            .input(Content::file(path))
+            .options(json!({"ocrOnly":true})),
+        cancelled,
+    )
+    .map_err(|e| e.user_message("Arcade Lens"))?;
+    let text = result
+        .outputs
+        .iter()
+        .filter(|c| c.kind == "text/plain")
+        .map(arcade_link::handoff::read_text)
+        .collect::<Result<Vec<_>, _>>()
+        .map_err(|e| e.to_string())?
+        .join("\n");
+    Ok(arcade_contract::ToolResult {
+        tool_id: tool.id.clone(),
+        status: arcade_contract::ResultStatus::Success,
+        outputs: vec![ToolValue::text(text, "text/plain")],
+        message: Some("Recognized image text locally with Arcade Lens".into()),
+        warnings: vec![],
+        metadata: [
+            ("providerId".into(), json!("ocr.lens")),
+            ("providerSource".into(), json!("arcade-app")),
+            ("providerPath".into(), json!(peer.executable)),
+            ("providerVersion".into(), json!(peer.version)),
+            (
+                "ocrEngine".into(),
+                result
+                    .data
+                    .unwrap_or_default()
+                    .get("ocrEngine")
+                    .cloned()
+                    .unwrap_or_default(),
+            ),
+        ]
+        .into_iter()
+        .collect(),
+    })
+}
+
+/// Copy Lens's temporary image before its handoff is cleaned, then use the
+/// normal Box artifact/grant boundary. The caller's image remains read-only.
+pub fn capture_region(
+    runtime: &Arcade,
+    cancelled: &AtomicBool,
+) -> Result<crate::SelectedFile, String> {
+    let result = invoke(
+        runtime,
+        ids::LENS,
+        InvokeRequest::new("lens.capture", ids::BOX),
+        cancelled,
+    )
+    .map_err(|e| e.user_message("Arcade Lens"))?;
+    let image = result
+        .outputs
+        .iter()
+        .find(|c| c.kind == "file/image")
+        .ok_or("Arcade Lens returned no region image")?;
+    let path = std::path::Path::new(
+        image
+            .path
+            .as_deref()
+            .ok_or("Arcade Lens returned no image path")?,
+    );
+    let metadata = std::fs::metadata(path).map_err(|e| e.to_string())?;
+    if !metadata.is_file() || metadata.len() > 128 * 1024 * 1024 {
+        return Err("Arcade Lens returned an invalid or oversized region image".into());
+    }
+    let copy = runtime
+        .artifact_staging_root()
+        .join(format!("lens-region-{}.png", uuid::Uuid::new_v4()));
+    std::fs::copy(path, &copy).map_err(|e| e.to_string())?;
+    match runtime.grants().grant(&copy) {
+        Ok(selected) => Ok(selected),
+        Err(error) => {
+            let _ = std::fs::remove_file(copy);
+            Err(error.to_string())
+        }
+    }
+}
+
+pub fn pick_clipboard(
+    runtime: &Arcade,
+    cancelled: &AtomicBool,
+) -> Result<arcade_contract::ToolResult, String> {
+    let result = invoke(
+        runtime,
+        ids::CLIPBOARD,
+        InvokeRequest::new("clipboard.pick", ids::BOX),
+        cancelled,
+    )
+    .map_err(|e| e.user_message("Arcade Clipboard"))?;
+    let mut outputs = Vec::new();
+    for content in result.outputs {
+        match arcade_link::content::family(&content.kind) {
+            "text" => outputs.push(ToolValue::text(
+                arcade_link::handoff::read_text(&content).map_err(|e| e.to_string())?,
+                &content.kind,
+            )),
+            "file" => {
+                for path in content.all_paths() {
+                    let source = std::path::Path::new(path);
+                    let owned;
+                    let path = if source.starts_with(Locations::discover().handoff) {
+                        owned = super::copy_handoff_input(runtime, source)
+                            .map_err(|e| e.to_string())?;
+                        owned.as_path()
+                    } else {
+                        source
+                    };
+                    outputs.push(
+                        runtime
+                            .grants()
+                            .grant(path)
+                            .map_err(|e| e.to_string())?
+                            .as_tool_value(),
+                    );
+                }
+            }
+            _ => return Err("Arcade Clipboard returned an unsupported clip".into()),
+        }
+    }
+    Ok(arcade_contract::ToolResult {
+        tool_id: "arcade.system.clipboard-history".into(),
+        status: arcade_contract::ResultStatus::Success,
+        outputs,
+        message: result.message,
+        warnings: vec![],
+        metadata: [("providerId".into(), json!("clipboard.pick"))]
+            .into_iter()
+            .collect(),
+    })
+}
+
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ResultOffer {
@@ -284,13 +434,13 @@ pub fn result_offers(
     let registry = registry(runtime).snapshot();
     let mut offers = Vec::new();
     for (key, app, request) in result_requests(runtime, outputs, tool, preset)? {
-        // Missing, disabled and unsupported peers stay hidden. Oversized or
-        // unavailable actions stay disabled, with the owner's standard reason.
+        // Only available actions contribute a row. Payload size is checked
+        // separately so an oversized device send can explain its limit.
         if !settings.uses(&app)
             || !registry.get(&app).is_some_and(|m| {
                 m.settings.link_enabled
                     && m.action(&request.action)
-                        .is_some_and(Action::on_this_platform)
+                        .is_some_and(|a| a.available && a.on_this_platform())
             })
         {
             continue;
@@ -438,10 +588,11 @@ mod tests {
         LinkSettings::default().save(&runtime).unwrap();
         write_peer(&loc, true, false);
         registry(&runtime).refresh();
-        let offer = result_offers(&runtime, std::slice::from_ref(&output), &tool, None)
-            .unwrap()
-            .remove(0);
-        assert!(!offer.enabled && offer.reason.as_ref().unwrap().contains("Private mode"));
+        assert!(
+            result_offers(&runtime, std::slice::from_ref(&output), &tool, None)
+                .unwrap()
+                .is_empty()
+        );
         write_peer(&loc, false, true);
         registry(&runtime).refresh();
         assert!(

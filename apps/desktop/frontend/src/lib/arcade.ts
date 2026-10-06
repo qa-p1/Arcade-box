@@ -433,9 +433,12 @@ export async function resultLinkActions(outputs: ToolOutput[], toolId: string, p
   if (!isDesktopRuntime()) return [];
   return invoke<ResultLinkAction[]>('result_link_actions', { outputs, toolId, preset });
 }
-export async function invokeResultLinkAction(key: string, outputs: ToolOutput[], toolId: string, preset: string | null): Promise<{ message?: string }> {
+export async function invokeResultLinkAction(requestId: string, key: string, outputs: ToolOutput[], toolId: string, preset: string | null): Promise<{ message?: string }> {
   requireDesktopRuntime();
-  return invoke<{ message?: string }>('invoke_result_link_action', { key, outputs, toolId, preset });
+  return invoke<{ message?: string }>('invoke_result_link_action', { requestId, key, outputs, toolId, preset });
+}
+export async function cancelResultLinkAction(requestId: string): Promise<void> {
+  if (isDesktopRuntime()) await invoke<void>('cancel_result_link_action', { requestId });
 }
 export async function watchLinkChanged(handler: () => void): Promise<() => void> {
   if (!isDesktopRuntime()) return () => {};

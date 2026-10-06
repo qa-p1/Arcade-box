@@ -76,17 +76,19 @@ The Link switch (`link_enabled`) and the per-app toggles
 Box's manifest lists no actions and nothing listens.
 
 Settings includes **Connected apps**: a master switch, one row for Lens,
-Look, Wheel and Clipboard with installed/running state and a **Use with
-Box** toggle, Get links for missing apps, and registry/endpoint diagnostics.
+Look, Wheel, Clipboard and Tools with installed/running state and a **Use with
+Arcade Box** toggle, Get links for missing apps, and registry/endpoint diagnostics.
+Get hands the selected app to `tools.install` (`options.app`) when Arcade
+Tools is available; otherwise it opens that app's GitHub releases page.
 Registry and endpoint changes are watched through OS notifications; no
 polling runs while idle. Disk reads and probes run on worker threads.
 
-Island results offer **Preview** for files, **Send to my devices ↗** with a
+The first action row in Island results offers **Preview** for files, **Send to my devices ↗** with a
 payload preview and an explicit Send button, **Add to Wheel**, and **Pin**
 for a single image. Device sends over 16 MiB stay disabled with the standard
 reason. Each request rechecks availability and limits before invoking the
 owner; Private mode and Lens's safety checks remain in those apps. Missing
-or disabled peers contribute no result entries. Structured results are sent
+or disabled peers and unavailable actions contribute no result entries. Structured results are sent
 as plain JSON text when the user chooses to send them.
 
 Add to Wheel is also offered on tools, their named presets, and saved

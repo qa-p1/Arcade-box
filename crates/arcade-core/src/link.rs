@@ -215,12 +215,39 @@ pub fn probe_providers() -> ProviderCache {
 }
 
 /// Probes only the providers `tool` needs (one-shot mode has no cache).
-fn probe_for(tool: &ToolManifest) -> ProviderCache {
-    tool.providers
+fn probe_for(runtime: &Arcade, tool: &ToolManifest) -> ProviderCache {
+    let mut cache: ProviderCache = tool
+        .providers
         .iter()
         .filter(|id| !builtin_provider(id))
         .filter_map(|id| probe_one(id).map(|s| (id.clone(), s)))
-        .collect()
+        .collect();
+    cache.extend(peer_provider_cache(runtime));
+    cache
+}
+
+pub fn peer_provider_cache(runtime: &Arcade) -> ProviderCache {
+    [
+        ("ocr.lens", "lens.recognize"),
+        ("screen.select.lens", "lens.capture"),
+    ]
+    .into_iter()
+    .map(|(id, action)| {
+        (
+            id.into(),
+            state(
+                consumer::peer_action(runtime, ids::LENS, action).is_some(),
+                "Arcade Lens isn't available",
+            ),
+        )
+    })
+    .collect()
+}
+
+pub fn refresh_peer_providers(runtime: &Arcade) -> bool {
+    let mut cache = load_provider_cache(runtime).unwrap_or_default();
+    cache.extend(peer_provider_cache(runtime));
+    save_provider_cache(runtime, &cache)
 }
 
 pub fn load_provider_cache(runtime: &Arcade) -> Option<ProviderCache> {
@@ -249,6 +276,13 @@ pub fn save_provider_cache(runtime: &Arcade, cache: &ProviderCache) -> bool {
 fn missing_provider(tool: &ToolManifest, cache: Option<&ProviderCache>) -> Option<String> {
     for id in &tool.providers {
         if builtin_provider(id) {
+            continue;
+        }
+        if id == "ocr.tesseract"
+            && cache
+                .and_then(|c| c.get("ocr.lens"))
+                .is_some_and(|s| s.available)
+        {
             continue;
         }
         match cache.and_then(|c| c.get(id)) {
@@ -940,7 +974,7 @@ pub fn run_blocking(
         {
             for node in &p.nodes {
                 if let Some(tool) = tools.iter().find(|t| t.id == node.tool_id) {
-                    cache.extend(probe_for(tool));
+                    cache.extend(probe_for(runtime, tool));
                 }
             }
         }
@@ -951,7 +985,7 @@ pub fn run_blocking(
     } else {
         resolve_action(&tools, request)?
     };
-    if let Some(reason) = missing_provider(tool, Some(&probe_for(tool))) {
+    if let Some(reason) = missing_provider(tool, Some(&probe_for(runtime, tool))) {
         return Err(LinkError::unavailable(reason));
     }
     let prepared = prepare(runtime, tool, options, &request.inputs)?;

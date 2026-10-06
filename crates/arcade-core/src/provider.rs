@@ -25,6 +25,30 @@ pub struct ProviderInfo {
     pub capabilities: Vec<String>,
 }
 
+/// Local Arcade peers discovered from cached manifests; no provider process
+/// is started during discovery.
+pub fn discover_arcade(runtime: &crate::Arcade) -> Vec<ProviderInfo> {
+    [
+        ("ocr.lens", "lens.recognize"),
+        ("screen.select.lens", "lens.capture"),
+    ]
+    .into_iter()
+    .filter_map(|(capability, action)| {
+        let (manifest, _) =
+            crate::link::consumer::peer_action(runtime, arcade_link::ids::LENS, action)?;
+        Some(ProviderInfo {
+            capability: capability.into(),
+            source: "arcade-app".into(),
+            executable_path: manifest.executable.into(),
+            version: manifest.version,
+            compatible: true,
+            warning: None,
+            capabilities: vec![capability.replace('.', ":")],
+        })
+    })
+    .collect()
+}
+
 /// A separately managed model package. Model weights have independent
 /// provenance and license terms from the executable that runs them.
 #[derive(Debug, Clone, Serialize, Deserialize)]

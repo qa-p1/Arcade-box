@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import ArcadeBadge from './ArcadeBadge.svelte';
+  import Icon from './Icon.svelte';
   import { connectedApps, getConnectedApp, setLinkSettings, watchLinkChanged, type ConnectedAppsState, type LinkSettings } from './arcade';
   let connections = $state<ConnectedAppsState | null>(null);
   let loading = $state(true);
@@ -41,8 +42,8 @@
     {#each connections.apps as peer (peer.id)}
       <div class="peer-row"><ArcadeBadge app={peer.id} />
         <div class="peer-copy"><strong>{peer.name}</strong><span>{peer.state}{peer.version ? ` · v${peer.version}` : ''}</span>{#if peer.state === 'Not installed'}<p>{peer.pitch}</p>{/if}</div>
-        {#if peer.state === 'Not installed'}<button class="quiet-button" disabled={busy} onclick={() => void get(peer.id)}>Get</button>
-        {:else}<label class="peer-toggle"><input type="checkbox" checked={peer.enabled} disabled={busy || !connections.settings.enabled} onchange={(event) => void save({ ...connections!.settings, disabledPeers: event.currentTarget.checked ? connections!.settings.disabledPeers.filter((id) => id !== peer.id) : [...connections!.settings.disabledPeers.filter((id) => id !== peer.id), peer.id] })} />Use with Box</label>{/if}
+        {#if peer.state === 'Not installed'}<button class="quiet-button get-app-button" disabled={busy} onclick={() => void get(peer.id)}><span>Get</span><Icon name="external" size={13} /></button>
+        {:else}<label class="peer-toggle"><input type="checkbox" checked={peer.enabled} disabled={busy || !connections.settings.enabled} onchange={(event) => void save({ ...connections!.settings, disabledPeers: event.currentTarget.checked ? connections!.settings.disabledPeers.filter((id) => id !== peer.id) : [...connections!.settings.disabledPeers.filter((id) => id !== peer.id), peer.id] })} />Use with Arcade Box</label>{/if}
       </div>
     {/each}
     <details class="connection-diagnostics"><summary>Diagnostics</summary><dl><dt>Registry</dt><dd>{connections.registryPath}</dd><dt>Box endpoint</dt><dd>{connections.endpointState}</dd><dt>Last error</dt><dd>{connections.lastError || 'None'}</dd>{#each connections.apps as peer}<dt>{peer.name} endpoint</dt><dd>{peer.state} · {peer.endpoint}</dd>{/each}</dl></details>
@@ -53,6 +54,9 @@
 <style>
   .connected-apps { border-radius: 12px; }
   .connection-master { display: flex; gap: 10px; align-items: center; padding: 12px 0; }
+  .connection-master, .peer-toggle { user-select: none; }
+  .get-app-button { border: 1px solid var(--line); border-radius: 7px; padding: 7px 12px; color: var(--ink); }
+  .get-app-button:not(:disabled):hover { border-color: var(--accent); color: var(--accent); }
   .peer-row { display: flex; gap: 12px; align-items: center; padding: 14px 0; border-top: 1px solid var(--line); }
   .peer-copy { flex: 1; display: grid; gap: 4px; }
   .peer-copy span, .peer-copy p { font-size: 12px; color: var(--muted); margin: 0; }

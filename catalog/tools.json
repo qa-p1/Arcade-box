@@ -3061,12 +3061,24 @@
         },
         "controls": [
           {
+            "key": "provider",
+            "label": "OCR engine",
+            "type": "select",
+            "default": "auto",
+            "choices": [
+              { "value": "auto", "label": "Automatic" },
+              { "value": "tesseract", "label": "Tesseract" },
+              { "value": "lens", "label": "Arcade Lens (local)", "requires": ["ocr:lens"] }
+            ],
+            "help": "Automatic prefers Tesseract on Linux and Arcade Lens on Windows and macOS."
+          },
+          {
             "key": "language",
             "label": "OCR language",
             "type": "text",
             "default": "eng",
             "placeholder": "eng",
-            "help": "Requires this language pack in your local Tesseract installation."
+            "help": "Tesseract language pack. Arcade Lens uses its own OCR language settings."
           }
         ]
       }

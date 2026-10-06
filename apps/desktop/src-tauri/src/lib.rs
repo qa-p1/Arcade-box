@@ -266,10 +266,15 @@ fn run_pipeline(
 }
 
 #[tauri::command(async)]
-fn list_providers(app: tauri::AppHandle) -> Vec<ProviderInfo> {
+fn list_providers(
+    app: tauri::AppHandle,
+    runtime: tauri::State<'_, Arc<Arcade>>,
+) -> Vec<ProviderInfo> {
     let mut providers = discover_ffmpeg(None);
     providers.extend(discover_qpdf(None));
     providers.extend(discover_vips(None));
+    providers.extend(arcade_core::provider::discover_tesseract());
+    providers.extend(arcade_core::provider::discover_arcade(&runtime));
     // The user looked at their engines: refresh what other apps are offered.
     link::providers_checked(&app);
     providers
@@ -1137,6 +1142,7 @@ pub fn run(args: Vec<String>) {
             link::get_connected_app,
             link::result_link_actions,
             link::invoke_result_link_action,
+            link::cancel_result_link_action,
             list_tools,
             search_tools,
             choose_plugin_package,

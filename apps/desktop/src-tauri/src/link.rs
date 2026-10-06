@@ -314,7 +314,12 @@ impl Handler for BoxHandler {
     }
 
     fn status(&self) -> serde_json::Value {
-        serde_json::json!({ "jobs": self.app.state::<JobManager>().list().iter().filter(|j| !terminal(j.status)).count() })
+        let mode = if std::env::args().any(|arg| arg == "--background") {
+            "background"
+        } else {
+            "foreground"
+        };
+        serde_json::json!({ "mode": mode, "jobs": self.app.state::<JobManager>().list().iter().filter(|j| !terminal(j.status)).count() })
     }
 
     fn activate(&self) -> Result<(), LinkError> {
@@ -338,7 +343,8 @@ fn slot() -> &'static Mutex<Option<Arc<Presence>>> {
 
 /// Re-checks providers and rewrites the manifest if availability changed.
 fn reprobe(runtime: &Arcade) {
-    let cache: ProviderCache = core_link::probe_providers();
+    let mut cache: ProviderCache = core_link::probe_providers();
+    cache.extend(core_link::peer_provider_cache(runtime));
     if core_link::save_provider_cache(runtime, &cache) {
         let p = slot().lock().unwrap_or_else(|e| e.into_inner()).clone();
         if let Some(p) = p {
@@ -367,7 +373,13 @@ pub fn start(app: &AppHandle) {
             }
             *slot().lock().unwrap_or_else(|e| e.into_inner()) = Some(Arc::new(p));
             let watched_app = app.clone();
+            let watched_runtime = runtime.clone();
             consumer::registry(&runtime).watch(move |_| {
+                if core_link::refresh_peer_providers(&watched_runtime) {
+                    if let Some(p) = slot().lock().unwrap_or_else(|e| e.into_inner()).clone() {
+                        p.update(build(&watched_runtime));
+                    }
+                }
                 let _ = watched_app.emit("arcade://link-changed", ());
             });
             let _ = app.emit("arcade://link-changed", ());
@@ -432,6 +444,7 @@ pub fn connected_apps(runtime: tauri::State<'_, Arc<Arcade>>) -> ConnectedApps {
     let settings = LinkSettings::load(&runtime);
     let apps = arcade_link::ids::APPS
         .into_iter()
+        .chain(std::iter::once(arcade_link::ids::TOOLS))
         .filter(|id| *id != arcade_link::ids::BOX)
         .map(|id| {
             let (state, version) =
@@ -474,14 +487,14 @@ pub fn set_link_settings(
     app: AppHandle,
     runtime: tauri::State<'_, Arc<Arcade>>,
 ) -> Result<(), String> {
-    if settings
-        .disabled_peers
-        .iter()
-        .any(|id| !arcade_link::ids::APPS.contains(&id.as_str()) || id == arcade_link::ids::BOX)
-    {
+    if settings.disabled_peers.iter().any(|id| {
+        (!arcade_link::ids::APPS.contains(&id.as_str()) && id != arcade_link::ids::TOOLS)
+            || id == arcade_link::ids::BOX
+    }) {
         return Err("Unknown Arcade app".into());
     }
     settings.save(&runtime)?;
+    core_link::refresh_peer_providers(&runtime);
     if let Some(p) = slot().lock().unwrap_or_else(|e| e.into_inner()).clone() {
         p.update(build(&runtime));
     }
@@ -495,7 +508,7 @@ pub fn get_connected_app(
     app: AppHandle,
     runtime: tauri::State<'_, Arc<Arcade>>,
 ) -> Result<(), String> {
-    if !arcade_link::ids::APPS.contains(&id.as_str()) {
+    if !arcade_link::ids::APPS.contains(&id.as_str()) && id != arcade_link::ids::TOOLS {
         return Err("Unknown Arcade app".into());
     }
     if consumer::peer_action(&runtime, arcade_link::ids::TOOLS, "tools.install").is_some() {
@@ -534,6 +547,7 @@ pub fn result_link_actions(
 
 #[tauri::command(async)]
 pub fn invoke_result_link_action(
+    request_id: String,
     key: String,
     outputs: Vec<arcade_contract::ToolValue>,
     tool_id: String,
@@ -551,11 +565,40 @@ pub fn invoke_result_link_action(
             .into_iter()
             .find(|(k, _, _)| k == &key)
             .ok_or("Unknown result action")?;
-    consumer::invoke(
-        &runtime,
-        &app,
-        request,
-        &std::sync::atomic::AtomicBool::new(false),
-    )
-    .map_err(|e| e.user_message(arcade_link::manifest::app_name(&app)))
+    if request_id.len() > 80 || request_id.is_empty() {
+        return Err("Invalid action request".into());
+    }
+    let cancelled = Arc::new(std::sync::atomic::AtomicBool::new(false));
+    {
+        let mut requests = outbound_requests()
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        if requests.len() >= 32 || requests.contains_key(&request_id) {
+            return Err("Another action is already using this request".into());
+        }
+        requests.insert(request_id.clone(), cancelled.clone());
+    }
+    let result = consumer::invoke(&runtime, &app, request, &cancelled);
+    outbound_requests()
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .remove(&request_id);
+    result.map_err(|e| e.user_message(arcade_link::manifest::app_name(&app)))
+}
+
+fn outbound_requests() -> &'static Mutex<HashMap<String, Arc<std::sync::atomic::AtomicBool>>> {
+    static REQUESTS: OnceLock<Mutex<HashMap<String, Arc<std::sync::atomic::AtomicBool>>>> =
+        OnceLock::new();
+    REQUESTS.get_or_init(Default::default)
+}
+
+#[tauri::command(async)]
+pub fn cancel_result_link_action(request_id: String) {
+    if let Some(cancelled) = outbound_requests()
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .get(&request_id)
+    {
+        cancelled.store(true, std::sync::atomic::Ordering::Release);
+    }
 }

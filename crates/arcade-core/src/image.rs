@@ -161,7 +161,7 @@ pub fn execute(
             return metadata_tool(manifest, request, &source, grants, cancelled);
         }
         "arcade.image.palette" => return palette(manifest, &source, cancelled),
-        "arcade.image.ocr" => return image_ocr(manifest, request, &source, cancelled),
+        "arcade.image.ocr" => return image_ocr(manifest, request, runtime, &source, cancelled),
         "arcade.image.background-remove" => {
             return remove_background(manifest, request, &source, grants, cancelled);
         }
@@ -1607,6 +1607,7 @@ fn validate_generated_png(path: &Path) -> Result<(), String> {
 fn image_ocr(
     manifest: &ToolManifest,
     request: &ToolRequest,
+    runtime: &crate::Arcade,
     source: &Path,
     cancelled: &AtomicBool,
 ) -> Result<ToolResult, String> {
@@ -1623,6 +1624,21 @@ fn image_ocr(
     {
         return Err("Choose a valid OCR language code".into());
     }
+    let choice = request
+        .options
+        .get("provider")
+        .and_then(Value::as_str)
+        .unwrap_or("auto");
+    if !matches!(choice, "auto" | "lens" | "tesseract") {
+        return Err("Choose a valid OCR engine".into());
+    }
+    let lens =
+        crate::link::consumer::peer_action(runtime, arcade_link::ids::LENS, "lens.recognize");
+    if choice == "lens" || choice == "auto" && !cfg!(target_os = "linux") && lens.is_some() {
+        return crate::link::consumer::recognize_image(
+            runtime, manifest, source, language, cancelled,
+        );
+    }
     let provider = crate::provider::discover_tesseract()
         .into_iter()
         .find(|provider| {
@@ -1631,12 +1647,20 @@ fn image_ocr(
                     .capabilities
                     .iter()
                     .any(|cap| cap == &format!("ocr:language:{language}"))
-        })
-        .ok_or_else(|| {
-            format!(
+        });
+    let provider = match provider {
+        Some(provider) => provider,
+        None if choice == "auto" && lens.is_some() => {
+            return crate::link::consumer::recognize_image(
+                runtime, manifest, source, language, cancelled,
+            );
+        }
+        None => {
+            return Err(format!(
                 "No compatible local Tesseract provider has the {language} language pack installed"
-            )
-        })?;
+            ));
+        }
+    };
     let format = ImageFormat::from_file(source)?;
     let parent = source
         .parent()
