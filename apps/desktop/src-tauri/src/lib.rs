@@ -1056,6 +1056,7 @@ fn install_recovery_tray(app: &tauri::App) -> tauri::Result<()> {
     let menu = Menu::with_items(app, &[&show, &settings, &restart_item, &separator, &quit])?;
     let menu_on_left = cfg!(target_os = "macos");
     let mut builder = TrayIconBuilder::with_id("arcade-box-tray")
+        .tooltip("Arcade Box")
         .menu(&menu)
         .show_menu_on_left_click(menu_on_left);
     // The bundled image is 16-bit RGBA. Tauri's default window image keeps
@@ -1294,6 +1295,10 @@ pub fn run(args: Vec<String>) {
             app.manage(runtime);
             app.manage(jobs);
             app.manage(screen_capture::ScreenRecorder::default());
+            // The Linux tray host shows the GLib application name as the
+            // item's title; it defaults to the binary name.
+            #[cfg(target_os = "linux")]
+            gtk::glib::set_application_name("Arcade Box");
             if let Err(error) = install_recovery_tray(app) {
                 eprintln!("Arcade Box recovery tray unavailable: {error}");
             }
