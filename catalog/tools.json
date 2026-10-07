@@ -12764,7 +12764,7 @@
         },
         "controls": []
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "unsupported (no API for other apps' windows)",

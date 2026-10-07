@@ -110,6 +110,6 @@ Generated from [`catalog/tools.json`](../catalog/tools.json) by `python3 catalog
 | arcade.screen.pin | partial | Screen & Capture | platform.screenshot, platform.window | LOCAL | conditional | conditional | conditional | conditional | screen/region → window/pinned-image | Pending |
 | arcade.system.clipboard-history | implemented | System | platform.clipboard, storage.sqlite | LOCAL | conditional | conditional | partial | conditional | clipboard/item → clipboard/item[] | Pending |
 | arcade.system.paste-plain | implemented | System | platform.clipboard, platform.shortcut | LOCAL | conditional | conditional | unsupported | conditional | clipboard/text → clipboard/text | Pending |
-| arcade.system.window-pin | partial | System | platform.window | LOCAL | conditional | unsupported (no API for other apps' windows) | unsupported | conditional |  → structured/window-pin | Pending |
+| arcade.system.window-pin | implemented | System | platform.window | LOCAL | conditional | unsupported (no API for other apps' windows) | unsupported | conditional |  → structured/window-pin | Pending |
 | arcade.system.process | implemented | System | platform.process | LOCAL | implemented | implemented | implemented | implemented | text/plain → structured/process-list | Pending |
 | arcade.system.system-info | implemented | System | platform.system-info | LOCAL | implemented | implemented | implemented | implemented |  → structured/system-info | Pending |

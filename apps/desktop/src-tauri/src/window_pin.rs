@@ -25,19 +25,26 @@ pub fn status() -> WindowPinStatus {
     }
     #[cfg(target_os = "linux")]
     {
-        let wayland = env::var_os("WAYLAND_DISPLAY").is_some_and(|display| !display.is_empty())
-            || env::var("XDG_SESSION_TYPE")
-                .is_ok_and(|session| session.eq_ignore_ascii_case("wayland"));
+        let wayland = is_wayland_session();
         let wmctrl = find_wmctrl();
+        let has_display = env::var_os("DISPLAY").is_some_and(|display| !display.is_empty());
+        let manager_available = has_display
+            && wmctrl
+                .as_ref()
+                .is_some_and(|executable| supports_ewmh(executable));
         return WindowPinStatus {
             platform: if wayland { "wayland" } else { "x11" }.into(),
-            available: !wayland && wmctrl.is_some(),
+            available: !wayland && manager_available,
             message: if wayland {
                 "Wayland does not expose a general always-on-top API to desktop apps. Use the window manager's own controls.".into()
-            } else if wmctrl.is_some() {
+            } else if !has_display {
+                "X11 window pinning needs an active X11 display.".into()
+            } else if wmctrl.is_none() {
+                "X11 window pinning requires wmctrl, which was not found on PATH.".into()
+            } else if manager_available {
                 "Pins the window that was active before Arcade Box hid; the X11 window manager must support EWMH above state.".into()
             } else {
-                "X11 window pinning requires wmctrl, which was not found on PATH.".into()
+                "The active X11 session has no EWMH window manager, so window pinning is unavailable.".into()
             },
         };
     }
@@ -128,12 +135,16 @@ fn set_previous_foreground_pin(pin: bool) -> Result<(), String> {
 
 #[cfg(target_os = "linux")]
 fn set_previous_foreground_pin(pin: bool) -> Result<(), String> {
-    if env::var_os("WAYLAND_DISPLAY").is_some_and(|display| !display.is_empty())
-        || env::var("XDG_SESSION_TYPE").is_ok_and(|session| session.eq_ignore_ascii_case("wayland"))
-    {
+    if is_wayland_session() {
         return Err("Wayland does not allow a general window pin request".into());
     }
     let wmctrl = find_wmctrl().ok_or("wmctrl is not available on PATH")?;
+    if !env::var_os("DISPLAY").is_some_and(|display| !display.is_empty()) {
+        return Err("X11 window pinning needs an active X11 display".into());
+    }
+    if !supports_ewmh(&wmctrl) {
+        return Err("The active X11 session has no EWMH window manager".into());
+    }
     let state = if pin { "add,above" } else { "remove,above" };
     let output = Command::new(wmctrl)
         .args(["-r", ":ACTIVE:", "-b", state])
@@ -149,6 +160,25 @@ fn set_previous_foreground_pin(pin: bool) -> Result<(), String> {
             detail
         })
     }
+}
+
+#[cfg(target_os = "linux")]
+fn is_wayland_session() -> bool {
+    env::var_os("WAYLAND_DISPLAY").is_some_and(|display| !display.is_empty())
+        || env::var("XDG_SESSION_TYPE").is_ok_and(|session| session.eq_ignore_ascii_case("wayland"))
+}
+
+#[cfg(target_os = "linux")]
+fn supports_ewmh(wmctrl: &PathBuf) -> bool {
+    Command::new(wmctrl)
+        .args(["-m"])
+        .output()
+        .is_ok_and(|output| {
+            output.status.success()
+                && String::from_utf8_lossy(&output.stdout)
+                    .lines()
+                    .any(|line| line.starts_with("Name:"))
+        })
 }
 
 #[cfg(target_os = "macos")]
