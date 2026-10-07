@@ -1,5 +1,5 @@
 //! User-initiated screen content capture through each platform's native picker.
-//! Linux uses the XDG Screenshot portal rather than compositor-specific APIs.
+//! Linux prefers the XDG Screenshot portal and falls back to ImageMagick on X11.
 
 use arcade_contract::{ResultStatus, ToolRequest, ToolResult, ToolValue, ValueKind};
 use arcade_core::{Arcade, grants::SelectedFile};
@@ -156,7 +156,7 @@ pub async fn capability_status() -> ScreenCaptureStatus {
     #[cfg(target_os = "linux")]
     {
         use ashpd::desktop::screenshot::{AvailableTargets, ScreenshotProxy};
-        let status: (bool, &'static str, String) = match ScreenshotProxy::new().await {
+        let portal_status: (bool, &'static str, String) = match ScreenshotProxy::new().await {
             Ok(portal) => match portal.available_targets().await {
                 Ok(targets) if targets.contains(AvailableTargets::Area) => (
                     true,
@@ -179,6 +179,20 @@ pub async fn capability_status() -> ScreenCaptureStatus {
                 "unavailable",
                 format!("The XDG Screenshot portal is unavailable: {error}"),
             ),
+        };
+        let status = if portal_status.0 {
+            portal_status
+        } else if let Some(executable) = linux_x11_import_executable() {
+            (
+                true,
+                "x11-import",
+                format!(
+                    "The XDG Screenshot portal is unavailable; using the ImageMagick area selector at {}.",
+                    executable.display()
+                ),
+            )
+        } else {
+            portal_status
         };
         let (recording_available, recording_message) = linux_recording_capability().await;
         return ScreenCaptureStatus {
@@ -1746,6 +1760,28 @@ pub async fn run_screen_tool(
 
 #[cfg(target_os = "linux")]
 async fn capture_linux_area(runtime: &Arcade) -> Result<Option<SelectedFile>, String> {
+    let portal_result = capture_linux_portal_area(runtime).await;
+    match portal_result {
+        Ok(result) => Ok(result),
+        Err(portal_error) => {
+            let Some(executable) = linux_x11_import_executable() else {
+                return Err(portal_error);
+            };
+            capture_linux_x11_area(runtime, executable).await
+        }
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn linux_x11_import_executable() -> Option<PathBuf> {
+    if std::env::var_os("WAYLAND_DISPLAY").is_some() || std::env::var_os("DISPLAY").is_none() {
+        return None;
+    }
+    arcade_core::provider::find_system_executable("import")
+}
+
+#[cfg(target_os = "linux")]
+async fn capture_linux_portal_area(runtime: &Arcade) -> Result<Option<SelectedFile>, String> {
     use ashpd::desktop::screenshot::{AvailableTargets, Screenshot, ScreenshotProxy};
 
     let portal = ScreenshotProxy::new().await.map_err(|error| {
@@ -1783,6 +1819,46 @@ async fn capture_linux_area(runtime: &Arcade) -> Result<Option<SelectedFile>, St
         .publish_staged_output(None, &path, "screen-selection.png", &AtomicBool::new(false))
         .map(Some)
         .map_err(|error| format!("Could not keep the selected screen image safely: {error}"))
+}
+
+#[cfg(target_os = "linux")]
+async fn capture_linux_x11_area(
+    runtime: &Arcade,
+    executable: PathBuf,
+) -> Result<Option<SelectedFile>, String> {
+    use std::process::{Command, Stdio};
+
+    let staging = staging_directory(runtime)?;
+    let output_path = staging.path().join("screen-selection.png");
+    let command_path = output_path.clone();
+    let output = tauri::async_runtime::spawn_blocking(move || {
+        Command::new(executable)
+            .arg(&command_path)
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::piped())
+            .output()
+    })
+    .await
+    .map_err(|error| format!("The X11 area selector stopped unexpectedly: {error}"))?
+    .map_err(|error| format!("Could not start the X11 area selector: {error}"))?;
+
+    if !output.status.success() {
+        let detail = String::from_utf8_lossy(&output.stderr).trim().to_owned();
+        if detail.to_ascii_lowercase().contains("cancel") && !output_path.exists() {
+            return Ok(None);
+        }
+        return Err(if detail.is_empty() {
+            format!("The X11 area selector exited with {}.", output.status)
+        } else {
+            format!("The X11 area selector failed: {detail}")
+        });
+    }
+    if !output_path.exists() {
+        // ImageMagick's right-click cancellation exits without creating a file.
+        return Ok(None);
+    }
+    publish_capture(runtime, &output_path)
 }
 
 #[cfg(target_os = "windows")]
@@ -1947,7 +2023,7 @@ fn local_screenshot_path(uri: &str) -> Result<PathBuf, String> {
         .map_err(|_| "The screenshot portal returned an invalid local file path".to_owned())
 }
 
-#[cfg(any(target_os = "windows", target_os = "macos"))]
+#[cfg(any(target_os = "linux", target_os = "windows", target_os = "macos"))]
 fn staging_directory(runtime: &Arcade) -> Result<tempfile::TempDir, String> {
     tempfile::Builder::new()
         .prefix("arcade-screen-capture-")
@@ -1955,7 +2031,7 @@ fn staging_directory(runtime: &Arcade) -> Result<tempfile::TempDir, String> {
         .map_err(|error| format!("Could not create a private capture workspace: {error}"))
 }
 
-#[cfg(any(target_os = "windows", target_os = "macos"))]
+#[cfg(any(target_os = "linux", target_os = "windows", target_os = "macos"))]
 fn publish_capture(
     runtime: &Arcade,
     path: &std::path::Path,
@@ -1971,7 +2047,7 @@ fn validate_png_screenshot(path: &std::path::Path) -> Result<(), String> {
     let link_metadata = fs::symlink_metadata(path)
         .map_err(|error| format!("The selected screen image is unavailable: {error}"))?;
     if link_metadata.file_type().is_symlink() || !link_metadata.is_file() {
-        return Err("The screenshot portal did not return a regular image file".into());
+        return Err("The screen selector did not return a regular image file".into());
     }
     if link_metadata.len() == 0 || link_metadata.len() > MAX_CAPTURE_BYTES {
         return Err("The selected screen image is empty or larger than 128 MB".into());
@@ -1979,10 +2055,10 @@ fn validate_png_screenshot(path: &std::path::Path) -> Result<(), String> {
     let mut file = fs::File::open(path).map_err(|error| error.to_string())?;
     let mut header = [0u8; 24];
     file.read_exact(&mut header)
-        .map_err(|_| "The screenshot portal returned a truncated image".to_owned())?;
+        .map_err(|_| "The screen selector returned a truncated image".to_owned())?;
     if &header[..8] != PNG_SIGNATURE || &header[12..16] != b"IHDR" {
         return Err(
-            "The screenshot portal returned an unsupported image format; Arcade Box expected PNG"
+            "The screen selector returned an unsupported image format; Arcade Box expected PNG"
                 .into(),
         );
     }
