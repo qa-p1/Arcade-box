@@ -19,7 +19,7 @@ use std::{
     collections::BTreeSet,
     ffi::OsString,
     fs::{self, File, OpenOptions},
-    io::Write,
+    io::{Read, Write},
     path::{Path, PathBuf},
     sync::atomic::{AtomicBool, Ordering},
     time::Duration,
@@ -457,7 +457,7 @@ fn images_to_pdf(
     }
     args.push("--".into());
     args.extend(sources.iter().map(|path| path.as_os_str().to_os_string()));
-    run_provider(
+    let output = run_provider(
         &provider.executable_path,
         args,
         Some(temp.path()),
@@ -465,6 +465,32 @@ fn images_to_pdf(
         "create a PDF from images",
         1024 * 1024,
     )?;
+    if !output.status.success() {
+        let detail = if output.stderr.is_empty() {
+            &output.stdout
+        } else {
+            &output.stderr
+        };
+        let detail = concise(&String::from_utf8_lossy(detail));
+        return Err(if detail.is_empty() {
+            format!(
+                "img2pdf could not create a PDF (exit status {})",
+                output
+                    .status
+                    .code()
+                    .map_or_else(|| "unknown".to_owned(), |code| code.to_string())
+            )
+        } else {
+            format!("img2pdf could not create a PDF: {detail}")
+        });
+    }
+    let mut signature = [0; 5];
+    File::open(&staged)
+        .and_then(|mut file| file.read_exact(&mut signature))
+        .map_err(|error| format!("img2pdf did not create a readable PDF: {error}"))?;
+    if &signature != b"%PDF-" {
+        return Err("img2pdf reported success but did not produce a valid PDF".into());
+    }
     let final_path = publish_without_overwrite(&staged, parent, &name, cancelled)
         .map_err(|error| format!("Could not save image PDF: {error}"))?;
     let selected = grants
@@ -3042,6 +3068,73 @@ mod tests {
         discover_qpdf(None).into_iter().find(|provider| {
             provider.compatible && provider.capabilities.iter().any(|item| item == capability)
         })
+    }
+
+    #[test]
+    fn images_to_pdf_checks_provider_status_and_publishes_a_real_pdf() {
+        let provider_available = discover_img2pdf().into_iter().any(|provider| {
+            provider.compatible && provider.capabilities.iter().any(|cap| cap == "pdf:create")
+        });
+        if !provider_available {
+            return;
+        }
+        let temp = tempfile::tempdir().unwrap();
+        let source = temp.path().join("source.png");
+        ::image::RgbImage::from_pixel(32, 24, ::image::Rgb([20, 80, 180]))
+            .save(&source)
+            .unwrap();
+        let runtime = crate::Arcade::in_memory().unwrap();
+        let grants = runtime.grants();
+        let selected = grants.grant(&source).unwrap();
+        let manifest = runtime
+            .list_tools()
+            .into_iter()
+            .find(|tool| tool.id == "arcade.pdf.images-to-pdf")
+            .unwrap();
+        let cancelled = AtomicBool::new(false);
+        let result = execute(
+            &manifest,
+            &ToolRequest {
+                tool_id: manifest.id.clone(),
+                inputs: vec![selected.as_tool_value()],
+                options: json!({"pageSize":"A4","fit":"into"}),
+            },
+            grants,
+            &cancelled,
+        )
+        .unwrap();
+        assert_eq!(result.status, ResultStatus::Success, "{:?}", result.message);
+        let output = grants.resolve(&result.outputs[0].value).unwrap();
+        let mut signature = [0; 5];
+        File::open(&output)
+            .unwrap()
+            .read_exact(&mut signature)
+            .unwrap();
+        assert_eq!(&signature, b"%PDF-");
+        assert_eq!(result.metadata["imageCount"], 1);
+
+        let unsupported = temp.path().join("unsupported.png");
+        ::image::ImageBuffer::<::image::Rgba<u16>, Vec<u16>>::from_pixel(
+            32,
+            24,
+            ::image::Rgba([50_000, 1_000, 2_000, 30_000]),
+        )
+        .save(&unsupported)
+        .unwrap();
+        let unsupported_grant = grants.grant(&unsupported).unwrap();
+        let error = execute(
+            &manifest,
+            &ToolRequest {
+                tool_id: manifest.id.clone(),
+                inputs: vec![unsupported_grant.as_tool_value()],
+                options: json!({"pageSize":"A4","fit":"into"}),
+            },
+            grants,
+            &cancelled,
+        )
+        .unwrap_err();
+        assert!(error.contains("img2pdf could not create a PDF"), "{error}");
+        assert!(!temp.path().join("unsupported-images.pdf").exists());
     }
 
     #[test]
