@@ -1,5 +1,5 @@
 //! User-initiated screen content capture through each platform's native picker.
-//! Linux prefers the XDG Screenshot portal and falls back to ImageMagick on X11.
+//! Linux prefers the XDG Screenshot portal and uses a local picker on X11.
 
 use arcade_contract::{ResultStatus, ToolRequest, ToolResult, ToolValue, ValueKind};
 use arcade_core::{Arcade, grants::SelectedFile};
@@ -26,34 +26,48 @@ type CaptureFuture<'a> =
 /// Platform capture implementations share this small boundary. The frontend
 /// receives only a normal opaque file grant regardless of the native API.
 pub trait ScreenCaptureProvider: Send + Sync {
-    fn capture_content<'a>(&'a self, runtime: &'a Arcade) -> CaptureFuture<'a>;
+    fn capture_content<'a>(
+        &'a self,
+        runtime: &'a Arcade,
+        app: &'a tauri::AppHandle,
+    ) -> CaptureFuture<'a>;
 }
 
 struct PlatformCaptureProvider;
 
 impl ScreenCaptureProvider for PlatformCaptureProvider {
-    fn capture_content<'a>(&'a self, runtime: &'a Arcade) -> CaptureFuture<'a> {
+    fn capture_content<'a>(
+        &'a self,
+        runtime: &'a Arcade,
+        app: &'a tauri::AppHandle,
+    ) -> CaptureFuture<'a> {
         #[cfg(target_os = "linux")]
         {
-            Box::pin(capture_linux_area(runtime))
+            Box::pin(capture_linux_area(runtime, app))
         }
         #[cfg(target_os = "windows")]
         {
+            let _ = app;
             Box::pin(capture_windows_area(runtime))
         }
         #[cfg(target_os = "macos")]
         {
+            let _ = app;
             Box::pin(capture_macos_area(runtime))
         }
         #[cfg(not(any(target_os = "linux", target_os = "windows", target_os = "macos")))]
         {
+            let _ = app;
             Box::pin(capture_unsupported_area(runtime))
         }
     }
 }
 
-pub async fn capture_screen_area(runtime: &Arcade) -> Result<Option<SelectedFile>, String> {
-    PlatformCaptureProvider.capture_content(runtime).await
+pub async fn capture_screen_area(
+    runtime: &Arcade,
+    app: &tauri::AppHandle,
+) -> Result<Option<SelectedFile>, String> {
+    PlatformCaptureProvider.capture_content(runtime, app).await
 }
 
 #[tauri::command]
@@ -182,14 +196,12 @@ pub async fn capability_status() -> ScreenCaptureStatus {
         };
         let status = if portal_status.0 {
             portal_status
-        } else if let Some(executable) = linux_x11_import_executable() {
+        } else if linux_x11_available() {
             (
                 true,
-                "x11-import",
-                format!(
-                    "The XDG Screenshot portal is unavailable; using the ImageMagick area selector at {}.",
-                    executable.display()
-                ),
+                "x11-overlay",
+                "The XDG Screenshot portal is unavailable; Box can select an area locally on X11."
+                    .into(),
             )
         } else {
             portal_status
@@ -1611,6 +1623,7 @@ pub async fn run_screen_tool(
     tool_id: &str,
     runtime: std::sync::Arc<Arcade>,
     cancelled: std::sync::Arc<AtomicBool>,
+    app: tauri::AppHandle,
 ) -> Result<Option<ToolResult>, String> {
     if !matches!(
         tool_id,
@@ -1681,7 +1694,7 @@ pub async fn run_screen_tool(
         let _ = fs::remove_file(path);
         published?
     } else {
-        let Some(selected) = capture_screen_area(&runtime).await? else {
+        let Some(selected) = capture_screen_area(&runtime, &app).await? else {
             return Ok(None);
         };
         selected
@@ -1771,25 +1784,25 @@ pub async fn run_screen_tool(
 }
 
 #[cfg(target_os = "linux")]
-async fn capture_linux_area(runtime: &Arcade) -> Result<Option<SelectedFile>, String> {
+async fn capture_linux_area(
+    runtime: &Arcade,
+    app: &tauri::AppHandle,
+) -> Result<Option<SelectedFile>, String> {
     let portal_result = capture_linux_portal_area(runtime).await;
     match portal_result {
         Ok(result) => Ok(result),
         Err(portal_error) => {
-            let Some(executable) = linux_x11_import_executable() else {
+            if !linux_x11_available() {
                 return Err(portal_error);
-            };
-            capture_linux_x11_area(runtime, executable).await
+            }
+            capture_linux_x11_area(runtime, app).await
         }
     }
 }
 
 #[cfg(target_os = "linux")]
-fn linux_x11_import_executable() -> Option<PathBuf> {
-    if std::env::var_os("WAYLAND_DISPLAY").is_some() || std::env::var_os("DISPLAY").is_none() {
-        return None;
-    }
-    arcade_core::provider::find_system_executable("import")
+fn linux_x11_available() -> bool {
+    std::env::var_os("WAYLAND_DISPLAY").is_none() && std::env::var_os("DISPLAY").is_some()
 }
 
 #[cfg(target_os = "linux")]
@@ -1836,41 +1849,286 @@ async fn capture_linux_portal_area(runtime: &Arcade) -> Result<Option<SelectedFi
 #[cfg(target_os = "linux")]
 async fn capture_linux_x11_area(
     runtime: &Arcade,
-    executable: PathBuf,
+    app: &tauri::AppHandle,
 ) -> Result<Option<SelectedFile>, String> {
-    use std::process::{Command, Stdio};
+    let Some(region) = select_x11_region(app).await? else {
+        return Ok(None);
+    };
+    checked_dimensions(region.width, region.height)?;
 
     let staging = staging_directory(runtime)?;
     let output_path = staging.path().join("screen-selection.png");
-    let command_path = output_path.clone();
-    let output = tauri::async_runtime::spawn_blocking(move || {
-        Command::new(executable)
-            .arg(&command_path)
-            .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .stderr(Stdio::piped())
-            .output()
+    let capture_path = output_path.clone();
+    let (send, receive) = tokio::sync::oneshot::channel();
+    app.run_on_main_thread(move || {
+        let result = capture_x11_region_png(region, &capture_path);
+        let _ = send.send(result);
     })
-    .await
-    .map_err(|error| format!("The X11 area selector stopped unexpectedly: {error}"))?
-    .map_err(|error| format!("Could not start the X11 area selector: {error}"))?;
-
-    if !output.status.success() {
-        let detail = String::from_utf8_lossy(&output.stderr).trim().to_owned();
-        if detail.to_ascii_lowercase().contains("cancel") && !output_path.exists() {
-            return Ok(None);
-        }
-        return Err(if detail.is_empty() {
-            format!("The X11 area selector exited with {}.", output.status)
-        } else {
-            format!("The X11 area selector failed: {detail}")
-        });
-    }
-    if !output_path.exists() {
-        // ImageMagick's right-click cancellation exits without creating a file.
-        return Ok(None);
-    }
+    .map_err(|error| format!("Could not capture the selected X11 region: {error}"))?;
+    receive
+        .await
+        .map_err(|error| format!("X11 screen capture stopped unexpectedly: {error}"))??;
     publish_capture(runtime, &output_path)
+}
+
+#[cfg(target_os = "linux")]
+#[derive(Clone, Copy)]
+struct X11Region {
+    x: i32,
+    y: i32,
+    width: u32,
+    height: u32,
+}
+
+#[cfg(target_os = "linux")]
+#[derive(Default)]
+struct X11Selection {
+    start: Option<(f64, f64)>,
+    cursor: Option<(f64, f64)>,
+    hint: Option<String>,
+}
+
+#[cfg(target_os = "linux")]
+type X11PickerSender = tokio::sync::oneshot::Sender<Result<Option<X11Region>, String>>;
+
+#[cfg(target_os = "linux")]
+async fn select_x11_region(app: &tauri::AppHandle) -> Result<Option<X11Region>, String> {
+    let (send, receive) = tokio::sync::oneshot::channel();
+    app.run_on_main_thread(move || {
+        use gtk::gdk::prelude::WindowExtManual;
+
+        let root = gtk::gdk::Window::default_root_window();
+        let width = root.width();
+        let height = root.height();
+        let image_size = u32::try_from(width)
+            .ok()
+            .zip(u32::try_from(height).ok())
+            .ok_or_else(|| "X11 reported an invalid screen size".to_owned())
+            .and_then(|(width, height)| checked_dimensions(width, height));
+        if let Err(error) = image_size {
+            let _ = send.send(Err(error));
+            return;
+        }
+        let Some(snapshot) = root.pixbuf(0, 0, width, height) else {
+            let _ = send.send(Err("X11 could not preview the current screen".into()));
+            return;
+        };
+        show_x11_picker(send, snapshot);
+    })
+    .map_err(|error| format!("Could not open the X11 region selector: {error}"))?;
+    receive
+        .await
+        .map_err(|error| format!("X11 region selection stopped unexpectedly: {error}"))?
+}
+
+#[cfg(target_os = "linux")]
+fn show_x11_picker(send: X11PickerSender, snapshot: gtk::gdk_pixbuf::Pixbuf) {
+    use gtk::{gdk, prelude::*};
+    use std::{cell::RefCell, rc::Rc};
+
+    let Some(screen) = gdk::Screen::default() else {
+        let _ = send.send(Err("X11 did not report an available screen".into()));
+        return;
+    };
+    let Some(root) = screen.root_window() else {
+        let _ = send.send(Err("X11 did not expose its root screen window".into()));
+        return;
+    };
+    let window = gtk::Window::new(gtk::WindowType::Toplevel);
+    window.set_title("Select screen area");
+    window.set_decorated(false);
+    window.set_skip_taskbar_hint(true);
+    window.set_keep_above(true);
+    window.set_modal(true);
+    window.set_app_paintable(true);
+    if let Some(visual) = screen.rgba_visual() {
+        window.set_visual(Some(&visual));
+    }
+    window.set_default_size(root.width(), root.height());
+    window.fullscreen();
+
+    let canvas = gtk::DrawingArea::new();
+    canvas.set_can_focus(true);
+    canvas.add_events(
+        gdk::EventMask::BUTTON_PRESS_MASK
+            | gdk::EventMask::BUTTON_RELEASE_MASK
+            | gdk::EventMask::POINTER_MOTION_MASK
+            | gdk::EventMask::KEY_PRESS_MASK,
+    );
+    window.add(&canvas);
+
+    let selection = Rc::new(RefCell::new(X11Selection::default()));
+    let sender = Rc::new(RefCell::new(Some(send)));
+    let draw_state = selection.clone();
+    canvas.connect_draw(move |_, context| {
+        context.set_source_pixbuf(&snapshot, 0.0, 0.0);
+        let _ = context.paint();
+        context.set_source_rgba(0.02, 0.03, 0.05, 0.18);
+        let _ = context.paint();
+
+        context.set_source_rgba(0.04, 0.07, 0.12, 0.88);
+        context.rectangle(18.0, 18.0, 416.0, 50.0);
+        let _ = context.fill();
+        context.set_source_rgb(1.0, 1.0, 1.0);
+        context.select_font_face(
+            "Sans",
+            gtk::cairo::FontSlant::Normal,
+            gtk::cairo::FontWeight::Normal,
+        );
+        context.set_font_size(16.0);
+        context.move_to(32.0, 49.0);
+        let hint = draw_state
+            .borrow()
+            .hint
+            .clone()
+            .unwrap_or_else(|| "Drag to capture an area · Esc or right-click to cancel".into());
+        let _ = context.show_text(&hint);
+
+        if let (Some((start_x, start_y)), Some((end_x, end_y))) = {
+            let state = draw_state.borrow();
+            (state.start, state.cursor)
+        } {
+            let x = start_x.min(end_x);
+            let y = start_y.min(end_y);
+            let rect_width = (start_x - end_x).abs();
+            let rect_height = (start_y - end_y).abs();
+            context.set_source_rgba(0.17, 0.56, 1.0, 0.22);
+            context.rectangle(x, y, rect_width, rect_height);
+            let _ = context.fill_preserve();
+            context.set_source_rgb(0.8, 0.92, 1.0);
+            context.set_line_width(2.0);
+            let _ = context.stroke();
+        }
+        gtk::glib::Propagation::Proceed
+    });
+
+    let click_window = window.clone();
+    let click_sender = sender.clone();
+    let click_selection = selection.clone();
+    canvas.connect_button_press_event(move |canvas, event| {
+        if event.button() == 3 {
+            complete_x11_picker(&click_sender, Ok(None), &click_window);
+            return gtk::glib::Propagation::Stop;
+        }
+        if event.button() != 1 {
+            return gtk::glib::Propagation::Proceed;
+        }
+        let Some((x, y)) = event.coords() else {
+            return gtk::glib::Propagation::Proceed;
+        };
+        let mut state = click_selection.borrow_mut();
+        state.start = Some((x, y));
+        state.cursor = Some((x, y));
+        state.hint = None;
+        canvas.grab_focus();
+        canvas.queue_draw();
+        gtk::glib::Propagation::Stop
+    });
+
+    let move_selection = selection.clone();
+    canvas.connect_motion_notify_event(move |canvas, event| {
+        if let Some((x, y)) = event.coords() {
+            let mut state = move_selection.borrow_mut();
+            if state.start.is_some() {
+                state.cursor = Some((x, y));
+                canvas.queue_draw();
+            }
+        }
+        gtk::glib::Propagation::Stop
+    });
+
+    let release_window = window.clone();
+    let release_sender = sender.clone();
+    let release_selection = selection.clone();
+    canvas.connect_button_release_event(move |canvas, event| {
+        if event.button() != 1 {
+            return gtk::glib::Propagation::Proceed;
+        }
+        let Some((end_x, end_y)) = event.coords() else {
+            return gtk::glib::Propagation::Proceed;
+        };
+        let start = release_selection.borrow().start;
+        let Some((start_x, start_y)) = start else {
+            return gtk::glib::Propagation::Proceed;
+        };
+        let left = start_x.min(end_x);
+        let top = start_y.min(end_y);
+        let scale = f64::from(canvas.scale_factor().max(1));
+        let x = (left * scale).floor() as i32;
+        let y = (top * scale).floor() as i32;
+        let width = ((start_x - end_x).abs() * scale).ceil() as u32;
+        let height = ((start_y - end_y).abs() * scale).ceil() as u32;
+        if width < 2 || height < 2 {
+            let mut state = release_selection.borrow_mut();
+            state.start = None;
+            state.cursor = None;
+            state.hint = Some("Drag a larger area · Esc or right-click to cancel".into());
+            canvas.queue_draw();
+            return gtk::glib::Propagation::Stop;
+        }
+        complete_x11_picker(
+            &release_sender,
+            Ok(Some(X11Region {
+                x,
+                y,
+                width,
+                height,
+            })),
+            &release_window,
+        );
+        gtk::glib::Propagation::Stop
+    });
+
+    let key_window = window.clone();
+    let key_sender = sender.clone();
+    canvas.connect_key_press_event(move |_, event| {
+        if event.keyval() == gdk::keys::constants::Escape {
+            complete_x11_picker(&key_sender, Ok(None), &key_window);
+            gtk::glib::Propagation::Stop
+        } else {
+            gtk::glib::Propagation::Proceed
+        }
+    });
+
+    window.connect_delete_event(move |window, _| {
+        complete_x11_picker(&sender, Ok(None), window);
+        gtk::glib::Propagation::Stop
+    });
+    window.show_all();
+    window.present();
+    canvas.grab_focus();
+}
+
+#[cfg(target_os = "linux")]
+fn complete_x11_picker(
+    sender: &std::rc::Rc<std::cell::RefCell<Option<X11PickerSender>>>,
+    result: Result<Option<X11Region>, String>,
+    window: &gtk::Window,
+) {
+    use gtk::prelude::*;
+
+    if let Some(sender) = sender.borrow_mut().take() {
+        let _ = sender.send(result);
+    }
+    window.hide();
+}
+
+#[cfg(target_os = "linux")]
+fn capture_x11_region_png(region: X11Region, path: &std::path::Path) -> Result<(), String> {
+    use gtk::{gdk, prelude::*};
+
+    let root = gdk::Window::default_root_window();
+    let image = root
+        .pixbuf(
+            region.x,
+            region.y,
+            i32::try_from(region.width).map_err(|_| "The selected area is too wide")?,
+            i32::try_from(region.height).map_err(|_| "The selected area is too tall")?,
+        )
+        .ok_or_else(|| "X11 could not read the selected screen pixels".to_owned())?;
+    image
+        .savev(path, "png", &[])
+        .map_err(|error| format!("Could not encode the selected X11 region: {error}"))
 }
 
 #[cfg(target_os = "windows")]

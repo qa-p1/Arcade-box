@@ -618,34 +618,29 @@ async fn run_screen_tool(
 ) -> Result<Option<ToolResult>, String> {
     let runtime = runtime.inner().clone();
     let active = link::OutboundRequest::begin(request_id)?;
-    let peer =
-        arcade_core::link::consumer::peer_action(&runtime, arcade_link::ids::LENS, "lens.capture")
-            .is_some();
     let window = app.get_webview_window("island");
-    if peer {
-        if let Some(window) = &window {
-            // Lens freezes the screen as soon as it's asked, so Box must be
-            // gone first: wait until the window is unmapped, then give the
-            // windows beneath a moment to repaint. Otherwise the selection
-            // can contain Box's own UI.
-            if window.hide().is_ok() {
-                for _ in 0..50 {
-                    if !window.is_visible().unwrap_or(false) {
-                        break;
-                    }
-                    tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+    if let Some(window) = &window {
+        // Lens and the native picker both capture the desktop immediately, so
+        // Box must be unmapped before either selection path starts.
+        if window.hide().is_ok() {
+            for _ in 0..50 {
+                if !window.is_visible().unwrap_or(false) {
+                    break;
                 }
-                tokio::time::sleep(std::time::Duration::from_millis(150)).await;
+                tokio::time::sleep(std::time::Duration::from_millis(10)).await;
             }
+            tokio::time::sleep(std::time::Duration::from_millis(150)).await;
         }
     }
-    let result = screen_capture::run_screen_tool(&tool_id, runtime, active.cancelled.clone()).await;
+    let result =
+        screen_capture::run_screen_tool(&tool_id, runtime, active.cancelled.clone(), app.clone())
+            .await;
     let handed_over = result
         .as_ref()
         .ok()
         .and_then(|r| r.as_ref())
         .is_some_and(|r| r.metadata.get("handedOver") == Some(&serde_json::json!(true)));
-    if peer && !handed_over {
+    if !handed_over {
         if let Some(window) = window {
             let _ = window.show();
             let _ = window.set_focus();
