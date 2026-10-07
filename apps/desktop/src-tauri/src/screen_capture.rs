@@ -127,8 +127,8 @@ pub fn pin_screen_capture(
     .map_err(|error| format!("Could not prepare pinned image preview: {error}"))?;
     let counter = PIN_WINDOW_COUNTER.fetch_add(1, Ordering::Relaxed);
     let label = format!("arcade-pin-{}-{counter}", std::process::id());
-    let width = f64::from(preview.width.min(560).max(180)) + 28.0;
-    let height = f64::from(preview.height.min(340).max(120)) + 46.0;
+    let width = f64::from(preview.width.clamp(180, 560)) + 28.0;
+    let height = f64::from(preview.height.clamp(120, 340)) + 46.0;
     let script = format!("window.__ARCADE_PIN_IMAGE = {preview_js};");
     WebviewWindowBuilder::new(&app, &label, WebviewUrl::App(PathBuf::from("pin.html")))
         .title("Arcade Box · Pinned reference")
@@ -1681,10 +1681,7 @@ async fn stop_linux_recording(
     let portal_session = session.portal_session.take();
     let capture_mode = session.capture_mode;
     let finalization = tauri::async_runtime::spawn_blocking(move || {
-        let result = finish_gstreamer_process(&mut session.child);
-        if let Err(error) = result {
-            return Err(error);
-        }
+        finish_gstreamer_process(&mut session.child)?;
         let metadata = fs::metadata(&session.output_path)
             .map_err(|error| format!("The recording output was not created: {error}"))?;
         if metadata.len() < 512 {

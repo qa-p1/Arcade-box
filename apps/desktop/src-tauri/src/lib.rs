@@ -1045,11 +1045,19 @@ fn request_hide_island(window: &tauri::WebviewWindow) {
     });
 }
 
+/// The tray menu every Arcade app has: open, settings, restart and, below a
+/// separator, quit. A left click opens Settings where the platform reports it.
 fn install_recovery_tray(app: &tauri::App) -> tauri::Result<()> {
-    let show = MenuItem::with_id(app, "show-island", "Show Arcade Island", true, None::<&str>)?;
+    let show = MenuItem::with_id(app, "show-island", "Open Box", true, None::<&str>)?;
+    let settings = MenuItem::with_id(app, "settings", "Open Settings", true, None::<&str>)?;
+    let restart_item = MenuItem::with_id(app, "restart", "Restart Arcade Box", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "Quit Arcade Box", true, None::<&str>)?;
-    let menu = Menu::with_items(app, &[&show, &quit])?;
-    let mut builder = TrayIconBuilder::with_id("arcade-box-tray").menu(&menu);
+    let separator = tauri::menu::PredefinedMenuItem::separator(app)?;
+    let menu = Menu::with_items(app, &[&show, &settings, &restart_item, &separator, &quit])?;
+    let menu_on_left = cfg!(target_os = "macos");
+    let mut builder = TrayIconBuilder::with_id("arcade-box-tray")
+        .menu(&menu)
+        .show_menu_on_left_click(menu_on_left);
     // The bundled image is 16-bit RGBA. Tauri's default window image keeps
     // those raw bytes, but tray-icon expects 8-bit RGBA; decode here so the
     // tray receives the correctly normalized pixel buffer.
@@ -1062,11 +1070,92 @@ fn install_recovery_tray(app: &tauri::App) -> tauri::Result<()> {
                     show_island(&window);
                 }
             }
+            "settings" => open_settings(app),
+            "restart" => restart(app),
             "quit" => app.exit(0),
             _ => {}
         })
+        .on_tray_icon_event(move |tray, event| {
+            if let tauri::tray::TrayIconEvent::Click {
+                button: tauri::tray::MouseButton::Left,
+                button_state: tauri::tray::MouseButtonState::Up,
+                ..
+            } = event
+                && !menu_on_left
+            {
+                open_settings(tray.app_handle());
+            }
+        })
         .build(app)?;
     Ok(())
+}
+
+/// Set on the successor so it waits for this process to exit before taking
+/// the single-instance slot and the profile lock.
+const RESTART_ENV: &str = "ARCADE_BOX_RESTART_AFTER";
+
+/// Starts a new background instance, then quits. Quitting without a
+/// successor would silently remove Box, so a failed launch keeps this one.
+fn restart(app: &tauri::AppHandle) {
+    let started = std::process::Command::new(arcade_link::manifest::current_executable())
+        .arg("--background")
+        .env(RESTART_ENV, std::process::id().to_string())
+        .spawn();
+    match started {
+        Ok(_) => app.exit(0),
+        Err(error) => {
+            eprintln!("Arcade Box could not start a new instance, so it kept running: {error}")
+        }
+    }
+}
+
+/// In a successor started by [`restart`]: waits (up to 5 s) for the old
+/// instance to exit.
+fn wait_for_predecessor() {
+    let Some(pid) = std::env::var(RESTART_ENV)
+        .ok()
+        .and_then(|p| p.parse::<u32>().ok())
+    else {
+        return;
+    };
+    for _ in 0..50 {
+        if !process_alive(pid) {
+            return;
+        }
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn process_alive(pid: u32) -> bool {
+    std::path::Path::new(&format!("/proc/{pid}")).exists()
+}
+
+#[cfg(target_os = "macos")]
+fn process_alive(pid: u32) -> bool {
+    std::process::Command::new("kill")
+        .args(["-0", &pid.to_string()])
+        .stderr(std::process::Stdio::null())
+        .status()
+        .is_ok_and(|s| s.success())
+}
+
+#[cfg(windows)]
+fn process_alive(pid: u32) -> bool {
+    use windows_sys::Win32::Foundation::{CloseHandle, WAIT_TIMEOUT};
+    use windows_sys::Win32::System::Threading::{
+        OpenProcess, PROCESS_SYNCHRONIZE, WaitForSingleObject,
+    };
+    // SAFETY: plain Win32 calls on a handle we own and close.
+    unsafe {
+        let handle = OpenProcess(PROCESS_SYNCHRONIZE, 0, pid);
+        if handle.is_null() {
+            return false;
+        }
+        let alive = WaitForSingleObject(handle, 0) == WAIT_TIMEOUT;
+        CloseHandle(handle);
+        alive
+    }
 }
 
 /// On Windows the release build has no console; attach to the parent's so
@@ -1123,6 +1212,7 @@ fn handle_second_instance(app: &tauri::AppHandle, argv: &[String]) {
 }
 
 pub fn run(args: Vec<String>) {
+    wait_for_predecessor();
     let first_flag = args.iter().find(|a| a.starts_with("--")).cloned();
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
