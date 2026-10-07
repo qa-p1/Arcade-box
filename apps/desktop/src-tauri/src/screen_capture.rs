@@ -1724,28 +1724,40 @@ pub async fn run_screen_tool(
         }));
     }
 
-    let runtime = runtime.clone();
     let target_tool_id = match tool_id {
         "arcade.screen.qr" => "arcade.barcode.decode",
         "arcade.screen.ocr" => "arcade.image.ocr",
         _ => unreachable!("screenshot and color capture handled above"),
     };
+    let selected_token = selected.token.clone();
     let request = ToolRequest {
         tool_id: target_tool_id.into(),
         inputs: vec![ToolValue {
             kind: ValueKind::Artifact,
-            value: selected.token,
+            value: selected_token.clone(),
             mime: selected.mime,
         }],
         options: json!({}),
     };
+    let worker = runtime.clone();
     let result = tauri::async_runtime::spawn_blocking(move || {
-        runtime.run_tool_with_cancel(request, &cancelled)
+        worker.run_tool_with_cancel(request, &cancelled)
     })
-    .await
-    .map_err(|error| format!("Screen QR scan stopped unexpectedly: {error}"))?
-    .map_err(|error| format!("Could not scan the selected screen content: {error}"))?;
-    let mut result = result;
+    .await;
+    runtime.grants().revoke(&selected_token);
+    let action = if tool_id == "arcade.screen.qr" {
+        "scan"
+    } else {
+        "read"
+    };
+    let operation = if tool_id == "arcade.screen.qr" {
+        "Screen QR scan"
+    } else {
+        "Screen OCR"
+    };
+    let mut result = result
+        .map_err(|error| format!("{operation} stopped unexpectedly: {error}"))?
+        .map_err(|error| format!("Could not {action} the selected screen content: {error}"))?;
     result.tool_id = tool_id.into();
     result.metadata.insert(
         "selectionProvider".into(),
