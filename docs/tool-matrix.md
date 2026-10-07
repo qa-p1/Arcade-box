@@ -107,7 +107,7 @@ Generated from [`catalog/tools.json`](../catalog/tools.json) by `python3 catalog
 | arcade.screen.qr | implemented | Screen & Capture | platform.screen-capture, barcode.zxing | LOCAL | conditional | conditional | conditional | conditional | screen/region, file/image → structured/barcode | Pending |
 | arcade.screen.color | implemented | Screen & Capture | platform.screenshot | LOCAL | conditional | conditional | conditional | conditional | screen/region → structured/color | Pending |
 | arcade.screen.ruler | implemented | Screen & Capture | platform.screenshot, platform.overlay | LOCAL | conditional | conditional | conditional | conditional | screen/region → structured/screen-measurement | Pending |
-| arcade.screen.pin | partial | Screen & Capture | platform.screenshot, platform.window | LOCAL | conditional | conditional | conditional | conditional | screen/region → window/pinned-image | Pending |
+| arcade.screen.pin | implemented | Screen & Capture | platform.screenshot, platform.window | LOCAL | conditional | conditional | conditional | conditional | screen/region → window/pinned-image | Pending |
 | arcade.system.clipboard-history | partial | System | platform.clipboard, storage.sqlite | LOCAL | conditional | conditional | partial | conditional | clipboard/item → clipboard/item[] | Pending |
 | arcade.system.paste-plain | partial | System | platform.clipboard, platform.shortcut | LOCAL | conditional | conditional | unsupported | conditional | clipboard/text → clipboard/text | Pending |
 | arcade.system.window-pin | partial | System | platform.window | LOCAL | conditional | unsupported (no API for other apps' windows) | unsupported | conditional |  → structured/window-pin | Pending |
