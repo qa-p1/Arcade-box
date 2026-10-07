@@ -25,23 +25,32 @@ pub fn capability_status() -> PastePlainStatus {
     }
     #[cfg(target_os = "macos")]
     {
+        let osascript = executable_on_path("osascript");
         return PastePlainStatus {
             platform: "macos",
-            available: true,
+            available: osascript,
             shortcut: "⌘+⌥+⇧+V",
-            message: "Arcade Box will request Paste and Match Style. macOS may ask for Accessibility permission, and the target app must support this shortcut.".to_string(),
+            message: if osascript {
+                "Arcade Box will request Paste and Match Style. macOS may ask for Accessibility permission, and the target app must support this shortcut."
+            } else {
+                "Plain-text paste needs osascript, which was not found on PATH."
+            }
+            .to_string(),
         };
     }
     #[cfg(target_os = "linux")]
     {
-        let wayland = std::env::var_os("WAYLAND_DISPLAY").is_some();
+        let wayland = is_wayland_session();
+        let has_display = std::env::var_os("DISPLAY").is_some_and(|display| !display.is_empty());
         let xdotool = executable_on_path("xdotool");
         return PastePlainStatus {
             platform: if wayland { "wayland" } else { "x11" },
-            available: !wayland && xdotool,
+            available: !wayland && has_display && xdotool,
             shortcut: "Ctrl+Shift+V",
             message: if wayland {
                 "Wayland does not permit applications to synthesize global paste input. Copy the text, switch to the target app, and use its plain-text paste shortcut."
+            } else if !has_display {
+                "X11 plain-text paste needs an active X11 display."
             } else if xdotool {
                 "Arcade Box will request the common plain-text paste shortcut in the previously focused app."
             } else {
@@ -63,7 +72,31 @@ fn executable_on_path(name: &str) -> bool {
     let Some(path) = std::env::var_os("PATH") else {
         return false;
     };
-    std::env::split_paths(&path).any(|directory| directory.join(name).is_file())
+    std::env::split_paths(&path).any(|directory| {
+        let candidate = directory.join(name);
+        let Ok(metadata) = candidate.metadata() else {
+            return false;
+        };
+        if !metadata.is_file() {
+            return false;
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            metadata.permissions().mode() & 0o111 != 0
+        }
+        #[cfg(not(unix))]
+        {
+            true
+        }
+    })
+}
+
+#[cfg(target_os = "linux")]
+fn is_wayland_session() -> bool {
+    std::env::var_os("WAYLAND_DISPLAY").is_some_and(|display| !display.is_empty())
+        || std::env::var("XDG_SESSION_TYPE")
+            .is_ok_and(|session| session.eq_ignore_ascii_case("wayland"))
 }
 
 #[tauri::command]
@@ -95,7 +128,8 @@ pub async fn paste_plain_text(
     tokio::time::sleep(std::time::Duration::from_millis(140)).await;
     let paste_result = tauri::async_runtime::spawn_blocking(send_plain_paste_shortcut)
         .await
-        .map_err(|error| format!("Could not send paste shortcut: {error}"))?;
+        .map_err(|error| format!("Could not send paste shortcut: {error}"))
+        .and_then(|result| result);
     if let Err(error) = paste_result {
         let _ = window.show();
         let _ = window.set_focus();
