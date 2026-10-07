@@ -105,7 +105,7 @@ Generated from [`catalog/tools.json`](../catalog/tools.json) by `python3 catalog
 | arcade.screen.recorder | partial | Screen & Capture | platform.screen-record, media.ffmpeg | LOCAL | conditional | conditional | conditional | conditional | screen/region → file/video | Pending |
 | arcade.screen.ocr | implemented | Screen & Capture | platform.screenshot, ocr.tesseract | LOCAL | conditional | conditional | conditional | conditional | screen/region → text/plain | Pending |
 | arcade.screen.qr | implemented | Screen & Capture | platform.screen-capture, barcode.zxing | LOCAL | conditional | conditional | conditional | conditional | screen/region, file/image → structured/barcode | Pending |
-| arcade.screen.color | partial | Screen & Capture | platform.screenshot | LOCAL | conditional | conditional | conditional | conditional | screen/region → structured/color | Pending |
+| arcade.screen.color | implemented | Screen & Capture | platform.screenshot | LOCAL | conditional | conditional | conditional | conditional | screen/region → structured/color | Pending |
 | arcade.screen.ruler | partial | Screen & Capture | platform.screenshot, platform.overlay | LOCAL | conditional | conditional | conditional | conditional | screen/region → structured/screen-measurement | Pending |
 | arcade.screen.pin | partial | Screen & Capture | platform.screenshot, platform.window | LOCAL | conditional | conditional | conditional | conditional | screen/region → window/pinned-image | Pending |
 | arcade.system.clipboard-history | partial | System | platform.clipboard, storage.sqlite | LOCAL | conditional | conditional | partial | conditional | clipboard/item → clipboard/item[] | Pending |
