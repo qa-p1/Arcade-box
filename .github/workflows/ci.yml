@@ -22,7 +22,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-24.04
+            bundle: appimage
+            installer: Arcade-box/target/release/bundle/appimage/*.AppImage
+          - os: windows-latest
+            bundle: nsis
+            installer: Arcade-box/target/release/bundle/nsis/*-setup.exe
+          - os: macos-latest
+            bundle: dmg
+            installer: Arcade-box/target/release/bundle/dmg/*.dmg
     steps:
       - uses: actions/checkout@v7
         with:
@@ -75,3 +84,16 @@ jobs:
         run: python catalog/render_tool_matrix.py --check
       - name: Check locked license inventory
         run: python scripts/license_inventory.py --check
+      - name: Stage the CLI and trusted plugin worker
+        run: python scripts/prepare-bundle.py
+      - name: Install the pinned Tauri bundler
+        run: npm install --prefix target/tauri-cli --cache target/npm-cache --no-audit --no-fund @tauri-apps/cli@2.12.1
+      - name: Build the installer
+        working-directory: Arcade-box/apps/desktop/src-tauri
+        run: node ../../../target/tauri-cli/node_modules/@tauri-apps/cli/tauri.js build --ci --config tauri.bundle.conf.json --bundles ${{ matrix.bundle }}
+      - name: Upload the installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: arcade-box-${{ matrix.bundle }}
+          if-no-files-found: error
+          path: ${{ matrix.installer }}

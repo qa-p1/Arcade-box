@@ -15,3 +15,6 @@ __pycache__/
 # Local secrets (Groq API key)
 .env
 .env.*
+
+# Generated Tauri sidecars, staged only for installer builds.
+/apps/desktop/src-tauri/binaries/

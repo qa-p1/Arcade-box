@@ -1,0 +1,13 @@
+{
+  "bundle": {
+    "externalBin": [
+      "binaries/arcade-box",
+      "binaries/arcade-plugin-worker"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
+  }
+}

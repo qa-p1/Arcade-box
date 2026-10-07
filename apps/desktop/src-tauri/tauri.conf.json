@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "identifier": "dev.arcadebox.app",
   "build": {
-    "beforeDevCommand": "npm run dev --prefix ../frontend",
-    "beforeBuildCommand": "npm run build --prefix ../frontend",
+    "beforeDevCommand": "npm run dev --prefix frontend",
+    "beforeBuildCommand": "npm run build --prefix frontend",
     "devUrl": "http://localhost:1420",
     "frontendDist": "../frontend/dist"
   },
@@ -34,10 +34,15 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": [
+      "nsis",
+      "appimage",
+      "dmg"
+    ],
     "icon": ["icons/icon.png", "icons/icon.ico", "icons/icon.icns"],
     "macOS": {
-      "infoPlist": "Info.plist"
+      "infoPlist": "Info.plist",
+      "minimumSystemVersion": "14.0"
     }
   }
 }
