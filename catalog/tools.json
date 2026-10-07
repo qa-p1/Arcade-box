@@ -12347,7 +12347,7 @@
       "version": "0.1.0",
       "apiVersion": "1",
       "name": "Screen Recorder",
-      "description": "Record a user-selected display or window with local platform capture and save a video artifact.",
+      "description": "Record an X11 display or a display or window chosen through the native platform picker, then save a local video artifact.",
       "category": "Screen & Capture",
       "aliases": [
         "record screen",
@@ -12376,12 +12376,12 @@
       "execution": {
         "runtime": "builtin"
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "conditional",
         "wayland": "conditional",
-        "x11": "conditional"
+        "x11": "implemented"
       }
     },
     {

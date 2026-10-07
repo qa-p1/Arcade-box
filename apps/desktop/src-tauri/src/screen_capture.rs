@@ -323,7 +323,12 @@ impl ScreenRecorder {
             } else if state.finalizing {
                 "Finalizing the recording and saving the video…".into()
             } else if recording {
-                "Screen recording is active. Stop it to finalize the video.".into()
+                state
+                    .session
+                    .as_ref()
+                    .map(RecordingSession::message)
+                    .unwrap_or("Screen recording is active. Stop it to finalize the video.")
+                    .into()
             } else if recorder_build_available() {
                 "Ready to record a user-selected screen or window.".into()
             } else {
@@ -364,6 +369,27 @@ impl RecordingSession {
             Self::Mac(session) => &session.job,
             #[cfg(target_os = "windows")]
             Self::Windows(session) => &session.job,
+        }
+    }
+
+    fn message(&self) -> &'static str {
+        match self {
+            #[cfg(target_os = "linux")]
+            Self::Linux(session) if session.capture_mode == "x11-display" => {
+                "Recording the full X11 display. Stop it to save a WebM video, or discard it."
+            }
+            #[cfg(target_os = "linux")]
+            Self::Linux(_) => {
+                "Recording the screen or window selected in the Wayland portal. Stop it to save a WebM video, or discard it."
+            }
+            #[cfg(target_os = "macos")]
+            Self::Mac(_) => {
+                "Recording the selected screen or window. Stop it to save the video, or discard it."
+            }
+            #[cfg(target_os = "windows")]
+            Self::Windows(_) => {
+                "Recording the selected screen or window. Stop it to save the video, or discard it."
+            }
         }
     }
 }
@@ -454,6 +480,9 @@ pub async fn start_screen_recording(
     state.starting = false;
     match result {
         Ok(Some(session)) => {
+            let _ = session
+                .job()
+                .update(Some(0.0), Some(session.message().to_owned()));
             state.session = Some(session);
             drop(state);
             watch_job_cancellation(recorder.clone());
@@ -495,6 +524,7 @@ pub async fn stop_screen_recording(
     };
 
     let job = session.job().clone();
+    let _ = job.update(Some(0.0), Some("Finalizing the screen recording…".into()));
     let result = match session {
         #[cfg(target_os = "linux")]
         RecordingSession::Linux(session) => stop_linux_recording(session, runtime).await,
@@ -533,6 +563,7 @@ pub async fn cancel_screen_recording(
         session
     };
     let job = session.job().clone();
+    let _ = job.update(Some(0.0), Some("Discarding the partial recording…".into()));
     let cancel_result = match session {
         #[cfg(target_os = "linux")]
         RecordingSession::Linux(session) => cancel_linux_recording(session).await,
@@ -596,6 +627,7 @@ struct LinuxRecordingSession {
     output_path: PathBuf,
     provider_path: PathBuf,
     provider_version: String,
+    capture_mode: &'static str,
     started_at: std::time::Instant,
     job: arcade_core::jobs::ExternalJobHandle,
 }
@@ -637,6 +669,24 @@ struct GStreamerProvider {
 async fn linux_recording_capability() -> (bool, &'static str) {
     use ashpd::desktop::screencast::{Screencast, SourceType};
 
+    if linux_uses_x11_capture() {
+        if std::env::var_os("DISPLAY").is_none() {
+            return (false, "No X11 display is available for screen recording.");
+        }
+        let provider = tauri::async_runtime::spawn_blocking(probe_gstreamer_x11_provider).await;
+        return if matches!(provider, Ok(Ok(_))) {
+            (
+                true,
+                "X11 display recording is available through GStreamer. Stop the recording to save a WebM video.",
+            )
+        } else {
+            (
+                false,
+                "X11 recording needs GStreamer with ximagesrc, vp8enc and WebM support.",
+            )
+        };
+    }
+
     let provider = tauri::async_runtime::spawn_blocking(probe_gstreamer_provider).await;
     let Ok(Ok(_provider)) = provider else {
         return (
@@ -670,6 +720,15 @@ async fn linux_recording_capability() -> (bool, &'static str) {
             false,
             "The XDG ScreenCast portal could not report capture capabilities.",
         ),
+    }
+}
+
+#[cfg(target_os = "linux")]
+fn linux_uses_x11_capture() -> bool {
+    match std::env::var("XDG_SESSION_TYPE") {
+        Ok(session) if session.eq_ignore_ascii_case("wayland") => false,
+        Ok(session) if session.eq_ignore_ascii_case("x11") => true,
+        _ => std::env::var_os("DISPLAY").is_some() && std::env::var_os("WAYLAND_DISPLAY").is_none(),
     }
 }
 
@@ -712,10 +771,7 @@ async fn windows_recording_capability() -> (bool, &'static str) {
 
 #[cfg(target_os = "linux")]
 async fn cancel_linux_recording(mut session: LinuxRecordingSession) -> Result<(), String> {
-    let portal_session = session
-        .portal_session
-        .take()
-        .ok_or("The ScreenCast portal session is already closed")?;
+    let portal_session = session.portal_session.take();
     let process_result = tauri::async_runtime::spawn_blocking(move || {
         let kill_result = session.child.kill();
         let wait_result = session.child.wait();
@@ -726,12 +782,14 @@ async fn cancel_linux_recording(mut session: LinuxRecordingSession) -> Result<()
     })
     .await
     .map_err(|error| format!("Could not cancel the screen recording: {error}"))?;
-    let close_result = portal_session
-        .close()
-        .await
-        .map_err(|error| format!("Could not close the ScreenCast portal session: {error}"));
     process_result?;
-    close_result
+    if let Some(portal_session) = portal_session {
+        portal_session
+            .close()
+            .await
+            .map_err(|error| format!("Could not close the ScreenCast portal session: {error}"))?;
+    }
+    Ok(())
 }
 
 #[cfg(target_os = "macos")]
@@ -1223,6 +1281,16 @@ fn recording_result(selected: SelectedFile, provider: &str, capture_mode: &str) 
 
 #[cfg(target_os = "linux")]
 fn probe_gstreamer_provider() -> Result<GStreamerProvider, String> {
+    probe_gstreamer_provider_for("pipewiresrc")
+}
+
+#[cfg(target_os = "linux")]
+fn probe_gstreamer_x11_provider() -> Result<GStreamerProvider, String> {
+    probe_gstreamer_provider_for("ximagesrc")
+}
+
+#[cfg(target_os = "linux")]
+fn probe_gstreamer_provider_for(source: &str) -> Result<GStreamerProvider, String> {
     let launch = resolve_executable("gst-launch-1.0")?;
     let inspect = resolve_executable("gst-inspect-1.0")?;
     let output = std::process::Command::new(&launch)
@@ -1248,7 +1316,7 @@ fn probe_gstreamer_provider() -> Result<GStreamerProvider, String> {
             "The discovered gst-launch executable did not identify as GStreamer".to_owned()
         })?
         .to_owned();
-    for element in ["pipewiresrc", "videoconvert", "vp8enc", "webmmux", "fdsink"] {
+    for element in [source, "videoconvert", "vp8enc", "webmmux", "fdsink"] {
         let exists = std::process::Command::new(&inspect)
             .arg("--exists")
             .arg(element)
@@ -1292,6 +1360,10 @@ async fn start_linux_recording(
     runtime: std::sync::Arc<Arcade>,
     job: arcade_core::jobs::ExternalJobHandle,
 ) -> Result<Option<LinuxRecordingSession>, String> {
+    if linux_uses_x11_capture() {
+        return start_linux_x11_recording(runtime, job).await;
+    }
+
     use ashpd::desktop::{
         PersistMode,
         screencast::{CursorMode, Screencast, SelectSourcesOptions, SourceType},
@@ -1390,6 +1462,41 @@ async fn start_linux_recording(
         output_path,
         provider_path: provider.launch,
         provider_version: provider.version,
+        capture_mode: "xdg-portal-pipewire",
+        started_at: std::time::Instant::now(),
+        job,
+    }))
+}
+
+#[cfg(target_os = "linux")]
+async fn start_linux_x11_recording(
+    runtime: std::sync::Arc<Arcade>,
+    job: arcade_core::jobs::ExternalJobHandle,
+) -> Result<Option<LinuxRecordingSession>, String> {
+    let display = std::env::var("DISPLAY")
+        .map_err(|_| "No X11 display is available for screen recording".to_owned())?;
+    let provider = tauri::async_runtime::spawn_blocking(probe_gstreamer_x11_provider)
+        .await
+        .map_err(|error| format!("GStreamer capability check stopped unexpectedly: {error}"))??;
+    let staging = tempfile::Builder::new()
+        .prefix("arcade-screen-recording-")
+        .tempdir_in(runtime.artifact_staging_root())
+        .map_err(|error| format!("Could not create a private recording workspace: {error}"))?;
+    let output_path = staging.path().join("screen-recording.webm");
+    let file = create_private_output(&output_path)?;
+    let (child, provider) = tauri::async_runtime::spawn_blocking(move || {
+        start_gstreamer_x11_process(&provider.launch, &display, file).map(|child| (child, provider))
+    })
+    .await
+    .map_err(|error| format!("The GStreamer process could not start: {error}"))??;
+    Ok(Some(LinuxRecordingSession {
+        portal_session: None,
+        child,
+        _staging: staging,
+        output_path,
+        provider_path: provider.launch,
+        provider_version: provider.version,
+        capture_mode: "x11-display",
         started_at: std::time::Instant::now(),
         job,
     }))
@@ -1426,42 +1533,79 @@ fn start_gstreamer_process(
     remote: std::os::fd::OwnedFd,
     output: fs::File,
 ) -> Result<std::process::Child, String> {
+    let mut args = vec!["-e".into(), "pipewiresrc".into(), "fd=3".into()];
+    args.push(format!("path={node_id}"));
+    args.extend(gstreamer_recording_args());
+    start_gstreamer_process_with_args(launch, args, Some(remote), output)
+}
+
+#[cfg(target_os = "linux")]
+fn start_gstreamer_x11_process(
+    launch: &std::path::Path,
+    display: &str,
+    output: fs::File,
+) -> Result<std::process::Child, String> {
+    let mut args = vec![
+        "-e".into(),
+        "ximagesrc".into(),
+        format!("display-name={display}"),
+        "use-damage=false".into(),
+        "do-timestamp=true".into(),
+    ];
+    args.extend(gstreamer_recording_args());
+    start_gstreamer_process_with_args(launch, args, None, output)
+}
+
+#[cfg(target_os = "linux")]
+fn gstreamer_recording_args() -> Vec<String> {
+    [
+        "!",
+        "queue",
+        "max-size-buffers=12",
+        "max-size-time=0",
+        "max-size-bytes=0",
+        "leaky=downstream",
+        "!",
+        "videoconvert",
+        "!",
+        "video/x-raw,framerate=30/1",
+        "!",
+        "vp8enc",
+        "deadline=1",
+        "cpu-used=8",
+        "threads=2",
+        "target-bitrate=4000000",
+        "keyframe-max-dist=60",
+        "!",
+        "webmmux",
+        "!",
+        "fdsink",
+        "fd=4",
+        "sync=false",
+    ]
+    .map(str::to_owned)
+    .to_vec()
+}
+
+#[cfg(target_os = "linux")]
+fn start_gstreamer_process_with_args(
+    launch: &std::path::Path,
+    args: Vec<String>,
+    remote: Option<std::os::fd::OwnedFd>,
+    output: fs::File,
+) -> Result<std::process::Child, String> {
     use std::os::fd::AsRawFd;
     use std::os::unix::process::CommandExt;
-    let remote_for_child = duplicate_fd_for_exec(remote.as_raw_fd())?;
+    let remote_for_child = remote
+        .as_ref()
+        .map(|remote| duplicate_fd_for_exec(remote.as_raw_fd()))
+        .transpose()?;
     let output_for_child = duplicate_fd_for_exec(output.as_raw_fd())?;
-    let remote_fd = remote_for_child.as_raw_fd();
+    let remote_fd = remote_for_child.as_ref().map(AsRawFd::as_raw_fd);
     let output_fd = output_for_child.as_raw_fd();
     let mut command = std::process::Command::new(launch);
     command
-        .args(["-e", "pipewiresrc", "fd=3"])
-        .arg(format!("path={node_id}"))
-        .args([
-            "do-timestamp=true",
-            "!",
-            "queue",
-            "max-size-buffers=12",
-            "max-size-time=0",
-            "max-size-bytes=0",
-            "leaky=downstream",
-            "!",
-            "videoconvert",
-            "!",
-            "video/x-raw,framerate=30/1",
-            "!",
-            "vp8enc",
-            "deadline=1",
-            "cpu-used=8",
-            "threads=2",
-            "target-bitrate=4000000",
-            "keyframe-max-dist=60",
-            "!",
-            "webmmux",
-            "!",
-            "fdsink",
-            "fd=4",
-            "sync=false",
-        ])
+        .args(args)
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::null())
         .env_remove("GST_PLUGIN_PATH")
@@ -1472,7 +1616,7 @@ fn start_gstreamer_process(
     // explicitly granted handles inheritable by the encoder process.
     unsafe {
         command.pre_exec(move || {
-            if libc::dup2(remote_fd, 3) < 0 || libc::dup2(output_fd, 4) < 0 {
+            if remote_fd.is_some_and(|fd| libc::dup2(fd, 3) < 0) || libc::dup2(output_fd, 4) < 0 {
                 return Err(std::io::Error::last_os_error());
             }
             Ok(())
@@ -1508,10 +1652,8 @@ async fn stop_linux_recording(
     mut session: LinuxRecordingSession,
     runtime: std::sync::Arc<Arcade>,
 ) -> Result<ToolResult, String> {
-    let portal_session = session
-        .portal_session
-        .take()
-        .ok_or("The ScreenCast portal session is already closed")?;
+    let portal_session = session.portal_session.take();
+    let capture_mode = session.capture_mode;
     let finalization = tauri::async_runtime::spawn_blocking(move || {
         let result = finish_gstreamer_process(&mut session.child);
         if let Err(error) = result {
@@ -1533,7 +1675,7 @@ async fn stop_linux_recording(
         let mut result = recording_result(
             selected,
             &session.provider_path.display().to_string(),
-            "xdg-portal-pipewire",
+            capture_mode,
         );
         result
             .metadata
@@ -1543,12 +1685,13 @@ async fn stop_linux_recording(
     })
     .await
     .map_err(|error| format!("Screen recording finalization stopped unexpectedly: {error}"))?;
-    let close_result = portal_session.close().await;
-    if let Err(error) = close_result {
-        if finalization.is_ok() {
-            return Err(format!(
-                "The video was saved, but the portal session did not close cleanly: {error}"
-            ));
+    if let Some(portal_session) = portal_session {
+        if let Err(error) = portal_session.close().await {
+            if finalization.is_ok() {
+                return Err(format!(
+                    "The video was saved, but the portal session did not close cleanly: {error}"
+                ));
+            }
         }
     }
     finalization
