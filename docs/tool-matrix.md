@@ -14,7 +14,7 @@ Generated from [`catalog/tools.json`](../catalog/tools.json) by `python3 catalog
 | arcade.pdf.protect | implemented | PDF | pdf.qpdf | LOCAL | conditional | conditional | conditional | conditional | file/pdf → file/pdf | Pending |
 | arcade.pdf.images-to-pdf | implemented | PDF | pdf.create | LOCAL | conditional | conditional | conditional | conditional | file/image[] → file/pdf | Pending |
 | arcade.pdf.pdf-to-images | implemented | PDF | pdf.render | LOCAL | conditional | conditional | conditional | conditional | file/pdf → file/image[] | `arcade-core/src/pdf.rs`: `installed_poppler_extracts_metadata_and_renders_pdf_pages` |
-| arcade.pdf.convert | partial | PDF | office.libreoffice | LOCAL | conditional | conditional | conditional | conditional | file/document, file/spreadsheet → file/pdf | Pending |
+| arcade.pdf.convert | implemented | PDF | office.libreoffice | LOCAL | conditional | conditional | conditional | conditional | file/document, file/spreadsheet → file/pdf | Pending |
 | arcade.pdf.extract | implemented | PDF | pdf.text, pdf.info, pdf.images, pdf.attachments | LOCAL | conditional | conditional | conditional | conditional | file/pdf → structured/pdf-extraction, file/image, file/octet-stream | `arcade-core/src/pdf.rs`: `installed_poppler_extracts_embedded_images_as_granted_files`, `installed_poppler_extracts_attachments_to_generated_non_overwriting_files` |
 | arcade.pdf.ocr | implemented | PDF | pdf.ocrmypdf | LOCAL | conditional | conditional | conditional | conditional | file/pdf → file/pdf | Pending |
 | arcade.image.convert | implemented | Images | image.vips | LOCAL | conditional | conditional | conditional | conditional | file/image → file/image | `arcade-core/src/image.rs`: `installed_vips_converts_and_resizes_real_images` |
@@ -108,8 +108,8 @@ Generated from [`catalog/tools.json`](../catalog/tools.json) by `python3 catalog
 | arcade.screen.color | implemented | Screen & Capture | platform.screenshot | LOCAL | conditional | conditional | conditional | conditional | screen/region → structured/color | Pending |
 | arcade.screen.ruler | implemented | Screen & Capture | platform.screenshot, platform.overlay | LOCAL | conditional | conditional | conditional | conditional | screen/region → structured/screen-measurement | Pending |
 | arcade.screen.pin | implemented | Screen & Capture | platform.screenshot, platform.window | LOCAL | conditional | conditional | conditional | conditional | screen/region → window/pinned-image | Pending |
-| arcade.system.clipboard-history | partial | System | platform.clipboard, storage.sqlite | LOCAL | conditional | conditional | partial | conditional | clipboard/item → clipboard/item[] | Pending |
-| arcade.system.paste-plain | partial | System | platform.clipboard, platform.shortcut | LOCAL | conditional | conditional | unsupported | conditional | clipboard/text → clipboard/text | Pending |
-| arcade.system.window-pin | partial | System | platform.window | LOCAL | conditional | unsupported (no API for other apps' windows) | unsupported | conditional |  → structured/window-pin | Pending |
+| arcade.system.clipboard-history | implemented | System | platform.clipboard, storage.sqlite | LOCAL | conditional | conditional | partial | conditional | clipboard/item → clipboard/item[] | Pending |
+| arcade.system.paste-plain | implemented | System | platform.clipboard, platform.shortcut | LOCAL | conditional | conditional | unsupported | conditional | clipboard/text → clipboard/text | Pending |
+| arcade.system.window-pin | implemented | System | platform.window | LOCAL | conditional | unsupported (no API for other apps' windows) | unsupported | conditional |  → structured/window-pin | Pending |
 | arcade.system.process | implemented | System | platform.process | LOCAL | implemented | implemented | implemented | implemented | text/plain → structured/process-list | Pending |
 | arcade.system.system-info | implemented | System | platform.system-info | LOCAL | implemented | implemented | implemented | implemented |  → structured/system-info | Pending |

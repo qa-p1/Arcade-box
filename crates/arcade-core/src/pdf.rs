@@ -1886,7 +1886,7 @@ fn convert_document(
     let [input] = request.inputs.as_slice() else {
         return Err("Select one document through Arcade Box".into());
     };
-    if input.kind != ValueKind::Artifact || input.mime != "file/document" {
+    if !is_convertible_document_input(input) {
         return Err("Select a supported document file through Arcade Box".into());
     }
     let source = grants
@@ -1921,7 +1921,7 @@ fn convert_document(
         temp.path().as_os_str().to_os_string(),
         staged_input.as_os_str().to_os_string(),
     ];
-    run_provider(
+    let output = run_provider(
         &provider.executable_path,
         args,
         Some(temp.path()),
@@ -1929,6 +1929,14 @@ fn convert_document(
         "convert the document to PDF",
         2 * 1024 * 1024,
     )?;
+    if !output.status.success() {
+        let detail = concise(&String::from_utf8_lossy(&output.stderr));
+        return Err(if detail.is_empty() {
+            "LibreOffice could not convert the selected document to PDF".into()
+        } else {
+            format!("LibreOffice could not convert the selected document to PDF: {detail}")
+        });
+    }
     let staged = temp.path().join(format!("input.pdf"));
     if !staged.is_file() {
         return Err("LibreOffice finished without creating a PDF".into());
@@ -1952,6 +1960,11 @@ fn convert_document(
         .metadata
         .insert("providerVersion".into(), json!(provider.version));
     Ok(result)
+}
+
+fn is_convertible_document_input(input: &ToolValue) -> bool {
+    input.kind == ValueKind::Artifact
+        && matches!(input.mime.as_str(), "file/document" | "file/spreadsheet")
 }
 
 fn selected_pdf(request: &ToolRequest, grants: &FileGrants) -> Result<PathBuf, String> {
@@ -2849,6 +2862,23 @@ fn concise(detail: &str) -> String {
 mod tests {
     use super::*;
     use std::{fs, io::Write};
+
+    #[test]
+    fn document_conversion_accepts_documents_and_spreadsheets() {
+        let input = |mime: &str| ToolValue {
+            kind: ValueKind::Artifact,
+            value: "grant".into(),
+            mime: mime.into(),
+        };
+        assert!(is_convertible_document_input(&input("file/document")));
+        assert!(is_convertible_document_input(&input("file/spreadsheet")));
+        assert!(!is_convertible_document_input(&input("file/pdf")));
+        assert!(!is_convertible_document_input(&ToolValue {
+            kind: ValueKind::Text,
+            value: "text".into(),
+            mime: "file/document".into(),
+        }));
+    }
 
     #[test]
     fn pdf_optimization_modes_set_explicit_quality_and_reject_bad_values() {

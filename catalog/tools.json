@@ -1301,7 +1301,7 @@
       "execution": {
         "runtime": "builtin"
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "conditional",
@@ -12659,7 +12659,7 @@
       "execution": {
         "runtime": "builtin"
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "conditional",
@@ -12709,7 +12709,7 @@
       "execution": {
         "runtime": "builtin"
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "conditional",
@@ -12764,7 +12764,7 @@
         },
         "controls": []
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "unsupported (no API for other apps' windows)",
