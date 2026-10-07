@@ -6,7 +6,7 @@ Discovery checks normal `PATH`, known platform application/package locations, an
 
 | Capability family | Engine | Reuse and fallback policy | Status |
 |---|---|---|---|
-| Audio/video and probing | FFmpeg / ffprobe | Reuse a compatible system installation. Probe identity and version, and record the encoders (`encoder:libx264`, `libx265`, `libsvtav1`/`libaom-av1`, `libvpx-vp9`, `prores_ks`, `mjpeg`, `libwebp_anim`, …), muxers (`mux:mp4`, `matroska`, `webm`, `mov`, …), and filters (`filter:subtitles`, `palettegen`, `loudnorm`, `silencedetect`, `rubberband`, `arnndn`, `afftdn`, `stereotools`, `drawtext`, …) that the tools and form choices require. | Implemented on Linux; Windows/macOS pending |
+| Audio/video and probing | FFmpeg / ffprobe | Reuse a compatible system installation. Probe identity and version, and record the encoders (`encoder:libx264`, `libx265`, `libsvtav1`/`libaom-av1`, `libvpx-vp9`, `prores_ks`, `mjpeg`, `libwebp_anim`, …), muxers (`mux:mp4`, `matroska`, `webm`, `mov`, …), and filters (`filter:subtitles`, `palettegen`, `loudnorm`, `silencedetect`, `rubberband`, `arnndn`, `afftdn`, `stereotools`, `drawtext`, …) that the tools and form choices require. | Implemented on Linux; Windows/macOS build only (CI defined, not run here) |
 | Public media acquisition | yt-dlp | Reuse a compatible system version and its JS runtime. Used by the media downloader, video transcript, and thumbnail tools. | Implemented on Linux |
 | Images | libvips 8.14+ | Reuse a compatible system `vips`/`vipsheader` pair; probe the installed loaders and savers (PNG, JPEG, WebP, TIFF, HEIF/AVIF, GIF, BMP). | Implemented on Linux |
 | Image composition | ImageMagick 7 (`magick`) | Combine, watermark, favicon, passport photo, and PDF signature images. Staged inputs use fixed names and resource limits; user text cannot read files or expand escapes. | Implemented on Linux |
@@ -27,6 +27,19 @@ Discovery checks normal `PATH`, known platform application/package locations, an
 | Image upscaling | Real-ESRGAN NCNN/Vulkan | Reuse an executable from `PATH` or `<app data>/tools/realesrgan` with its x4plus `.param`/`.bin` pair. | Implemented on Linux |
 
 `<app data>` is the platform application data folder (`~/.local/share/dev.arcadebox.app` on Linux). Discovery also searches `~/.local/bin` and each folder under `<app data>/tools`.
+Windows probes PATH, both Program Files roots, `%LOCALAPPDATA%\Microsoft\WinGet\Links`
+and installed WinGet package directories, plus `~/scoop/shims` and `~/scoop/apps/*/current`.
+macOS probes both Homebrew prefixes (`/opt/homebrew/bin`, `/usr/local/bin`) and
+installed `/Applications/*.app/Contents/MacOS` executables. Candidate construction
+is a pure function tested on Linux; native Windows/macOS probes are **build only
+(CI defined, not run here)**. Every candidate still passes the existing bounded
+identity/version/capability probes; directory discovery grants no execution authority.
+
+Arcade Lens provides `ocr.lens` and `screen.select.lens` when installed, enabled
+and available. Automatic OCR prefers Lens on Windows/macOS and Tesseract on Linux;
+explicit language packs remain a Tesseract operation. Screen selection delegates
+to Lens on all platforms when present. Lens has no recorder: recording remains
+Box's own platform implementation. See [Arcade Link](arcade-link.md).
 
 ## Groq API key
 

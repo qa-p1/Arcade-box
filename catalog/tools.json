@@ -12767,7 +12767,7 @@
       "status": "partial",
       "platforms": {
         "windows": "conditional",
-        "macos": "unsupported",
+        "macos": "unsupported (no API for other apps' windows)",
         "wayland": "unsupported",
         "x11": "conditional"
       }

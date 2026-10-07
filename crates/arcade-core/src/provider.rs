@@ -1,6 +1,8 @@
 //! System-first provider discovery. Discovery never invokes a shell or accepts
 //! an executable name from an untrusted tool request.
 
+mod paths;
+
 use crate::process::{self, ProcessSpec};
 use serde::{Deserialize, Serialize};
 use std::{
@@ -90,9 +92,7 @@ pub fn discover_ffmpeg(user_binary: Option<&Path>) -> Vec<ProviderInfo> {
     if let Some(path) = user_binary {
         candidates.push((path.to_path_buf(), "user-configured"));
     }
-    for directory in system_search_directories() {
-        candidates.push((directory.join(binary_name("ffmpeg")), "system"));
-    }
+    candidates.extend(executable_candidates("ffmpeg"));
     let mut seen = HashSet::new();
     let mut providers = Vec::new();
     for (candidate, source) in candidates {
@@ -121,19 +121,7 @@ pub fn discover_qpdf(user_binary: Option<&Path>) -> Vec<ProviderInfo> {
     if let Some(path) = user_binary {
         candidates.push((path.to_path_buf(), "user-configured"));
     }
-    for directory in system_search_directories() {
-        candidates.push((directory.join(binary_name("qpdf")), "system"));
-    }
-    #[cfg(windows)]
-    if let Some(program_files) = env::var_os("ProgramFiles") {
-        candidates.push((
-            PathBuf::from(program_files)
-                .join("qpdf")
-                .join("bin")
-                .join("qpdf.exe"),
-            "system",
-        ));
-    }
+    candidates.extend(executable_candidates("qpdf"));
     let mut seen = HashSet::new();
     let mut providers = Vec::new();
     for (candidate, source) in candidates {
@@ -161,9 +149,7 @@ pub fn discover_vips(user_binary: Option<&Path>) -> Vec<ProviderInfo> {
     if let Some(path) = user_binary {
         candidates.push((path.to_path_buf(), "user-configured"));
     }
-    for directory in system_search_directories() {
-        candidates.push((directory.join(binary_name("vips")), "system"));
-    }
+    candidates.extend(executable_candidates("vips"));
     let mut seen = HashSet::new();
     let mut providers = Vec::new();
     for (candidate, source) in candidates {
@@ -489,19 +475,6 @@ pub fn discover_libreoffice() -> Vec<ProviderInfo> {
     if let Some(path) = find_system_executable("libreoffice") {
         candidates.push(path);
     }
-    #[cfg(windows)]
-    if let Some(program_files) = env::var_os("ProgramFiles") {
-        candidates.push(
-            PathBuf::from(program_files)
-                .join("LibreOffice")
-                .join("program")
-                .join("soffice.exe"),
-        );
-    }
-    #[cfg(target_os = "macos")]
-    candidates.push(PathBuf::from(
-        "/Applications/LibreOffice.app/Contents/MacOS/soffice",
-    ));
     let mut seen = HashSet::new();
     candidates
         .into_iter()
@@ -540,28 +513,40 @@ fn discover_identified_command(
     version_args: &[&str],
     expected_identity: &str,
 ) -> Option<ProviderInfo> {
-    let executable_path = find_system_executable(stem)?;
-    let warning = suspicious_path(&executable_path);
-    let output = command_output_with_stderr(&executable_path, version_args, 64 * 1024)?;
-    let lower = output.to_ascii_lowercase();
-    if !lower.contains(expected_identity) || !lower.bytes().any(|byte| byte.is_ascii_digit()) {
-        return None;
+    let mut seen = HashSet::new();
+    for (candidate, source) in executable_candidates(stem) {
+        let Ok(executable_path) = fs::canonicalize(candidate) else {
+            continue;
+        };
+        if !seen.insert(executable_path.clone()) || !is_executable_file(&executable_path) {
+            continue;
+        }
+        let Some(output) = command_output_with_stderr(&executable_path, version_args, 64 * 1024)
+        else {
+            continue;
+        };
+        let lower = output.to_ascii_lowercase();
+        if !lower.contains(expected_identity) || !lower.bytes().any(|byte| byte.is_ascii_digit()) {
+            continue;
+        }
+        let version = output.lines().next()?.trim().to_owned();
+        let warning = suspicious_path(&executable_path);
+        let compatible = warning.is_none();
+        return Some(ProviderInfo {
+            capability: capability.into(),
+            source: source.into(),
+            executable_path,
+            version,
+            compatible,
+            warning,
+            capabilities: if compatible {
+                vec![capability.replace('.', ":")]
+            } else {
+                vec![]
+            },
+        });
     }
-    let version = output.lines().next()?.trim().to_owned();
-    let compatible = warning.is_none();
-    Some(ProviderInfo {
-        capability: capability.into(),
-        source: "system".into(),
-        executable_path,
-        version,
-        compatible,
-        warning,
-        capabilities: if compatible {
-            vec![capability.replace('.', ":")]
-        } else {
-            vec![]
-        },
-    })
+    None
 }
 
 /// Discover a compatible system curl without trusting its basename alone.
@@ -665,30 +650,8 @@ fn user_tool_dirs() -> Vec<PathBuf> {
 /// Resolve a system executable candidate for platform adapters. Callers must
 /// still perform a safe identity/capability probe before invoking it.
 pub fn find_system_executable(stem: &str) -> Option<PathBuf> {
-    let mut candidates = Vec::new();
-    #[cfg(unix)]
-    candidates.extend(
-        [
-            "/usr/bin",
-            "/usr/local/bin",
-            "/opt/homebrew/bin",
-            "/opt/local/bin",
-        ]
-        .map(|dir| PathBuf::from(dir).join(binary_name(stem))),
-    );
-    #[cfg(windows)]
-    if let Some(root) = env::var_os("SystemRoot") {
-        candidates.push(PathBuf::from(root).join("System32").join(binary_name(stem)));
-    }
-    if let Some(path) = env::var_os("PATH") {
-        candidates.extend(env::split_paths(&path).map(|dir| dir.join(binary_name(stem))));
-    }
-    candidates.extend(
-        user_tool_dirs()
-            .into_iter()
-            .map(|dir| dir.join(binary_name(stem))),
-    );
-    for candidate in candidates {
+    let candidates = executable_candidates(stem);
+    for (candidate, _) in candidates {
         if let Ok(path) = fs::canonicalize(candidate) {
             if is_executable_file(&path) && suspicious_path(&path).is_none() {
                 return Some(path);
@@ -705,50 +668,7 @@ fn discover_versioned_command(
     help_args: &[&str],
     validate: impl Fn(&str) -> bool,
 ) -> Vec<ProviderInfo> {
-    let mut candidates = Vec::new();
-    #[cfg(unix)]
-    candidates.extend(
-        [
-            "/usr/bin",
-            "/usr/local/bin",
-            "/opt/homebrew/bin",
-            "/opt/local/bin",
-        ]
-        .map(|dir| (PathBuf::from(dir).join(binary_name(stem)), "system")),
-    );
-    #[cfg(windows)]
-    {
-        if let Some(system_root) = env::var_os("SystemRoot") {
-            candidates.push((
-                PathBuf::from(system_root)
-                    .join("System32")
-                    .join(binary_name(stem)),
-                "system",
-            ));
-        }
-        if let Some(program_files) = env::var_os("ProgramFiles") {
-            let root = PathBuf::from(program_files);
-            candidates.push((
-                root.join(stem).join("bin").join(binary_name(stem)),
-                "system",
-            ));
-            candidates.push((
-                root.join("Git")
-                    .join("mingw64")
-                    .join("bin")
-                    .join(binary_name(stem)),
-                "system",
-            ));
-        }
-    }
-    if let Some(path) = env::var_os("PATH") {
-        candidates.extend(env::split_paths(&path).map(|dir| (dir.join(binary_name(stem)), "path")));
-    }
-    candidates.extend(
-        user_tool_dirs()
-            .into_iter()
-            .map(|dir| (dir.join(binary_name(stem)), "user")),
-    );
+    let candidates = executable_candidates(stem);
     let mut seen = HashSet::new();
     let mut providers = Vec::new();
     for (candidate, source) in candidates {
@@ -1113,25 +1033,82 @@ fn binary_name(stem: &str) -> String {
     }
 }
 
-fn system_search_directories() -> Vec<PathBuf> {
-    let mut directories = Vec::new();
-    if let Some(path) = env::var_os("PATH") {
-        directories.extend(env::split_paths(&path));
-    }
-    #[cfg(unix)]
-    directories.extend(
-        [
-            "/usr/bin",
-            "/usr/local/bin",
-            "/opt/homebrew/bin",
-            "/opt/local/bin",
-        ]
-        .map(PathBuf::from),
-    );
+/// Read platform roots only when explicitly probing providers, on a worker.
+fn executable_candidates(stem: &str) -> Vec<(PathBuf, &'static str)> {
+    use paths::{Platform, Roots};
+    #[allow(unused_mut)]
+    let mut roots = Roots {
+        path: env::var_os("PATH")
+            .map(|p| env::split_paths(&p).collect())
+            .unwrap_or_default(),
+        managed: user_tool_dirs(),
+        ..Default::default()
+    };
     #[cfg(windows)]
-    if let Some(program_files) = env::var_os("ProgramFiles") {
-        directories.push(PathBuf::from(program_files).join("ffmpeg").join("bin"));
-    }
+    let platform = {
+        roots.program_files = ["ProgramFiles", "ProgramFiles(x86)"]
+            .into_iter()
+            .filter_map(env::var_os)
+            .map(PathBuf::from)
+            .collect();
+        roots.system_root = env::var_os("SystemRoot").map(PathBuf::from);
+        roots.local_app_data = env::var_os("LOCALAPPDATA").map(PathBuf::from);
+        roots.home = env::var_os("USERPROFILE")
+            .or_else(|| env::var_os("HOME"))
+            .map(PathBuf::from);
+        for root in &roots.program_files {
+            for directory in child_directories(root) {
+                roots.installed.push((directory.clone(), "system"));
+                roots.installed.extend(
+                    child_directories(&directory)
+                        .into_iter()
+                        .map(|p| (p, "system")),
+                );
+            }
+        }
+        if let Some(local) = &roots.local_app_data {
+            for package in child_directories(&local.join("Microsoft/WinGet/Packages")) {
+                roots.installed.push((package.clone(), "winget"));
+                roots.installed.extend(
+                    child_directories(&package)
+                        .into_iter()
+                        .map(|p| (p, "winget")),
+                );
+            }
+        }
+        if let Some(home) = &roots.home {
+            roots.installed.extend(
+                child_directories(&home.join("scoop/apps"))
+                    .into_iter()
+                    .map(|p| (p.join("current"), "scoop")),
+            );
+        }
+        Platform::Windows
+    };
+    #[cfg(target_os = "macos")]
+    let platform = {
+        roots.installed = child_directories(std::path::Path::new("/Applications"))
+            .into_iter()
+            .filter(|p| p.extension().is_some_and(|e| e == "app"))
+            .map(|p| (p, "application"))
+            .collect();
+        Platform::Macos
+    };
+    #[cfg(not(any(windows, target_os = "macos")))]
+    let platform = Platform::Linux;
+    paths::candidates(platform, stem, &roots)
+}
+
+#[cfg(any(windows, target_os = "macos"))]
+fn child_directories(root: &Path) -> Vec<PathBuf> {
+    let mut directories = fs::read_dir(root)
+        .into_iter()
+        .flatten()
+        .filter_map(Result::ok)
+        .map(|entry| entry.path())
+        .filter(|path| path.is_dir())
+        .collect::<Vec<_>>();
+    directories.sort();
     directories
 }
 

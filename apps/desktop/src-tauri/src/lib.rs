@@ -188,12 +188,25 @@ fn set_shortcut(
 
 #[tauri::command]
 fn list_tools(runtime: tauri::State<'_, Arc<Arcade>>) -> Vec<ToolManifest> {
-    runtime.list_tools()
+    runtime
+        .list_tools()
+        .into_iter()
+        .filter(desktop_tool_supported)
+        .collect()
+}
+
+fn desktop_tool_supported(tool: &ToolManifest) -> bool {
+    // macOS has no supported API to pin another application's window.
+    !(cfg!(target_os = "macos") && tool.id == "arcade.system.window-pin")
 }
 
 #[tauri::command]
 fn search_tools(query: String, runtime: tauri::State<'_, Arc<Arcade>>) -> Vec<ToolManifest> {
-    runtime.search_tools(&query)
+    runtime
+        .search_tools(&query)
+        .into_iter()
+        .filter(desktop_tool_supported)
+        .collect()
 }
 
 #[tauri::command]
