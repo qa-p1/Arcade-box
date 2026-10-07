@@ -459,6 +459,8 @@ fn execute_with_provider(
         }
         "arcade.image.redact" => {
             let rectangles = redaction_rectangles(&request.options, dimensions)?;
+            let fill_color =
+                redaction_fill_color(&provider.executable_path, &local_input, cancelled)?;
             let mask = temp.path().join("redacted.v");
             run_vips(
                 provider,
@@ -477,7 +479,7 @@ fn execute_with_provider(
                     vec![
                         "draw_rect".into(),
                         mask.as_os_str().to_os_string(),
-                        "0 0 0".into(),
+                        fill_color.clone().into(),
                         x.to_string().into(),
                         y.to_string().into(),
                         width.to_string().into(),
@@ -1216,6 +1218,18 @@ fn compare_images(
 }
 
 fn image_bands(vips: &Path, input: &Path, cancelled: &AtomicBool) -> Result<u32, String> {
+    let value = image_header_field(vips, input, "bands", cancelled)?;
+    value
+        .parse()
+        .map_err(|_| "libvips returned an invalid channel count".into())
+}
+
+fn image_header_field(
+    vips: &Path,
+    input: &Path,
+    field: &str,
+    cancelled: &AtomicBool,
+) -> Result<String, String> {
     let header = vips.with_file_name(if cfg!(windows) {
         "vipsheader.exe"
     } else {
@@ -1224,11 +1238,7 @@ fn image_bands(vips: &Path, input: &Path, cancelled: &AtomicBool) -> Result<u32,
     let output = process::run(
         &ProcessSpec {
             executable: header,
-            args: vec![
-                "-f".into(),
-                "bands".into(),
-                input.as_os_str().to_os_string(),
-            ],
+            args: vec!["-f".into(), field.into(), input.as_os_str().to_os_string()],
             current_dir: None,
             timeout: Duration::from_secs(10),
             output_limit: 64 * 1024,
@@ -1237,12 +1247,46 @@ fn image_bands(vips: &Path, input: &Path, cancelled: &AtomicBool) -> Result<u32,
     )
     .map_err(|error| error.to_string())?;
     if !output.status.success() {
-        return Err("Could not read image channel count".into());
+        return Err(format!("Could not read image {field}"));
     }
-    String::from_utf8_lossy(&output.stdout)
-        .trim()
-        .parse()
-        .map_err(|_| "libvips returned an invalid channel count".into())
+    Ok(String::from_utf8_lossy(&output.stdout).trim().to_owned())
+}
+
+fn redaction_fill_color(
+    vips: &Path,
+    input: &Path,
+    cancelled: &AtomicBool,
+) -> Result<String, String> {
+    let bands = image_bands(vips, input, cancelled)?;
+    let format = image_header_field(vips, input, "format", cancelled)?;
+    let max = if format.contains("VIPS_FORMAT_UCHAR") {
+        "255"
+    } else if format.contains("VIPS_FORMAT_USHORT") {
+        "65535"
+    } else if format.contains("VIPS_FORMAT_UINT") {
+        "4294967295"
+    } else if format.contains("VIPS_FORMAT_CHAR") {
+        "127"
+    } else if format.contains("VIPS_FORMAT_SHORT") {
+        "32767"
+    } else if format.contains("VIPS_FORMAT_INT") {
+        "2147483647"
+    } else if format.contains("VIPS_FORMAT_FLOAT") || format.contains("VIPS_FORMAT_DOUBLE") {
+        "1"
+    } else {
+        return Err(format!(
+            "Cannot redact this image pixel format safely: {format}"
+        ));
+    };
+    match bands {
+        1 => Ok("0".into()),
+        2 => Ok(format!("0 {max}")),
+        3 => Ok("0 0 0".into()),
+        4 => Ok(format!("0 0 0 {max}")),
+        _ => Err(format!(
+            "Image redaction supports one to four channels; this image has {bands}"
+        )),
+    }
 }
 
 fn scalar_vips(
@@ -2007,6 +2051,38 @@ mod tests {
         let pixels = ::image::open(redacted_path).unwrap().to_rgb8();
         assert_eq!(pixels.get_pixel(5, 4).0, [0, 0, 0]);
         assert_eq!(pixels.get_pixel(1, 1).0, [240, 0, 0]);
+
+        let rgba_source = temp.path().join("rgba.png");
+        ::image::ImageBuffer::<::image::Rgba<u16>, Vec<u16>>::from_pixel(
+            32,
+            24,
+            ::image::Rgba([50_000, 1_000, 2_000, 30_000]),
+        )
+        .save(&rgba_source)
+        .unwrap();
+        let rgba_grant = runtime.grants().grant(&rgba_source).unwrap();
+        let rgba_redacted = call(
+            "arcade.image.redact",
+            vec![rgba_grant.as_tool_value()],
+            json!({"x":4,"y":3,"width":8,"height":6}),
+        )
+        .unwrap();
+        assert_eq!(
+            rgba_redacted.status,
+            ResultStatus::Success,
+            "{:?}",
+            rgba_redacted.message
+        );
+        let rgba_path = runtime
+            .grants()
+            .resolve(&rgba_redacted.outputs[0].value)
+            .unwrap();
+        let rgba_pixels = ::image::open(rgba_path).unwrap().to_rgba16();
+        assert_eq!(rgba_pixels.get_pixel(5, 4).0, [0, 0, 0, u16::MAX]);
+        assert_eq!(
+            rgba_pixels.get_pixel(1, 1).0,
+            [50_000, 1_000, 2_000, 30_000]
+        );
 
         let multi_redacted = call(
             "arcade.image.redact",
