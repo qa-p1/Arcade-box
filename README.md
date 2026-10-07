@@ -39,6 +39,30 @@ Requirements: Node.js 24 or newer, npm, and the [Tauri 2 system prerequisites](h
 
 The script builds the frontend and embedded Tauri assets, builds the desktop and plugin worker, and launches the result. On Linux it installs the local build under `${XDG_DATA_HOME:-$HOME/.local/share}/arcade-box/local-build` and registers a desktop application entry under `${XDG_DATA_HOME:-$HOME/.local/share}/applications`; it does not edit shell profiles, autostart files, or compositor configuration. Re-run the script after changing frontend assets. Desktop invocation, portal behavior, and cross-platform interaction are still being verified; see the [platform matrix](docs/platform.md) for current evidence.
 
+## Works with other Arcade apps
+
+With installed, enabled peers, Box can use Arcade Lens for screen selection and
+OCR, preview results in Arcade Look, send them to your devices through Arcade
+Clipboard, and add tools, presets or pipelines to Arcade Wheel. Saved pipelines
+can combine peer actions with Box tools; the first stage may open a picker.
+Outbound/network/command effects need first-run approval. Connected apps settings
+control each connection. Box works on its own with its existing local tools and
+fallbacks. Lens has no recorder, so Box keeps its own screen recorder.
+
+[Arcade Link actions and pipelines](docs/arcade-link.md) describes the exposed and
+consumed actions, cancellation, input limits and version repair. Windows/macOS
+integration remains build only until native runs verify it; see the
+[platform evidence](docs/platform.md).
+
+## Installer builds
+
+CI builds NSIS (Windows), AppImage (Linux), and dmg (macOS), including the
+`arcade-box` CLI and trusted plugin worker beside the GUI. Successful CI builds
+on `main` feed the stable `v<version>` and rolling `nightly` release workflow.
+Every release includes `arcade-release.json` and `SHA256SUMS.txt` for Arcade Tools
+and manual verification. See [packaging](docs/packaging.md) for local commands
+and current validation limits.
+
 ## Check the MVP
 
 Run the real CLI smoke flow and Rust suite from the repository root:

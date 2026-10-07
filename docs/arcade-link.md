@@ -50,6 +50,32 @@ files are copied before processing and remain unchanged.
 {"action":"box.pipeline.run","options":{"pipeline":"upper-clean"},"inputs":[{"type":"text/plain","text":"hello"}]}
 ```
 
+## What Box consumes
+
+| Peer action | Box surface / behavior |
+|---|---|
+| `lens.capture` | Local screen tools and an interactive pipeline first stage; returns a selected region image. |
+| `lens.capture_and_act` | Ruler, image pin and color tools forward `options.mode` as `measure`, `pin` or `color`. |
+| `lens.recognize` | `ocr.lens`, requesting `ocrOnly: true`, with provider provenance. |
+| `lens.pin` | Pin a single image from the first result action row. |
+| `clipboard.pick` | Choose a history item for Box without writing the OS clipboard. |
+| `clipboard.add` | Confirmed Send to my devices ↗, and pipeline sinks; 16 MiB maximum, with Clipboard Private mode enforced by its owner. |
+| `look.preview` | Preview output files in Arcade Look. |
+| `wheel.add_action` | Add a tool, preset or saved pipeline; Wheel asks the user to choose a slot and confirm. |
+| `tools.install` | Connected apps Get buttons pass `options.app`; when Tools is absent, Get opens the app's GitHub releases page. |
+
+The pipeline editor can also use other peer actions that declare compatible
+Link input/output types and are installed, enabled, available on this platform
+and pinned to the saved action version. An unavailable or changed action hides
+the pipeline from `box.pipelines`; its saved card remains available for repair.
+Wheel, Lens and Look consume the live pipeline offers through `box.pipelines`
+and invoke them with `box.pipeline.run` and `options.pipeline`.
+
+The standard `app.status` response includes Box's app-defined
+`status.mode: "background" | "foreground"`, recording how this instance was
+started. `--background` starts to tray with no window; activation does not
+change the startup mode. Arcade Tools uses it when relaunching after updates.
+
 ## How requests run
 
 - **Running Box**: requests go through the same job manager as the Island,
@@ -124,8 +150,8 @@ when available. Ruler, pin and color hand over to `lens.capture_and_act` with
 `mode: measure`, `pin` or `color`. Lens handles all three hints directly. Captured PNGs are validated, copied
 into Box's normal artifact/grant boundary, and remain local. Without Lens, the
 native platform picker and screen tools keep their existing behavior. Lens's
-v1 capture API returns still images, so screen recording retains Box's native
-stream capture on every platform.
+capture API returns still images and Lens has no recorder, so screen recording
+retains Box's own platform recorder. Windows/macOS recording is build only.
 
 Clipboard history opens `clipboard.pick` when available; selection does not
 change the system clipboard. Without it, Box's own history view stays intact.
@@ -146,7 +172,11 @@ one-shot progress without a listener or manifest, new outputs without
 overwriting the selected input, cancellation without partial outputs,
 an unavailable engine's reason, and `box.open` showing the Island. The core
 tests verify that a delegated file grant is revoked after the job and on
-input preparation failure. Runtime checks use a private D-Bus session,
+input preparation failure. Real cross-app checks also drive Lens selection into
+resize 50% → WebP → Clipboard history, exercise remembered effect approval,
+cancellation and a peer crash, and repair a changed action version in the editor.
+Pure provider-path tests cover WinGet/scoop/Program Files and Homebrew/app bundles
+on Linux. Runtime checks use a private D-Bus session,
 Xvfb, and temporary HOME/XDG/Arcade directories.
 
 ## Platforms
