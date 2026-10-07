@@ -215,7 +215,7 @@ pub fn probe_providers() -> ProviderCache {
 }
 
 /// Probes only the providers `tool` needs (one-shot mode has no cache).
-fn probe_for(runtime: &Arcade, tool: &ToolManifest) -> ProviderCache {
+pub(crate) fn probe_for(runtime: &Arcade, tool: &ToolManifest) -> ProviderCache {
     let mut cache: ProviderCache = tool
         .providers
         .iter()
@@ -273,7 +273,10 @@ pub fn save_provider_cache(runtime: &Arcade, cache: &ProviderCache) -> bool {
 
 /// Why `tool` can't run here, from the cache. Providers Box can't check are
 /// treated as missing, so a peer never shows an entry that would fail.
-fn missing_provider(tool: &ToolManifest, cache: Option<&ProviderCache>) -> Option<String> {
+pub(crate) fn missing_provider(
+    tool: &ToolManifest,
+    cache: Option<&ProviderCache>,
+) -> Option<String> {
     for id in &tool.providers {
         if builtin_provider(id) {
             continue;
@@ -380,7 +383,7 @@ pub fn link_accepts(tool: &ToolManifest) -> Vec<String> {
 }
 
 /// The Link type of one of Box's output types.
-fn link_type_of_output(box_type: &str) -> String {
+pub(crate) fn link_type_of_output(box_type: &str) -> String {
     let base = box_type.trim_end_matches("[]");
     match base {
         "text/markdown" | "rows/csv" | "network/host" | "network/ip" => "text/plain".into(),
@@ -392,7 +395,7 @@ fn link_type_of_output(box_type: &str) -> String {
     }
 }
 
-fn effects(tool: &ToolManifest) -> Vec<String> {
+pub(crate) fn effects(tool: &ToolManifest) -> Vec<String> {
     let mut e = Vec::new();
     if tool
         .permissions
@@ -538,7 +541,9 @@ fn pipeline_offer(
         .first()
         .ok_or_else(|| LinkError::unavailable("the pipeline has no stages"))?;
     let tools = runtime.list_tools();
-    let first_tool = tools.iter().find(|t| t.id == first.tool_id).unwrap();
+    let first_info = first
+        .describe(runtime)
+        .map_err(|e| LinkError::unavailable(e.to_string()))?;
     let mut offer = PipelineOffer {
         id: pipeline.id.clone(),
         name: pipeline.name.clone(),
@@ -548,37 +553,43 @@ fn pipeline_offer(
             .iter()
             .any(|i| matches!(i, InputSource::External { .. }))
         {
-            link_accepts(first_tool)
+            if first.link.is_some() {
+                first_info.inputs.clone()
+            } else {
+                link_accepts(tools.iter().find(|t| t.id == first.tool_id).unwrap())
+            }
         } else {
             Vec::new()
         },
         produces: Vec::new(),
-        effects: Vec::new(),
-        interactive: false,
+        effects: pipeline
+            .effects(runtime)
+            .map_err(|e| LinkError::unavailable(e.to_string()))?,
+        interactive: first_info.interactive,
     };
     for node in order {
-        let tool = tools.iter().find(|t| t.id == node.tool_id).unwrap();
-        if tool.status != ImplementationStatus::Implemented
-            || tool.execution.get("runtime").and_then(Value::as_str) == Some("wasm")
-            || tool.id.starts_with("arcade.pipeline.")
-            || (!tool.inputs.is_empty() && link_accepts(tool).is_empty())
-        {
-            return Err(LinkError::unavailable(format!(
-                "{} can't run through other apps",
-                tool.name
-            )));
-        }
-        if let Some(reason) = missing_provider(tool, cache) {
-            return Err(LinkError::unavailable(reason));
-        }
-        for effect in effects(tool) {
-            if !offer.effects.contains(&effect) {
-                offer.effects.push(effect);
+        if node.link.is_none() {
+            let tool = tools.iter().find(|t| t.id == node.tool_id).unwrap();
+            if tool.status != ImplementationStatus::Implemented
+                || tool.execution.get("runtime").and_then(Value::as_str) == Some("wasm")
+                || (!tool.inputs.is_empty() && link_accepts(tool).is_empty())
+            {
+                return Err(LinkError::unavailable(format!(
+                    "{} can't run through other apps",
+                    tool.name
+                )));
+            }
+            if let Some(reason) = missing_provider(tool, cache) {
+                return Err(LinkError::unavailable(reason));
             }
         }
         if pipeline.output_nodes.contains(&node.id) {
-            for output in &tool.outputs {
-                let kind = link_type_of_output(output);
+            for output in node
+                .describe(runtime)
+                .map_err(|e| LinkError::unavailable(e.to_string()))?
+                .outputs
+            {
+                let kind = link_type_of_output(&output);
                 if !offer.produces.contains(&kind) {
                     offer.produces.push(kind);
                 }
@@ -645,7 +656,12 @@ pub fn resolve_pipeline<'a>(
         .into_iter()
         .find(|p| p.id == id)
         .ok_or_else(|| LinkError::unavailable(format!("pipeline {id} does not exist")))?;
-    pipeline_offer(runtime, &pipeline, cache)?;
+    let offer = pipeline_offer(runtime, &pipeline, cache)?;
+    if offer.interactive && !request.context.interactive {
+        return Err(LinkError::denied(
+            "This pipeline needs an interactive caller",
+        ));
+    }
     tools
         .iter()
         .find(|t| t.id == format!("arcade.pipeline.{id}"))
@@ -1020,6 +1036,32 @@ impl Handler for OneshotHandler {
     fn invoke(&self, request: InvokeRequest, ctx: &InvokeContext) -> Result<Reply, LinkError> {
         if request.action == "box.open" {
             return Err(LinkError::unavailable("Arcade Box isn't running"));
+        }
+        if request.action == "box.pipeline.run" {
+            let id = request
+                .options
+                .get("pipeline")
+                .and_then(Value::as_str)
+                .unwrap_or_default();
+            if self
+                .runtime
+                .list_pipelines()
+                .map_err(|e| LinkError::internal(e.to_string()))?
+                .iter()
+                .find(|p| p.id == id)
+                .is_some_and(|p| {
+                    p.validate(&self.runtime)
+                        .ok()
+                        .and_then(|order| {
+                            order.first().and_then(|n| n.describe(&self.runtime).ok())
+                        })
+                        .is_some_and(|info| info.interactive)
+                })
+            {
+                return Err(LinkError::denied(
+                    "An interactive pipeline needs the resident Arcade Box",
+                ));
+            }
         }
         let job = ctx.start_job();
         let ticket = job.ticket();

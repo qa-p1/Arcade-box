@@ -4,7 +4,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 
 use arcade_contract::{ToolManifest, ToolValue};
 use arcade_link::{
-    Action, CallOptions, Content, ErrorCode, InvokeRequest, InvokeResult, LinkError, Locations,
+    Action, Client, Content, ErrorCode, InvokeRequest, InvokeResult, LinkError, Locations,
     Manifest, PeerInfo, Registry, SharedRegistry, ids,
 };
 use serde::Serialize;
@@ -136,16 +136,75 @@ pub fn invoke(
                 .map_err(|e| LinkError::internal(e.to_string()))?;
         }
     }
-    arcade_link::invoke_action(
-        &locations,
-        &me(),
-        &manifest,
-        &request,
-        CallOptions {
-            cancel: Some(cancelled),
-            ..Default::default()
-        },
-    )
+    let action = arcade_link::client::find_action(&manifest, &request)
+        .ok_or_else(|| LinkError::unavailable("action is missing"))?;
+    let client = Client::connect(&locations, app, &me());
+    let mut client = match client {
+        Ok(client) => client,
+        Err(_) if !action.interactive && manifest.launch.invoke.is_some() => {
+            return arcade_link::oneshot::run(
+                &manifest.executable,
+                manifest.launch.invoke.as_ref().unwrap(),
+                &request,
+                &mut |_| {},
+                Some(cancelled),
+            );
+        }
+        Err(_) => arcade_link::client::launch_and_connect(&locations, &manifest, &me())?,
+    };
+    invoke_resident(&mut client, &request, cancelled)
+}
+
+/// Wait only while this user-requested operation is active. Return after a
+/// cancellation acknowledgement, even if a peer keeps its picker open. Box
+/// can then release its private workspace instead of waiting indefinitely.
+fn invoke_resident(
+    client: &mut Client,
+    request: &InvokeRequest,
+    cancelled: &AtomicBool,
+) -> Result<InvokeResult, LinkError> {
+    use arcade_link::wire::{JobDone, method};
+    use std::time::{Duration, Instant};
+    let reply = client.call(
+        method::INVOKE,
+        serde_json::to_value(request).map_err(|e| LinkError::internal(e.to_string()))?,
+    )?;
+    let Some(job) = reply.get("job").and_then(serde_json::Value::as_str) else {
+        return serde_json::from_value(reply).map_err(|e| LinkError::internal(e.to_string()));
+    };
+    let deadline = Instant::now() + Duration::from_secs(300);
+    loop {
+        if cancelled.load(Ordering::Acquire) || Instant::now() >= deadline {
+            let _ = client.call(method::JOB_CANCEL, json!({"job":job}));
+            return Err(if cancelled.load(Ordering::Acquire) {
+                LinkError::cancelled()
+            } else {
+                LinkError::new(ErrorCode::Timeout, "peer job exceeded five minutes")
+            });
+        }
+        match client.next_notification(Some(Duration::from_millis(100))) {
+            Ok(message)
+                if message.method.as_deref() == Some(method::JOB_DONE)
+                    && message
+                        .params()
+                        .get("job")
+                        .and_then(serde_json::Value::as_str)
+                        == Some(job) =>
+            {
+                return serde_json::from_value::<JobDone>(message.params().clone())
+                    .map_err(|e| LinkError::internal(e.to_string()))?
+                    .into_result();
+            }
+            Ok(_) => {}
+            Err(error) if error.code == ErrorCode::Timeout => {}
+            Err(_) => {
+                return Err(LinkError::new(
+                    ErrorCode::NotRunning,
+                    "peer stopped while working",
+                ));
+            }
+        }
+    }
 }
 
 /// SPEC §5.4: pipelines carry their ID in options, never in preset.
@@ -528,6 +587,67 @@ mod tests {
         manifest.actions.push(action);
         arcade_link::manifest::write_manifest(loc, &manifest).unwrap();
     }
+    #[test]
+    fn resident_cancel_returns_after_ack_without_waiting_for_peer_done() {
+        use arcade_link::server::{Handler, InvokeContext, Reply};
+        use std::sync::{Arc, Mutex};
+        struct Picker {
+            cancel: Arc<AtomicBool>,
+            acknowledged: Arc<AtomicBool>,
+            pending: Mutex<Vec<arcade_link::Job>>,
+        }
+        impl Handler for Picker {
+            fn describe(&self) -> Vec<Action> {
+                vec![Action::new("lens.capture", "Capture", "capture").interactive(true)]
+            }
+            fn invoke(&self, _: InvokeRequest, ctx: &InvokeContext) -> Result<Reply, LinkError> {
+                let job = ctx.start_job();
+                let ticket = job.ticket();
+                let observed = self.acknowledged.clone();
+                job.on_cancel(move || {
+                    observed.store(true, Ordering::Release);
+                });
+                self.pending.lock().unwrap().push(job);
+                self.cancel.store(true, Ordering::Release);
+                Ok(Reply::Job(ticket))
+            }
+        }
+        let dir = tempfile::tempdir().unwrap();
+        let locations = Locations::under(dir.path());
+        let cancel = Arc::new(AtomicBool::new(false));
+        let acknowledged = Arc::new(AtomicBool::new(false));
+        let handler = Arc::new(Picker {
+            cancel: cancel.clone(),
+            acknowledged: acknowledged.clone(),
+            pending: Mutex::new(vec![]),
+        });
+        let server = arcade_link::Server::start(
+            arcade_link::ServerConfig {
+                locations: locations.clone(),
+                app: PeerInfo {
+                    id: ids::LENS.into(),
+                    version: "1".into(),
+                },
+            },
+            handler.clone(),
+        )
+        .unwrap();
+        let mut client = Client::connect(&locations, ids::LENS, &me()).unwrap();
+        let started = std::time::Instant::now();
+        let error = invoke_resident(
+            &mut client,
+            &InvokeRequest::new("lens.capture", ids::BOX),
+            &cancel,
+        )
+        .unwrap_err();
+        assert_eq!(error.code, ErrorCode::Cancelled);
+        assert!(acknowledged.load(Ordering::Acquire));
+        assert!(started.elapsed() < std::time::Duration::from_secs(2));
+        drop(client);
+        handler.pending.lock().unwrap().clear();
+        server.stop();
+    }
+
     #[test]
     fn action_references_keep_preset_and_pipeline_options_separate() {
         let runtime = Arcade::in_memory().unwrap();

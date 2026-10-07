@@ -29,9 +29,22 @@ Pipeline effects are the union of their stages' effects, and output types
 come from their exposed output stages. Pipelines with unavailable engines,
 unsupported sources or plugins are excluded from the consumer list; an
 explicit run still returns the reason. Saving or deleting a pipeline
-refreshes the manifest and emits `app.changed`. Pipeline node identity and
-execution remain in Box's existing versioned DAG; peer `link` nodes and
-interactive first stages will be added in Phase 6.
+refreshes the manifest and emits `app.changed`. Peer nodes store `link: {app, action, version}` instead of `toolId`. Their
+actions must be installed, enabled and available, and the saved action version
+must match. The editor marks changed versions **Needs repair** and lets the
+user select the current version. Interactive actions are allowed only at the
+first stage. Pipelines containing `sends-to-device`, `network` or
+`executes-commands` ask for confirmation before their first run; an edit or a
+change to their effects invalidates that approval. Resident peer jobs end locally
+on a cancellation acknowledgement and have a five-minute deadline, so a picker
+that stays open cannot hold Box's job directory indefinitely. CLI users approve explicitly
+with `arcade-box pipeline run <id> --confirm-effects`. One-shot requests reject
+interactive pipelines and unapproved effects.
+
+Intermediates and scoped grants live in a private per-run directory, removed
+on success, failure or cancellation. Only declared output stages publish files;
+only peer-bound file inputs are copied into Link handoff. User-selected source
+files are copied before processing and remain unchanged.
 
 ```json
 {"action":"box.pipeline.run","options":{"pipeline":"upper-clean"},"inputs":[{"type":"text/plain","text":"hello"}]}
@@ -108,8 +121,7 @@ and macOS. A specific Tesseract language pack still uses Tesseract.
 
 Screen screenshot, QR and OCR actions select their region with `lens.capture`
 when available. Ruler, pin and color hand over to `lens.capture_and_act` with
-`mode: measure`, `pin` or `color`. Lens handles measure directly; its current
-pin/color hints open the full Lens palette. Captured PNGs are validated, copied
+`mode: measure`, `pin` or `color`. Lens handles all three hints directly. Captured PNGs are validated, copied
 into Box's normal artifact/grant boundary, and remain local. Without Lens, the
 native platform picker and screen tools keep their existing behavior. Lens's
 v1 capture API returns still images, so screen recording retains Box's native

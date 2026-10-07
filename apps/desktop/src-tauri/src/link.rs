@@ -291,6 +291,8 @@ impl Handler for BoxHandler {
         let app = self.app.clone();
         let box_id = snapshot.id.clone();
         job.on_cancel(move || {
+            // Runs on the Link connection thread. JobManager::cancel releases
+            // its state lock before re-entering Box's job_update callback.
             let _ = app.state::<JobManager>().cancel(&box_id);
         });
         let early = {
@@ -376,13 +378,14 @@ pub fn start(app: &AppHandle) {
             let watched_app = app.clone();
             let watched_runtime = runtime.clone();
             consumer::registry(&runtime).watch(move |_| {
-                if core_link::refresh_peer_providers(&watched_runtime) {
-                    if let Some(p) = slot().lock().unwrap_or_else(|e| e.into_inner()).clone() {
-                        p.update(build(&watched_runtime));
-                    }
+                let _ = watched_runtime.refresh_pipeline_catalog();
+                core_link::refresh_peer_providers(&watched_runtime);
+                if let Some(p) = slot().lock().unwrap_or_else(|e| e.into_inner()).clone() {
+                    p.update(build(&watched_runtime));
                 }
                 let _ = watched_app.emit("arcade://link-changed", ());
             });
+            let _ = runtime.refresh_pipeline_catalog();
             let _ = app.emit("arcade://link-changed", ());
             reprobe(&runtime);
         });
@@ -673,4 +676,15 @@ pub fn pick_peer_clipboard(
         let _ = window.set_focus();
     }
     result
+}
+
+#[tauri::command(async)]
+pub fn pipeline_link_actions(runtime: tauri::State<'_, Arc<Arcade>>) -> Vec<serde_json::Value> {
+    let settings = LinkSettings::load(&runtime);
+    consumer::registry(&runtime).with(|registry| registry.apps().iter().filter(|manifest| manifest.id != arcade_link::ids::BOX && manifest.settings.link_enabled && settings.uses(&manifest.id)).flat_map(|manifest| {
+        manifest.actions.iter().filter(|action| action.available && action.on_this_platform()).map(|action| serde_json::json!({
+            "app":manifest.id,"name":manifest.name,"action":action.id,"title":action.title,"version":action.version,
+            "accepts":action.accepts,"produces":action.produces,"effects":action.effects,"interactive":action.interactive
+        })).collect::<Vec<_>>()
+    }).collect())
 }

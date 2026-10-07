@@ -360,9 +360,9 @@ export async function deletePipeline(id: string): Promise<void> {
   await invoke<void>('delete_pipeline', { id });
 }
 
-export async function runPipeline(id: string, inputs: ToolInput[]): Promise<Record<string, ToolOutput[]>> {
+export async function runPipeline(requestId: string, id: string, inputs: ToolInput[]): Promise<Record<string, ToolOutput[]>> {
   requireDesktopRuntime();
-  return invoke<Record<string, ToolOutput[]>>('run_pipeline', { id, inputs });
+  return invoke<Record<string, ToolOutput[]>>('run_pipeline', { requestId, id, inputs });
 }
 
 export async function hideIsland(): Promise<void> {
@@ -477,4 +477,13 @@ export async function shortcutOwner(accelerator: string): Promise<string | null>
 export async function pickPeerClipboard(requestId: string): Promise<ToolResult> {
   requireDesktopRuntime();
   return invoke<ToolResult>('pick_peer_clipboard', { requestId });
+}
+
+export interface PipelineLinkAction {
+  app: string; name: string; action: string; title: string; version: number;
+  accepts: string[]; produces: string[]; effects: string[]; interactive: boolean;
+}
+export async function pipelineLinkActions(): Promise<PipelineLinkAction[]> {
+  if (!isDesktopRuntime()) return [];
+  return invoke<PipelineLinkAction[]>('pipeline_link_actions');
 }

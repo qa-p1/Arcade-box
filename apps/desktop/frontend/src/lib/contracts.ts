@@ -73,9 +73,12 @@ export type PipelineInputSource =
   | { kind: 'external'; index: number }
   | { kind: 'node'; nodeId: string; outputIndex: number };
 
+export interface PipelineLinkNode { app: string; action: string; version: number }
+
 export interface PipelineNode {
   id: string;
-  toolId: string;
+  toolId?: string;
+  link?: PipelineLinkNode;
   inputs: PipelineInputSource[];
   options: Record<string, unknown>;
 }

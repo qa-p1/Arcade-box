@@ -77,6 +77,8 @@ pub struct Arcade {
     artifact_staging_root: PathBuf,
     default_output_directory: String,
     plugins: plugins::PluginRuntime,
+    pub(crate) pipeline_confirmation:
+        OnceLock<Arc<dyn Fn(&pipeline::Pipeline, &[String]) -> bool + Send + Sync>>,
     pub(crate) link_registry: OnceLock<arcade_link::SharedRegistry>,
     _ephemeral_data: Option<tempfile::TempDir>,
 }
@@ -151,6 +153,7 @@ impl Arcade {
             artifact_staging_root,
             default_output_directory,
             plugins,
+            pipeline_confirmation: OnceLock::new(),
             link_registry: OnceLock::new(),
             _ephemeral_data: ephemeral_data,
         };
@@ -472,7 +475,7 @@ impl Arcade {
             tool_id: manifest.id.clone(),
             status: ResultStatus::Success,
             outputs,
-            message: None,
+            message: Some("Pipeline complete".into()),
             warnings: Vec::new(),
             metadata: Default::default(),
         })
@@ -487,7 +490,7 @@ impl Arcade {
         for pipeline in self.list_pipelines()? {
             catalog
                 .tools
-                .push(pipeline_manifest(&pipeline, &pipeline_tools));
+                .push(pipeline_manifest(self, &pipeline, &pipeline_tools));
         }
         catalog.validate()?;
         *self
@@ -495,6 +498,17 @@ impl Arcade {
             .write()
             .unwrap_or_else(std::sync::PoisonError::into_inner) = catalog;
         Ok(())
+    }
+
+    pub fn refresh_pipeline_catalog(&self) -> Result<(), CoreError> {
+        self.refresh_plugin_catalog()
+    }
+
+    pub fn set_pipeline_confirmation(
+        &self,
+        confirm: impl Fn(&pipeline::Pipeline, &[String]) -> bool + Send + Sync + 'static,
+    ) {
+        let _ = self.pipeline_confirmation.set(Arc::new(confirm));
     }
 
     pub fn storage(&self) -> &storage::Storage {
@@ -601,7 +615,11 @@ fn humanize_id(id: &str) -> String {
         .join(" ")
 }
 
-fn pipeline_manifest(pipeline: &pipeline::Pipeline, tools: &[ToolManifest]) -> ToolManifest {
+fn pipeline_manifest(
+    runtime: &Arcade,
+    pipeline: &pipeline::Pipeline,
+    tools: &[ToolManifest],
+) -> ToolManifest {
     let mut input_types = BTreeSet::new();
     let mut output_types = BTreeSet::new();
     let mut related_tools = BTreeSet::new();
@@ -612,7 +630,38 @@ fn pipeline_manifest(pipeline: &pipeline::Pipeline, tools: &[ToolManifest]) -> T
         .iter()
         .map(|node| (node.id.as_str(), node))
         .collect::<HashMap<_, _>>();
+    let link_settings = link::LinkSettings::load(runtime);
     for node in &pipeline.nodes {
+        if let Some(link) = &node.link {
+            let action = runtime.link_registry.get().and_then(|registry| {
+                registry.with(|r| {
+                    r.get(&link.app)
+                        .filter(|m| m.settings.link_enabled && link_settings.uses(&link.app))
+                        .and_then(|m| m.action(&link.action))
+                        .cloned()
+                })
+            });
+            if let Some(action) = action {
+                implemented &=
+                    action.available && action.on_this_platform() && action.version == link.version;
+                for input in &node.inputs {
+                    if matches!(input, pipeline::InputSource::External { .. }) {
+                        input_types.extend(action.accepts.iter().cloned());
+                    }
+                }
+                if pipeline.output_nodes.contains(&node.id) {
+                    output_types.extend(action.produces.iter().cloned());
+                }
+                if action.privacy == "cloud" {
+                    privacy_class = PrivacyClass::Cloud;
+                } else if action.privacy == "network" && privacy_class == PrivacyClass::Local {
+                    privacy_class = PrivacyClass::Network;
+                }
+            } else {
+                implemented = false;
+            }
+            continue;
+        }
         related_tools.insert(node.tool_id.clone());
         let Some(tool) = tools.iter().find(|tool| tool.id == node.tool_id) else {
             implemented = false;
@@ -654,6 +703,19 @@ fn pipeline_manifest(pipeline: &pipeline::Pipeline, tools: &[ToolManifest]) -> T
     };
     let mut phrases = vec![name.clone(), "saved pipeline".into()];
     phrases.extend(pipeline.id.split('-').map(str::to_owned));
+    let inputs: Vec<String> = input_types.into_iter().collect();
+    let input_kind = if inputs.is_empty() {
+        "none"
+    } else if inputs.iter().any(|t| t == "folder/reference") {
+        "folder"
+    } else if inputs.iter().any(|t| t.starts_with("file/")) {
+        "file"
+    } else if inputs.iter().any(|t| t.ends_with("/url")) {
+        "url"
+    } else {
+        "text"
+    };
+    let ui = serde_json::from_value(serde_json::json!({"version":1,"input":{"kind":input_kind,"label":"Pipeline input"},"controls":[]})).ok();
     ToolManifest {
         id: format!("arcade.pipeline.{}", pipeline.id),
         version: format!("{}.0.0", pipeline.version),
@@ -663,7 +725,7 @@ fn pipeline_manifest(pipeline: &pipeline::Pipeline, tools: &[ToolManifest]) -> T
         category: "Pipelines".into(),
         aliases: vec![pipeline.id.clone()],
         privacy_class,
-        inputs: input_types.into_iter().collect(),
+        inputs,
         outputs: output_types.into_iter().collect(),
         providers: Vec::new(),
         status: if implemented {
@@ -679,7 +741,7 @@ fn pipeline_manifest(pipeline: &pipeline::Pipeline, tools: &[ToolManifest]) -> T
         }),
         phrases,
         related_tools: related_tools.into_iter().collect(),
-        ui: None,
+        ui,
         presets: Vec::new(),
         link: None,
     }

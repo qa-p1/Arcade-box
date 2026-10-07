@@ -10,7 +10,7 @@ use arcade_core::{Arcade, PluginInstallApproval, PluginPermissionGrant, pipeline
 use std::{
     collections::BTreeSet,
     path::PathBuf,
-    sync::{Arc, Mutex, atomic::AtomicBool},
+    sync::{Arc, Mutex},
 };
 use tauri::menu::{Menu, MenuItem};
 use tauri::tray::TrayIconBuilder;
@@ -32,6 +32,48 @@ mod screen_capture;
 #[cfg(target_os = "linux")]
 mod wayland_shortcut;
 mod window_pin;
+
+// Called only on pipeline workers. GTK's callback keeps the main loop free;
+// the portal dialog backend would require an unrelated Zenity executable.
+fn confirm_pipeline_effects(app: &tauri::AppHandle, message: String) -> bool {
+    #[cfg(target_os = "linux")]
+    {
+        let (send, receive) = std::sync::mpsc::sync_channel(1);
+        if app
+            .run_on_main_thread(move || {
+                use gtk::prelude::*;
+                let dialog = gtk::MessageDialog::new(
+                    None::<&gtk::Window>,
+                    gtk::DialogFlags::MODAL,
+                    gtk::MessageType::Question,
+                    gtk::ButtonsType::OkCancel,
+                    &message,
+                );
+                dialog.set_title("Confirm pipeline effects");
+                dialog.set_default_response(gtk::ResponseType::Ok);
+                dialog.connect_response(move |dialog, response| {
+                    let _ = send.send(response == gtk::ResponseType::Ok);
+                    dialog.close();
+                });
+                dialog.show_all();
+                dialog.present();
+            })
+            .is_err()
+        {
+            return false;
+        }
+        receive.recv().unwrap_or(false)
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        use tauri_plugin_dialog::MessageDialogButtons;
+        app.dialog()
+            .message(message)
+            .title("Confirm pipeline effects")
+            .buttons(MessageDialogButtons::OkCancel)
+            .blocking_show()
+    }
+}
 
 #[derive(Clone, Copy, PartialEq)]
 struct SurfaceGeometry {
@@ -256,12 +298,14 @@ fn delete_pipeline(
 
 #[tauri::command(async)]
 fn run_pipeline(
+    request_id: String,
     id: String,
     inputs: Vec<ToolValue>,
     runtime: tauri::State<'_, Arc<Arcade>>,
 ) -> Result<std::collections::HashMap<String, Vec<ToolValue>>, String> {
+    let active = link::OutboundRequest::begin(request_id)?;
     runtime
-        .run_saved_pipeline(&id, inputs, &AtomicBool::new(false))
+        .run_saved_pipeline(&id, inputs, &active.cancelled)
         .map_err(|error| error.to_string())
 }
 
@@ -1115,6 +1159,26 @@ pub fn run(args: Vec<String>) {
                 .then(|| wayland_shortcut::register_host_app(app.handle()));
 
             let runtime = Arc::new(Arcade::open(&db_dir.join("arcade.sqlite3"))?);
+            let confirmation_app = app.handle().clone();
+            runtime.set_pipeline_confirmation(move |pipeline, effects| {
+                let message = format!(
+                    "Run \"{}\"?\n\nThis pipeline can: {}.\n\nApprove once for this version and these effects.",
+                    pipeline.name,
+                    effects.iter().map(|effect| match effect.as_str() {
+                        "sends-to-device" => "send content to your devices",
+                        "network" => "access the network",
+                        "executes-commands" => "run commands",
+                        "writes-files" => "create files",
+                        "opens-ui" => "open app windows",
+                        "clipboard" => "change the clipboard",
+                        "uploads-content" => "upload content",
+                        "persists" => "save data",
+                        "launch-apps" => "launch apps",
+                        other => other,
+                    }).collect::<Vec<_>>().join(", ")
+                );
+                confirm_pipeline_effects(&confirmation_app, message)
+            });
             let clipboard_history =
                 clipboard_history::ClipboardHistory::open(db_dir.join("clipboard-history.json"))
                     .map_err(std::io::Error::other)?;
@@ -1190,6 +1254,7 @@ pub fn run(args: Vec<String>) {
             link::invoke_result_link_action,
             link::cancel_result_link_action,
             link::overlap_state,
+            link::pipeline_link_actions,
             link::shortcut_owner,
             link::pick_peer_clipboard,
             list_tools,

@@ -90,9 +90,17 @@ enum PipelineCommand {
         file: Vec<PathBuf>,
         #[arg(long)]
         json: bool,
+        /// Approve the listed network/device/command effects for this definition.
+        #[arg(long)]
+        confirm_effects: bool,
     },
     /// Run a one-off pipeline definition from JSON.
-    RunFile { definition: PathBuf, input: String },
+    RunFile {
+        definition: PathBuf,
+        input: String,
+        #[arg(long)]
+        confirm_effects: bool,
+    },
     /// Delete a saved pipeline.
     Delete { id: String },
 }
@@ -356,7 +364,11 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 input,
                 file,
                 json,
+                confirm_effects,
             } => {
+                if confirm_effects {
+                    runtime.set_pipeline_confirmation(|_, _| true);
+                }
                 let inputs = selected_inputs(&runtime, input, file)?;
                 let mut outputs =
                     runtime.run_saved_pipeline(&id, inputs, &AtomicBool::new(false))?;
@@ -384,7 +396,14 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                     }
                 }
             }
-            PipelineCommand::RunFile { definition, input } => {
+            PipelineCommand::RunFile {
+                definition,
+                input,
+                confirm_effects,
+            } => {
+                if confirm_effects {
+                    runtime.set_pipeline_confirmation(|_, _| true);
+                }
                 let pipeline: Pipeline = serde_json::from_slice(&fs::read(definition)?)?;
                 let mut result = pipeline.run(
                     &runtime,
@@ -626,6 +645,7 @@ mod tests {
             name: "CLI QR Output".into(),
             version: 1,
             nodes: vec![arcade_core::pipeline::PipelineNode {
+                link: None,
                 id: "qr".into(),
                 tool_id: "arcade.barcode.qr-generate".into(),
                 inputs: vec![arcade_core::pipeline::InputSource::External { index: 0 }],
