@@ -345,8 +345,12 @@ fn slot() -> &'static Mutex<Option<Arc<Presence>>> {
 }
 
 /// Re-checks providers and rewrites the manifest if availability changed.
-fn reprobe(runtime: &Arcade) {
-    let mut cache: ProviderCache = core_link::probe_providers();
+/// `full` re-checks every provider; otherwise only those last seen missing.
+fn reprobe(runtime: &Arcade, full: bool) {
+    let mut cache: ProviderCache = match core_link::load_provider_cache(runtime) {
+        Some(previous) if !full => core_link::probe_missing_providers(&previous),
+        _ => core_link::probe_providers(),
+    };
     cache.extend(core_link::peer_provider_cache(runtime));
     if core_link::save_provider_cache(runtime, &cache) {
         let p = slot().lock().unwrap_or_else(|e| e.into_inner()).clone();
@@ -387,7 +391,7 @@ pub fn start(app: &AppHandle) {
             });
             let _ = runtime.refresh_pipeline_catalog();
             let _ = app.emit("arcade://link-changed", ());
-            reprobe(&runtime);
+            reprobe(&runtime, false);
         });
 }
 
@@ -407,7 +411,7 @@ pub fn providers_checked(app: &AppHandle) {
     let Some(runtime) = app.try_state::<Arc<Arcade>>().map(|r| r.inner().clone()) else {
         return;
     };
-    std::thread::spawn(move || reprobe(&runtime));
+    std::thread::spawn(move || reprobe(&runtime, true));
 }
 
 /// Stops listening and removes the endpoint file (the manifest stays).

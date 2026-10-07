@@ -214,6 +214,27 @@ pub fn probe_providers() -> ProviderCache {
     cache
 }
 
+/// Startup check: keeps providers `previous` saw available and probes only
+/// the rest (they may have been installed since). Running every tool's
+/// `--version` at each launch (some, like OCRmyPDF, start a Python runtime)
+/// made startup heavy; the Engines page still re-checks everything.
+pub fn probe_missing_providers(previous: &ProviderCache) -> ProviderCache {
+    let mut cache = ProviderCache::new();
+    for id in PROBED {
+        match previous.get(*id) {
+            Some(known) if known.available => {
+                cache.insert((*id).to_string(), known.clone());
+            }
+            _ => {
+                if let Some(s) = probe_one(id) {
+                    cache.insert((*id).to_string(), s);
+                }
+            }
+        }
+    }
+    cache
+}
+
 /// Probes only the providers `tool` needs (one-shot mode has no cache).
 pub(crate) fn probe_for(runtime: &Arcade, tool: &ToolManifest) -> ProviderCache {
     let mut cache: ProviderCache = tool
@@ -1080,6 +1101,21 @@ impl Handler for OneshotHandler {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn startup_keeps_available_providers_without_reprobing() {
+        // An id cached as available is kept as is (probing it would run the
+        // tool); the reason text proves it wasn't re-checked.
+        let mut previous = ProviderCache::new();
+        let kept = ProviderState {
+            available: true,
+            reason: Some("cached".into()),
+        };
+        previous.insert("pdf.ocrmypdf".into(), kept.clone());
+        let cache = probe_missing_providers(&previous);
+        assert_eq!(cache.get("pdf.ocrmypdf"), Some(&kept));
+        assert!(PROBED.iter().all(|id| cache.contains_key(*id)));
+    }
 
     fn runtime() -> (tempfile::TempDir, Arcade) {
         let dir = tempfile::tempdir().unwrap();
