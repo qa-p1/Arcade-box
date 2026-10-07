@@ -167,6 +167,17 @@ Run Box's integration checks through the isolated ecosystem runner:
 E2E_VERBOSE=1 python3 ../Arcade-link/tools/e2e.py --only box
 ```
 
+The normal embedded desktop can also be checked alone and with real peers,
+including its shortcut, a tool run, startup mode and result-row visibility:
+
+```sh
+ARCADE_E2E_SHOTS=../Arcade-link/.orch/shots python3 ../Arcade-link/tools/e2e.py run -- python3 scripts/verify-desktop-isolated.py
+ARCADE_E2E_SHOTS=../Arcade-link/.orch/shots python3 ../Arcade-link/tools/e2e.py run -- python3 scripts/verify-desktop-isolated.py --peers
+```
+
+These checks use `target/release/arcade-desktop`; `--binary` can select the
+ordinary debug build. The script refuses to run outside the isolated runner.
+
 The checks exercise a resident preset with `job.progress` and `job.done`,
 one-shot progress without a listener or manifest, new outputs without
 overwriting the selected input, cancellation without partial outputs,
