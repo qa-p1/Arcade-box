@@ -115,6 +115,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
   const providerCapabilities = $derived(providersLoaded
     ? new Set(providers.filter((provider) => provider.compatible).flatMap((provider) => provider.capabilities ?? []))
     : null);
+  const screenOcrAvailable = $derived(providerCapabilities?.has('ocr:language:eng') ?? false);
   let backgroundJobs = $state<JobSnapshot[]>([]);
   let screenStatus = $state<ScreenCaptureStatus | null>(null);
   let screenRecording = $state<ScreenRecordingSnapshot | null>(null);
@@ -1339,6 +1340,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     }
     if (selectedTool.id === 'arcade.system.clipboard-history') return overlaps.clipboardPick;
     if (selectedTool.id === 'arcade.system.paste-plain') return plainPasteStatus?.available === true;
+    if (selectedTool.id === 'arcade.screen.ocr' && !screenOcrAvailable) return false;
     if (isScreenTool(selectedTool.id) && screenStatus?.captureAvailable === false) return false;
     if (isScreenTool(selectedTool.id)) return true;
     const standardProblem = standardUiOptionsProblem(selectedTool.ui, toolOptions);
@@ -1798,6 +1800,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
                   <p>{isScreenRecorderTool(selectedTool.id) ? (screenRecording?.recording || screenRecording?.starting || screenRecording?.finalizing || screenRecording?.message === 'Recording discarded.' ? screenRecording.message : screenStatus?.recordingMessage || screenRecording?.message || 'Arcade Box is checking screen recording support.') : screenStatus?.message || 'Arcade Box is checking your desktop’s native capture support.'}</p>
                   {#if selectedTool.id === 'arcade.screen.qr'}<small>Decoded destinations are shown first. Arcade Box will not open them automatically.</small>{/if}
                   {#if selectedTool.id === 'arcade.screen.ocr'}<small>Capture and OCR run locally. The selected image is passed through a scoped file grant.</small>{/if}
+                  {#if selectedTool.id === 'arcade.screen.ocr' && !screenOcrAvailable}<p class="field-error" role="status">{providersLoaded ? (providerError || 'Screen OCR is unavailable. Install Tesseract with its English language data to use this tool.') : 'Checking local Tesseract availability…'}</p>{/if}
                   {#if selectedTool.id === 'arcade.screen.color'}<small>Choose a screen area, then click a pixel or use arrow keys to inspect its exact color locally.</small>{/if}
                   {#if isScreenRecorderTool(selectedTool.id) && screenRecording?.recording}
                     <div class="screen-recording-controls">

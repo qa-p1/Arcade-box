@@ -12298,7 +12298,7 @@
       "version": "0.1.0",
       "apiVersion": "1",
       "name": "Screenshot",
-      "description": "Capture one user-selected screen region through the native system picker and keep the resulting PNG as a local image artifact; window and full-display captures are not implemented yet.",
+      "description": "Capture one user-selected screen region through the system picker or X11 area selector and keep the resulting PNG as a local image artifact; window and full-display captures are not implemented yet.",
       "category": "Screen & Capture",
       "aliases": [
         "screen capture",
@@ -12327,7 +12327,7 @@
       "execution": {
         "runtime": "builtin"
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "conditional",
@@ -12418,7 +12418,7 @@
       "execution": {
         "runtime": "builtin"
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "conditional",
@@ -12469,7 +12469,7 @@
       "execution": {
         "runtime": "builtin"
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "conditional",
@@ -12517,7 +12517,7 @@
       "execution": {
         "runtime": "builtin"
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "conditional",
@@ -12567,7 +12567,7 @@
       "execution": {
         "runtime": "builtin"
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "conditional",
@@ -12617,7 +12617,7 @@
       "execution": {
         "runtime": "builtin"
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "conditional",
