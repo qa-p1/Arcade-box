@@ -120,28 +120,43 @@ impl ClipboardHistory {
                         "text".hash(&mut hasher);
                         text.hash(&mut hasher);
                         let fingerprint = hasher.finish();
-                        if last_seen.replace(fingerprint) != Some(fingerprint) {
+                        if last_seen != Some(fingerprint) {
                             let source = foreground_application_name();
-                            let _ = service.capture_text(text, source);
+                            if service.capture_text(text, source).unwrap_or(false) {
+                                last_seen = Some(fingerprint);
+                            }
                         }
                         continue;
                     }
                     if let Ok(image) = app.clipboard().read_image() {
                         let width = image.width();
                         let height = image.height();
+                        if !valid_image_dimensions(width, height) {
+                            let mut hasher = DefaultHasher::new();
+                            "oversized-image".hash(&mut hasher);
+                            width.hash(&mut hasher);
+                            height.hash(&mut hasher);
+                            last_seen = Some(hasher.finish());
+                            continue;
+                        }
                         let mut hasher = DefaultHasher::new();
                         "image".hash(&mut hasher);
                         width.hash(&mut hasher);
                         height.hash(&mut hasher);
                         image.rgba().hash(&mut hasher);
                         let fingerprint = hasher.finish();
-                        if last_seen.replace(fingerprint) == Some(fingerprint) {
+                        if last_seen == Some(fingerprint) {
                             continue;
                         }
                         let rgba = image.rgba().to_vec();
                         let source = foreground_application_name();
                         drop(image);
-                        let _ = service.capture_image(rgba, width, height, source);
+                        if service
+                            .capture_image(rgba, width, height, source)
+                            .unwrap_or(false)
+                        {
+                            last_seen = Some(fingerprint);
+                        }
                     }
                 }
             });
@@ -251,8 +266,10 @@ impl ClipboardHistory {
         state.excluded_applications = names
             .into_iter()
             .map(|name| name.trim().to_lowercase())
+            .filter(|name| !name.is_empty())
             .collect();
         self.save_locked(&state)?;
+        drop(state);
         Ok(self.status())
     }
 
@@ -346,9 +363,13 @@ impl ClipboardHistory {
         Err("This clipboard item cannot be restored as text".into())
     }
 
-    fn capture_text(&self, text: String, source_application: Option<String>) -> Result<(), String> {
+    fn capture_text(
+        &self,
+        text: String,
+        source_application: Option<String>,
+    ) -> Result<bool, String> {
         if text.len() > MAX_TEXT_BYTES || is_sensitive_text(&text) {
-            return Ok(());
+            return Ok(true);
         }
         let mut hasher = DefaultHasher::new();
         "text".hash(&mut hasher);
@@ -359,10 +380,11 @@ impl ClipboardHistory {
             .inner
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
-        if source_is_excluded(&state, source_application.as_deref())
-            || state.items.first().is_some_and(|item| item.id == id)
-        {
-            return Ok(());
+        if !state.enabled || source_is_excluded(&state, source_application.as_deref()) {
+            return Ok(false);
+        }
+        if state.items.first().is_some_and(|item| item.id == id) {
+            return Ok(true);
         }
         let preview = text
             .lines()
@@ -393,7 +415,8 @@ impl ClipboardHistory {
             },
         );
         trim_history(&mut state);
-        self.save_locked(&state)
+        self.save_locked(&state)?;
+        Ok(true)
     }
 
     fn capture_image(
@@ -402,18 +425,15 @@ impl ClipboardHistory {
         width: u32,
         height: u32,
         source_application: Option<String>,
-    ) -> Result<(), String> {
+    ) -> Result<bool, String> {
         let expected = (width as usize)
             .saturating_mul(height as usize)
             .saturating_mul(4);
-        if width == 0
-            || height == 0
-            || width > MAX_IMAGE_EDGE
-            || height > MAX_IMAGE_EDGE
+        if !valid_image_dimensions(width, height)
             || rgba.len() != expected
             || rgba.len() > MAX_IMAGE_BYTES
         {
-            return Ok(());
+            return Ok(true);
         }
         let mut hasher = DefaultHasher::new();
         "image".hash(&mut hasher);
@@ -426,10 +446,11 @@ impl ClipboardHistory {
             .inner
             .lock()
             .unwrap_or_else(std::sync::PoisonError::into_inner);
-        if source_is_excluded(&state, source_application.as_deref())
-            || state.items.first().is_some_and(|item| item.id == id)
-        {
-            return Ok(());
+        if !state.enabled || source_is_excluded(&state, source_application.as_deref()) {
+            return Ok(false);
+        }
+        if state.items.first().is_some_and(|item| item.id == id) {
+            return Ok(true);
         }
         state.items.insert(
             0,
@@ -447,7 +468,8 @@ impl ClipboardHistory {
             },
         );
         trim_history(&mut state);
-        self.save_locked(&state)
+        self.save_locked(&state)?;
+        Ok(true)
     }
 
     fn expire_and_save(&self) -> Result<(), String> {
@@ -488,12 +510,20 @@ impl ClipboardHistory {
 
 fn source_is_excluded(state: &StoredHistory, source: Option<&str>) -> bool {
     source.is_some_and(|source| {
+        let source = normalized_application_name(source);
         source.contains("arcade")
-            || state
-                .excluded_applications
-                .iter()
-                .any(|excluded| source.contains(excluded))
+            || state.excluded_applications.iter().any(|excluded| {
+                let excluded = normalized_application_name(excluded);
+                !excluded.is_empty() && source.contains(&excluded)
+            })
     })
+}
+
+fn normalized_application_name(name: &str) -> String {
+    name.chars()
+        .flat_map(char::to_lowercase)
+        .filter(|character| character.is_alphanumeric())
+        .collect()
 }
 
 fn is_sensitive_text(text: &str) -> bool {
@@ -501,26 +531,47 @@ fn is_sensitive_text(text: &str) -> bool {
     [
         "-----begin private key-----",
         "-----begin rsa private key-----",
+        "-----begin ec private key-----",
+        "-----begin dsa private key-----",
         "-----begin openpgp private key-----",
+        "-----begin openssh private key-----",
+        "-----begin encrypted private key-----",
         "authorization: bearer ",
+        "authorization: basic ",
         "bearer eyj",
         "api_key=",
         "api-key=",
+        "api key:",
         "access_token=",
         "refresh_token=",
         "password=",
+        "password =",
+        "password:",
+        "password :",
         "passwd=",
+        "passwd:",
+        "pwd=",
+        "passphrase=",
+        "passphrase:",
         "client_secret=",
+        "client-secret=",
+        "secret_key=",
+        "secret-key=",
+        "api_token=",
         "private_key=",
+        "aws_secret_access_key=",
     ]
     .iter()
     .any(|marker| lower.contains(marker))
 }
 
 fn is_file_reference(text: &str) -> bool {
-    text.lines()
-        .filter(|line| !line.trim().is_empty())
-        .all(|line| line.trim().starts_with("file://"))
+    let lines = text
+        .lines()
+        .map(str::trim)
+        .filter(|line| !line.is_empty())
+        .collect::<Vec<_>>();
+    !lines.is_empty() && lines.iter().all(|line| line.starts_with("file://"))
 }
 
 fn trim_history(state: &mut StoredHistory) {
@@ -606,7 +657,9 @@ fn source_application_supported() -> bool {
     }
     #[cfg(target_os = "linux")]
     {
-        return std::env::var_os("WAYLAND_DISPLAY").is_none();
+        return !is_wayland_session()
+            && std::env::var_os("DISPLAY").is_some_and(|display| !display.is_empty())
+            && executable_on_path("xdotool");
     }
     #[allow(unreachable_code)]
     false
@@ -661,7 +714,7 @@ fn macos_frontmost_application_name() -> Option<String> {
 
 #[cfg(target_os = "linux")]
 fn linux_active_application_name() -> Option<String> {
-    if std::env::var_os("WAYLAND_DISPLAY").is_some() {
+    if is_wayland_session() {
         return None;
     }
     let output = std::process::Command::new("xdotool")
@@ -676,6 +729,49 @@ fn linux_active_application_name() -> Option<String> {
     fs::read_to_string(comm_path)
         .ok()
         .map(|name| name.trim().to_owned())
+}
+
+#[cfg(target_os = "linux")]
+fn is_wayland_session() -> bool {
+    std::env::var_os("WAYLAND_DISPLAY").is_some_and(|display| !display.is_empty())
+        || std::env::var("XDG_SESSION_TYPE")
+            .is_ok_and(|session| session.eq_ignore_ascii_case("wayland"))
+}
+
+#[cfg(target_os = "linux")]
+fn executable_on_path(name: &str) -> bool {
+    let Some(path) = std::env::var_os("PATH") else {
+        return false;
+    };
+    std::env::split_paths(&path).any(|directory| {
+        let candidate = directory.join(name);
+        let Ok(metadata) = candidate.metadata() else {
+            return false;
+        };
+        if !metadata.is_file() {
+            return false;
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            metadata.permissions().mode() & 0o111 != 0
+        }
+        #[cfg(not(unix))]
+        {
+            true
+        }
+    })
+}
+
+fn valid_image_dimensions(width: u32, height: u32) -> bool {
+    width > 0
+        && height > 0
+        && width <= MAX_IMAGE_EDGE
+        && height <= MAX_IMAGE_EDGE
+        && (width as usize)
+            .saturating_mul(height as usize)
+            .saturating_mul(4)
+            <= MAX_IMAGE_BYTES
 }
 
 #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
@@ -749,4 +845,74 @@ pub fn copy_clipboard_history_item(
     history: State<'_, ClipboardHistory>,
 ) -> Result<(), String> {
     history.copy_item(&id, &app)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn clipboard_history_requires_current_explicit_opt_in_and_respects_exclusions() {
+        let directory = tempfile::tempdir().unwrap();
+        let history = ClipboardHistory::open(directory.path().join("history.json")).unwrap();
+
+        assert!(
+            !history
+                .capture_text("captured while disabled".into(), None)
+                .unwrap()
+        );
+        assert!(history.list("").is_empty());
+
+        history.set_enabled(true).unwrap();
+        history
+            .set_excluded_applications(vec!["Password Manager".into()])
+            .unwrap();
+        assert!(
+            !history
+                .capture_text("excluded secret".into(), Some("password-manager".into()))
+                .unwrap()
+        );
+        assert!(
+            history
+                .capture_text("kept text".into(), Some("text-editor".into()))
+                .unwrap()
+        );
+        history.set_enabled(false).unwrap();
+        assert!(
+            !history
+                .capture_text("captured during disable race".into(), None)
+                .unwrap()
+        );
+
+        let items = history.list("");
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].text.as_deref(), Some("kept text"));
+    }
+
+    #[test]
+    fn clipboard_history_skips_sensitive_text_and_enforces_content_caps() {
+        assert!(is_sensitive_text("Password: hunter2"));
+        assert!(is_sensitive_text("Authorization: Bearer abc123"));
+        assert!(is_sensitive_text("-----BEGIN EC PRIVATE KEY-----"));
+        assert!(is_sensitive_text("-----BEGIN OPENSSH PRIVATE KEY-----"));
+        assert!(!is_sensitive_text("I forgot my password yesterday"));
+        assert!(is_file_reference(
+            "file:///home/user/a.txt\nfile:///home/user/b.txt"
+        ));
+        assert!(!is_file_reference("\n  \n"));
+        assert!(valid_image_dimensions(1024, 1024));
+        assert!(!valid_image_dimensions(2048, 2048));
+        assert!(!valid_image_dimensions(0, 1));
+
+        let directory = tempfile::tempdir().unwrap();
+        let history = ClipboardHistory::open(directory.path().join("history.json")).unwrap();
+        history.set_enabled(true).unwrap();
+        assert!(
+            history
+                .capture_text("x".repeat(MAX_TEXT_BYTES + 1), None)
+                .unwrap()
+        );
+        assert!(history.capture_image(vec![0; 4], 2, 2, None).unwrap());
+        assert!(history.list("").is_empty());
+    }
 }

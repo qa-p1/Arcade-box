@@ -152,7 +152,7 @@
     <summary>Privacy exclusions</summary>
     <label for="clipboard-exclusions">Application names, one per line</label>
     <textarea id="clipboard-exclusions" bind:value={exclusionText} placeholder="Password Manager&#10;Secure Wallet" spellcheck="false"></textarea>
-    <small>{status?.sourceApplicationAvailable ? 'Arcade Box checks the active application when this desktop exposes it. Wayland does not provide this information.' : 'This desktop does not expose the active application, so application exclusions are not applied.'}</small>
+    <small>{status?.sourceApplicationAvailable ? 'Arcade Box checks the active application when this desktop exposes it. Wayland does not provide this information.' : 'Source app detection is unavailable in this session, so application exclusions cannot be applied. X11 needs xdotool; Wayland does not expose the active app.'}</small>
     <button type="button" class="quiet-button" onclick={() => void saveExclusions()}><Icon name="check" size={13} /><span>Save exclusions</span></button>
   </details>
 
