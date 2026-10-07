@@ -23,7 +23,7 @@
   import PluginManager from './lib/PluginManager.svelte';
   import SettingsView from './lib/SettingsView.svelte';
   import type { IconName } from './lib/icon-names';
-import { cancelJob, detectContext, getHistory, getPreference, hideIsland, listFavorites, listJobs, listProviders, listTools, openArtifact, openReviewedUrl, pastePlainStatus, pastePlainText, pinScreenCapture, revokeInputFolder, revokeOutputDirectory, revealArtifact, runContextAction, runScreenTool, saveArtifactAs, screenCaptureStatus, screenRecordingStatus, searchTools, selectFiles, setAlias, setFavorite, setPreference, setShortcut, setSurfaceMode, setWindowPin, shortcutStatus, startJob, startScreenRecording, stopScreenRecording, terminateProcess, watchIslandFocus, watchJobUpdates, watchShortcutStatus, windowPinStatus } from './lib/arcade';
+import { cancelJob, cancelScreenRecording, detectContext, getHistory, getPreference, hideIsland, listFavorites, listJobs, listProviders, listTools, openArtifact, openReviewedUrl, pastePlainStatus, pastePlainText, pinScreenCapture, revokeInputFolder, revokeOutputDirectory, revealArtifact, runContextAction, runScreenTool, saveArtifactAs, screenCaptureStatus, screenRecordingStatus, searchTools, selectFiles, setAlias, setFavorite, setPreference, setShortcut, setSurfaceMode, setWindowPin, shortcutStatus, startJob, startScreenRecording, stopScreenRecording, terminateProcess, watchIslandFocus, watchJobUpdates, watchShortcutStatus, windowPinStatus } from './lib/arcade';
 import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, ProcessInfo, ProcessList, ProviderInfo, ScreenCaptureStatus, ScreenRecordingSnapshot, SelectedDirectory, SelectedFile, ShortcutStatus, SystemWindowPinStatus, ToolInput, ToolResult, ToolSummary } from './lib/contracts';
   import { acceptsSelectedFile, acceptsTextInput, fileInputMime, inputMime, isRunnable, privacyHint, privacyLabel, usesFileInput } from './lib/tool-utils';
   import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem } from './lib/standard-ui';
@@ -816,11 +816,28 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
         return;
       }
       if (isScreenRecorderTool(tool.id)) {
-        const status = await startScreenRecording();
-        if (status) {
-          screenRecording = status;
-          if (generation === viewGeneration && selectedTool?.id === tool.id) activeJobId = status.jobId || '';
-          mergeBackgroundJobs(await listJobs().catch(() => []));
+        screenRecording = {
+          platform: screenRecording?.platform || screenStatus?.platform || 'unknown',
+          available: screenRecording?.available ?? (screenStatus?.recordingAvailable === true),
+          starting: true,
+          recording: false,
+          finalizing: false,
+          elapsedSeconds: null,
+          jobId: null,
+          message: 'Waiting for screen selection…',
+        };
+        try {
+          const status = await startScreenRecording();
+          screenRecording = status || await screenRecordingStatus();
+          if (status) {
+            if (generation === viewGeneration && selectedTool?.id === tool.id) activeJobId = status.jobId || '';
+            mergeBackgroundJobs(await listJobs().catch(() => []));
+          }
+        } catch (error) {
+          screenRecording = await screenRecordingStatus().catch(() => ({
+            ...screenRecording!, starting: false, message: messageOf(error),
+          }));
+          throw error;
         }
         return;
       }
@@ -942,6 +959,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     if (!screenRecording?.recording || screenRecording.finalizing) return;
     const generation = viewGeneration;
     const recordingToolId = selectedTool?.id;
+    screenRecording = { ...screenRecording, finalizing: true, message: 'Finalizing the recording and saving the video…' };
     running = true;
     runError = '';
     activeResult = null;
@@ -962,8 +980,18 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
   }
 
   async function discardScreenRecording(): Promise<void> {
-    const job = backgroundJobs.find((entry) => entry.id === screenRecording?.jobId);
-    if (job && jobIsActive(job)) await cancelBackgroundJob(job);
+    if (!screenRecording?.recording || screenRecording.finalizing) return;
+    screenRecording = { ...screenRecording, finalizing: true, message: 'Discarding the partial recording…' };
+    runError = '';
+    try {
+      screenRecording = { ...(await cancelScreenRecording()), message: 'Recording discarded.' };
+      mergeBackgroundJobs(await listJobs().catch(() => []));
+    } catch (error) {
+      runError = messageOf(error);
+      screenRecording = await screenRecordingStatus().catch(() => ({
+        ...screenRecording!, recording: true, finalizing: false, message: messageOf(error),
+      }));
+    }
   }
 
   async function copyOutput(value: string): Promise<void> {
@@ -1767,14 +1795,14 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
               {#if isScreenTool(selectedTool.id)}
                 <section class="screen-action-status" aria-label="Screen capture availability" aria-live="polite">
                   <div class="screen-status-heading"><span class="runtime-dot" class:offline={(isScreenRecorderTool(selectedTool.id) ? screenStatus?.recordingAvailable : screenStatus?.captureAvailable) === false}></span><strong>{isScreenRecorderTool(selectedTool.id) ? (screenStatus?.recordingAvailable ? 'Screen recording is available' : screenStatus ? 'Screen recording unavailable' : 'Checking screen recording') : (screenStatus?.captureAvailable ? 'Screen selection is available' : screenStatus ? 'Screen selection unavailable' : 'Checking screen capture')}</strong><span>{isScreenRecorderTool(selectedTool.id) ? screenRecording?.platform || screenStatus?.platform || 'checking' : screenStatus?.selectionMode || 'checking'}</span></div>
-                  <p>{isScreenRecorderTool(selectedTool.id) ? screenRecording?.message || screenStatus?.recordingMessage || 'Arcade Box is checking screen recording support.' : screenStatus?.message || 'Arcade Box is checking your desktop’s native capture support.'}</p>
+                  <p>{isScreenRecorderTool(selectedTool.id) ? (screenRecording?.recording || screenRecording?.starting || screenRecording?.finalizing || screenRecording?.message === 'Recording discarded.' ? screenRecording.message : screenStatus?.recordingMessage || screenRecording?.message || 'Arcade Box is checking screen recording support.') : screenStatus?.message || 'Arcade Box is checking your desktop’s native capture support.'}</p>
                   {#if selectedTool.id === 'arcade.screen.qr'}<small>Decoded destinations are shown first. Arcade Box will not open them automatically.</small>{/if}
                   {#if selectedTool.id === 'arcade.screen.ocr'}<small>Capture and OCR run locally. The selected image is passed through a scoped file grant.</small>{/if}
                   {#if selectedTool.id === 'arcade.screen.color'}<small>Choose a screen area, then click a pixel or use arrow keys to inspect its exact color locally.</small>{/if}
                   {#if isScreenRecorderTool(selectedTool.id) && screenRecording?.recording}
                     <div class="screen-recording-controls">
-                      <span><strong>Recording active</strong><small>{Math.floor((screenRecording.elapsedSeconds || 0) / 60).toString().padStart(2, '0')}:{((screenRecording.elapsedSeconds || 0) % 60).toString().padStart(2, '0')} elapsed · closing the Island keeps it running</small></span>
-                      <button type="button" class="quiet-button" disabled={screenRecording.finalizing || running} onclick={() => void finishScreenRecording()}><Icon name="check" size={14} /><span>{screenRecording.finalizing ? 'Saving…' : 'Stop & save'}</span></button>
+                      <span><strong>{screenRecording.finalizing ? (screenRecording.message.toLowerCase().includes('discard') ? 'Discarding recording' : 'Saving recording') : 'Recording active'}</strong><small>{Math.floor((screenRecording.elapsedSeconds || 0) / 60).toString().padStart(2, '0')}:{((screenRecording.elapsedSeconds || 0) % 60).toString().padStart(2, '0')} elapsed · closing the Island keeps it running</small></span>
+                      <button type="button" class="quiet-button" disabled={screenRecording.finalizing || running} onclick={() => void finishScreenRecording()}><Icon name="check" size={14} /><span>{screenRecording.finalizing ? (screenRecording.message.toLowerCase().includes('discard') ? 'Discarding…' : 'Saving…') : 'Stop & save'}</span></button>
                       <button type="button" class="quiet-button" disabled={screenRecording.finalizing} onclick={() => void discardScreenRecording()}><Icon name="close" size={14} /><span>Discard</span></button>
                     </div>
                   {/if}
@@ -1835,7 +1863,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
                 {#if selectedTool.id === 'arcade.pdf.compress'}<p class="field-note">This performs lossless structural optimization. It does not reduce image quality.</p>{/if}
               {:else}
                 {#if isScreenTool(selectedTool.id) || selectedTool.ui?.input.kind === 'none'}
-                  <p class="field-note no-input-note">{selectedTool.id === 'arcade.system.paste-plain' ? 'Choose Paste as plain text to hide Arcade Box and send the desktop’s common plain-text paste shortcut to the previously focused app. The clipboard itself stays unchanged.' : isScreenRecorderTool(selectedTool.id) ? 'Start a local recording from a screen or window chosen in the system capture dialog. You can close Arcade Island and stop it later.' : isScreenTool(selectedTool.id) ? 'Run this action to open your desktop’s capture picker.' : ''}</p>
+                  <p class="field-note no-input-note">{selectedTool.id === 'arcade.system.paste-plain' ? 'Choose Paste as plain text to hide Arcade Box and send the desktop’s common plain-text paste shortcut to the previously focused app. The clipboard itself stays unchanged.' : isScreenRecorderTool(selectedTool.id) ? 'On Linux X11, Box records the full display. Wayland, Windows, and macOS use the native picker to choose a display or window. You can close Arcade Island and stop or discard the recording later.' : isScreenTool(selectedTool.id) ? 'Run this action to open your desktop’s capture picker.' : ''}</p>
                 {:else}
                   <div class="field-label-row">
                     <label for="tool-input">{selectedTool.ui?.version === 1 ? selectedTool.ui.input.label : 'Input'}</label>
