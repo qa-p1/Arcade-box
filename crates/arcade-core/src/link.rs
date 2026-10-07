@@ -458,8 +458,10 @@ fn verb(tool: &ToolManifest) -> String {
 pub fn actions(tools: &[ToolManifest], cache: Option<&ProviderCache>) -> Vec<Action> {
     let mut out = Vec::new();
     for tool in tools {
+        // Screen tools own a live picker and cannot be run as peer actions.
         if tool.status != ImplementationStatus::Implemented
             || tool.id.starts_with("arcade.pipeline.")
+            || tool.id.starts_with("arcade.screen.")
             || tool.execution.get("runtime").and_then(Value::as_str) == Some("wasm")
         {
             continue;
