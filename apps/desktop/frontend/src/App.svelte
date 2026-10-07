@@ -1245,6 +1245,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       case 'arcade.pdf.split': return 'pdf:split';
       case 'arcade.pdf.compress': return 'pdf:structural';
       case 'arcade.pdf.watermark': return 'pdf:structural';
+      case 'arcade.pdf.convert': return 'document:render:pdf';
       default: return null;
     }
   }
@@ -1313,6 +1314,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     if (selectedTool.id === 'arcade.system.paste-plain') return plainPasteStatus?.available === true;
     if (isScreenTool(selectedTool.id) && screenStatus?.captureAvailable === false) return false;
     if (isScreenTool(selectedTool.id)) return true;
+    if (selectedTool.id === 'arcade.pdf.convert' && !providerSupports('document:render:pdf')) return false;
     const standardProblem = standardUiOptionsProblem(selectedTool.ui, toolOptions);
     if (standardProblem) return false;
     if (selectedTool.id === 'arcade.pdf.watermark') {
@@ -1830,7 +1832,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
                 {:else if selectedTool.ui?.version === 1 && selectedTool.ui.input.kind === 'files' && selectedFiles.length < (selectedTool.ui.input.minItems ?? 1)}<p class="field-note">Select at least {selectedTool.ui.input.minItems ?? 1} {(selectedTool.ui.input.minItems ?? 1) === 1 ? 'file' : 'files'}{selectedTool.ui.input.sortable ? '. Their order here controls the result.' : '.'}</p>{/if}
                 {@const pdfCapability = requiredPdfCapability(selectedTool)}
                 {#if pdfCapability && !loadingCatalog && !providerError && !providerSupports(pdfCapability)}
-                  <div class="provider-inline-missing" role="status"><Icon name="document" size={14} /><span>No compatible qpdf provider is currently available. Install qpdf or review provider detection in Engines &amp; Dependencies.</span><button type="button" onclick={openEngines}>View engines</button></div>
+                  <div class="provider-inline-missing" role="status"><Icon name="document" size={14} /><span>{selectedTool.id === 'arcade.pdf.convert' ? 'LibreOffice is required to convert documents to PDF. Install LibreOffice or review provider detection in Engines &amp; Dependencies.' : 'No compatible qpdf provider is currently available. Install qpdf or review provider detection in Engines &amp; Dependencies.'}</span><button type="button" onclick={openEngines}>View engines</button></div>
                 {/if}
                 {#if selectedTool.id === 'arcade.pdf.compress'}<p class="field-note">This performs lossless structural optimization. It does not reduce image quality.</p>{/if}
               {:else}

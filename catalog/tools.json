@@ -1301,7 +1301,7 @@
       "execution": {
         "runtime": "builtin"
       },
-      "status": "partial",
+      "status": "implemented",
       "platforms": {
         "windows": "conditional",
         "macos": "conditional",

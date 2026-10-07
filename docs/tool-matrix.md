@@ -14,7 +14,7 @@ Generated from [`catalog/tools.json`](../catalog/tools.json) by `python3 catalog
 | arcade.pdf.protect | implemented | PDF | pdf.qpdf | LOCAL | conditional | conditional | conditional | conditional | file/pdf → file/pdf | Pending |
 | arcade.pdf.images-to-pdf | implemented | PDF | pdf.create | LOCAL | conditional | conditional | conditional | conditional | file/image[] → file/pdf | Pending |
 | arcade.pdf.pdf-to-images | implemented | PDF | pdf.render | LOCAL | conditional | conditional | conditional | conditional | file/pdf → file/image[] | `arcade-core/src/pdf.rs`: `installed_poppler_extracts_metadata_and_renders_pdf_pages` |
-| arcade.pdf.convert | partial | PDF | office.libreoffice | LOCAL | conditional | conditional | conditional | conditional | file/document, file/spreadsheet → file/pdf | Pending |
+| arcade.pdf.convert | implemented | PDF | office.libreoffice | LOCAL | conditional | conditional | conditional | conditional | file/document, file/spreadsheet → file/pdf | Pending |
 | arcade.pdf.extract | implemented | PDF | pdf.text, pdf.info, pdf.images, pdf.attachments | LOCAL | conditional | conditional | conditional | conditional | file/pdf → structured/pdf-extraction, file/image, file/octet-stream | `arcade-core/src/pdf.rs`: `installed_poppler_extracts_embedded_images_as_granted_files`, `installed_poppler_extracts_attachments_to_generated_non_overwriting_files` |
 | arcade.pdf.ocr | implemented | PDF | pdf.ocrmypdf | LOCAL | conditional | conditional | conditional | conditional | file/pdf → file/pdf | Pending |
 | arcade.image.convert | implemented | Images | image.vips | LOCAL | conditional | conditional | conditional | conditional | file/image → file/image | `arcade-core/src/image.rs`: `installed_vips_converts_and_resizes_real_images` |
