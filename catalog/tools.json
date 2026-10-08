@@ -1273,7 +1273,7 @@
       "version": "0.1.0",
       "apiVersion": "1",
       "name": "Document to PDF",
-      "description": "Render supported document formats to PDF using an available compatible provider.",
+      "description": "Convert Word, OpenDocument, PowerPoint, RTF and spreadsheet files to PDF on this device: text, headings, lists and tables.",
       "category": "PDF",
       "aliases": [
         "doc to pdf",
@@ -1289,7 +1289,7 @@
         "file/pdf"
       ],
       "providers": [
-        "office.libreoffice"
+        "core.document-pdf"
       ],
       "permissions": {
         "filesystem": {
@@ -1312,7 +1312,7 @@
         "version": 1,
         "input": {
           "kind": "file",
-          "label": "Office document",
+          "label": "Document or spreadsheet",
           "minItems": 1,
           "maxItems": 1
         },
@@ -1415,7 +1415,9 @@
         "file/pdf"
       ],
       "providers": [
-        "pdf.ocrmypdf"
+        "ocr.tesseract",
+        "pdf.render",
+        "pdf.qpdf"
       ],
       "permissions": {
         "filesystem": {
@@ -1449,7 +1451,7 @@
             "type": "text",
             "default": "eng",
             "placeholder": "eng or eng+fra",
-            "help": "Install matching Tesseract language data through your system package manager."
+            "help": "Tesseract language codes. English is always included in Arcade's Tesseract download; add others through your package manager."
           },
           {
             "key": "outputName",
@@ -3066,9 +3068,21 @@
             "type": "select",
             "default": "auto",
             "choices": [
-              { "value": "auto", "label": "Automatic" },
-              { "value": "tesseract", "label": "Tesseract" },
-              { "value": "lens", "label": "Arcade Lens (local)", "requires": ["ocr:lens"] }
+              {
+                "value": "auto",
+                "label": "Automatic"
+              },
+              {
+                "value": "tesseract",
+                "label": "Tesseract"
+              },
+              {
+                "value": "lens",
+                "label": "Arcade Lens (local)",
+                "requires": [
+                  "ocr:lens"
+                ]
+              }
             ],
             "help": "Automatic prefers Tesseract on Linux and Arcade Lens on Windows and macOS."
           },
@@ -7364,14 +7378,13 @@
       "version": "0.1.0",
       "apiVersion": "1",
       "name": "Text to Speech",
-      "description": "Read text aloud with natural offline voices (Piper) and save it as audio.",
+      "description": "Read text aloud with the voice built into your system and save it as audio.",
       "category": "Audio & Speech",
       "aliases": [
         "text to speech",
         "tts",
         "read aloud",
-        "voice over",
-        "piper"
+        "voice over"
       ],
       "privacyClass": "LOCAL",
       "inputs": [
@@ -7382,7 +7395,7 @@
         "file/audio"
       ],
       "providers": [
-        "audio.piper"
+        "audio.system-speech"
       ],
       "permissions": {
         "filesystem": {
@@ -7405,15 +7418,19 @@
             "key": "voice",
             "label": "Voice",
             "type": "select",
-            "default": "en_US-lessac-medium",
+            "default": "default",
             "choices": [
               {
-                "value": "en_US-lessac-medium",
-                "label": "Lessac (US English, female)"
+                "value": "default",
+                "label": "System default"
               },
               {
-                "value": "en_US-ryan-medium",
-                "label": "Ryan (US English, male)"
+                "value": "female",
+                "label": "Female"
+              },
+              {
+                "value": "male",
+                "label": "Male"
               }
             ]
           },
@@ -7425,16 +7442,6 @@
             "minimum": 0.5,
             "maximum": 2,
             "step": 0.05
-          },
-          {
-            "key": "pause",
-            "label": "Pause between sentences (seconds)",
-            "type": "number",
-            "default": 0.3,
-            "minimum": 0,
-            "maximum": 3,
-            "step": 0.05,
-            "advanced": true
           },
           {
             "key": "format",
@@ -8234,7 +8241,7 @@
       "version": "0.1.0",
       "apiVersion": "1",
       "name": "Webpage to PDF / Screenshot",
-      "description": "Save a webpage as a PDF or a full-page screenshot using headless Chromium.",
+      "description": "Save a webpage as a PDF or a full-page screenshot using the web browser already on this computer.",
       "category": "Web & Network",
       "aliases": [
         "save webpage",
@@ -8251,7 +8258,7 @@
         "file/image"
       ],
       "providers": [
-        "web.chromium"
+        "web.browser"
       ],
       "permissions": {
         "filesystem": {

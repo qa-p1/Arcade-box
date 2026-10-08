@@ -28,6 +28,8 @@ use std::{
 
 mod page_images;
 mod snapshot;
+
+pub(crate) use snapshot::browser_available;
 mod ytdlp;
 
 const TEXT_LIMIT: u64 = 5 * 1024 * 1024;

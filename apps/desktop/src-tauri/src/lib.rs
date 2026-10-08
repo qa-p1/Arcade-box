@@ -333,12 +333,33 @@ fn list_providers(
     providers.extend(discover_vips(None));
     providers.extend(arcade_core::provider::discover_tesseract());
     providers.extend(arcade_core::provider::discover_arcade(&runtime));
-    // Only when the user opens Engines: re-checking every provider starts
-    // Python tools (rembg, OCRmyPDF), which startup must not pay for.
+    // Only when the user opens Engines: re-checking every provider runs each
+    // tool's `--version`, which startup must not pay for.
     if recheck.unwrap_or(false) {
         link::providers_checked(&app);
     }
     providers
+}
+
+/// Size in MB of the Tesseract download offered on this platform, if any.
+#[tauri::command]
+fn tesseract_download_size() -> Option<u32> {
+    arcade_link::engines::tesseract_source().map(|source| source.size_mb)
+}
+
+/// Gets Tesseract for every Arcade app (nothing is shipped with Box).
+#[tauri::command(async)]
+async fn download_tesseract() -> Result<String, String> {
+    use arcade_link::engines::{Download, download_tesseract};
+    match tauri::async_runtime::spawn_blocking(download_tesseract)
+        .await
+        .map_err(|error| error.to_string())??
+    {
+        Download::Ready(_) => Ok("Tesseract is ready.".into()),
+        Download::InstallerOpened => {
+            Ok("Finish the Tesseract installer, then open Engines again.".into())
+        }
+    }
 }
 
 #[tauri::command]
@@ -1411,6 +1432,8 @@ pub fn run(args: Vec<String>) {
             revoke_input_folder,
             terminate_process,
             window_pin_status,
+            tesseract_download_size,
+            download_tesseract,
             set_window_pin,
             revoke_output_directory,
             save_artifact_as,

@@ -4,9 +4,7 @@ use crate::{
     artifacts::{publish_without_overwrite, validate_portable_filename},
     grants::FileGrants,
     process::{self, ProcessSpec},
-    provider::{
-        discover_img2pdf, discover_libreoffice, discover_ocrmypdf, discover_poppler, discover_qpdf,
-    },
+    provider::{discover_poppler, discover_qpdf},
 };
 use arcade_contract::{ResultStatus, ToolManifest, ToolRequest, ToolResult, ToolValue, ValueKind};
 use printpdf::{
@@ -19,13 +17,16 @@ use std::{
     collections::BTreeSet,
     ffi::OsString,
     fs::{self, File, OpenOptions},
-    io::{Read, Write},
+    io::Write,
     path::{Path, PathBuf},
     sync::atomic::{AtomicBool, Ordering},
     time::Duration,
 };
 
+mod convert;
 mod form;
+pub(crate) mod images;
+mod ocr;
 mod shrink;
 mod sign;
 
@@ -62,7 +63,7 @@ pub fn execute(
         "arcade.pdf.fill" => form::fill(manifest, request, grants, cancelled),
         "arcade.pdf.images-to-pdf" => images_to_pdf(manifest, request, grants, cancelled),
         "arcade.pdf.pdf-to-images" => pdf_to_images(manifest, request, grants, cancelled),
-        "arcade.pdf.ocr" => searchable_ocr(manifest, request, grants, cancelled),
+        "arcade.pdf.ocr" => ocr::searchable(manifest, request, grants, cancelled),
         "arcade.pdf.extract" => extract_content(manifest, request, grants, cancelled),
         "arcade.pdf.watermark" => watermark(manifest, request, grants, cancelled),
         "arcade.pdf.protect" => protect(manifest, request, grants, cancelled),
@@ -418,79 +419,26 @@ fn images_to_pdf(
             "Original-sized pages need an explicit DPI before margins can be calculated. Choose A4 or Letter, or set an image DPI.".into(),
         );
     }
-    let provider = discover_img2pdf()
-        .into_iter()
-        .find(|provider| {
-            provider.compatible && provider.capabilities.iter().any(|cap| cap == "pdf:create")
-        })
-        .ok_or(
-            "Images to PDF needs img2pdf (the `img2pdf` command). Install it, then try again.",
-        )?;
     let temp = tempfile::Builder::new()
         .prefix(".arcade-pdf-")
         .tempdir_in(parent)
         .map_err(|error| format!("Cannot create a private PDF workspace: {error}"))?;
     let staged = temp.path().join("images.pdf");
-    let mut args: Vec<OsString> = vec!["--output".into(), staged.as_os_str().to_os_string()];
-    if let Some(page_size) = page_size {
-        args.push("--pagesize".into());
-        let page_size = match orientation {
-            "auto" => page_size.to_owned(),
-            "portrait" => page_size.to_owned(),
-            "landscape" => format!("{page_size}^T"),
-            _ => page_size.to_owned(),
-        };
-        args.push(page_size.into());
-        if orientation == "auto" {
-            args.push("--auto-orient".into());
-        }
-        args.push("--fit".into());
-        args.push(fit.into());
-    }
-    if margin_mm > 0 {
-        args.push("--border".into());
-        args.push(format!("{margin_mm}mm").into());
-    }
-    if let Some(dpi) = dpi {
-        args.push("--imgsize".into());
-        args.push(format!("{dpi}dpi").into());
-    }
-    args.push("--".into());
-    args.extend(sources.iter().map(|path| path.as_os_str().to_os_string()));
-    let output = run_provider(
-        &provider.executable_path,
-        args,
-        Some(temp.path()),
-        cancelled,
-        "create a PDF from images",
-        1024 * 1024,
-    )?;
-    if !output.status.success() {
-        let detail = if output.stderr.is_empty() {
-            &output.stdout
-        } else {
-            &output.stderr
-        };
-        let detail = concise(&String::from_utf8_lossy(detail));
-        return Err(if detail.is_empty() {
-            format!(
-                "img2pdf could not create a PDF (exit status {})",
-                output
-                    .status
-                    .code()
-                    .map_or_else(|| "unknown".to_owned(), |code| code.to_string())
-            )
-        } else {
-            format!("img2pdf could not create a PDF: {detail}")
-        });
-    }
-    let mut signature = [0; 5];
-    File::open(&staged)
-        .and_then(|mut file| file.read_exact(&mut signature))
-        .map_err(|error| format!("img2pdf did not create a readable PDF: {error}"))?;
-    if &signature != b"%PDF-" {
-        return Err("img2pdf reported success but did not produce a valid PDF".into());
-    }
+    let layout = images::Layout {
+        page: page_size.map(|size| {
+            if size == "A4" {
+                images::A4
+            } else {
+                images::LETTER
+            }
+        }),
+        orientation,
+        fit,
+        margin: margin_mm as f32 * 72.0 / 25.4,
+        dpi: dpi.unwrap_or(96) as f32,
+    };
+    let pdf = images::build(&sources, &layout, cancelled)?;
+    fs::write(&staged, pdf).map_err(|error| format!("Could not write the PDF: {error}"))?;
     let final_path = publish_without_overwrite(&staged, parent, &name, cancelled)
         .map_err(|error| format!("Could not save image PDF: {error}"))?;
     let selected = grants
@@ -511,10 +459,6 @@ fn images_to_pdf(
     if let Some(dpi) = dpi {
         result.metadata.insert("dpi".into(), json!(dpi));
     }
-    result.metadata.insert(
-        "providerPath".into(),
-        json!(provider.executable_path.display().to_string()),
-    );
     result.warnings.push("Per-image crop/fill previews and DPI overrides on fixed-size pages are not available. Review page sizes before printing.".into());
     Ok(result)
 }
@@ -681,66 +625,6 @@ fn pdf_to_images(
     result.metadata.insert("pageTo".into(), json!(last));
     result.metadata.insert("dpi".into(), json!(dpi));
     result.metadata.insert("format".into(), json!(format));
-    result.metadata.insert(
-        "providerPath".into(),
-        json!(provider.executable_path.display().to_string()),
-    );
-    Ok(result)
-}
-
-fn searchable_ocr(
-    manifest: &ToolManifest,
-    request: &ToolRequest,
-    grants: &FileGrants,
-    cancelled: &AtomicBool,
-) -> Result<ToolResult, String> {
-    let source = selected_pdf(request, grants)?;
-    let parent = source.parent().ok_or("Selected PDF has no parent folder")?;
-    let language = request
-        .options
-        .get("language")
-        .and_then(serde_json::Value::as_str)
-        .unwrap_or("eng");
-    if language.is_empty()
-        || language.len() > 64
-        || !language
-            .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'+' | b'-'))
-    {
-        return Err("Choose a valid OCR language code".into());
-    }
-    let provider = discover_ocrmypdf().into_iter().find(|provider| provider.compatible)
-        .ok_or("Searchable PDF needs OCRmyPDF (the `ocrmypdf` command) and Tesseract language data. Install them, then try again.")?;
-    let name = output_name(request, &source, "-searchable.pdf")?;
-    let temp = tempfile::Builder::new()
-        .prefix(".arcade-pdf-ocr-")
-        .tempdir_in(parent)
-        .map_err(|error| format!("Cannot create a private OCR workspace: {error}"))?;
-    let staged = temp.path().join("searchable.pdf");
-    run_provider(
-        &provider.executable_path,
-        vec![
-            "--skip-text".into(),
-            "-l".into(),
-            language.into(),
-            source.as_os_str().to_os_string(),
-            staged.as_os_str().to_os_string(),
-        ],
-        Some(temp.path()),
-        cancelled,
-        "add a searchable OCR layer",
-        2 * 1024 * 1024,
-    )?;
-    if !staged.is_file() {
-        return Err("OCRmyPDF finished without creating the searchable PDF".into());
-    }
-    let final_path = publish_without_overwrite(&staged, parent, &name, cancelled)
-        .map_err(|error| format!("Could not save searchable PDF: {error}"))?;
-    let selected = grants
-        .grant(&final_path)
-        .map_err(|error| error.to_string())?;
-    let mut result = success_file(manifest, selected, "Created a searchable PDF");
-    result.metadata.insert("language".into(), json!(language));
     result.metadata.insert(
         "providerPath".into(),
         json!(provider.executable_path.display().to_string()),
@@ -1921,70 +1805,38 @@ fn convert_document(
     let parent = source
         .parent()
         .ok_or("Selected document has no parent folder")?;
-    let provider = discover_libreoffice()
-        .into_iter()
-        .find(|provider| provider.compatible)
-        .ok_or("Converting documents to PDF needs LibreOffice (the `soffice` command). Install it, then try again.")?;
-    let name = output_name(request, &source, ".pdf")?;
-    let temp = tempfile::Builder::new()
-        .prefix(".arcade-office-")
-        .tempdir_in(parent)
-        .map_err(|error| format!("Cannot create a private conversion workspace: {error}"))?;
     let extension = source
         .extension()
         .and_then(|value| value.to_str())
-        .ok_or("The selected document has no extension")?;
-    let staged_input = temp.path().join(format!("input.{extension}"));
-    link_or_copy_pdf(source.as_path(), &staged_input, cancelled)?;
-    let profile_url = url::Url::from_directory_path(temp.path().join("profile"))
-        .map_err(|_| "Cannot make a private LibreOffice profile")?;
-    let args = vec![
-        "--headless".into(),
-        format!("-env:UserInstallation={profile_url}").into(),
-        "--convert-to".into(),
-        "pdf".into(),
-        "--outdir".into(),
-        temp.path().as_os_str().to_os_string(),
-        staged_input.as_os_str().to_os_string(),
-    ];
-    let output = run_provider(
-        &provider.executable_path,
-        args,
-        Some(temp.path()),
-        cancelled,
-        "convert the document to PDF",
-        2 * 1024 * 1024,
-    )?;
-    if !output.status.success() {
-        let detail = concise(&String::from_utf8_lossy(&output.stderr));
-        return Err(if detail.is_empty() {
-            "LibreOffice could not convert the selected document to PDF".into()
-        } else {
-            format!("LibreOffice could not convert the selected document to PDF: {detail}")
-        });
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+    let size = fs::metadata(&source)
+        .map_err(|error| error.to_string())?
+        .len();
+    if size > 100 * 1024 * 1024 {
+        return Err("Documents up to 100 MB can be converted".into());
     }
-    let staged = temp.path().join(format!("input.pdf"));
-    if !staged.is_file() {
-        return Err("LibreOffice finished without creating a PDF".into());
-    }
+    let bytes = fs::read(&source).map_err(|error| format!("Cannot read the document: {error}"))?;
+    let name = output_name(request, &source, ".pdf")?;
+    let title = source
+        .file_stem()
+        .map(|stem| stem.to_string_lossy().into_owned())
+        .unwrap_or_default();
+    let converted = convert::convert(bytes, &extension, &title, cancelled)?;
+    let temp = tempfile::Builder::new()
+        .prefix(".arcade-convert-")
+        .tempdir_in(parent)
+        .map_err(|error| format!("Cannot create a private conversion workspace: {error}"))?;
+    let staged = temp.path().join("document.pdf");
+    fs::write(&staged, converted.pdf)
+        .map_err(|error| format!("Could not write the PDF: {error}"))?;
     let final_path = publish_without_overwrite(&staged, parent, &name, cancelled)
         .map_err(|error| format!("Could not save converted PDF: {error}"))?;
     let selected = grants
         .grant(&final_path)
         .map_err(|error| error.to_string())?;
-    let mut result = success_file(
-        manifest,
-        selected,
-        "Converted the document using system LibreOffice",
-    );
-    result.warnings.push("Formatting fidelity depends on LibreOffice and the source document. Review the output before relying on complex layout conversion.".into());
-    result.metadata.insert(
-        "providerPath".into(),
-        json!(provider.executable_path.display().to_string()),
-    );
-    result
-        .metadata
-        .insert("providerVersion".into(), json!(provider.version));
+    let mut result = success_file(manifest, selected, "Converted the document to PDF");
+    result.warnings.extend(converted.warnings);
     Ok(result)
 }
 
@@ -2887,7 +2739,10 @@ fn concise(detail: &str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::{fs, io::Write};
+    use std::{
+        fs,
+        io::{Read, Write},
+    };
 
     #[test]
     fn document_conversion_accepts_documents_and_spreadsheets() {
@@ -3101,13 +2956,7 @@ mod tests {
     }
 
     #[test]
-    fn images_to_pdf_checks_provider_status_and_publishes_a_real_pdf() {
-        let provider_available = discover_img2pdf().into_iter().any(|provider| {
-            provider.compatible && provider.capabilities.iter().any(|cap| cap == "pdf:create")
-        });
-        if !provider_available {
-            return;
-        }
+    fn images_to_pdf_publishes_a_real_pdf_without_external_programs() {
         let temp = tempfile::tempdir().unwrap();
         let source = temp.path().join("source.png");
         ::image::RgbImage::from_pixel(32, 24, ::image::Rgb([20, 80, 180]))
@@ -3143,28 +2992,47 @@ mod tests {
         assert_eq!(&signature, b"%PDF-");
         assert_eq!(result.metadata["imageCount"], 1);
 
-        let unsupported = temp.path().join("unsupported.png");
+        // 16-bit with transparency is flattened, not refused.
+        let deep = temp.path().join("deep.png");
         ::image::ImageBuffer::<::image::Rgba<u16>, Vec<u16>>::from_pixel(
             32,
             24,
             ::image::Rgba([50_000, 1_000, 2_000, 30_000]),
         )
-        .save(&unsupported)
+        .save(&deep)
         .unwrap();
-        let unsupported_grant = grants.grant(&unsupported).unwrap();
+        let deep_grant = grants.grant(&deep).unwrap();
+        let result = execute(
+            &manifest,
+            &ToolRequest {
+                tool_id: manifest.id.clone(),
+                inputs: vec![deep_grant.as_tool_value()],
+                options: json!({"pageSize":"A4","fit":"into"}),
+            },
+            grants,
+            &cancelled,
+        )
+        .unwrap();
+        assert_eq!(result.status, ResultStatus::Success, "{:?}", result.message);
+
+        let broken = temp.path().join("broken.png");
+        // A real PNG header with the image data cut off.
+        let whole = fs::read(&source).unwrap();
+        fs::write(&broken, &whole[..40]).unwrap();
+        let broken_grant = grants.grant(&broken).unwrap();
         let error = execute(
             &manifest,
             &ToolRequest {
                 tool_id: manifest.id.clone(),
-                inputs: vec![unsupported_grant.as_tool_value()],
+                inputs: vec![broken_grant.as_tool_value()],
                 options: json!({"pageSize":"A4","fit":"into"}),
             },
             grants,
             &cancelled,
         )
         .unwrap_err();
-        assert!(error.contains("img2pdf could not create a PDF"), "{error}");
-        assert!(!temp.path().join("unsupported-images.pdf").exists());
+        assert!(error.contains("broken.png"), "{error}");
+        assert!(!temp.path().join("broken-images.pdf").exists());
     }
 
     #[test]

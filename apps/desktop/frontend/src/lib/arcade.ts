@@ -66,6 +66,16 @@ export async function listProviders(recheck = false): Promise<ProviderInfo[]> {
   return invoke<ProviderInfo[]>('list_providers', { recheck });
 }
 
+export async function tesseractDownloadSize(): Promise<number | null> {
+  requireDesktopRuntime();
+  return invoke<number | null>('tesseract_download_size');
+}
+
+export async function downloadTesseract(): Promise<string> {
+  requireDesktopRuntime();
+  return invoke<string>('download_tesseract');
+}
+
 export async function getHistory(): Promise<HistoryEntry[]> {
   requireDesktopRuntime();
   return invoke<HistoryEntry[]>('get_history');

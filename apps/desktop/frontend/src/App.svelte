@@ -23,7 +23,7 @@
   import PluginManager from './lib/PluginManager.svelte';
   import SettingsView from './lib/SettingsView.svelte';
   import type { IconName } from './lib/icon-names';
-import { cancelJob, cancelScreenRecording, detectContext, getHistory, getPreference, hideIsland, listFavorites, listJobs, listProviders, listTools, openArtifact, openReviewedUrl, pastePlainStatus, pastePlainText, pinScreenCapture, revokeInputFolder, revokeOutputDirectory, revealArtifact, runContextAction, runScreenTool, saveArtifactAs, screenCaptureStatus, screenRecordingStatus, searchTools, selectFiles, setAlias, setFavorite, setPreference, setShortcut, setSurfaceMode, setWindowPin, shortcutStatus, startJob, startScreenRecording, stopScreenRecording, terminateProcess, watchIslandFocus, watchJobUpdates, watchShortcutStatus, windowPinStatus } from './lib/arcade';
+import { cancelJob, cancelScreenRecording, detectContext, downloadTesseract, getHistory, getPreference, hideIsland, listFavorites, listJobs, listProviders, listTools, openArtifact, openReviewedUrl, pastePlainStatus, pastePlainText, pinScreenCapture, revokeInputFolder, revokeOutputDirectory, revealArtifact, runContextAction, runScreenTool, saveArtifactAs, screenCaptureStatus, screenRecordingStatus, searchTools, selectFiles, setAlias, setFavorite, setPreference, setShortcut, setSurfaceMode, setWindowPin, shortcutStatus, startJob, startScreenRecording, stopScreenRecording, tesseractDownloadSize, terminateProcess, watchIslandFocus, watchJobUpdates, watchShortcutStatus, windowPinStatus } from './lib/arcade';
 import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, ProcessInfo, ProcessList, ProviderInfo, ScreenCaptureStatus, ScreenRecordingSnapshot, SelectedDirectory, SelectedFile, ShortcutStatus, SystemWindowPinStatus, ToolInput, ToolResult, ToolSummary } from './lib/contracts';
   import { acceptsSelectedFile, acceptsTextInput, fileInputMime, inputMime, isRunnable, privacyHint, privacyLabel, usesFileInput } from './lib/tool-utils';
   import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem } from './lib/standard-ui';
@@ -107,6 +107,11 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
   let history = $state<HistoryEntry[]>([]);
   let favorites = $state<string[]>([]);
   let providers = $state<ProviderInfo[]>([]);
+  // Tesseract is never shipped: Engines offers a download when it's missing.
+  let tesseractOffer = $state<number | null>(null);
+  let tesseractBusy = $state(false);
+  let tesseractMessage = $state('');
+  const tesseractMissing = $derived(!providers.some((provider) => provider.capability === 'ocr.tesseract' && provider.compatible));
   let overlaps = $state<OverlapState>({ lensCapture: false, lensActions: false, clipboardPick: false });
   let peerRequestId = $state('');
   let providersLoaded = $state(false);
@@ -152,6 +157,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
   $effect(() => {
     if (catalogMode !== 'engines') return;
     void listProviders(true).then((items) => { providers = items; providersLoaded = true; }).catch(() => {});
+    void tesseractDownloadSize().then((size) => { tesseractOffer = size; }).catch(() => {});
   });
   let toolOptions = $state<Record<string, string>>({});
   let selectedFiles = $state<SelectedFile[]>([]);
@@ -1279,7 +1285,6 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       case 'arcade.pdf.split': return 'pdf:split';
       case 'arcade.pdf.compress': return 'pdf:structural';
       case 'arcade.pdf.watermark': return 'pdf:structural';
-      case 'arcade.pdf.convert': return 'document:render:pdf';
       default: return null;
     }
   }
@@ -1293,6 +1298,19 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     catalogMode = 'settings';
     categoryFilter = 'All tools';
     dashboardQuery = '';
+  }
+
+  async function getTesseract(): Promise<void> {
+    tesseractBusy = true;
+    tesseractMessage = '';
+    try {
+      tesseractMessage = await downloadTesseract();
+      providers = await listProviders(true);
+    } catch (error) {
+      tesseractMessage = String(error);
+    } finally {
+      tesseractBusy = false;
+    }
   }
 
   function openEngines(): void {
@@ -1807,7 +1825,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
                   <p>{isScreenRecorderTool(selectedTool.id) ? (screenRecording?.recording || screenRecording?.starting || screenRecording?.finalizing || screenRecording?.message === 'Recording discarded.' ? screenRecording.message : screenStatus?.recordingMessage || screenRecording?.message || 'Arcade Box is checking screen recording support.') : screenStatus?.message || 'Arcade Box is checking your desktop’s native capture support.'}</p>
                   {#if selectedTool.id === 'arcade.screen.qr'}<small>Decoded destinations are shown first. Arcade Box will not open them automatically.</small>{/if}
                   {#if selectedTool.id === 'arcade.screen.ocr'}<small>Capture and OCR run locally. The selected image is passed through a scoped file grant.</small>{/if}
-                  {#if selectedTool.id === 'arcade.screen.ocr' && !screenOcrAvailable}<p class="field-error" role="status">{providersLoaded ? (providerError || 'Screen OCR is unavailable. Install Tesseract with its English language data to use this tool.') : 'Checking local Tesseract availability…'}</p>{/if}
+                  {#if selectedTool.id === 'arcade.screen.ocr' && !screenOcrAvailable}<p class="field-error" role="status">{providersLoaded ? (providerError || 'Screen OCR is unavailable. Install Tesseract with its English language data, or download it from Engines & dependencies.') : 'Checking local Tesseract availability…'}</p>{/if}
                   {#if selectedTool.id === 'arcade.screen.color'}<small>Choose a screen area, then click a pixel or use arrow keys to inspect its exact color locally.</small>{/if}
                   {#if isScreenRecorderTool(selectedTool.id) && screenRecording?.recording}
                     <div class="screen-recording-controls">
@@ -1868,7 +1886,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
                 {:else if selectedTool.ui?.version === 1 && selectedTool.ui.input.kind === 'files' && selectedFiles.length < (selectedTool.ui.input.minItems ?? 1)}<p class="field-note">Select at least {selectedTool.ui.input.minItems ?? 1} {(selectedTool.ui.input.minItems ?? 1) === 1 ? 'file' : 'files'}{selectedTool.ui.input.sortable ? '. Their order here controls the result.' : '.'}</p>{/if}
                 {@const pdfCapability = requiredPdfCapability(selectedTool)}
                 {#if pdfCapability && !loadingCatalog && !providerError && !providerSupports(pdfCapability)}
-                  <div class="provider-inline-missing" role="status"><Icon name="document" size={14} /><span>{selectedTool.id === 'arcade.pdf.convert' ? 'LibreOffice is required to convert documents to PDF. Install LibreOffice or review provider detection in Engines &amp; Dependencies.' : 'No compatible qpdf provider is currently available. Install qpdf or review provider detection in Engines &amp; Dependencies.'}</span><button type="button" onclick={openEngines}>View engines</button></div>
+                  <div class="provider-inline-missing" role="status"><Icon name="document" size={14} /><span>No compatible qpdf provider is currently available. Install qpdf or review provider detection in Engines &amp; Dependencies.</span><button type="button" onclick={openEngines}>View engines</button></div>
                 {/if}
                 {#if selectedTool.id === 'arcade.pdf.compress'}<p class="field-note">This performs lossless structural optimization. It does not reduce image quality.</p>{/if}
               {:else}
@@ -2298,6 +2316,9 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
           {:else if catalogMode === 'engines'}
             {#if providerError}
               <div class="dashboard-alert" role="alert"><span class="alert-icon"><Icon name="network" size={16} /></span><div><strong>Could not inspect providers</strong><span>{providerError}</span></div></div>
+            {/if}
+            {#if tesseractMissing}
+              <div class="provider-inline-missing" role="status"><Icon name="document" size={14} /><span>{tesseractMessage || (tesseractOffer ? 'Tesseract (text recognition) isn’t installed. Arcade apps can download a private copy shared by all of them.' : 'Tesseract (text recognition) isn’t installed. Install it with its English language data from your package manager.')}</span>{#if tesseractOffer}<button type="button" disabled={tesseractBusy} onclick={() => void getTesseract()}>{tesseractBusy ? 'Downloading…' : `Download Tesseract (${tesseractOffer} MB)`}</button>{/if}</div>
             {/if}
             {#if providers.length === 0}
               <div class="provider-empty"><span class="provider-empty-icon"><Icon name="network" size={20} /></span><div><strong>No providers detected</strong><span>Arcade Box checks for supported system tools such as FFmpeg, qpdf, and libvips when the runtime starts.</span></div></div>

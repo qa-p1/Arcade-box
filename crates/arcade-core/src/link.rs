@@ -136,7 +136,8 @@ const PROBED: &[&str] = &[
     "pdf.render",
     "pdf.ghostscript",
     "ocr.tesseract",
-    "pdf.ocrmypdf",
+    "audio.system-speech",
+    "web.browser",
     "image.imagemagick",
     "image.model.background-removal",
     "image.model.upscale",
@@ -174,10 +175,11 @@ fn probe_one(id: &str) -> Option<ProviderState> {
             compatible(provider::discover_tesseract()),
             "Tesseract isn't installed",
         ),
-        "pdf.ocrmypdf" => state(
-            compatible(provider::discover_ocrmypdf()),
-            "OCRmyPDF isn't installed",
+        "audio.system-speech" => state(
+            crate::media::system_speech().is_some(),
+            "No system voice was found (on Linux, install espeak-ng)",
         ),
+        "web.browser" => state(crate::web::browser_available(), "No web browser was found"),
         "image.imagemagick" => state(
             crate::magick::Magick::discover().is_ok(),
             "ImageMagick 7 isn't installed",
@@ -216,7 +218,7 @@ pub fn probe_providers() -> ProviderCache {
 
 /// Startup check: keeps providers `previous` saw available and probes only
 /// the rest (they may have been installed since). Running every tool's
-/// `--version` at each launch (some, like OCRmyPDF, start a Python runtime)
+/// `--version` at each launch
 /// made startup heavy; the Engines page still re-checks everything.
 pub fn probe_missing_providers(previous: &ProviderCache) -> ProviderCache {
     let mut cache = ProviderCache::new();
@@ -302,7 +304,9 @@ pub(crate) fn missing_provider(
         if builtin_provider(id) {
             continue;
         }
+        // Lens can stand in for Tesseract, except to build a PDF text layer.
         if id == "ocr.tesseract"
+            && tool.id != "arcade.pdf.ocr"
             && cache
                 .and_then(|c| c.get("ocr.lens"))
                 .is_some_and(|s| s.available)
@@ -1111,9 +1115,9 @@ mod tests {
             available: true,
             reason: Some("cached".into()),
         };
-        previous.insert("pdf.ocrmypdf".into(), kept.clone());
+        previous.insert("pdf.ghostscript".into(), kept.clone());
         let cache = probe_missing_providers(&previous);
-        assert_eq!(cache.get("pdf.ocrmypdf"), Some(&kept));
+        assert_eq!(cache.get("pdf.ghostscript"), Some(&kept));
         assert!(PROBED.iter().all(|id| cache.contains_key(*id)));
     }
 

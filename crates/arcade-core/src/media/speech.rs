@@ -1,5 +1,6 @@
 //! Speech tools: transcription and auto-subtitles through Groq's hosted
-//! Whisper (`whisper-large-v3`), and offline text to speech with Piper.
+//! Whisper (`whisper-large-v3`), and offline text to speech with the voice
+//! built into the operating system.
 //!
 //! Transcription is the only cloud step. Audio is reduced to 16 kHz mono MP3
 //! and split into 30-minute chunks to stay under Groq's upload limit. The API
@@ -14,7 +15,7 @@ use super::{
 use crate::{
     Arcade, network,
     process::{self, ProcessSpec},
-    provider::{ProviderInfo, discover_ffmpeg, find_system_executable, user_model_file},
+    provider::{ProviderInfo, discover_ffmpeg, find_system_executable},
     secrets,
     tool_kit::{self, check_cancelled},
 };
@@ -589,30 +590,98 @@ pub(super) fn auto_subtitles(job: &Job, input: &Path) -> Result<ToolResult, Stri
 }
 
 // ---------------------------------------------------------------------------
-// Text to speech (Piper, offline)
+// Text to speech (the system's own voice, offline)
 // ---------------------------------------------------------------------------
 
-fn piper() -> Result<std::path::PathBuf, String> {
-    find_system_executable("piper")
-        .filter(|path| {
-            process::run(
-                &ProcessSpec {
-                    executable: path.clone(),
-                    args: vec!["--help".into()],
-                    current_dir: None,
-                    timeout: Duration::from_secs(10),
-                    output_limit: 64 * 1024,
-                },
-                &AtomicBool::new(false),
-            )
-            .is_ok_and(|output| {
-                let help = [output.stdout, output.stderr].concat();
-                String::from_utf8_lossy(&help).contains("length_scale")
-            })
-        })
-        .ok_or_else(|| {
-            "Text to speech needs Piper. Unpack it into Arcade Box's tools/piper folder.".into()
-        })
+/// The system speech engine: SAPI through PowerShell on Windows, `say` on
+/// macOS, eSpeak NG (or eSpeak) on Linux. Nothing is bundled.
+pub fn system_speech() -> Option<std::path::PathBuf> {
+    if cfg!(windows) {
+        let root = std::env::var_os("SystemRoot")?;
+        let path =
+            std::path::PathBuf::from(root).join("System32/WindowsPowerShell/v1.0/powershell.exe");
+        path.is_file().then_some(path)
+    } else if cfg!(target_os = "macos") {
+        find_system_executable("say")
+    } else {
+        find_system_executable("espeak-ng").or_else(|| find_system_executable("espeak"))
+    }
+}
+
+/// Arguments that make `engine` read `text_file` into `wav`.
+fn speech_args(
+    engine: &Path,
+    text_file: &Path,
+    wav: &Path,
+    voice: &str,
+    speed: f64,
+) -> Vec<OsString> {
+    let words_per_minute = (175.0 * speed).round().clamp(80.0, 450.0);
+    if cfg!(windows) {
+        let quote = |path: &Path| path.display().to_string().replace('\'', "''");
+        let gender = match voice {
+            "female" => "$s.SelectVoiceByHints([System.Speech.Synthesis.VoiceGender]::Female);",
+            "male" => "$s.SelectVoiceByHints([System.Speech.Synthesis.VoiceGender]::Male);",
+            _ => "",
+        };
+        let rate = ((speed.ln() / 3f64.ln()) * 10.0).round().clamp(-10.0, 10.0);
+        let script = format!(
+            "Add-Type -AssemblyName System.Speech; $s = New-Object System.Speech.Synthesis.SpeechSynthesizer; {gender} $s.Rate = {rate}; $s.SetOutputToWaveFile('{}'); $s.Speak((Get-Content -Raw -Encoding UTF8 -LiteralPath '{}')); $s.Dispose()",
+            quote(wav),
+            quote(text_file),
+        );
+        return vec![
+            "-NoProfile".into(),
+            "-NonInteractive".into(),
+            "-Command".into(),
+            script.into(),
+        ];
+    }
+    let mut args: Vec<OsString> = Vec::new();
+    if cfg!(target_os = "macos") {
+        args.extend(["-f".into(), text_file.into(), "-o".into(), wav.into()]);
+        args.extend([
+            "--file-format=WAVE".into(),
+            "--data-format=LEI16@22050".into(),
+        ]);
+        args.extend(["-r".into(), words_per_minute.to_string().into()]);
+        let name = match voice {
+            "female" => Some("Samantha"),
+            "male" => Some("Daniel"),
+            _ => None,
+        };
+        if let Some(name) = name.filter(|name| mac_voice_installed(engine, name)) {
+            args.extend(["-v".into(), name.into()]);
+        }
+    } else {
+        let voice = match voice {
+            "female" => "en-us+f3",
+            "male" => "en-us+m3",
+            _ => "en-us",
+        };
+        args.extend(["-b".into(), "1".into(), "-f".into(), text_file.into()]);
+        args.extend(["-w".into(), wav.into(), "-v".into(), voice.into()]);
+        args.extend(["-s".into(), words_per_minute.to_string().into()]);
+    }
+    args
+}
+
+fn mac_voice_installed(say: &Path, name: &str) -> bool {
+    process::run(
+        &ProcessSpec {
+            executable: say.to_path_buf(),
+            args: vec!["-v".into(), "?".into()],
+            current_dir: None,
+            timeout: Duration::from_secs(10),
+            output_limit: 256 * 1024,
+        },
+        &AtomicBool::new(false),
+    )
+    .is_ok_and(|output| {
+        String::from_utf8_lossy(&output.stdout)
+            .lines()
+            .any(|line| line.starts_with(&format!("{name} ")))
+    })
 }
 
 pub fn text_to_speech(
@@ -631,58 +700,51 @@ pub fn text_to_speech(
             "Text to speech handles up to {MAX_TTS_CHARS} characters at a time"
         ));
     }
-    let voice = tool_kit::option_str(request, "voice", "en_US-lessac-medium");
-    if !voice
-        .bytes()
-        .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'-'))
-    {
-        return Err("Choose a valid voice".into());
+    let voice = tool_kit::option_str(request, "voice", "default");
+    if !matches!(voice, "default" | "female" | "male") {
+        return Err("Choose the default, a female or a male voice".into());
     }
-    let model = user_model_file(&format!("piper-voices/{voice}.onnx"))
-        .filter(|model| model.with_extension("onnx.json").is_file())
-        .ok_or_else(|| {
-            format!(
-                "The `{voice}` voice isn't installed in Arcade Box's models/piper-voices folder"
-            )
-        })?;
     let speed = tool_kit::number_in(request, "speed", "Speed", Some(1.0), 0.5..=2.0)?;
-    let pause = tool_kit::number_in(
-        request,
-        "pause",
-        "Pause between sentences",
-        Some(0.3),
-        0.0..=3.0,
-    )?;
     let format = tool_kit::option_str(request, "format", "mp3");
-    let piper = piper()?;
+    let engine = system_speech().ok_or(if cfg!(target_os = "linux") {
+        "Text to speech uses your system voice, eSpeak NG. Install `espeak-ng` from your package manager."
+    } else {
+        "This system has no built-in speech engine"
+    })?;
     let stage =
         tempfile::tempdir_in(runtime.artifact_staging_root()).map_err(|error| error.to_string())?;
+    let text_file = stage.path().join("speech.txt");
+    fs::write(&text_file, text).map_err(|error| error.to_string())?;
     let wav = stage.path().join("speech.wav");
-    let output = process::run_with_input(
+    // PowerShell and the speech services need the user's profile folders.
+    let environment: Vec<(OsString, OsString)> = [
+        "HOME",
+        "USERPROFILE",
+        "TEMP",
+        "TMP",
+        "APPDATA",
+        "LOCALAPPDATA",
+        "PSModulePath",
+        "windir",
+    ]
+    .into_iter()
+    .filter_map(|key| std::env::var_os(key).map(|value| (key.into(), value)))
+    .collect();
+    let output = process::run_with_env(
         &ProcessSpec {
-            executable: piper,
-            args: vec![
-                "--quiet".into(),
-                "--model".into(),
-                model.into_os_string(),
-                "--output_file".into(),
-                wav.as_os_str().to_os_string(),
-                "--length_scale".into(),
-                format!("{:.3}", 1.0 / speed).into(),
-                "--sentence_silence".into(),
-                format!("{pause:.2}").into(),
-            ],
+            executable: engine.clone(),
+            args: speech_args(&engine, &text_file, &wav, voice, speed),
             current_dir: Some(stage.path().to_path_buf()),
             timeout: Duration::from_secs(30 * 60),
             output_limit: 1024 * 1024,
         },
         cancelled,
-        text.as_bytes(),
+        &environment,
     )
-    .map_err(|error| format!("Piper could not run: {error}"))?;
+    .map_err(|error| format!("The system voice could not run: {error}"))?;
     if !output.status.success() || !wav.is_file() {
         return Err(format!(
-            "Piper failed: {}",
+            "The system voice failed: {}",
             tool_kit::stderr_excerpt(&output.stderr)
         ));
     }

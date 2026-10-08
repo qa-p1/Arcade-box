@@ -1,7 +1,7 @@
 # Searchable PDF OCR
 
-**LOCAL** · Requires OCRmyPDF and its local OCR engine/language data.
+**LOCAL** · Requires Tesseract (with its language data), Poppler and qpdf.
 
-Select a scanned PDF and enter installed language codes such as `eng` or `eng+fra`. OCRmyPDF skips pages that already contain text and writes a new searchable PDF. It does not upload the document.
+Select a scanned PDF and enter installed language codes such as `eng` or `eng+fra`. Poppler renders each page that has no text yet at 300 DPI, Tesseract writes an invisible text layer, and qpdf lays it over the original pages, which are otherwise untouched. The result is a new searchable PDF; nothing is uploaded.
 
-Install OCRmyPDF with `uv tool install ocrmypdf` (Arch's repositories don't package it) and Tesseract language data through the system package manager. This form does not yet enumerate installed languages or expose image cleanup modes.
+If Tesseract is missing, **Engines & dependencies** offers a per-user download shared by every Arcade app (Linux x86_64 and Windows); otherwise install it and its language data through the system package manager. This form does not yet enumerate installed languages or offer image cleanup (deskew, despeckle).

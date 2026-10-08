@@ -114,6 +114,9 @@ fn application_folder(stem: &str) -> &str {
         "soffice" | "libreoffice" => "LibreOffice/program",
         "magick" => "ImageMagick",
         "chrome" | "chromium" => "Google/Chrome/Application",
+        "msedge" => "Microsoft/Edge/Application",
+        "brave" => "BraveSoftware/Brave-Browser/Application",
+        "firefox" => "Mozilla Firefox",
         _ => stem,
     }
 }

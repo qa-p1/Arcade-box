@@ -28,8 +28,8 @@ mod speech;
 mod video;
 
 pub use audio::{AudioPreview, LoudnessReport, audio_preview, measure_audio_loudness};
-pub use speech::text_to_speech;
 pub(crate) use speech::transcribe_to_segments;
+pub use speech::{system_speech, text_to_speech};
 pub use video::{
     PreviewFrame, StreamSummary, VideoEstimate, VideoPreview, estimate_video_output, video_preview,
 };

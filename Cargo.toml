@@ -21,7 +21,7 @@ serde_json = { version = "1.0", features = ["preserve_order"] }
 thiserror = "2.0"
 # Arcade Link (the shared protocol). A relative path until Arcade-link has a
 # tagged release; then a git dependency with a local [patch] override.
-arcade-link = { path = "../Arcade-link/crates/arcade-link" }
+arcade-link = { path = "../Arcade-link/crates/arcade-link", features = ["engines"] }
 
 # zxing-cpp's bundled C++ build follows the opt-level: at 0 CMake builds Debug,
 # which links MSVC's debug runtime (unresolved _CrtDbgReport on Windows).

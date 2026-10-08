@@ -6,7 +6,7 @@ The catalog is the source of current status. These items remain before the web a
 
 - [ ] **`arcade.web.downloader`** — Document a managed yt-dlp option and its update path; system yt-dlp is reused today. Authenticated downloads stay out of scope; never read browser cookies implicitly.
 - [x] **`arcade.web.file-downloader`** — Strong-ETag `If-Range` resume, clean restart on mismatch, and optional SHA-256 verification before publication.
-- [x] **`arcade.web.snapshot`** — Webpage to PDF or full-page PNG/JPEG through Chromium's DevTools protocol, with a throwaway profile and lazy-load scrolling.
+- [x] **`arcade.web.snapshot`** — Webpage to PDF or full-page PNG/JPEG with the user's browser: Chromium-family over the DevTools protocol (lazy-load scrolling), or Firefox-family headless screenshots (image-only PDF). Throwaway profile either way.
 - [ ] **`arcade.web.markdown`** — Improve article extraction across real-world markup; the parser recognizes common static HTML only.
 - [ ] **`arcade.web.images`** — Static HTML only; images inserted by JavaScript are not seen. A Chromium-rendered mode could reuse the snapshot session.
 - [x] **`arcade.web.transcript`** — Exact-language captions with rolling auto-caption de-duplication; Groq Whisper fallback when a video has none.

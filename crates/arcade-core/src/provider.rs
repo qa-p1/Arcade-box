@@ -439,74 +439,6 @@ pub fn discover_tesseract() -> Vec<ProviderInfo> {
     vec![provider]
 }
 
-/// Discover OCRmyPDF, which coordinates PDF rendering, OCR, and searchable
-/// text-layer assembly through its mature local provider stack.
-pub fn discover_ocrmypdf() -> Vec<ProviderInfo> {
-    // `--version` prints a bare number, so identify the program by its usage text.
-    discover_identified_command("pdf.ocrmypdf", "ocrmypdf", &["--help"], "ocrmypdf")
-        .map(|mut provider| {
-            if let Some(version) = command_output(&provider.executable_path, &["--version"], 1024) {
-                provider.version = version.trim().to_owned();
-            }
-            provider.capabilities.push("pdf:searchable-ocr".into());
-            vec![provider]
-        })
-        .unwrap_or_default()
-}
-
-/// Discover the optional img2pdf command used to embed selected raster images
-/// into a PDF without decoding them into full in-memory pixel buffers.
-pub fn discover_img2pdf() -> Vec<ProviderInfo> {
-    discover_identified_command("pdf.create", "img2pdf", &["--version"], "img2pdf")
-        .map(|mut provider| {
-            provider.capabilities.push("pdf:images-to-pdf".into());
-            vec![provider]
-        })
-        .unwrap_or_default()
-}
-
-/// Discover an installed LibreOffice headless executable. Arcade Box never
-/// bundles or updates the user's office suite.
-pub fn discover_libreoffice() -> Vec<ProviderInfo> {
-    let mut candidates = Vec::new();
-    if let Some(path) = find_system_executable("soffice") {
-        candidates.push(path);
-    }
-    if let Some(path) = find_system_executable("libreoffice") {
-        candidates.push(path);
-    }
-    let mut seen = HashSet::new();
-    candidates
-        .into_iter()
-        .filter_map(|candidate| fs::canonicalize(candidate).ok())
-        .filter(|path| seen.insert(path.clone()))
-        .filter_map(|path| {
-            let warning = suspicious_path(&path);
-            let output = command_output_with_stderr(&path, &["--version"], 64 * 1024)?;
-            let version = output.lines().next()?.trim();
-            if !version.to_ascii_lowercase().contains("libreoffice") {
-                return None;
-            }
-            let compatible = warning.is_none();
-            Some(ProviderInfo {
-                capability: "office.libreoffice".into(),
-                source: "system".into(),
-                executable_path: path,
-                version: version.to_owned(),
-                compatible,
-                warning: warning.or_else(|| {
-                    (!compatible).then(|| "LibreOffice provider failed validation".into())
-                }),
-                capabilities: if compatible {
-                    vec!["document:render:pdf".into()]
-                } else {
-                    vec![]
-                },
-            })
-        })
-        .collect()
-}
-
 fn discover_identified_command(
     capability: &str,
     stem: &str,
@@ -627,7 +559,8 @@ pub fn user_model_file(relative: &str) -> Option<PathBuf> {
 /// release such as `tools/piper/piper`). A desktop launcher's PATH often
 /// lacks these.
 fn user_tool_dirs() -> Vec<PathBuf> {
-    let mut dirs = Vec::new();
+    // Engines any Arcade app downloaded for the user (Tesseract).
+    let mut dirs = vec![arcade_link::engines::bin_dir()];
     #[cfg(unix)]
     if let Some(home) = env::var_os("HOME") {
         dirs.push(PathBuf::from(home).join(".local/bin"));

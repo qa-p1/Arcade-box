@@ -4,9 +4,9 @@ The catalog is the source of current status. These items remain before the PDF a
 
 ## PDF
 
-- [ ] **`arcade.pdf.images-to-pdf`** — Works through img2pdf (verified on Linux); per-image crop/fill previews remain.
-- [x] **`arcade.pdf.ocr`** — Works through OCRmyPDF (verified on Linux); pages that already have text are skipped.
-- [ ] **`arcade.pdf.convert`** — Needs an installed LibreOffice (`soffice`); verify supported input formats on each OS.
+- [ ] **`arcade.pdf.images-to-pdf`** — Built in (no img2pdf); per-image crop/fill previews remain.
+- [x] **`arcade.pdf.ocr`** — Poppler + Tesseract + qpdf (verified on Linux); pages that already have text are skipped.
+- [ ] **`arcade.pdf.convert`** — Built in (no LibreOffice): text, headings, lists and tables. Images and exact layout are not kept.
 - [ ] **`arcade.pdf.organize`** — Page thumbnails and multi-select controls remain UI work.
 - [ ] **`arcade.pdf.extract`** — Reliable table reconstruction needs a mature provider.
 - [ ] **`arcade.pdf.watermark`** — Text uses built-in Helvetica, so only printable ASCII is supported.

@@ -380,6 +380,7 @@ dependencies = [
  "uuid",
  "windows-sys 0.61.2",
  "yaml-rust2",
+ "zip",
  "zxcvbn",
  "zxing-cpp",
 ]
@@ -426,6 +427,7 @@ dependencies = [
  "notify",
  "serde",
  "serde_json",
+ "sha2 0.10.9",
  "widestring",
  "windows-sys 0.61.2",
 ]
