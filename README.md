@@ -51,7 +51,7 @@ Clipboard, and add tools, presets or pipelines to Arcade Wheel. Saved pipelines
 can combine peer actions with Box tools; the first stage may open a picker.
 Outbound/network/command effects need first-run approval. Connected apps settings
 control each connection. Box works on its own with its existing local tools and
-fallbacks. Lens has no recorder, so Box keeps its own screen recorder.
+fallbacks. Lens exposes no recorder action over Link, so Box keeps its own screen recorder.
 
 [Arcade Link actions and pipelines](docs/arcade-link.md) describes the exposed and
 consumed actions, cancellation, input limits and version repair. Windows/macOS

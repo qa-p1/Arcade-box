@@ -1,23 +1,51 @@
 # Storage and retention
 
-Use SQLite for relational application metadata and migrations from the beginning. Do not place source documents, media, clipboard payloads, or large pipeline artifacts in database blobs. Use private files and opaque scoped references for job data. Migrations are versioned, transactional, and tested against both a fresh database and the previous supported schema.
+Current implementation, checked against `crates/arcade-core/src/storage.rs`
+and the desktop clipboard-history service on 2026-10-08.
 
-## Initial logical tables
+## SQLite metadata
 
-| Table | Purpose |
+`arcade.sqlite3` stores application metadata. SQLite uses WAL, foreign keys
+and numbered migrations, each applied in a transaction. Migration records
+contain a version number, not a checksum.
+
+| Table | Stored information |
 |---|---|
-| `schema_migrations` | Applied migration identifiers and checksums. |
-| `settings` | Typed application settings, theme, shortcut, and retention choices; never raw credentials. |
-| `tool_state` | Installed/disabled tool metadata and manifest versions. |
-| `aliases` | User-defined aliases tied to stable tool or pipeline IDs. |
-| `favorites` | Favorite tool and pipeline IDs. |
-| `usage_events` | Minimal local ranking signals; configurable retention and path-free by default. |
-| `jobs` | Status, tool/pipeline reference, timing, safe output references, progress summary, and interruption state. |
-| `pipelines` | Versioned serialized DAG definitions and friendly names. |
-| `providers` | Discovery result, provenance, version, capabilities, and health timestamp. |
-| `plugins` | Package identity, version, hash/signature, effective/requested permissions, enabled state. |
-| `clipboard_items` | Created only when clipboard history is opted into; expiry, pin, exclusions, and sensitive-content policy apply. |
+| `schema_migrations` | Applied version numbers |
+| `settings` | String key/value settings, including provider caches and pipeline approvals |
+| `favorites` | Tool IDs |
+| `usage` | Count and last-use time per tool |
+| `history` | Tool ID, success/error status and timestamp |
+| `custom_aliases` | Alias to tool ID |
+| `pipelines` | ID, version, serialized definition and update time |
+| `jobs` | ID, tool, status, progress and timestamps |
+| `provider_choices` | Capability and executable path |
 
-Secrets use the OS credential store (Windows Credential Manager, macOS Keychain, Linux Secret Service when available). If secure storage is unavailable, require an explicit safer fallback choice; never silently store API keys in SQLite. Logs and history omit document contents, secrets, raw clipboard content, and source paths when configured. Sensitive tools use minimal history by default.
+History and job records omit input content, source paths, output values and
+error text. Results stay in memory; `arcade.security.*` tools skip usage and
+history recording. File artifacts use scoped references rather than database
+blobs. Saved pipeline options are persisted, but password controls are rejected.
 
-On startup, abandoned temporary jobs are considered for cleanup only after ownership, scope, and expected directory identity have been verified. Crash recovery reports interrupted jobs without resuming dangerous operations automatically. Users can configure history retention and clear it explicitly.
+The CLI and desktop currently use separate database locations. They do not
+share saved pipelines, favorites or history automatically. The CLI uses its
+application data directory; the desktop uses its Tauri application data
+directory. See About/diagnostics and the CLI options for the active paths.
+
+## Files and credentials
+
+Desktop clipboard history is opt-in and stored separately in
+`clipboard-history.json` beside the desktop database. Its retention choices
+are 1, 7, 30 or 90 days (default 7); pinned entries and exclusions follow the
+clipboard-history service's rules. Plugin packages and their install metadata
+are also files, not a `plugins` SQLite table.
+
+Groq credentials are read on demand from `GROQ_API_KEY`, then the application
+data directory's `.env`, then the workspace `.env` in debug builds only. Box
+does not currently implement an OS credential-store adapter for these keys.
+The `.env` fallback is plaintext; keep it private and out of version control.
+Keys are not returned in results, logged, or put in provider argument vectors.
+
+Interrupted jobs are marked during recovery and terminal job metadata can be
+pruned. A general configurable retention policy for all tool history, migration
+checksums and automatic credential-store migration are design work, not shipped
+features. See [status](STATUS.md) and [threat model](security/threat-model.md).
