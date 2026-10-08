@@ -220,7 +220,7 @@ pub async fn capability_status() -> ScreenCaptureStatus {
     #[cfg(target_os = "windows")]
     {
         let (capture_available, message) =
-            match windows_capture::capture::GraphicsCaptureApi::is_supported() {
+            match windows_capture::graphics_capture_api::GraphicsCaptureApi::is_supported() {
                 Ok(true) => (
                     true,
                     "Windows Graphics Capture and the system picker are available.".to_owned(),
@@ -761,7 +761,7 @@ fn linux_uses_x11_capture() -> bool {
 #[cfg(target_os = "windows")]
 async fn windows_recording_capability() -> (bool, &'static str) {
     if !matches!(
-        windows_capture::capture::GraphicsCaptureApi::is_supported(),
+        windows_capture::graphics_capture_api::GraphicsCaptureApi::is_supported(),
         Ok(true)
     ) {
         return (
@@ -1038,7 +1038,7 @@ impl windows_capture::capture::GraphicsCaptureApiHandler for WindowsRecordingHan
         if frame.width() != self.width || frame.height() != self.height {
             return Err("Windows changed the selected capture dimensions mid-recording".into());
         }
-        let mut buffer = frame.buffer()?;
+        let buffer = frame.buffer()?;
         let pixels = buffer.as_nopadding_buffer(&mut self.scratch);
         let writer = self
             .writer
@@ -1164,7 +1164,7 @@ fn start_windows_recording_blocking(
         stop,
     };
     let settings = Settings::new(
-        selected.item,
+        selected,
         CursorCaptureSettings::Default,
         DrawBorderSettings::Default,
         SecondaryWindowSettings::Default,
@@ -2273,10 +2273,18 @@ fn capture_x11_region_png(region: X11Region, path: &std::path::Path) -> Result<(
 
 #[cfg(target_os = "windows")]
 async fn capture_windows_area(runtime: &Arcade) -> Result<Option<SelectedFile>, String> {
-    let runtime = runtime.clone();
-    tauri::async_runtime::spawn_blocking(move || capture_windows_frame(&runtime))
+    // The picker and capture block a thread; staging and publishing need the
+    // runtime, which stays on this side.
+    let staging = staging_directory(runtime)?;
+    let output_path = staging.path().join("screen-selection.png");
+    let target = output_path.clone();
+    let captured = tauri::async_runtime::spawn_blocking(move || capture_windows_frame(target))
         .await
-        .map_err(|error| format!("Windows screen capture stopped unexpectedly: {error}"))?
+        .map_err(|error| format!("Windows screen capture stopped unexpectedly: {error}"))??;
+    if !captured {
+        return Ok(None);
+    }
+    publish_capture(runtime, &output_path)
 }
 
 #[cfg(target_os = "macos")]
@@ -2343,7 +2351,9 @@ async fn capture_unsupported_area(_runtime: &Arcade) -> Result<Option<SelectedFi
 }
 
 #[cfg(target_os = "windows")]
-fn capture_windows_frame(runtime: &Arcade) -> Result<Option<SelectedFile>, String> {
+/// Lets the user pick a screen or window and writes one frame to `output_path`.
+/// Returns false when the picker was dismissed.
+fn capture_windows_frame(output_path: PathBuf) -> Result<bool, String> {
     use windows_capture::{
         capture::{Context, GraphicsCaptureApiHandler},
         encoder::ImageFormat,
@@ -2359,7 +2369,7 @@ fn capture_windows_frame(runtime: &Arcade) -> Result<Option<SelectedFile>, Strin
     let Some(selected) = GraphicsCapturePicker::pick_item()
         .map_err(|error| format!("Could not open the Windows capture picker: {error}"))?
     else {
-        return Ok(None);
+        return Ok(false);
     };
     let (width, height) = selected
         .size()
@@ -2368,8 +2378,6 @@ fn capture_windows_frame(runtime: &Arcade) -> Result<Option<SelectedFile>, Strin
         return Err("The selected screen or window is too large to capture safely".into());
     }
 
-    let staging = staging_directory(runtime)?;
-    let output_path = staging.path().join("screen-selection.png");
     struct OneFrameCapture {
         output_path: PathBuf,
         captured: bool,
@@ -2415,7 +2423,7 @@ fn capture_windows_frame(runtime: &Arcade) -> Result<Option<SelectedFile>, Strin
     if !output_path.is_file() {
         return Err("Windows capture ended before a frame was delivered".into());
     }
-    publish_capture(runtime, &output_path)
+    Ok(true)
 }
 
 fn local_screenshot_path(uri: &str) -> Result<PathBuf, String> {
