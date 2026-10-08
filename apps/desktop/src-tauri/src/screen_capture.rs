@@ -967,12 +967,7 @@ async fn cancel_macos_recording(session: MacRecordingSession) -> Result<(), Stri
 
 #[cfg(target_os = "windows")]
 struct WindowsRecordingSession {
-    control: Option<
-        windows_capture::capture::CaptureControl<
-            WindowsRecordingHandler,
-            Box<dyn std::error::Error + Send + Sync>,
-        >,
-    >,
+    capture: Option<WindowsCaptureThread>,
     child: std::process::Child,
     _staging: tempfile::TempDir,
     output_path: PathBuf,
@@ -985,12 +980,48 @@ struct WindowsRecordingSession {
 #[cfg(target_os = "windows")]
 impl Drop for WindowsRecordingSession {
     fn drop(&mut self) {
-        if let Some(control) = self.control.take() {
-            let _ = control.stop();
+        if let Some(capture) = self.capture.take() {
+            let _ = capture.stop();
         }
         let _ = self.child.kill();
         let _ = self.child.wait();
     }
+}
+
+/// The thread that picked the target and runs windows-capture's message loop.
+/// (`start_free_threaded` would need the picked item to be `Send`; it owns the
+/// picker's hidden window, so it stays on the thread that created it.)
+#[cfg(target_os = "windows")]
+struct WindowsCaptureThread {
+    thread_id: u32,
+    stop: std::sync::Arc<AtomicBool>,
+    handle: std::thread::JoinHandle<Result<(), String>>,
+}
+
+#[cfg(target_os = "windows")]
+impl WindowsCaptureThread {
+    /// Ends the message loop with WM_QUIT (as windows-capture's own
+    /// `CaptureControl::stop` does) and waits for the thread.
+    fn stop(self) -> Result<(), String> {
+        use windows_sys::Win32::UI::WindowsAndMessaging::{PostThreadMessageW, WM_QUIT};
+        self.stop.store(true, std::sync::atomic::Ordering::Release);
+        // Posting fails until the thread has a message queue; retry until then.
+        while !self.handle.is_finished()
+            && unsafe { PostThreadMessageW(self.thread_id, WM_QUIT, 0, 0) } == 0
+        {
+            std::thread::sleep(std::time::Duration::from_millis(10));
+        }
+        self.handle
+            .join()
+            .map_err(|_| "The Windows capture thread panicked".to_owned())?
+    }
+}
+
+#[cfg(target_os = "windows")]
+struct PreparedWindowsRecording {
+    child: std::process::Child,
+    staging: tempfile::TempDir,
+    output_path: PathBuf,
 }
 
 #[cfg(target_os = "windows")]
@@ -1071,14 +1102,7 @@ fn start_windows_recording_blocking(
     runtime: std::sync::Arc<Arcade>,
     job: arcade_core::jobs::ExternalJobHandle,
 ) -> Result<Option<WindowsRecordingSession>, String> {
-    use windows_capture::{
-        capture::GraphicsCaptureApiHandler,
-        graphics_capture_picker::GraphicsCapturePicker,
-        settings::{
-            ColorFormat, CursorCaptureSettings, DirtyRegionSettings, DrawBorderSettings,
-            MinimumUpdateIntervalSettings, SecondaryWindowSettings, Settings,
-        },
-    };
+    use windows_capture::capture::GraphicsCaptureApiHandler;
 
     let provider = arcade_core::provider::discover_ffmpeg(None)
         .into_iter()
@@ -1091,6 +1115,89 @@ fn start_windows_recording_blocking(
                 && provider.capabilities.iter().any(|item| item == "mux:mp4")
         })
         .ok_or_else(|| recording_unavailable_message().to_owned())?;
+    let stop = std::sync::Arc::new(AtomicBool::new(false));
+    let (ready_tx, ready_rx) = std::sync::mpsc::channel();
+    let thread_stop = stop.clone();
+    let thread_runtime = runtime.clone();
+    let ffmpeg = provider.executable_path.clone();
+    let handle = std::thread::Builder::new()
+        .name("box-windows-recorder".into())
+        .spawn(move || {
+            let thread_id = unsafe { windows_sys::Win32::System::Threading::GetCurrentThreadId() };
+            match prepare_windows_recording(&thread_runtime, &ffmpeg, thread_stop) {
+                Ok(Some((settings, prepared))) => {
+                    let _ = ready_tx.send(Ok(Some((thread_id, prepared))));
+                    WindowsRecordingHandler::start(settings)
+                        .map_err(|error| format!("Windows Graphics Capture stopped: {error}"))
+                }
+                Ok(None) => {
+                    let _ = ready_tx.send(Ok(None));
+                    Ok(())
+                }
+                Err(error) => {
+                    let _ = ready_tx.send(Err(error));
+                    Ok(())
+                }
+            }
+        })
+        .map_err(|error| format!("Could not start the Windows recorder: {error}"))?;
+    let ready = ready_rx
+        .recv()
+        .map_err(|_| "The Windows recorder stopped during setup".to_owned())?;
+    let Some((thread_id, mut prepared)) = ready? else {
+        let _ = handle.join();
+        return Ok(None);
+    };
+    let capture = WindowsCaptureThread {
+        thread_id,
+        stop,
+        handle,
+    };
+    if let Some(status) = prepared
+        .child
+        .try_wait()
+        .map_err(|error| format!("Could not verify FFmpeg startup: {error}"))?
+    {
+        let _ = capture.stop();
+        return Err(format!("FFmpeg stopped during startup (status {status})"));
+    }
+    Ok(Some(WindowsRecordingSession {
+        capture: Some(capture),
+        child: prepared.child,
+        _staging: prepared.staging,
+        output_path: prepared.output_path,
+        provider_path: provider.executable_path,
+        provider_version: provider.version,
+        started_at: std::time::Instant::now(),
+        job,
+    }))
+}
+
+/// Runs on the recorder thread: the system picker, then FFmpeg waiting for frames.
+#[cfg(target_os = "windows")]
+#[allow(clippy::type_complexity)]
+fn prepare_windows_recording(
+    runtime: &Arcade,
+    ffmpeg: &std::path::Path,
+    stop: std::sync::Arc<AtomicBool>,
+) -> Result<
+    Option<(
+        windows_capture::settings::Settings<
+            WindowsRecorderFlags,
+            windows_capture::graphics_capture_picker::PickedGraphicsCaptureItem,
+        >,
+        PreparedWindowsRecording,
+    )>,
+    String,
+> {
+    use windows_capture::{
+        graphics_capture_picker::GraphicsCapturePicker,
+        settings::{
+            ColorFormat, CursorCaptureSettings, DirtyRegionSettings, DrawBorderSettings,
+            MinimumUpdateIntervalSettings, SecondaryWindowSettings, Settings,
+        },
+    };
+
     let Some(selected) = GraphicsCapturePicker::pick_item()
         .map_err(|error| format!("Could not open the Windows capture picker: {error}"))?
     else {
@@ -1111,7 +1218,7 @@ fn start_windows_recording_blocking(
         .map_err(|error| format!("Could not create a private recording workspace: {error}"))?;
     let output_path = staging.path().join("screen-recording.mp4");
 
-    let mut child = std::process::Command::new(&provider.executable_path)
+    let mut child = std::process::Command::new(ffmpeg)
         .args([
             "-hide_banner",
             "-loglevel",
@@ -1146,17 +1253,11 @@ fn start_windows_recording_blocking(
         .stdout(std::process::Stdio::null())
         .stderr(std::process::Stdio::null())
         .spawn()
-        .map_err(|error| {
-            format!(
-                "Could not start FFmpeg at {}: {error}",
-                provider.executable_path.display()
-            )
-        })?;
+        .map_err(|error| format!("Could not start FFmpeg at {}: {error}", ffmpeg.display()))?;
     let writer = child
         .stdin
         .take()
         .ok_or("Could not open FFmpeg's frame input")?;
-    let stop = std::sync::Arc::new(AtomicBool::new(false));
     let flags = WindowsRecorderFlags {
         writer,
         width,
@@ -1173,31 +1274,14 @@ fn start_windows_recording_blocking(
         ColorFormat::Bgra8,
         flags,
     );
-    let control = match WindowsRecordingHandler::start_free_threaded(settings) {
-        Ok(control) => control,
-        Err(error) => {
-            let _ = child.kill();
-            let _ = child.wait();
-            return Err(format!("Windows Graphics Capture could not start: {error}"));
-        }
-    };
-    if let Some(status) = child
-        .try_wait()
-        .map_err(|error| format!("Could not verify FFmpeg startup: {error}"))?
-    {
-        let _ = control.stop();
-        return Err(format!("FFmpeg stopped during startup (status {status})"));
-    }
-    Ok(Some(WindowsRecordingSession {
-        control: Some(control),
-        child,
-        _staging: staging,
-        output_path,
-        provider_path: provider.executable_path,
-        provider_version: provider.version,
-        started_at: std::time::Instant::now(),
-        job,
-    }))
+    Ok(Some((
+        settings,
+        PreparedWindowsRecording {
+            child,
+            staging,
+            output_path,
+        },
+    )))
 }
 
 #[cfg(target_os = "windows")]
@@ -1216,7 +1300,7 @@ fn finalize_windows_recording(
     runtime: std::sync::Arc<Arcade>,
 ) -> Result<ToolResult, String> {
     session
-        .control
+        .capture
         .take()
         .ok_or("The Windows capture session is already stopped")?
         .stop()
@@ -1249,8 +1333,8 @@ fn finalize_windows_recording(
 #[cfg(target_os = "windows")]
 async fn cancel_windows_recording(mut session: WindowsRecordingSession) -> Result<(), String> {
     tauri::async_runtime::spawn_blocking(move || {
-        if let Some(control) = session.control.take() {
-            control
+        if let Some(capture) = session.capture.take() {
+            capture
                 .stop()
                 .map_err(|error| format!("Could not stop Windows capture cleanly: {error}"))?;
         }
