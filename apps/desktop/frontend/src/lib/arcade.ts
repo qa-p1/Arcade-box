@@ -60,9 +60,10 @@ export async function listTools(): Promise<ToolSummary[]> {
   return invoke<ToolSummary[]>('list_tools');
 }
 
-export async function listProviders(): Promise<ProviderInfo[]> {
+/** `recheck` also re-probes every optional provider for other Arcade apps (slow; Engines page only). */
+export async function listProviders(recheck = false): Promise<ProviderInfo[]> {
   requireDesktopRuntime();
-  return invoke<ProviderInfo[]>('list_providers');
+  return invoke<ProviderInfo[]>('list_providers', { recheck });
 }
 
 export async function getHistory(): Promise<HistoryEntry[]> {

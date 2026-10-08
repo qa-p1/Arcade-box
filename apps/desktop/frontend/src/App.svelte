@@ -148,6 +148,11 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
   let outputPage = $state(0);
   const fileOutputs = $derived(activeResult?.outputs.filter((output) => output.kind === 'artifact' || output.kind === 'file') ?? []);
   $effect(() => { activeResult; outputPage = 0; });
+  // Opening Engines is when the user looks at their providers: re-check them all.
+  $effect(() => {
+    if (catalogMode !== 'engines') return;
+    void listProviders(true).then((items) => { providers = items; providersLoaded = true; }).catch(() => {});
+  });
   let toolOptions = $state<Record<string, string>>({});
   let selectedFiles = $state<SelectedFile[]>([]);
   let selectedInputFolder = $state<SelectedDirectory | null>(null);

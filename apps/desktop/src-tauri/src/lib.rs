@@ -324,6 +324,7 @@ fn run_pipeline(
 
 #[tauri::command(async)]
 fn list_providers(
+    recheck: Option<bool>,
     app: tauri::AppHandle,
     runtime: tauri::State<'_, Arc<Arcade>>,
 ) -> Vec<ProviderInfo> {
@@ -332,8 +333,11 @@ fn list_providers(
     providers.extend(discover_vips(None));
     providers.extend(arcade_core::provider::discover_tesseract());
     providers.extend(arcade_core::provider::discover_arcade(&runtime));
-    // The user looked at their engines: refresh what other apps are offered.
-    link::providers_checked(&app);
+    // Only when the user opens Engines: re-checking every provider starts
+    // Python tools (rembg, OCRmyPDF), which startup must not pay for.
+    if recheck.unwrap_or(false) {
+        link::providers_checked(&app);
+    }
     providers
 }
 
