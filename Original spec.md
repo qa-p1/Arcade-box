@@ -1,5 +1,7 @@
 # ARCADE BOX
 
+> Original product brief; aspirational features are not implementation claims. Current implementation and limits: [status](docs/STATUS.md).
+
 ## Master Product, Architecture, UX, Engineering, Plugin SDK, Tool Catalog, and Implementation Specification
 
 

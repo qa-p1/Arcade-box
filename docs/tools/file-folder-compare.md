@@ -1,6 +1,6 @@
 # File / Folder Compare
 
-**Status:** Partial. **Privacy:** LOCAL. **Input:** two or more selected files, or two or more selected folders. **Output:** a structured difference report.
+**Status:** Implemented (read-only). **Privacy:** LOCAL. **Input:** two or more selected files, or two or more selected folders. **Output:** a structured difference report.
 
 File comparison streams BLAKE3 hashes and compares both size and digest. Folder comparison reports missing and changed relative paths across the selected roots. This is a byte-level comparison; it does not render images or compare document meaning.
 

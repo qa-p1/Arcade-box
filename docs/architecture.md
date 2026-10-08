@@ -25,7 +25,7 @@ Rust owns durable state, permissions, tool resolution, provider execution, pipel
 ## Boundaries
 
 - **Catalog and registry:** validate stable IDs, API version, tool metadata, typed I/O, provider requirements, and permissions. The catalog is authoritative for search and category data.
-- **Tool runtime:** dispatches a typed request to a built-in handler or sandboxed extension. It normalizes structured results and progress. The standalone plugin host uses WIT API v1 and is not yet connected to the root workspace registry/runtime.
+- **Tool runtime:** dispatches a typed request to a built-in handler or sandboxed extension. It normalizes structured results and progress. Installed plugin manifests join the core registry. Execution uses WIT API v1 in an adjacent, short-lived `arcade-plugin-worker`; the main process does not initialize Wasmtime.
 - **Provider broker:** maps capability requests to a verified system provider or Arcade-managed provider. Tools do not hardcode paths.
 - **Job manager:** runs long work asynchronously, publishes rate-limited progress, cancels workers, records safe status, and cleans scoped partial artifacts.
 - **Platform layer:** exposes explicit capability traits. OS-specific code lives behind adapters instead of per-tool platform branches.
@@ -38,7 +38,7 @@ User selections become scoped references. A tool consumes values tagged with MIM
 
 ## Startup and performance
 
-Measure cold and warm invocation before choosing how much UI to prewarm. The background process should remain event-driven while idle. Provider workers are started on demand and stopped when no longer needed. Search indexing is built from manifests, aliases, phrases, usage, favorites, accepted input types, and current context.
+Measure cold and warm invocation before choosing how much UI to prewarm. The background process should remain event-driven while idle. Provider workers are started on demand and stopped when no longer needed. Cached provider state is reused at startup; missing providers can be rechecked, and opening Engines requests a full refresh. Link discovery and listening run off the UI thread. The desktop and CLI currently use different data directories/databases; their saved pipelines and history are not automatically shared (see [storage](storage.md)). Search indexing is built from manifests, aliases, phrases, usage, favorites, accepted input types, and current context.
 
 ## Decisions still requiring evidence
 

@@ -6,7 +6,7 @@ The public tool contract is shared by first-party tools and community plugins. F
 
 The v1 interface is [`sdk/wit/arcade-tool/1.0.0/world.wit`](../sdk/wit/arcade-tool/1.0.0/world.wit), package `arcade:tool@1.0.0`. It takes a `tool-request` with plural `inputs` and returns typed outputs, warnings, and JSON metadata. The Rust ABI is generated from WIT; Rust struct layout is not the compatibility boundary. `apiVersion` is a string and must equal `1`; the package schema version is currently `1`.
 
-The host uses Wasmtime `48.0.2` and the Component Model. The plugin host crate is kept out of default workspace builds because Wasmtime is a substantial optional dependency and should initialize only when a plugin is used. Guest components are built for `wasm32-wasip2` with `wit-bindgen` 0.57.1. See the external sample under [`sdk/examples/community-uppercase`](../sdk/examples/community-uppercase).
+The host uses Wasmtime `48.0.2` and the Component Model. The plugin host is a workspace member; the default members are the contract, core and CLI. The core uses the host protocol/install APIs, while Wasmtime execution is isolated in the trusted `arcade-plugin-worker` sidecar and initialized only for a plugin invocation. Guest components are built for `wasm32-wasip2` with `wit-bindgen` 0.57.1. See the external sample under [`sdk/examples/community-uppercase`](../sdk/examples/community-uppercase).
 
 ## Host capabilities
 
@@ -14,7 +14,7 @@ The host links the declared Arcade capability interface and WASI Preview 2 stand
 
 User-selected file reads are available only through `read-selected-input(input-index, offset, max-bytes)`. The trusted host supplies an already-open handle for a selected request input. The guest sees an opaque `input:<index>` token, never a path, and can read no more than 64 KiB per call. A permission declaration alone does not create a grant: installation records a separate user approval, and the host checks it again for every call. Writes and plugin network access are not supported by host API v1 and requests for them are rejected. File/artifact outputs are also rejected until a scoped output capability is available.
 
-Default limits are 64 MiB total linear memory per component store, one linear memory, 25 million fuel units, a two-second execution deadline, at most 1,024 input/output items, and 1 MiB serialized request/result text. Adversarial fixtures exercise the memory, fuel, and deadline limits. The runtime serializes calls per engine because epoch interruption is engine-wide. Wasmtime component compilation is not included in the execution deadline; package size and integrity checks bound the input, and compilation isolation is a follow-up hardening item before accepting arbitrary registry packages.
+Default limits are 64 MiB total linear memory per component store, one linear memory, 25 million fuel units, a two-second execution deadline, at most 1,024 input/output items, and 1 MiB serialized request/result text. Adversarial fixtures exercise the memory, fuel, and deadline limits. The runtime serializes calls per engine because epoch interruption is engine-wide. The two-second execution deadline excludes component compilation. The core launches the entire worker through the bounded process runner with a 30-second timeout, cancellation and an 8 MiB output cap, so compilation is outside the GUI process. This does not provide an OS resource sandbox for the compiler; stronger compiler resource limits and signed registry distribution remain separate work.
 
 ## Packages and installation
 
@@ -27,13 +27,13 @@ component.wasm
 
 `plugin.json` wraps a normal Arcade tool manifest in `toolManifest` and adds `schemaVersion` plus package author, source, license, and `componentSha256`. The installer rejects unsupported schema/API versions, a non-WASM execution declaration, unimplemented tools, unsupported permissions/output types, malformed IDs/versions, hash mismatches, and unexpected grants. It copies the package to private versioned directories. Reusing a version with different component bytes and downgrades are rejected.
 
-An update cannot gain a permission silently. New requested grants require both an explicit grant and `acknowledgeEscalation`; approval to install a package is separate from signature/authenticity. Local developer installs are hash-verified but not author-authenticated. Registry signatures, revocation, rollback UI, disable/uninstall UI, and permission explanation UI are still pending.
+An update cannot gain a permission silently. New requested grants require both an explicit grant and `acknowledgeEscalation`; approval to install a package is separate from signature/authenticity. Local developer installs are hash-verified but not author-authenticated. The desktop supports package preview, explicit permission approval, installation and uninstall; the CLI provides the same local lifecycle. A signed registry, revocation, rollback and a separate disable control remain future work.
 
 ## Developer flow
 
 Build the sample and adversarial fixtures with `scripts/build-plugin-fixtures.sh`. The script uses a process-local Cargo target directory under the repository's ignored `target/` folder and emits a sample package under `crates/arcade-plugin-host/tests/fixtures/community-uppercase/`. It requires Rust 1.95 or newer and the `wasm32-wasip2` target. The sample uses only the published WIT contract and `wit-bindgen`; the host test installs it through the local-package API, executes it, and verifies its real result.
 
-The intended complete SDK flow remains `arcadebox sdk new`, `arcadebox sdk dev`, validate, run fixtures, and package. Developer mode should report manifest errors, effective permissions, logs, typed inputs/outputs, and host/runtime compatibility.
+The implemented CLI commands are `arcadebox plugins list`, `preview <package>`, `install <package>`, `dev <package> --request-json <json>`, and `uninstall <tool-id>`. Installation/dev execution accepts explicit `--grant read-user-selected`; updates that widen access also need `--acknowledge-escalation`. Use `--help` for the exact command options. `sdk new` and an SDK scaffolding/package registry are not implemented.
 
 ## Registry and trust
 
@@ -41,4 +41,4 @@ The official registry should be an index of signed/versioned packages, not an ex
 
 ## Current state
 
-The versioned WIT ABI, standalone Wasmtime host, local hash-checked installer, selected-file read capability, empty-context WASI policy, sample component, and network/filesystem/fuel/deadline tests are implemented. The host is not yet added to the root workspace or connected to the core registry/runtime. Permission UI, signed registry packages, plugin updates/removal UI, sandboxed advanced views, output-file capability, and release integration remain planned.
+The WIT ABI, worker-backed core dispatch, local hash-checked installer, desktop permission preview/install/uninstall, CLI developer flow, selected-input read capability and adversarial sandbox tests are implemented. Packaging stages the worker beside the GUI and CLI. Signed registry distribution, advanced plugin views and a scoped output-file capability are not implemented; API v1 rejects file outputs and network/write requests.

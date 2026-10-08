@@ -1,6 +1,8 @@
 # Implementation plan
 
-This is a living sequence. Each stage produces a usable, reviewable increment and keeps existing contracts in use.
+> Roadmap, not a completion ledger: signed distribution, archive tools and some polish remain outside the implemented ecosystem scope. Current implementation and limits: [status](STATUS.md).
+
+The sequence below records the original intended implementation order. Each stage produces a usable, reviewable increment and keeps existing contracts in use.
 
 1. **Repository contracts and audit:** workspace rules, catalog/schema, typed values/results, version rules, threat model, migration and license inventory. Verify direct and transitive licenses before distribution choices harden.
 2. **Core vertical path:** registry, manifest validation, local search, SQLite migrations, job/result model, CLI invocation, and simple real tools. Keep Tauri commands narrow.

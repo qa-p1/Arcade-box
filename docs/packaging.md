@@ -27,9 +27,10 @@ sidecars into the ignored `binaries` directory. It accepts `--target` for an
 installed Rust target; cross-platform toolchains are not provided by this repo.
 No WASM fixture rebuild, installation, app launch or startup-file edit is needed.
 
-CI checks out Box and the pinned Arcade-link source in sibling directories,
-runs the standalone Rust/frontend checks, builds native installers, and uploads
-one artifact per platform. Windows/macOS jobs are defined but **not run here**.
+CI checks out Box; Cargo resolves Arcade Link from the pinned `v0.1.0` git tag.
+It runs Rust/frontend checks, builds native installers, and uploads one artifact
+per platform. Linux, Windows and macOS jobs passed on 2026-10-08; interactive
+Windows/macOS behavior is still unverified (see [status](STATUS.md)).
 The macOS adapter minimum is 14 for screen selection; recording output requires
 15. The NSIS installation is per user. Linux CI uses Ubuntu 24.04; an AppImage
 built on a newer system does not prove compatibility with older glibc versions.
@@ -66,6 +67,7 @@ The native CLI/worker staging and production Tauri desktop build completed on
 Linux. The AppImage bundler then timed out downloading
 `https://github.com/tauri-apps/binary-releases/releases/download/apprun-old/AppRun-x86_64`
 (`timeout: global`), so no local AppImage was produced. This download failure is
-parked for CI or a working network path; fake installer manifests and checksums
+a limitation of that local attempt. Native CI subsequently built all three
+installer formats successfully; fake installer manifests and checksums also
 passed for both channels. Ordinary debug/release desktop builds are rebuilt
 without the bundling overlay before the isolated standalone GUI checks.

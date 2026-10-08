@@ -150,8 +150,9 @@ when available. Ruler, pin and color hand over to `lens.capture_and_act` with
 `mode: measure`, `pin` or `color`. Lens handles all three hints directly. Captured PNGs are validated, copied
 into Box's normal artifact/grant boundary, and remain local. Without Lens, the
 native platform picker and screen tools keep their existing behavior. Lens's
-capture API returns still images and Lens has no recorder, so screen recording
-retains Box's own platform recorder. Windows/macOS recording is build only.
+capture API returns still images and Lens exposes no recording action, so
+screen recording keeps Box's own platform recorder. Windows/macOS recording is
+built and tested in CI but has not been run interactively.
 
 Clipboard history opens `clipboard.pick` when available; selection does not
 change the system clipboard. Without it, Box's own history view stays intact.
@@ -194,5 +195,5 @@ Xvfb, and temporary HOME/XDG/Arcade directories.
 
 | | Linux X11 | Linux Wayland | Windows | macOS |
 |---|---|---|---|---|
-| Exposed actions, one-shot mode | tested | tested (headless) | build only | build only |
-| Lens/Clipboard delegation and shortcut warnings | tested under Xvfb | not run | build only | build only |
+| Exposed actions, one-shot mode | tested | tested (headless) | CI-built and tested; not run interactively | CI-built and tested; not run interactively |
+| Lens/Clipboard delegation and shortcut warnings | tested under Xvfb | not run | CI-built; not run interactively | CI-built; not run interactively |

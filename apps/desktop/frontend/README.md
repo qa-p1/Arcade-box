@@ -1,30 +1,29 @@
 # Arcade Box desktop frontend
 
-This Svelte 5 frontend is the visual surface for the Tauri desktop application. It contains the compact Arcade Island, keyboard driven tool search, tool execution controls, context suggestions, and the catalog dashboard.
+Svelte 5 renders the Island, dashboard, typed tool forms, previews, job progress,
+pipelines, plugin management, Engines and Connected apps. Rust owns execution,
+grants, providers, persistence and file outputs.
 
-## Local development
+## Development
 
-Run `npm install` and `npm run dev` from this directory. The frontend listens on `127.0.0.1:5173`, matching `apps/desktop/src-tauri/tauri.conf.json`. Outside Tauri it shows the backend connection state instead of inventing a catalog or returning simulated results.
+Run `npm ci`, `npm run check` and `npm run build` here. `npm run dev` serves
+`127.0.0.1:5173` for Tauri development. From the repository root,
+`scripts/run-desktop.sh` builds the embedded frontend and runs the installed local
+build; this is a user launch, not an isolated test. Use the ecosystem runner for
+GUI verification as described in [Arcade Link](../../../docs/arcade-link.md).
+Outside Tauri the frontend reports the missing backend instead of returning fake
+results.
 
 ## Backend boundary
 
-All desktop work goes through `src/lib/arcade.ts`. Its commands use the serialized types in `src/lib/contracts.ts`, which mirror `crates/arcade-contract`:
+`src/lib/arcade.ts` contains the command wrappers and `src/lib/contracts.ts` the
+serialized contracts. `App.svelte` routes selected text, files, folders and screen
+inputs through the real forms and scoped backend commands. Media bytes are not
+sent through the frontend as large inline payloads. Invalid/unavailable actions
+are rejected by the backend even if a cached UI entry is stale.
 
-- `list_tools`
-- `search_tools({ query })`
-- `run_tool({ request: { toolId, inputs, options } })`
-- `detect_context`
-- `run_context_action({ toolId })`
-- `hide_island`
-
-Search results with `status !== 'implemented'` appear under catalog discovery and cannot be invoked with Enter. A selected non-text tool explains which input type needs a file-picker/artifact connection; it does not fake a text run.
-
-## First-party controls
-
-The UI has explicit options for the shared text executors:
-
-- Case conversion: upper, lower, title, sentence, camel, Pascal, snake, kebab.
-- Whitespace cleaning: trim lines, collapse, remove blank lines, normalize endings, tabs to spaces.
-- Structured data: JSON, YAML, TOML, XML with supported pretty, compact, or validate modes.
-
-Each run submits a typed text value and selected options to the Rust runtime. Context suggestions call `run_context_action` so clipboard-backed JSON can be formatted without copying its content through frontend code.
+File pickers, drag/drop, image/video/audio previews and typed results are
+implemented. Progress and cancellation follow jobs; the one-second recorder
+status timer exists only while recording. Idle screens do not poll providers.
+See the [documentation index](../../../docs/STATUS.md) for runtime limits and the
+[tool catalog](../../../docs/tool-catalog.md) for per-tool behavior.

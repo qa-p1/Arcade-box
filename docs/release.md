@@ -1,9 +1,32 @@
 # Release and supply chain
 
-Core application updates must use the desktop framework's signed update mechanism. Downloaded binaries are verified before install; an unsigned or invalid package is rejected. Plugins and managed providers have separate hashes/signatures and versioning. A registry cannot silently widen plugin permissions.
+## Current implementation
 
-Release candidates build on actual Windows, macOS, and Linux runners. Package targets include Windows x64 and ARM64 where support is verified; macOS Apple Silicon and an Intel/universal strategy based on build tests; and Linux packages selected from tested AppImage, deb, rpm, and Flatpak flows. Production macOS releases require signing and notarization. Linux Wayland support requires a real mainstream desktop run, not just compilation.
+Native CI builds and tests on Linux, Windows and macOS, then produces AppImage,
+NSIS and dmg artifacts with the CLI and trusted plugin worker. The release
+workflow publishes `arcade-release.json` and `SHA256SUMS.txt` from successful
+`main` CI. See [packaging](packaging.md) for commands and triggers and
+[status](STATUS.md) for the dated verification record.
 
-Every release includes checksums, signatures, changelog, SBOM where practical, third-party license notices, source revision, and build provenance. Reproducible builds are pursued where toolchains allow. Release workflows should keep secrets scoped and protect signing credentials. Contributions require formatting, linting, unit/integration, security and license checks, plus cross-platform compile gates; functional desktop jobs run at an appropriate cadence.
+The ecosystem implementation remains on `arcade/link`; merging to `main` may
+publish an application release. Compilation and packaging do not establish
+interactive behavior on Windows/macOS or every Wayland compositor.
 
-Do not call a release ready until the acceptance flows for Island, provider reuse, context, pipeline, community plugin, malicious plugin denial, large media, and Wayland have passed and the tool readiness matrix contains no fake completion claims.
+## Release gates still outstanding
+
+Publisher signing/notarization, a signed in-app updater, signed plugin registry,
+revocation and a complete release SBOM/provenance policy are not implemented by
+this work. Current checksum verification over HTTPS checks integrity, not
+publisher signatures. Do not describe unsigned builds as signed or verified by
+a publisher key.
+
+The workspace declares GPL-3.0-or-later provisionally. The repository currently
+has no main application LICENSE text; final license approval, that text, and a
+packaged dependency/license review are release gates. The checked-in locked
+license inventory passes CI but is not a substitute for that review. See
+[ADR 0005](adr/0005-license-policy.md) and [license inventory](../licenses/README.md).
+
+Before publication, run the applicable standalone and integration checks,
+review platform limits, verify checksums against the actual packaged files,
+and complete the remaining release gates. Preserve user settings and keep
+credentials scoped to the release jobs that require them.

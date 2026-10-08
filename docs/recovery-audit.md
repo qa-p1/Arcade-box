@@ -1,5 +1,7 @@
 # Recovery audit — 27 September 2026
 
+> Historical audit: counts, defects and test totals below describe their dated checkpoints. Current implementation and limits: [status](STATUS.md).
+
 The original specification is the product source of truth. Catalog status describes implementation scope, not proof that a complete desktop flow works. This audit records evidence as recovery progresses.
 
 ## Baseline

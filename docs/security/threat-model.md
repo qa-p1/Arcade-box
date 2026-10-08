@@ -4,6 +4,8 @@
 
 Assets include user files, decrypted material, clipboard text, credentials, provider binaries, plugin packages, job artifacts, and update signing keys. Trust boundaries are the UI-to-core command facade, core-to-plugin runtime, core-to-provider subprocess, registry/download channel, platform APIs, and temporary storage. User input, filenames, archives, webpages, QR contents, deep links, plugins, and discovered executables are untrusted.
 
+The table distinguishes required security policy from current implementation; the status section below identifies unfinished release controls.
+
 | Threat | Required controls |
 |---|---|
 | Malicious plugin | Wasmtime Component Model sandbox, explicit Arcade host capability, no raw Tauri bridge, memory/fuel/deadline limits. WASI Preview 2 receives an empty context with no preopened filesystem, inherited process handles, or permitted network addresses. Verify private-file and outbound-socket denial with adversarial components. |
@@ -27,4 +29,6 @@ Manifest declarations are requests, not enforcement. The host checks every opera
 
 ## Current status
 
-The plugin host tests execute the community sample and confirm that selected-file reads require a stored grant, file paths are opaque, ungranted reads fail, WASI access to `/etc/passwd` fails, outbound TCP is denied, permission escalation needs acknowledgement, and execution stops at fuel/deadline limits. These tests cover the standalone plugin host only; it is not yet connected to the core registry/runtime. Provider verification, archive extraction controls, signed update/package verification, registry revocation, and platform permission UI still need their own implementation and acceptance evidence. Wasmtime component compilation occurs before the execution deadline and needs stronger isolation before the host accepts arbitrary registry packages.
+The core executes installed plugins through a trusted worker process, with hash/grant checks, opaque selected-input references, bounded execution and process cancellation. The host tests cover denied unrelated-file reads, WASI network/filesystem denial, permission escalation, and fuel/deadline limits. The worker has a separate 30-second process timeout covering compilation and execution; compilation is not an OS memory sandbox.
+
+Provider execution and output publication use the current scoped process/artifact helpers. There is no archive-tool family in the shipped catalog. Signed application/plugin update metadata, registry revocation and a general managed-model installer are not implemented. Existing release assets use SHA-256 checksums; Arcade Tools validates these over HTTPS, which is not publisher authentication. See [release policy and current coverage](../release.md) and [plugins](../plugin-model.md).

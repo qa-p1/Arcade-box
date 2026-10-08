@@ -1,12 +1,12 @@
 # Arcade Box
 
-Arcade Box is an open-source desktop action surface for everyday file, media, text, and system tasks. The intended flow is **shortcut → type → run → use the result → dismiss**. Its Rust core is shared by the Tauri desktop app and CLI; the tool catalog is the source for search, typed input/output, privacy labels, and implementation status.
+Arcade Box is an open-source desktop action surface for everyday file, media, text, and system tasks. The flow is **shortcut → type → run → use the result → dismiss**. Its Rust core is shared by the Tauri desktop app and CLI; the tool catalog is the source for search, typed input/output, privacy labels, and implementation status.
 
-This repository is under active development. The [tool readiness matrix](docs/tool-matrix.md) records which tools have a working backend, which depend on optional programs, and which are still partial. A catalog entry or dashboard card does not mean a tool is available.
+The current catalog contains 109 implemented tools. Runtime availability still depends on the input, operating system, permissions and optional engines. See the [tool readiness matrix](docs/tool-matrix.md) and [current status and documentation index](docs/STATUS.md) for verified behavior and remaining limits.
 
-## MVP: run and use the CLI
+## Run and use the CLI
 
-The Rust CLI is the usable MVP entry point. It shares the desktop app's tool runtime and lets you search, run implemented tools, inspect providers, and save or execute pipelines. Requirements: Rust 1.95 or newer.
+The Rust CLI shares the desktop app's tool runtime and lets you search, run implemented tools, inspect providers, and save or execute pipelines. Requirements: Rust 1.95 or newer.
 
 ```sh
 # Show available tools and their status, then find a tool.
@@ -27,7 +27,9 @@ cargo run -p arcadebox -- run arcade.video.inspect --file ./clip.mp4 --json
 cargo run -p arcadebox -- providers
 ```
 
-`tools` includes partial entries so you can see the catalog; check the status column and start with `Implemented` tools. `Partial` and `Planned` entries may be incomplete or unavailable. Many tools need an optional program: media workflows use FFmpeg/ffprobe, images use libvips and ImageMagick, PDFs use qpdf, Poppler, and Ghostscript, and web capture uses yt-dlp and Chromium. [Providers](docs/providers.md) lists each one. Speech tools need a Groq API key in `.env` (`GROQ_API_KEY=...`). Install providers through your operating system and confirm discovery with `providers`; Arcade Box does not silently download them. Individual tool pages under [`docs/tools`](docs/tools) describe supported formats and limits.
+Many tools use optional engines: FFmpeg/ffprobe for media, libvips/ImageMagick for images, qpdf/Poppler/Ghostscript for PDFs, and yt-dlp for media acquisition. Webpage capture reuses an installed Chromium-family or Firefox-family browser. Images-to-PDF and document conversion are built in; searchable PDF OCR uses Poppler, Tesseract and qpdf. No Chromium, LibreOffice, img2pdf, OCRmyPDF or Piper is bundled or installed by Box.
+
+Transcription and auto-subtitles use Groq and need `GROQ_API_KEY`; offline text-to-speech uses SAPI, `say`, or an installed eSpeak NG/eSpeak. OCR detects Tesseract or an available Lens provider; Engines offers an explicit Tesseract download when needed. [Providers](docs/providers.md) and the [tool pages](docs/tools) describe formats, privacy and limits.
 
 ## Desktop shell
 
@@ -65,7 +67,7 @@ Every release includes `arcade-release.json` and `SHA256SUMS.txt` for Arcade Too
 and manual verification. See [packaging](docs/packaging.md) for local commands
 and current validation limits.
 
-## Check the MVP
+## Verification
 
 Run the real CLI smoke flow and Rust suite from the repository root:
 

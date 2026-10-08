@@ -16,8 +16,8 @@ Per-tool notes live under [`docs/tools`](tools). They cover [batch rename](tools
 
 Tools added in the regrouped catalog keep their documentation in the form help text and in [providers](providers.md):
 
-- **Speech:** transcribe and translate (`arcade.audio.transcribe`), auto-subtitles (`arcade.video.auto-subtitles`), and the transcript fallback use Groq Whisper; text to speech uses Piper; noise removal uses RNNoise or FFmpeg's FFT denoiser; vocal separation uses Demucs when installed.
+- **Speech:** transcribe and translate (`arcade.audio.transcribe`), auto-subtitles (`arcade.video.auto-subtitles`), and the transcript fallback use Groq Whisper; text to speech uses the OS voice (SAPI / `say` / installed eSpeak NG or eSpeak); noise removal uses RNNoise or FFmpeg's FFT denoiser; vocal separation uses Demucs when installed.
 - **PDF:** sign (typed or image signature, visible only), fill AcroForm fields (list, then fill), and compress to a target size with Ghostscript.
 - **Images:** HEIC/AVIF input, compress to a target size, passport photos and print sheets, combine, watermark, and favicon sets use libvips and ImageMagick.
-- **Web:** video transcript and thumbnail (yt-dlp), webpage to PDF or full-page screenshot (Chromium), and download all page images (static HTML only). The website checker answers "is this site down?" with curl and the system `ping`.
+- **Web:** video transcript and thumbnail (yt-dlp), webpage to PDF or full-page screenshot (an installed Chromium-family or Firefox-family browser; the latter produces image-only PDFs), and download all page images (static HTML only). The website checker answers "is this site down?" with curl and the system `ping`.
 - **Everyday utilities:** emoji picker, colour converter with WCAG contrast, percentage/discount/tax/tip, loan EMI, timer and stopwatch (in the window), random picker, lorem ipsum, and Excel ↔ CSV.
