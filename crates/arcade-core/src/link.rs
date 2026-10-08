@@ -1217,7 +1217,11 @@ mod tests {
             .unwrap();
         let prepared = prepare(&runtime, tool, Map::new(), &[Content::file(&path)]).unwrap();
         let token = prepared.request.inputs[0].value.clone();
-        assert_eq!(runtime.grants().resolve(&token).unwrap(), path);
+        // Grants hold canonical paths (macOS: /var is /private/var).
+        assert_eq!(
+            runtime.grants().resolve(&token).unwrap(),
+            path.canonicalize().unwrap()
+        );
         prepared.release(&runtime);
         assert!(runtime.grants().resolve(&token).is_err());
         assert!(

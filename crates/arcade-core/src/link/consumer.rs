@@ -754,6 +754,8 @@ mod tests {
             .2
             .inputs[0];
         assert_eq!(sent.kind, "file/any[]");
+        // Grants hold canonical paths (macOS: /var is /private/var).
+        let path = path.canonicalize().unwrap();
         assert_eq!(sent.all_paths(), vec![path.to_str().unwrap()]);
         assert_eq!(
             requests
