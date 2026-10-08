@@ -40,6 +40,14 @@ pub fn capability_status() -> PastePlainStatus {
     }
     #[cfg(target_os = "linux")]
     {
+        if crate::hyprland::is_hyprland() {
+            return PastePlainStatus {
+                platform: "hyprland",
+                available: true,
+                shortcut: "Ctrl+Shift+V",
+                message: "Hyprland will send the common plain-text paste shortcut to the previously focused app. The clipboard remains unchanged; the target app must support this shortcut.".into(),
+            };
+        }
         let wayland = is_wayland_session();
         let has_display = std::env::var_os("DISPLAY").is_some_and(|display| !display.is_empty());
         let xdotool = executable_on_path("xdotool");
@@ -190,6 +198,9 @@ fn send_plain_paste_shortcut() -> Result<(), String> {
     }
     #[cfg(target_os = "linux")]
     {
+        if crate::hyprland::is_hyprland() {
+            return crate::hyprland::send_plain_paste();
+        }
         if std::env::var_os("WAYLAND_DISPLAY").is_some() {
             return Err(capability_status().message);
         }

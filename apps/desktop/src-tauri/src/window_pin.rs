@@ -25,6 +25,13 @@ pub fn status() -> WindowPinStatus {
     }
     #[cfg(target_os = "linux")]
     {
+        if crate::hyprland::is_hyprland() {
+            return WindowPinStatus {
+                platform: "hyprland".into(),
+                available: true,
+                message: "Pins the window that was active before Arcade Box hid. Hyprland pins floating windows, so a tiled window floats until it is unpinned.".into(),
+            };
+        }
         let wayland = is_wayland_session();
         let wmctrl = find_wmctrl();
         let has_display = env::var_os("DISPLAY").is_some_and(|display| !display.is_empty());
@@ -135,6 +142,9 @@ fn set_previous_foreground_pin(pin: bool) -> Result<(), String> {
 
 #[cfg(target_os = "linux")]
 fn set_previous_foreground_pin(pin: bool) -> Result<(), String> {
+    if crate::hyprland::is_hyprland() {
+        return crate::hyprland::set_active_window_pin(pin);
+    }
     if is_wayland_session() {
         return Err("Wayland does not allow a general window pin request".into());
     }

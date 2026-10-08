@@ -1,4 +1,5 @@
-//! Optional, process-scoped Hyprland support for the Island surface.
+//! Optional, process-scoped Hyprland support for the Island surface and for
+//! the window-pin and paste-plain tools, which Wayland offers no generic API for.
 //!
 //! Hyprland 0.55+ uses Lua as its configuration provider. These calls use
 //! `hyprctl repl`/`eval` to add only in-memory bindings and to target the
@@ -175,6 +176,85 @@ pub fn place_island(width: f64, height: f64, centered: bool) -> bool {
         end"#)).is_ok()
 }
 
+/// The window Hyprland focused once the island hid, when it belongs to another
+/// process. Returns its `address:0x…` selector and its current state.
+fn foreign_active_window() -> Result<(String, Value), String> {
+    let output = hyprctl(&["-j", "activewindow"])?;
+    let window: Value = serde_json::from_slice(&output)
+        .map_err(|error| format!("Could not inspect the active Hyprland window: {error}"))?;
+    let address = window
+        .get("address")
+        .and_then(Value::as_str)
+        .filter(|address| {
+            address
+                .strip_prefix("0x")
+                .is_some_and(|hex| !hex.is_empty() && hex.bytes().all(|b| b.is_ascii_hexdigit()))
+        })
+        .ok_or("No other window is active")?;
+    if window.get("pid").and_then(Value::as_u64) == Some(u64::from(std::process::id())) {
+        return Err("No other window is active".into());
+    }
+    Ok((format!("address:{address}"), window))
+}
+
+/// Windows Arcade Box floated in order to pin them; unpinning tiles them again.
+static FLOATED_FOR_PIN: std::sync::Mutex<Vec<String>> = std::sync::Mutex::new(Vec::new());
+
+/// Keep the active window above others. Hyprland pins only floating windows,
+/// so a tiled window is floated first and tiled again when unpinned.
+pub fn set_active_window_pin(pin: bool) -> Result<(), String> {
+    let (selector, window) = foreign_active_window()?;
+    let mut floated = FLOATED_FOR_PIN
+        .lock()
+        .unwrap_or_else(|error| error.into_inner());
+    let index = floated.iter().position(|address| *address == selector);
+    let change_float = if pin {
+        !window["floating"].as_bool().unwrap_or(false)
+    } else {
+        index.is_some()
+    };
+    run_lua(&pin_lua(&selector, pin, change_float))?;
+    match index {
+        None if pin && change_float => floated.push(selector),
+        Some(index) if !pin => drop(floated.remove(index)),
+        _ => {}
+    }
+    Ok(())
+}
+
+/// Send Ctrl+Shift+V straight to the active window. Hyprland delivers the
+/// shortcut itself, so no virtual keyboard or input permission is needed.
+pub fn send_plain_paste() -> Result<(), String> {
+    let (selector, _) = foreign_active_window()
+        .map_err(|_| String::from("No other app is active to paste into"))?;
+    run_lua(&paste_lua(&selector))
+}
+
+fn window_guard(selector: &str) -> String {
+    format!(r#"local w=hl.get_window("{selector}"); if not w then error("the window closed") end"#)
+}
+
+fn pin_lua(selector: &str, pin: bool, change_float: bool) -> String {
+    let state = if pin { "on" } else { "off" };
+    let float =
+        format!(r#"hl.dispatch(hl.dsp.window.float({{action="{state}",window="{selector}"}}))"#);
+    let mut steps = vec![
+        window_guard(selector),
+        format!(r#"hl.dispatch(hl.dsp.window.pin({{action="{state}",window="{selector}"}}))"#),
+    ];
+    if change_float {
+        steps.insert(if pin { 1 } else { 2 }, float);
+    }
+    steps.join("; ")
+}
+
+fn paste_lua(selector: &str) -> String {
+    format!(
+        r#"{}; hl.dispatch(hl.dsp.send_shortcut({{mods="CTRL SHIFT",key="V",window="{selector}"}}))"#,
+        window_guard(selector)
+    )
+}
+
 fn surface_bounds(
     monitor: &Value,
     width: f64,
@@ -319,7 +399,7 @@ fn run_lua(lua: &str) -> Result<(), String> {
         Ok(())
     } else {
         Err(format!(
-            "Hyprland rejected Arcade Box's temporary surface configuration: {}",
+            "Hyprland rejected Arcade Box's request: {}",
             response.trim()
         ))
     }
@@ -350,6 +430,31 @@ mod tests {
         assert_eq!(
             surface_bounds(&monitor, 740.0, 740.0, false),
             (0, 0, 540, 740)
+        );
+    }
+
+    #[test]
+    fn pin_floats_tiled_windows_first_and_tiles_them_after_unpinning() {
+        let guard =
+            r#"local w=hl.get_window("address:0x1"); if not w then error("the window closed") end"#;
+        assert_eq!(
+            pin_lua("address:0x1", true, true),
+            format!(
+                r#"{guard}; hl.dispatch(hl.dsp.window.float({{action="on",window="address:0x1"}})); hl.dispatch(hl.dsp.window.pin({{action="on",window="address:0x1"}}))"#
+            )
+        );
+        assert_eq!(
+            pin_lua("address:0x1", false, true),
+            format!(
+                r#"{guard}; hl.dispatch(hl.dsp.window.pin({{action="off",window="address:0x1"}})); hl.dispatch(hl.dsp.window.float({{action="off",window="address:0x1"}}))"#
+            )
+        );
+        assert!(!pin_lua("address:0x1", true, false).contains("float"));
+        assert_eq!(
+            paste_lua("address:0x1"),
+            format!(
+                r#"{guard}; hl.dispatch(hl.dsp.send_shortcut({{mods="CTRL SHIFT",key="V",window="address:0x1"}}))"#
+            )
         );
     }
 
