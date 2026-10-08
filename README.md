@@ -39,6 +39,8 @@ Requirements: Node.js 24 or newer, npm, and the [Tauri 2 system prerequisites](h
 
 The script builds the frontend and embedded Tauri assets, builds the desktop and plugin worker, and launches the result. On Linux it installs the local build under `${XDG_DATA_HOME:-$HOME/.local/share}/arcade-box/local-build` and registers a desktop application entry under `${XDG_DATA_HOME:-$HOME/.local/share}/applications`; it does not edit shell profiles, autostart files, or compositor configuration. Re-run the script after changing frontend assets. Desktop invocation, portal behavior, and cross-platform interaction are still being verified; see the [platform matrix](docs/platform.md) for current evidence.
 
+The tray icon opens Settings on click. Its menu is the one every Arcade app has: **Open Box**, **Open Settings**, **Restart Arcade Box** and, below a separator, **Quit Arcade Box**.
+
 ## Works with other Arcade apps
 
 With installed, enabled peers, Box can use Arcade Lens for screen selection and
