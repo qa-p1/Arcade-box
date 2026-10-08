@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "purpose": "Locked third-party dependency inventory; human license and notice review remains required",
-  "packageCount": 972,
+  "packageCount": 973,
   "unresolvedLicenseMetadata": [],
   "packages": [
     {
@@ -303,6 +303,16 @@
       "repository": "https://github.com/vorner/arc-swap",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "c049c0be4daef0b145cb3555416b3b8ef5b7888a38aea1a3a155801fe7b0810b"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "arcade-link",
+      "version": "0.1.0",
+      "license": "MIT OR Apache-2.0",
+      "licenseFile": null,
+      "repository": "https://github.com/qa-p1/Arcade-link",
+      "source": "git+https://github.com/qa-p1/Arcade-Link?tag=v0.1.0#337b85fe85fca3e68ec472a6337aa9ebd77fc7ef",
+      "checksum": null
     },
     {
       "ecosystem": "cargo",
