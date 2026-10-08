@@ -19,9 +19,11 @@ repository = "https://github.com/qa-p1/Arcade-box"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["preserve_order"] }
 thiserror = "2.0"
-# Arcade Link (the shared protocol). A relative path until Arcade-link has a
-# tagged release; then a git dependency with a local [patch] override.
-arcade-link = { path = "../Arcade-link/crates/arcade-link", features = ["engines"] }
+# Arcade Link (the shared protocol), pinned to a release tag. To build
+# against a local checkout instead, add to .cargo/config.toml (not committed):
+#   [patch."https://github.com/qa-p1/Arcade-Link"]
+#   arcade-link = { path = "<path to>/Arcade-link/crates/arcade-link" }
+arcade-link = { git = "https://github.com/qa-p1/Arcade-Link", tag = "v0.1.0", features = ["engines"] }
 
 # zxing-cpp's bundled C++ build follows the opt-level: at 0 CMake builds Debug,
 # which links MSVC's debug runtime (unresolved _CrtDbgReport on Windows).
