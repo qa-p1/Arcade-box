@@ -4,6 +4,11 @@ Verified 2026-10-08 on branch `arcade/link` (version 0.1.0, Arcade Link
 `v0.1.0`). This page records what is implemented and how it was checked;
 the other documents describe design and behavior.
 
+Box now pins Arcade Link `v0.2.0`, which adds Arcade Shelf and Arcade Find to
+the shared app metadata, so Connected apps lists both with a Get link. The
+checks below were recorded against `v0.1.0`; the 2026-10-08 figures are not
+re-measured for the new pin.
+
 ## Implemented
 
 - The Island and dashboard (Tauri 2, Svelte 5), the CLI (`arcade-box`, alias

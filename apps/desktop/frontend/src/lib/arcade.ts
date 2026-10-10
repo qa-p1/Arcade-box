@@ -414,7 +414,7 @@ export async function watchLinkOpen(handler: (request: LinkOpenRequest) => void)
 
 /** Display names of the Arcade apps, for "From Arcade Look" notes. */
 export function arcadeAppName(id: string): string {
-  return ({ 'arcade.box': 'Arcade Box', 'arcade.lens': 'Arcade Lens', 'arcade.look': 'Arcade Look', 'arcade.wheel': 'Arcade Wheel', 'arcade.clipboard': 'Arcade Clipboard' } as Record<string, string>)[id] ?? 'another Arcade app';
+  return ({ 'arcade.box': 'Arcade Box', 'arcade.lens': 'Arcade Lens', 'arcade.look': 'Arcade Look', 'arcade.wheel': 'Arcade Wheel', 'arcade.clipboard': 'Arcade Clipboard', 'arcade.shelf': 'Arcade Shelf', 'arcade.find': 'Arcade Find' } as Record<string, string>)[id] ?? 'another Arcade app';
 }
 
 /** `arcade-desktop --settings` (or another app) asked Box to open Settings. */
