@@ -115,8 +115,9 @@ The Link switch (`link_enabled`) and the per-app toggles
 Box's manifest lists no actions and nothing listens.
 
 Settings includes **Connected apps**: a master switch, one row for Lens,
-Look, Wheel, Clipboard and Tools with installed/running state and a **Use with
-Arcade Box** toggle, Get links for missing apps, and registry/endpoint diagnostics.
+Look, Wheel, Clipboard, Shelf, Find and Tools with installed/running state and
+a **Use with Arcade Box** toggle, Get links for missing apps, and
+registry/endpoint diagnostics.
 Get hands the selected app to `tools.install` (`options.app`) when Arcade
 Tools is available; otherwise it opens that app's GitHub releases page.
 Registry and endpoint changes are watched through OS notifications; no

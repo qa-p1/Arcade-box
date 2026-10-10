@@ -27,7 +27,7 @@ sidecars into the ignored `binaries` directory. It accepts `--target` for an
 installed Rust target; cross-platform toolchains are not provided by this repo.
 No WASM fixture rebuild, installation, app launch or startup-file edit is needed.
 
-CI checks out Box; Cargo resolves Arcade Link from the pinned `v0.1.0` git tag.
+CI checks out Box; Cargo resolves Arcade Link from the pinned `v0.2.0` git tag.
 It runs Rust/frontend checks, builds native installers, and uploads one artifact
 per platform. Linux, Windows and macOS jobs passed on 2026-10-08; interactive
 Windows/macOS behavior is still unverified (see [status](STATUS.md)).
