@@ -473,6 +473,12 @@ pub fn result_requests(
         ids::WHEEL.into(),
         InvokeRequest::new("wheel.add_action", ids::BOX).input(action_reference(tool, preset)),
     ));
+    let shelved = shelf_inputs(&contents);
+    if !shelved.is_empty() {
+        let mut request = InvokeRequest::new("shelf.add", ids::BOX);
+        request.inputs = shelved;
+        requests.push(("shelf".into(), ids::SHELF.into(), request));
+    }
     if files.len() == 1 && files[0].kind == "file/image" {
         requests.push((
             "pin".into(),
@@ -481,6 +487,39 @@ pub fn result_requests(
         ));
     }
     Ok(requests)
+}
+
+/// Shelf keeps references, so files travel by path as one `file/any[]` batch
+/// (Shelf types each path itself) and folders as their own references. Text
+/// Shelf can't store natively becomes plain text; structured values are
+/// skipped because they are data, not something a person shelves.
+fn shelf_inputs(contents: &[Content]) -> Vec<Content> {
+    let mut inputs = Vec::new();
+    let paths: Vec<_> = contents
+        .iter()
+        .filter(|c| c.kind.starts_with("file/"))
+        .flat_map(|c| c.all_paths())
+        .map(std::path::Path::new)
+        .collect();
+    if !paths.is_empty() {
+        let mut batch = Content::files(&paths);
+        batch.kind = "file/any[]".into();
+        inputs.push(batch);
+    }
+    for content in contents {
+        match content.kind.as_str() {
+            "folder/reference" => inputs.push(Content {
+                owner: None,
+                ..content.clone()
+            }),
+            "text/plain" | "text/url" | "text/rich" => inputs.push(content.clone()),
+            kind if kind.starts_with("text/") => {
+                inputs.push(Content::plain(content.text.clone().unwrap_or_default()))
+            }
+            _ => {}
+        }
+    }
+    inputs
 }
 
 pub fn result_offers(
@@ -543,6 +582,7 @@ pub fn result_offers(
                 "preview" => "Preview",
                 "send" => "Send to my devices ↗",
                 "wheel" => "Add to Wheel",
+                "shelf" => "Add to Shelf",
                 _ => "Pin",
             }
             .into(),
@@ -584,6 +624,26 @@ mod tests {
         action.available = available;
         action.reason = (!available).then(|| "Private mode".into());
         action.max_bytes = Some(DEVICE_LIMIT);
+        manifest.actions.push(action);
+        arcade_link::manifest::write_manifest(loc, &manifest).unwrap();
+    }
+    fn write_shelf(loc: &Locations, enabled: bool, available: bool) {
+        let mut manifest = Manifest::new(
+            ids::SHELF,
+            "1",
+            std::env::current_exe().unwrap().to_str().unwrap(),
+        );
+        manifest.settings.link_enabled = enabled;
+        let mut action = Action::new("shelf.add", "Add to Shelf", "add").accepts(&[
+            "file/*",
+            "file/*[]",
+            "folder/reference",
+            "text/plain",
+            "text/url",
+            "text/rich",
+        ]);
+        action.available = available;
+        action.reason = (!available).then(|| "Shelf is busy".into());
         manifest.actions.push(action);
         arcade_link::manifest::write_manifest(loc, &manifest).unwrap();
     }
@@ -767,5 +827,112 @@ mod tests {
             "lens.pin"
         );
         assert!(path.is_file());
+    }
+
+    #[test]
+    fn shelf_offer_follows_the_peer_and_sends_references() {
+        let (dir, loc, runtime) = peers();
+        let first = dir.path().join("result.png");
+        image::RgbImage::new(3, 2).save(&first).unwrap();
+        let second = dir.path().join("notes.pdf");
+        std::fs::write(&second, b"%PDF-1.4").unwrap();
+        let outputs = [
+            runtime.grants().grant(&first).unwrap().as_tool_value(),
+            runtime.grants().grant(&second).unwrap().as_tool_value(),
+        ];
+        let tool = runtime
+            .list_tools()
+            .into_iter()
+            .find(|t| t.id == "arcade.image.convert")
+            .unwrap();
+        let shelf = |outputs: &[ToolValue]| {
+            result_offers(&runtime, outputs, &tool, None)
+                .unwrap()
+                .into_iter()
+                .find(|o| o.key == "shelf")
+        };
+        // Missing Shelf: no row.
+        assert!(shelf(&outputs).is_none());
+
+        write_shelf(&loc, true, true);
+        registry(&runtime).refresh();
+        let offer = shelf(&outputs).unwrap();
+        assert_eq!(offer.app, ids::SHELF);
+        assert_eq!(offer.title, "Add to Shelf");
+        assert!(offer.enabled);
+        assert_eq!(offer.preview, "result.png, notes.pdf");
+
+        // Files go as one reference batch: originals stay where they are.
+        let requests = result_requests(&runtime, &outputs, &tool, None).unwrap();
+        let (_, app, request) = requests.iter().find(|(key, ..)| key == "shelf").unwrap();
+        assert_eq!(app, ids::SHELF);
+        assert_eq!(request.action, "shelf.add");
+        assert_eq!(request.inputs.len(), 1);
+        let batch = &request.inputs[0];
+        assert_eq!(batch.kind, "file/any[]");
+        assert!(batch.owner.is_none());
+        let expected = [
+            first.canonicalize().unwrap(),
+            second.canonicalize().unwrap(),
+        ];
+        assert_eq!(
+            batch.all_paths(),
+            expected
+                .iter()
+                .map(|p| p.to_str().unwrap())
+                .collect::<Vec<_>>()
+        );
+        assert!(first.is_file() && second.is_file());
+
+        // Text Shelf stores natively passes through; other text becomes plain
+        // text; structured values are not shelved.
+        let text_tool = runtime
+            .list_tools()
+            .into_iter()
+            .find(|t| t.id == "arcade.text.case")
+            .unwrap();
+        let texts = [
+            ToolValue::text("hello", "text/plain"),
+            ToolValue::text("<b>hi</b>", "text/html"),
+            ToolValue::text("{\"a\":1}", "structured/json"),
+        ];
+        let requests = result_requests(&runtime, &texts, &text_tool, None).unwrap();
+        let inputs = &requests
+            .iter()
+            .find(|(key, ..)| key == "shelf")
+            .unwrap()
+            .2
+            .inputs;
+        assert_eq!(
+            inputs
+                .iter()
+                .map(|c| (c.kind.as_str(), c.text.as_deref().unwrap()))
+                .collect::<Vec<_>>(),
+            vec![("text/plain", "hello"), ("text/plain", "<b>hi</b>")]
+        );
+        let structured = [ToolValue::text("{\"a\":1}", "structured/json")];
+        assert!(
+            !result_requests(&runtime, &structured, &text_tool, None)
+                .unwrap()
+                .iter()
+                .any(|(key, ..)| key == "shelf")
+        );
+
+        // Turned off in Box, disabled in Shelf, or unavailable: no row.
+        LinkSettings {
+            enabled: true,
+            disabled_peers: vec![ids::SHELF.into()],
+        }
+        .save(&runtime)
+        .unwrap();
+        assert!(shelf(&outputs).is_none());
+        LinkSettings::default().save(&runtime).unwrap();
+        assert!(shelf(&outputs).is_some());
+        write_shelf(&loc, false, true);
+        registry(&runtime).refresh();
+        assert!(shelf(&outputs).is_none());
+        write_shelf(&loc, true, false);
+        registry(&runtime).refresh();
+        assert!(shelf(&outputs).is_none());
     }
 }

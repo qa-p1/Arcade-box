@@ -9,6 +9,11 @@ the shared app metadata, so Connected apps lists both with a Get link. The
 checks below were recorded against `v0.1.0`; the 2026-10-08 figures are not
 re-measured for the new pin.
 
+Version 0.1.2 adds **Add to Shelf** to the result action row: output files,
+folders and text go to Arcade Shelf's `shelf.add` as references (see
+[Arcade Link](arcade-link.md)). It is covered by core unit tests against a
+mock Shelf manifest; a run against a real Shelf is not recorded here yet.
+
 ## Implemented
 
 - The Island and dashboard (Tauri 2, Svelte 5), the CLI (`arcade-box`, alias
@@ -26,7 +31,7 @@ re-measured for the new pin.
   downloaded per user from Engines (Link's shared `engines` folder).
 - Arcade Link: every tool and preset as `box:<tool>[#preset]`, `box.open`,
   `box.pipelines`, `box.pipeline.run`, one-shot mode, and the Lens, Look,
-  Clipboard, Wheel and Tools integrations listed in [Arcade Link](arcade-link.md).
+  Clipboard, Wheel, Shelf and Tools integrations listed in [Arcade Link](arcade-link.md).
 - Hyprland: window-pin floats and pins the previous window; paste-plain sends
   Ctrl+Shift+V to it.
 

@@ -47,7 +47,8 @@ The tray icon opens Settings on click. Its menu is the one every Arcade app has:
 
 With installed, enabled peers, Box can use Arcade Lens for screen selection and
 OCR, preview results in Arcade Look, send them to your devices through Arcade
-Clipboard, and add tools, presets or pipelines to Arcade Wheel. Saved pipelines
+Clipboard, keep result files and text on Arcade Shelf, and add tools, presets
+or pipelines to Arcade Wheel. Saved pipelines
 can combine peer actions with Box tools; the first stage may open a picker.
 Outbound/network/command effects need first-run approval. Connected apps settings
 control each connection. Box works on its own with its existing local tools and

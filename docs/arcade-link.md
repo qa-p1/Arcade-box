@@ -62,6 +62,7 @@ files are copied before processing and remain unchanged.
 | `clipboard.add` | Confirmed Send to my devices ↗, and pipeline sinks; 16 MiB maximum, with Clipboard Private mode enforced by its owner. |
 | `look.preview` | Preview output files in Arcade Look. |
 | `wheel.add_action` | Add a tool, preset or saved pipeline; Wheel asks the user to choose a slot and confirm. |
+| `shelf.add` | Add to Shelf from the first result action row: output files as one `file/any[]` reference batch, folders as `folder/reference`, and text as `text/plain`/`text/url`/`text/rich`. Shelf keeps references; Box's originals are never copied or moved. |
 | `tools.install` | Connected apps Get buttons pass `options.app`; when Tools is absent, Get opens the app's GitHub releases page. |
 
 The pipeline editor can also use other peer actions that declare compatible
@@ -124,12 +125,22 @@ Registry and endpoint changes are watched through OS notifications; no
 polling runs while idle. Disk reads and probes run on worker threads.
 
 The first action row in Island results offers **Preview** for files, **Send to my devices ↗** with a
-payload preview and an explicit Send button, **Add to Wheel**, and **Pin**
-for a single image. Device sends over 16 MiB stay disabled with the standard
+payload preview and an explicit Send button, **Add to Wheel**, **Add to Shelf**
+and **Pin** for a single image. Device sends over 16 MiB stay disabled with the standard
 reason. Each request rechecks availability and limits before invoking the
 owner; Private mode and Lens's safety checks remain in those apps. Missing
 or disabled peers and unavailable actions contribute no result entries. Structured results are sent
 as plain JSON text when the user chooses to send them.
+
+Add to Shelf appears when Arcade Shelf is installed, enabled for Box and
+reports `shelf.add` available, and the result has something Shelf can keep.
+Output files travel together as one `file/any[]` batch of paths (Shelf types
+each path itself) and folders as `folder/reference`; Box's artifact folder is
+persistent, so Shelf's references stay valid. Text outputs go as `text/plain`,
+`text/url` or `text/rich`; other text (for example HTML source) goes as plain
+text. Structured-only results contribute no Add to Shelf entry. Shelf adds to
+its active collection without opening a window and answers with a short
+message, shown under the row.
 
 Add to Wheel is also offered on tools, their named presets, and saved
 pipeline cards. It uses `structured/arcade-action`; pipeline references
