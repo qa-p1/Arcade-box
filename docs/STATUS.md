@@ -14,6 +14,29 @@ folders and text go to Arcade Shelf's `shelf.add` as references (see
 [Arcade Link](arcade-link.md)). It is covered by core unit tests against a
 mock Shelf manifest; a run against a real Shelf is not recorded here yet.
 
+## Tools hub standard (documentation prep, 2026-10-11)
+
+This section records the required Phase 8 target, not a claim that the runtime
+work is complete. The source baseline in this worktree is Box 0.1.2 at
+`360e6e8` (Arcade Link `v0.2.0`). This checkout has no verified runtime-worker
+evidence for the newer tray-host, receipt, self-install or settings methods.
+The dated verification below remains historical evidence for the commits and
+flows it names.
+
+| Area | Required behavior and current evidence |
+|---|---|
+| Tray hosting | **Required; runtime verification pending.** Follow the Tools registry notifications and `tray.host` without idle polling. Keep Box's own icon when hosting is off or Link is disabled; unregister it while hosted and recreate it immediately on hand-back or connection loss. Defer registration at startup for at most 300 ms, wait up to 5 s during a Tools restart, report `status.tray`, and verify hand-back within 1 s after a crash. Do not rely on a hidden-icon constructor: prepare icon/menu data while hosted and register the OS icon only when Box owns it. |
+| Linux self-install and receipts | **Required; implementation/runtime verification pending.** A real AppImage install should integrate Box under `~/Applications/Arcade`, retain its existing desktop-entry ID, create launcher/icon/CLI/autostart entries and write an atomic, mode-0600 schema-1 receipt under the Arcade data root (honoring `ARCADE_HOME`). Record the app/version/channel, method, manager, installed path, integration paths and timestamps; dev builds do not write receipts. Uninstall and repair must use receipt paths only; install/update preserve Box data and remove it only on explicit request. A dev build must not prompt or register desktop integration. |
+| Standard CLI flags | **Required; not verified in this baseline.** The shared additions are `--restart`, `--install [--silent] [--no-launch] [--channel C]`, `--uninstall [--silent] [--remove-data]`, `--repair` and read-only JSON `--integration-status`. Box's tray already has a Restart action, but that does not establish the standardized CLI flag. Existing `arcade-desktop` flags and the `arcade-box` tool CLI remain documented above and in [Arcade Link](arcade-link.md). |
+| Link methods and settings transfer | **Required; runtime verification pending.** Implement/advertise `app.settings`, `app.restart`, `app.menu`, `app.menu.invoke`, `app.shortcuts.set`, `app.settings.export` and `app.settings.import` against the landed Link contract; Box's app-specific menu includes **Open pipelines**. Box's portable export allowlist is pipelines, favorites and presets; history is excluded. Imports must validate and back up before applying. The current `v0.2.0` pin does not prove these newer methods. |
+| Shortcut and user docs | **Required; docs/schema validation pending.** Ship task-focused `docs/user/` pages, `shortcuts.json` and generated `shortcuts.md`; validate JSON against the shared schema/vectors, check generated output and local links in CI. Keep manifest global shortcuts in canonical accelerator notation; in-app shortcuts stay in the docs snapshot. This baseline has no `docs/user/` directory. |
+| Catalog and Tools e2e | **Required; onboarding verification pending.** Add Box's supported install assets and docs to the catalog through a reviewable catalog PR, and cover catalog lookup, install, update, receipt cleanup and removal in Tools/Link e2e. No such runtime/e2e verification is recorded in this status. |
+
+The existing Linux, Windows and macOS installer builds are not evidence for the
+new self-install or tray-host flows. Windows and macOS remain build-only unless
+their package and interactive flows are separately run and recorded; a CI
+build or installer artifact must not be described as a real desktop test.
+
 ## Implemented
 
 - The Island and dashboard (Tauri 2, Svelte 5), the CLI (`arcade-box`, alias
