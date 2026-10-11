@@ -29,7 +29,10 @@
       }
     ],
     "security": {
-      "capabilities": ["island", "pinned-image"]
+      "capabilities": [
+        "island",
+        "pinned-image"
+      ]
     }
   },
   "bundle": {
@@ -39,10 +42,25 @@
       "appimage",
       "dmg"
     ],
-    "icon": ["icons/icon.png", "icons/icon.ico", "icons/icon.icns"],
+    "icon": [
+      "icons/icon.png",
+      "icons/icon.ico",
+      "icons/icon.icns"
+    ],
     "macOS": {
       "infoPlist": "Info.plist",
       "minimumSystemVersion": "14.0"
+    },
+    "publisher": "qa-p1",
+    "homepage": "https://github.com/qa-p1/Arcade-catalog",
+    "category": "Utility",
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "installerHooks": "./windows/installer-hooks.nsh",
+        "template": "./windows/installer.nsi",
+        "installerIcon": "icons/icon.ico"
+      }
     }
   }
 }
