@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { copyText, watchIslandShown, watchIslandHiding, watchIslandHidden, watchOpenSettings, watchLinkOpen, arcadeAppName, islandReady, setIslandInputRegion, type LinkOpenRequest } from './lib/arcade';
+  import { copyText, watchIslandShown, watchIslandHiding, watchIslandHidden, watchOpenSettings, watchOpenPipelines, watchLinkOpen, arcadeAppName, islandReady, setIslandInputRegion, type LinkOpenRequest } from './lib/arcade';
   import { onMount, tick } from 'svelte';
   import { fade } from 'svelte/transition';
   import Icon from './lib/Icon.svelte';
@@ -361,6 +361,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       }),
       watchIslandHidden(() => { surfaceVisible = false; dismissing = false; }),
       watchOpenSettings(() => openSettings()),
+      watchOpenPipelines(() => openPipelines()),
       watchLinkOpen((request) => openFromLink(request)),
     ]).then(async ([shown, hiding, hidden, settings, linkOpen]) => {
       if (disposed) { shown(); hiding(); hidden(); settings(); linkOpen(); return; }
@@ -1298,6 +1299,18 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     catalogMode = 'settings';
     categoryFilter = 'All tools';
     dashboardQuery = '';
+  }
+
+  function openPipelines(): void {
+    releaseCurrentDirectoryGrant();
+    selectedTool = null;
+    activeJobId = '';
+    activeResult = null;
+    surface = 'dashboard';
+    catalogMode = 'pipelines';
+    categoryFilter = 'All tools';
+    dashboardQuery = '';
+    focusDashboardEntry();
   }
 
   async function getTesseract(): Promise<void> {

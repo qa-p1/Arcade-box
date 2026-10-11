@@ -423,6 +423,12 @@ export async function watchOpenSettings(handler: () => void): Promise<() => void
   return listen('arcade://open-settings', handler);
 }
 
+/** Tray and Link menu request that Box open its pipelines view. */
+export async function watchOpenPipelines(handler: () => void): Promise<() => void> {
+  if (!isDesktopRuntime()) return () => {};
+  return listen('arcade://open-pipelines', handler);
+}
+
 export interface LinkSettings { enabled: boolean; disabledPeers: string[] }
 export interface ConnectedApp { id: string; name: string; state: string; version: string | null; enabled: boolean; pitch: string; endpoint: string }
 export interface ConnectedAppsState { settings: LinkSettings; apps: ConnectedApp[]; registryPath: string; endpointState: string; lastError: string | null }
