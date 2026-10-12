@@ -430,9 +430,12 @@ fn default_resolver() -> Result<IpAddr, String> {
     }
     #[cfg(windows)]
     {
-        return Ok("1.1.1.1".parse().expect("static resolver IP"));
+        Ok("1.1.1.1".parse().expect("static resolver IP"))
     }
-    Err("Could not find a configured DNS resolver; enter a resolver IP address".into())
+    #[cfg(not(windows))]
+    {
+        Err("Could not find a configured DNS resolver; enter a resolver IP address".into())
+    }
 }
 
 fn dns_query(
