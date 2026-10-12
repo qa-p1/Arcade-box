@@ -8,6 +8,8 @@ since: 0.1.2
 
 Arcade Box brings file, media, text, web, and system tasks into one searchable desktop tool. Open it with a shortcut, find an action, and send the result where you need it.
 
+![Arcade Box on first run: the Island search bar above the shortcut setup card](images/first-run.png)
+
 ## Three useful things to start with
 
 - **Work with PDFs and images:** merge or split PDFs, make a scanned PDF searchable, resize or clean images, and more.
