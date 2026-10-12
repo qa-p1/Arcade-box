@@ -36,10 +36,7 @@ pub fn status() -> WindowPinStatus {
         let wayland = is_wayland_session();
         let wmctrl = find_wmctrl();
         let has_display = env::var_os("DISPLAY").is_some_and(|display| !display.is_empty());
-        let manager_available = has_display
-            && wmctrl
-                .as_ref()
-                .is_some_and(supports_ewmh);
+        let manager_available = has_display && wmctrl.as_ref().is_some_and(supports_ewmh);
         return WindowPinStatus {
             platform: if wayland { "wayland" } else { "x11" }.into(),
             available: !wayland && manager_available,
