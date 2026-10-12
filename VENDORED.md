@@ -55,7 +55,7 @@ Tauri template source: `tauri-cli-v2.12.1`, upstream SHA-256
 The template contains local Arcade adaptations. SHA-256 inventory:
 
 ```text
-7cf643e2bac04913b05150946bb9efc876cd5e2f30ef67b372695fa7478369f4  apps/desktop/src-tauri/windows/installer.nsi
+3ffc4150b03dadadbf8c6469723269aa36204a1f7c326f5045c0daf4b6a45500  apps/desktop/src-tauri/windows/installer.nsi
 9dd42ea92cff2ede5cd477cbfcce051b2d0115c0ac7f368ee88cb545055dff1d  apps/desktop/src-tauri/windows/LICENSE-TAURI-MIT
 0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594  apps/desktop/src-tauri/windows/LICENSE-TAURI-APACHE-2.0
 ```
