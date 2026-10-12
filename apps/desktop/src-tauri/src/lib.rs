@@ -1713,6 +1713,8 @@ pub fn run(args: Vec<String>) {
         .build(tauri::generate_context!())
         .expect("Arcade Box desktop runtime failed to initialize");
     app.run(|handle, event| {
+        #[cfg(not(target_os = "linux"))]
+        let _ = handle;
         if let tauri::RunEvent::Exit = event {
             link::stop();
         }
