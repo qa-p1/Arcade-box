@@ -152,6 +152,7 @@ fn rename_files(
     ))
 }
 
+#[allow(clippy::too_many_arguments)]
 fn transform_filename(
     name: &str,
     mode: &str,
@@ -419,10 +420,10 @@ fn compare_directories(
     }
     let mut all = Vec::new();
     let mut maps = Vec::new();
-    for index in 0..roots.len() {
+    for (index, root) in roots.iter().enumerate() {
         let mut entries = Vec::new();
         scan_directory(
-            &roots[index],
+            root,
             index,
             Path::new(""),
             0,
@@ -436,7 +437,7 @@ fn compare_directories(
         let mut map = BTreeMap::new();
         for entry in entries.into_iter().filter(|entry| !entry.directory) {
             check_cancelled(cancelled)?;
-            let mut file = roots[index]
+            let mut file = root
                 .open(&entry.relative)
                 .map_err(|error| error.to_string())?;
             let digest = hash_reader(&mut file, cancelled)?;
@@ -621,7 +622,7 @@ fn scan_directory(
     Ok(())
 }
 
-fn selected_files<'a>(request: &'a ToolRequest) -> Result<Vec<&'a ToolValue>, String> {
+fn selected_files(request: &ToolRequest) -> Result<Vec<&ToolValue>, String> {
     let files = request
         .inputs
         .iter()

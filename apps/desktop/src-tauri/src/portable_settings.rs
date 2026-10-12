@@ -11,6 +11,8 @@ use arcade_core::{Arcade, pipeline::Pipeline};
 use arcade_link::{Content, Handoff, LinkError, Locations};
 use serde::{Deserialize, Serialize};
 
+type StorageRows = (Vec<(String, u32, String)>, Vec<(String, String)>);
+
 const APP_ID: &str = "arcade.box";
 const MAX_BYTES: u64 = 1024 * 1024;
 const MAX_FAVORITES: usize = 2048;
@@ -51,7 +53,7 @@ fn setting(runtime: &Arcade, key: &str, fallback: &str) -> String {
 
 fn canonical_shortcut(value: &str) -> Result<String, LinkError> {
     arcade_link::accelerator::normalize(value)
-        .map_err(|error| LinkError::denied(format!("invalid global shortcut: {error}")))
+        .map_err(|error| LinkError::denied(&format!("invalid global shortcut: {error}")))
 }
 
 fn strip_device_options(pipelines: &mut [Pipeline], runtime: &Arcade) {
@@ -88,14 +90,20 @@ fn strip_device_options(pipelines: &mut [Pipeline], runtime: &Arcade) {
 
 impl PortableSettings {
     pub fn export(runtime: &Arcade) -> Result<Self, LinkError> {
-        let mut pipelines = runtime.list_pipelines().map_err(|e| LinkError::unavailable(e.to_string()))?;
+        let mut pipelines = runtime
+            .list_pipelines()
+            .map_err(|e| LinkError::unavailable(e.to_string()))?;
         strip_device_options(&mut pipelines, runtime);
         let theme = setting(runtime, "theme", "system");
         let onboarding_complete = setting(runtime, "onboarding_complete", "false");
         let onboarding_complete = match onboarding_complete.as_str() {
             "true" => true,
             "false" => false,
-            _ => return Err(LinkError::unavailable("invalid saved onboarding preference")),
+            _ => {
+                return Err(LinkError::unavailable(
+                    "invalid saved onboarding preference",
+                ));
+            }
         };
         let shortcut = canonical_shortcut(&setting(
             runtime,
@@ -110,7 +118,10 @@ impl PortableSettings {
             schema: 1,
             app: APP_ID.into(),
             version: env!("CARGO_PKG_VERSION").into(),
-            favorites: runtime.storage().favorites().map_err(|e| LinkError::unavailable(e.to_string()))?,
+            favorites: runtime
+                .storage()
+                .favorites()
+                .map_err(|e| LinkError::unavailable(e.to_string()))?,
             pipelines,
             preferences: PortablePreferences {
                 theme,
@@ -137,9 +148,9 @@ impl PortableSettings {
         for id in &self.favorites {
             if id.len() > 160
                 || !id.starts_with("arcade.")
-                || !id
-                    .bytes()
-                    .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || b".-".contains(&byte))
+                || !id.bytes().all(|byte| {
+                    byte.is_ascii_lowercase() || byte.is_ascii_digit() || b".-".contains(&byte)
+                })
             {
                 return Err(LinkError::denied("invalid favorite tool ID"));
             }
@@ -152,7 +163,9 @@ impl PortableSettings {
         let tools = runtime.list_tools();
         for favorite in &self.favorites {
             if !tools.iter().any(|tool| tool.id == *favorite) {
-                return Err(LinkError::denied(format!("unknown favorite tool ID: {favorite}")));
+                return Err(LinkError::denied(&format!(
+                    "unknown favorite tool ID: {favorite}"
+                )));
             }
         }
         let mut ids = std::collections::HashSet::new();
@@ -160,9 +173,9 @@ impl PortableSettings {
             if !ids.insert(pipeline.id.as_str()) {
                 return Err(LinkError::denied("duplicate pipeline ID"));
             }
-            pipeline
-                .validate(runtime)
-                .map_err(|error| LinkError::denied(format!("invalid pipeline {}: {error}", pipeline.id)))?;
+            pipeline.validate(runtime).map_err(|error| {
+                LinkError::denied(&format!("invalid pipeline {}: {error}", pipeline.id))
+            })?;
         }
         let bytes = serde_json::to_vec(self).map_err(|e| LinkError::internal(e.to_string()))?;
         if bytes.len() as u64 > MAX_BYTES {
@@ -171,12 +184,13 @@ impl PortableSettings {
         Ok(())
     }
 
-    pub fn storage_rows(&self) -> Result<(Vec<(String, u32, String)>, Vec<(String, String)>), LinkError> {
+    pub fn storage_rows(&self) -> Result<StorageRows, LinkError> {
         let pipelines = self
             .pipelines
             .iter()
             .map(|pipeline| {
-                let definition = serde_json::to_string(pipeline).map_err(|e| LinkError::internal(e.to_string()))?;
+                let definition = serde_json::to_string(pipeline)
+                    .map_err(|e| LinkError::internal(e.to_string()))?;
                 Ok((pipeline.id.clone(), pipeline.version, definition))
             })
             .collect::<Result<Vec<_>, LinkError>>()?;
@@ -186,7 +200,10 @@ impl PortableSettings {
                 "onboarding_complete".into(),
                 self.preferences.onboarding_complete.to_string(),
             ),
-            ("global_shortcut".into(), self.preferences.global_shortcut.clone()),
+            (
+                "global_shortcut".into(),
+                self.preferences.global_shortcut.clone(),
+            ),
         ];
         Ok((pipelines, settings))
     }
@@ -194,12 +211,15 @@ impl PortableSettings {
 
 pub fn export_file(runtime: &Arcade, locations: &Locations) -> Result<Vec<Content>, LinkError> {
     let settings = PortableSettings::export(runtime)?;
-    let bytes = serde_json::to_vec_pretty(&settings).map_err(|e| LinkError::internal(e.to_string()))?;
+    let bytes =
+        serde_json::to_vec_pretty(&settings).map_err(|e| LinkError::internal(e.to_string()))?;
     if bytes.len() as u64 > MAX_BYTES {
         return Err(LinkError::denied("settings file exceeds 1 MiB"));
     }
     let handoff = Handoff::create(locations, APP_ID).map_err(io_error)?;
-    let mut file = handoff.file("arcade-box-settings.json", &bytes).map_err(io_error)?;
+    let mut file = handoff
+        .file("arcade-box-settings.json", &bytes)
+        .map_err(io_error)?;
     file.kind = "file/any".into();
     handoff.keep();
     Ok(vec![file])
@@ -223,12 +243,14 @@ pub fn read_import(inputs: &[Content], runtime: &Arcade) -> Result<PortableSetti
         return Err(LinkError::denied("import requires a regular file"));
     }
     let mut bytes = Vec::new();
-    file.take(MAX_BYTES + 1).read_to_end(&mut bytes).map_err(io_error)?;
+    file.take(MAX_BYTES + 1)
+        .read_to_end(&mut bytes)
+        .map_err(io_error)?;
     if bytes.len() as u64 > MAX_BYTES {
         return Err(LinkError::denied("settings file exceeds 1 MiB"));
     }
-    let mut settings: PortableSettings =
-        serde_json::from_slice(&bytes).map_err(|e| LinkError::denied(format!("invalid settings: {e}")))?;
+    let mut settings: PortableSettings = serde_json::from_slice(&bytes)
+        .map_err(|e| LinkError::denied(&format!("invalid settings: {e}")))?;
     strip_device_options(&mut settings.pipelines, runtime);
     settings.validate_for(runtime)?;
     Ok(settings)
@@ -241,7 +263,8 @@ pub fn write_backup(settings: &PortableSettings, data_dir: &Path) -> Result<Path
     let directory = data_dir.join("portable-import-backups");
     arcade_link::paths::ensure_private_dir(&directory).map_err(io_error)?;
     let path = directory.join(format!("{token}.json"));
-    let bytes = serde_json::to_vec_pretty(settings).map_err(|e| LinkError::internal(e.to_string()))?;
+    let bytes =
+        serde_json::to_vec_pretty(settings).map_err(|e| LinkError::internal(e.to_string()))?;
     arcade_link::paths::write_atomic(&path, &bytes, true).map_err(io_error)?;
     Ok(path)
 }
@@ -266,7 +289,13 @@ mod tests {
         };
         settings.validate_shape().unwrap();
         let json = serde_json::to_string(&settings).unwrap();
-        for forbidden in ["history", "credential", "secret", "deviceIdentity", "providerChoices"] {
+        for forbidden in [
+            "history",
+            "credential",
+            "secret",
+            "deviceIdentity",
+            "providerChoices",
+        ] {
             assert!(!json.contains(forbidden));
         }
     }
@@ -275,6 +304,9 @@ mod tests {
     fn rejects_unknown_fields_and_noncanonical_shortcuts_are_normalized() {
         let json = r#"{"schema":1,"app":"arcade.box","version":"0.1.2","favorites":[],"pipelines":[],"preferences":{"theme":"system","onboardingComplete":false,"globalShortcut":"CTRL+ALT+SPACE"},"history":[]}"#;
         assert!(serde_json::from_str::<PortableSettings>(json).is_err());
-        assert_eq!(canonical_shortcut("CTRL+ALT+SPACE").unwrap(), "Ctrl+Alt+Space");
+        assert_eq!(
+            canonical_shortcut("CTRL+ALT+SPACE").unwrap(),
+            "Ctrl+Alt+Space"
+        );
     }
 }

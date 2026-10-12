@@ -449,7 +449,7 @@ impl StandardUi {
                 {
                     return Err("visibility condition must refer to an earlier option".into());
                 }
-                if condition.equals.is_some() == !condition.one_of.is_empty() {
+                if condition.equals.is_some() != condition.one_of.is_empty() {
                     return Err("visibility condition needs equals or oneOf".into());
                 }
             }

@@ -14,6 +14,7 @@ pub struct WindowPinStatus {
     pub message: String,
 }
 
+#[allow(clippy::needless_return)]
 pub fn status() -> WindowPinStatus {
     #[cfg(target_os = "windows")]
     {
@@ -38,7 +39,7 @@ pub fn status() -> WindowPinStatus {
         let manager_available = has_display
             && wmctrl
                 .as_ref()
-                .is_some_and(|executable| supports_ewmh(executable));
+                .is_some_and(supports_ewmh);
         return WindowPinStatus {
             platform: if wayland { "wayland" } else { "x11" }.into(),
             available: !wayland && manager_available,
@@ -149,7 +150,7 @@ fn set_previous_foreground_pin(pin: bool) -> Result<(), String> {
         return Err("Wayland does not allow a general window pin request".into());
     }
     let wmctrl = find_wmctrl().ok_or("wmctrl is not available on PATH")?;
-    if !env::var_os("DISPLAY").is_some_and(|display| !display.is_empty()) {
+    if env::var_os("DISPLAY").is_none_or(|display| display.is_empty()) {
         return Err("X11 window pinning needs an active X11 display".into());
     }
     if !supports_ewmh(&wmctrl) {

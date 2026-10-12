@@ -16,7 +16,7 @@ Read the [Arcade Box user guide](docs/user/) for setup, features, shortcuts, and
 
 ### Run and use the CLI
 
-The Rust CLI shares the desktop app’s tool runtime and lets you search, run implemented tools, inspect providers, and save or execute pipelines. Requirements: Rust 1.95 or newer.
+The Rust CLI shares the desktop app’s tool runtime and lets you search, run implemented tools, inspect providers, and save or execute pipelines. Requirements: Rust 1.88 or newer.
 
     cargo run -p arcadebox -- tools
     cargo run -p arcadebox -- search hash

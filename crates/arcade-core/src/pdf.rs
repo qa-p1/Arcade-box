@@ -710,8 +710,7 @@ fn extract_content(
         let (image_count, total_pixels) = pdf_image_listing_stats(&image_listing)?;
         if image_count > MAX_EMBEDDED_IMAGES || total_pixels > MAX_EMBEDDED_IMAGE_PIXELS {
             return Err(format!(
-                "PDF has too many embedded images to extract safely ({} images, {} pixels)",
-                image_count, total_pixels
+                "PDF has too many embedded images to extract safely ({image_count} images, {total_pixels} pixels)"
             ));
         }
         if image_count > 0 {
@@ -2824,8 +2823,7 @@ mod tests {
             payload.len(),
             String::from_utf8_lossy(payload)
         );
-        let objects = vec![
-            format!(
+        let objects = [format!(
                 "<< /Type /Catalog /Pages 2 0 R /Names << /EmbeddedFiles << /Names [({name}) 4 0 R] >> >> >>"
             ),
             "<< /Type /Pages /Count 1 /Kids [3 0 R] >>".into(),
@@ -2835,8 +2833,7 @@ mod tests {
             ),
             embedded_stream,
             "<< /Type /Filespec /F (unused) >>".into(),
-            "<< /Length 0 >>\nstream\n\nendstream".into(),
-        ];
+            "<< /Length 0 >>\nstream\n\nendstream".into()];
         let mut bytes = b"%PDF-1.7\n".to_vec();
         let mut offsets = vec![0u64];
         for (index, object) in objects.iter().enumerate() {

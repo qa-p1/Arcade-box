@@ -381,12 +381,13 @@ fn age_encrypt_decrypt(
         }),
         vec![],
     );
-    if encrypting && let Some(password) = password {
-        if password.chars().count() < 12 {
-            result.warnings.push(
-                "A short passphrase may be easier to guess; use a long, unique passphrase.".into(),
-            );
-        }
+    if encrypting
+        && let Some(password) = password
+        && password.chars().count() < 12
+    {
+        result.warnings.push(
+            "A short passphrase may be easier to guess; use a long, unique passphrase.".into(),
+        );
     }
     Ok(result)
 }

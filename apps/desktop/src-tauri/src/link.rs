@@ -13,13 +13,14 @@ use std::sync::{
     atomic::{AtomicU8, Ordering},
 };
 
+use crate::portable_settings;
 use arcade_contract::ToolResult;
 use arcade_core::Arcade;
 use arcade_core::jobs::{JobManager, JobSnapshot, JobStatus};
 use arcade_core::link::{self as core_link, LinkSettings, Prepared, ProviderCache, consumer};
-use arcade_link::server::{Handler, InvokeContext, Job, Reply};
 use arcade_link::manifest::{Docs, ManifestAdditions, ManifestDocument, MenuItem, MenuKind};
-use arcade_link::{Action, Content, InvokeRequest, InvokeResult, LinkError, Locations, Manifest, Presence};
+use arcade_link::server::{Handler, InvokeContext, Job, Reply};
+use arcade_link::{Action, Content, InvokeRequest, InvokeResult, LinkError, Locations, Presence};
 use serde::Serialize;
 use tauri::{AppHandle, Emitter, Manager};
 
@@ -151,7 +152,9 @@ pub fn print_manifest() {
             ),
             additions: ManifestAdditions {
                 menu: menu_items(),
-                docs: Some(Docs { version: env!("CARGO_PKG_VERSION").into() }),
+                docs: Some(Docs {
+                    version: env!("CARGO_PKG_VERSION").into(),
+                }),
                 install: Some(install_method()),
                 ..Default::default()
             },
@@ -383,8 +386,10 @@ impl Handler for BoxHandler {
             return Err(LinkError::denied("unknown shortcut id"));
         }
         let shortcut = arcade_link::accelerator::normalize(accelerator)
-            .map_err(|error| LinkError::denied(error.to_string()))?;
-        let _change = HUB_SETTINGS_CHANGE.lock().unwrap_or_else(|e| e.into_inner());
+            .map_err(|error| LinkError::denied(&error.to_string()))?;
+        let _change = HUB_SETTINGS_CHANGE
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let runtime = self.runtime();
         let old = effective_shortcut(&runtime);
         let result = crate::set_shortcut_from_link(&self.app, shortcut.clone())?;
@@ -405,32 +410,56 @@ impl Handler for BoxHandler {
         portable_settings::export_file(&self.runtime(), &Locations::discover())
     }
 
-    fn settings_import(&self, inputs: &[Content]) -> Result<arcade_link::app::ImportResult, LinkError> {
+    fn settings_import(
+        &self,
+        inputs: &[Content],
+    ) -> Result<arcade_link::app::ImportResult, LinkError> {
         let runtime = self.runtime();
         let next = portable_settings::read_import(inputs, &runtime)?;
-        let _change = HUB_SETTINGS_CHANGE.lock().unwrap_or_else(|e| e.into_inner());
+        let _change = HUB_SETTINGS_CHANGE
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
         let old = portable_settings::PortableSettings::export(&runtime)?;
-        let data_dir = data_dir().ok_or_else(|| LinkError::unavailable("application data directory is unavailable"))?;
+        let data_dir = data_dir()
+            .ok_or_else(|| LinkError::unavailable("application data directory is unavailable"))?;
         let backup = portable_settings::write_backup(&old, &data_dir)?;
         crate::set_shortcut_from_link(&self.app, next.preferences.global_shortcut.clone())?;
         let (pipelines, settings) = next.storage_rows()?;
-        if let Err(error) = runtime.storage().replace_portable_settings(&next.favorites, &pipelines, &settings) {
-            let _ = crate::set_shortcut_from_link(&self.app, old.preferences.global_shortcut.clone());
+        if let Err(error) =
+            runtime
+                .storage()
+                .replace_portable_settings(&next.favorites, &pipelines, &settings)
+        {
+            let _ =
+                crate::set_shortcut_from_link(&self.app, old.preferences.global_shortcut.clone());
             return Err(LinkError::unavailable(error.to_string()));
         }
-        if let Err(error) = runtime.refresh_pipeline_catalog().map_err(|e| LinkError::unavailable(e.to_string()))
+        if let Err(error) = runtime
+            .refresh_pipeline_catalog()
+            .map_err(|e| LinkError::unavailable(e.to_string()))
             .and_then(|_| publish_document(&runtime))
         {
             if let Ok((old_pipelines, old_settings)) = old.storage_rows() {
-                let _ = runtime.storage().replace_portable_settings(&old.favorites, &old_pipelines, &old_settings);
+                let _ = runtime.storage().replace_portable_settings(
+                    &old.favorites,
+                    &old_pipelines,
+                    &old_settings,
+                );
             }
             let _ = runtime.refresh_pipeline_catalog();
-            let _ = crate::set_shortcut_from_link(&self.app, old.preferences.global_shortcut.clone());
+            let _ =
+                crate::set_shortcut_from_link(&self.app, old.preferences.global_shortcut.clone());
             let _ = publish_document(&runtime);
-            return Err(LinkError::unavailable(format!("couldn't publish imported settings; backup saved at {}: {error}", backup.display())));
+            return Err(LinkError::unavailable(format!(
+                "couldn't publish imported settings; backup saved at {}: {error}",
+                backup.display()
+            )));
         }
         let _ = self.app.emit("arcade://settings-imported", ());
-        Ok(arcade_link::app::ImportResult { imported: true, restart_required: false })
+        Ok(arcade_link::app::ImportResult {
+            imported: true,
+            restart_required: false,
+        })
     }
 
     fn describe(&self) -> Vec<Action> {
@@ -542,7 +571,9 @@ pub fn set_tray_state(state: arcade_link::trayhost::TrayState) {
 }
 
 pub(crate) fn settings_change_lock() -> std::sync::MutexGuard<'static, ()> {
-    HUB_SETTINGS_CHANGE.lock().unwrap_or_else(|error| error.into_inner())
+    HUB_SETTINGS_CHANGE
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
 }
 
 fn tray_state() -> &'static str {
@@ -574,7 +605,9 @@ fn publish_document(runtime: &Arcade) -> Result<(), LinkError> {
     let mut written = ManifestDocument::from_json(&text).map_err(LinkError::unavailable)?;
     written.manifest.written_at = document.manifest.written_at.clone();
     if written != document {
-        return Err(LinkError::unavailable("couldn't publish settings in the manifest"));
+        return Err(LinkError::unavailable(
+            "couldn't publish settings in the manifest",
+        ));
     }
     Ok(())
 }
@@ -591,10 +624,10 @@ fn reprobe(runtime: &Arcade, full: bool) {
         _ => core_link::probe_providers(),
     };
     cache.extend(core_link::peer_provider_cache(runtime));
-    if core_link::save_provider_cache(runtime, &cache) {
-        if slot().lock().unwrap_or_else(|e| e.into_inner()).is_some() {
-            let _ = publish_document(runtime);
-        }
+    if core_link::save_provider_cache(runtime, &cache)
+        && slot().lock().unwrap_or_else(|e| e.into_inner()).is_some()
+    {
+        let _ = publish_document(runtime);
     }
 }
 

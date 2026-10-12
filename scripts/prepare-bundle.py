@@ -17,7 +17,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--target', help='Rust target triple (default: native host)')
     args = parser.parse_args()
-    host = subprocess.check_output(['rustc', '--print', 'host-tuple'], text=True).strip()
+    version = subprocess.check_output(['rustc', '-vV'], text=True)
+    host = next(line.removeprefix('host: ') for line in version.splitlines() if line.startswith('host: '))
     target = args.target or host
     env = dict(os.environ, CARGO_BUILD_JOBS='3')
     command = ['cargo', 'build', '--release', '--locked', '-p', 'arcadebox', '--bin', 'arcade-box', '-p', 'arcade-plugin-host', '--bin', 'arcade-plugin-worker']

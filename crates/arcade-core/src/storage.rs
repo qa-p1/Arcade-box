@@ -240,10 +240,7 @@ impl Storage {
         transaction.execute("DELETE FROM favorites", [])?;
         transaction.execute("DELETE FROM pipelines", [])?;
         for tool_id in favorites {
-            transaction.execute(
-                "INSERT INTO favorites (tool_id) VALUES (?1)",
-                [tool_id],
-            )?;
+            transaction.execute("INSERT INTO favorites (tool_id) VALUES (?1)", [tool_id])?;
         }
         for (id, version, definition) in pipelines {
             transaction.execute(

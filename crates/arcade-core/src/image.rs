@@ -1547,6 +1547,7 @@ fn upscale_image(
     )
 }
 
+#[allow(clippy::too_many_arguments)]
 fn publish_model_output(
     manifest: &ToolManifest,
     model: &ImageModelProvider,

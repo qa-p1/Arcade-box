@@ -10,7 +10,9 @@ use std::io;
 use std::path::{Path, PathBuf};
 
 use arcade_link::install::{self, AppInfo, Detection, Environment, Runtime, State};
-use arcade_link::receipt::{InstallMethod, ManagedBy, Receipt};
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+use arcade_link::receipt::ManagedBy;
+use arcade_link::receipt::{InstallMethod, Receipt};
 use serde::{Deserialize, Serialize};
 
 pub const ME: &str = arcade_link::ids::BOX;
@@ -35,20 +37,32 @@ pub fn app_info() -> AppInfo {
 
 /// How this copy was installed, for the manifest's `install` echo.
 pub fn method() -> InstallMethod {
-    match Environment::discover().and_then(|e| Runtime::discover().and_then(|r| install::detect(&e, ME, &r))) {
+    match Environment::discover()
+        .and_then(|e| Runtime::discover().and_then(|r| install::detect(&e, ME, &r)))
+    {
         Ok(d) if d.state == State::DevBuild => InstallMethod::Dev,
         Ok(d) => d
             .receipt
             .as_ref()
             .filter(|_| d.state == State::InstalledHere)
-            .map_or(if d.is_app_image { InstallMethod::Appimage } else { InstallMethod::Manual }, |r| r.method),
+            .map_or(
+                if d.is_app_image {
+                    InstallMethod::Appimage
+                } else {
+                    InstallMethod::Manual
+                },
+                |r| r.method,
+            ),
         Err(_) => InstallMethod::Manual,
     }
 }
 
 /// Whether an installer owns this copy's launcher and login entries.
 pub fn has_receipt() -> bool {
-    Environment::discover().ok().and_then(|e| e.receipts().read(ME).ok().flatten()).is_some()
+    Environment::discover()
+        .ok()
+        .and_then(|e| e.receipts().read(ME).ok().flatten())
+        .is_some()
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -64,11 +78,17 @@ pub fn dialog_state(d: &Detection, version: &str) -> Option<DialogState> {
         State::DevBuild | State::InstalledHere => None,
         State::NotInstalled => Some(DialogState::Install),
         State::InstalledElsewhere { version: installed } => {
-            let older = parse_version(installed).zip(parse_version(version)).is_some_and(|(a, b)| a < b);
+            let older = parse_version(installed)
+                .zip(parse_version(version))
+                .is_some_and(|(a, b)| a < b);
             if older {
-                Some(DialogState::Update { from: installed.clone() })
+                Some(DialogState::Update {
+                    from: installed.clone(),
+                })
             } else {
-                Some(DialogState::OpenInstalled { version: installed.clone() })
+                Some(DialogState::OpenInstalled {
+                    version: installed.clone(),
+                })
             }
         }
     }
@@ -77,7 +97,11 @@ pub fn dialog_state(d: &Detection, version: &str) -> Option<DialogState> {
 fn parse_version(v: &str) -> Option<(u64, u64, u64)> {
     let core = v.split(['-', '+']).next()?;
     let mut parts = core.split('.').map(|p| p.parse::<u64>().ok());
-    Some((parts.next()??, parts.next()??, parts.next().flatten().unwrap_or(0)))
+    Some((
+        parts.next()??,
+        parts.next()??,
+        parts.next().flatten().unwrap_or(0),
+    ))
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -92,9 +116,19 @@ impl Options {
     /// Box has never started at login on its own, so the box starts unchecked.
     pub fn defaults(environment: &Environment) -> Self {
         let receipt = environment.receipts().read(ME).ok().flatten();
-        let start_at_login = receipt.as_ref().is_some_and(|r| r.integration.autostart.as_ref().is_some_and(|p| p.exists()));
-        let install_cli = environment.path.as_ref().is_some_and(|p| std::env::split_paths(p).any(|p| p == environment.bin));
-        Self { channel: "stable".into(), start_at_login, remove_download: true, install_cli }
+        let start_at_login = receipt
+            .as_ref()
+            .is_some_and(|r| r.integration.autostart.as_ref().is_some_and(|p| p.exists()));
+        let install_cli = environment
+            .path
+            .as_ref()
+            .is_some_and(|p| std::env::split_paths(p).any(|p| p == environment.bin));
+        Self {
+            channel: "stable".into(),
+            start_at_login,
+            remove_download: true,
+            install_cli,
+        }
     }
 }
 
@@ -111,12 +145,18 @@ fn identity(path: &Path) -> io::Result<FileIdentity> {
     Ok(FileIdentity {
         path: path.into(),
         size: meta.len(),
-        modified: meta.modified()?.duration_since(std::time::UNIX_EPOCH).unwrap_or_default().as_nanos(),
+        modified: meta
+            .modified()?
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos(),
     })
 }
 
 fn dismissed_file() -> PathBuf {
-    crate::link::data_dir().unwrap_or_else(std::env::temp_dir).join("install-dismissed.json")
+    crate::link::data_dir()
+        .unwrap_or_else(std::env::temp_dir)
+        .join("install-dismissed.json")
 }
 
 pub fn dismissed(path: &Path) -> bool {
@@ -132,23 +172,47 @@ pub fn dismissed(path: &Path) -> bool {
 pub fn dismiss(path: &Path) -> io::Result<()> {
     let id = identity(path)?;
     let file = dismissed_file();
-    let mut ids: Vec<FileIdentity> = fs::read(&file).ok().and_then(|b| serde_json::from_slice(&b).ok()).unwrap_or_default();
+    let mut ids: Vec<FileIdentity> = fs::read(&file)
+        .ok()
+        .and_then(|b| serde_json::from_slice(&b).ok())
+        .unwrap_or_default();
     ids.retain(|old| old.path != id.path);
     if ids.len() >= 128 {
         ids.remove(0);
     }
     ids.push(id);
-    arcade_link::paths::write_atomic(&file, &serde_json::to_vec(&ids).map_err(io::Error::other)?, true)
+    arcade_link::paths::write_atomic(
+        &file,
+        &serde_json::to_vec(&ids).map_err(io::Error::other)?,
+        true,
+    )
 }
 
 /// Only real AppImages and macOS bundles outside Applications prompt. The
 /// argument check runs first, so background and Link starts cost nothing.
-pub fn automatic_prompt(args: &[String], environment: &Environment, runtime: &Runtime) -> io::Result<Option<(Detection, DialogState)>> {
+pub fn automatic_prompt(
+    args: &[String],
+    environment: &Environment,
+    runtime: &Runtime,
+) -> io::Result<Option<(Detection, DialogState)>> {
     const SKIP: &[&str] = &[
-        "--background", "--arcade-invoke", "--arcade-manifest", "--version", "-V", "--install", "--uninstall", "--repair",
-        "--integration-status", "--quit", "--restart", "--help", "-h",
+        "--background",
+        "--arcade-invoke",
+        "--arcade-manifest",
+        "--version",
+        "-V",
+        "--install",
+        "--uninstall",
+        "--repair",
+        "--integration-status",
+        "--quit",
+        "--restart",
+        "--help",
+        "-h",
     ];
-    if std::env::var("ARCADE_NO_INSTALL_PROMPT").as_deref() == Ok("1") || args.iter().skip(1).any(|a| SKIP.contains(&a.as_str())) {
+    if std::env::var("ARCADE_NO_INSTALL_PROMPT").as_deref() == Ok("1")
+        || args.iter().skip(1).any(|a| SKIP.contains(&a.as_str()))
+    {
         return Ok(None);
     }
     #[cfg(target_os = "linux")]
@@ -165,11 +229,19 @@ pub fn automatic_prompt(args: &[String], environment: &Environment, runtime: &Ru
     #[cfg(target_os = "macos")]
     {
         use arcade_link::install::platform::macos;
-        let Some(bundle) = macos::bundle_for(&runtime.executable) else { return Ok(None) };
+        let Some(bundle) = macos::bundle_for(&runtime.executable) else {
+            return Ok(None);
+        };
         let mut detection = install::detect(environment, ME, runtime)?;
         if macos::in_applications(environment, &bundle) {
             if detection.receipt.is_none() && detection.state != State::DevBuild {
-                environment.receipts().write(&macos_receipt(environment, &bundle, None, None, "stable")?)?;
+                environment.receipts().write(&macos_receipt(
+                    environment,
+                    &bundle,
+                    None,
+                    None,
+                    "stable",
+                )?)?;
             }
             return Ok(None);
         }
@@ -180,8 +252,14 @@ pub fn automatic_prompt(args: &[String], environment: &Environment, runtime: &Ru
         if !needs_move || dismissed(&bundle) {
             return Ok(None);
         }
-        let Some(state) = dialog_state(&detection, VERSION) else { return Ok(None) };
-        let state = if state == DialogState::Install { DialogState::MoveToApplications } else { state };
+        let Some(state) = dialog_state(&detection, VERSION) else {
+            return Ok(None);
+        };
+        let state = if state == DialogState::Install {
+            DialogState::MoveToApplications
+        } else {
+            state
+        };
         detection.running_from = bundle;
         Ok(Some((detection, state)))
     }
@@ -193,9 +271,15 @@ pub fn automatic_prompt(args: &[String], environment: &Environment, runtime: &Ru
 }
 
 #[cfg(target_os = "linux")]
-pub fn install_copy(environment: &Environment, runtime: &Runtime, options: &Options) -> io::Result<Receipt> {
+pub fn install_copy(
+    environment: &Environment,
+    runtime: &Runtime,
+    options: &Options,
+) -> io::Result<Receipt> {
     if !runtime.is_appimage() {
-        return Err(io::Error::other("--install requires a real AppImage, not an ordinary or development binary"));
+        return Err(io::Error::other(
+            "--install requires a real AppImage, not an ordinary or development binary",
+        ));
     }
     struct Stage(PathBuf);
     impl Drop for Stage {
@@ -203,14 +287,32 @@ pub fn install_copy(environment: &Environment, runtime: &Runtime, options: &Opti
             let _ = fs::remove_dir_all(&self.0);
         }
     }
-    let stage = Stage(environment.data.join("arcade").join(".install-icons").join(arcade_link::endpoint::new_token()?));
+    let stage = Stage(
+        environment
+            .data
+            .join("arcade")
+            .join(".install-icons")
+            .join(arcade_link::endpoint::new_token()?),
+    );
     arcade_link::paths::ensure_private_dir(&stage.0)?;
     let mut icons = Vec::new();
     for (size, bytes) in [
-        (install::IconSize::Pixels(512), include_bytes!("../icons/icon.png").as_slice()),
-        (install::IconSize::Scalable, include_bytes!("../icons/icon.svg").as_slice()),
+        (
+            install::IconSize::Pixels(512),
+            include_bytes!("../icons/icon.png").as_slice(),
+        ),
+        (
+            install::IconSize::Scalable,
+            include_bytes!("../icons/icon.svg").as_slice(),
+        ),
     ] {
-        let source = stage.0.join(if matches!(size, install::IconSize::Scalable) { "icon.svg".to_string() } else { "512.png".to_string() });
+        let source = stage
+            .0
+            .join(if matches!(size, install::IconSize::Scalable) {
+                "icon.svg".to_string()
+            } else {
+                "512.png".to_string()
+            });
         fs::write(&source, bytes)?;
         icons.push(install::Icon { source, size });
     }
@@ -222,7 +324,9 @@ pub fn install_copy(environment: &Environment, runtime: &Runtime, options: &Opti
             runtime,
             version: VERSION,
             channel: &options.channel,
-            managed_by: existing.as_ref().map_or(ManagedBy::SelfManaged, |r| r.managed_by),
+            managed_by: existing
+                .as_ref()
+                .map_or(ManagedBy::SelfManaged, |r| r.managed_by),
             icons: &icons,
             start_at_login: options.start_at_login,
             remove_download: options.remove_download,
@@ -241,42 +345,71 @@ pub fn install_copy(environment: &Environment, runtime: &Runtime, options: &Opti
 }
 
 #[cfg(target_os = "macos")]
-pub fn install_copy(environment: &Environment, runtime: &Runtime, options: &Options) -> io::Result<Receipt> {
+pub fn install_copy(
+    environment: &Environment,
+    runtime: &Runtime,
+    options: &Options,
+) -> io::Result<Receipt> {
     use arcade_link::install::platform::macos;
     let detection = install::detect(environment, ME, runtime)?;
     if detection.state == State::DevBuild {
         return Err(io::Error::other("development builds cannot be installed"));
     }
-    let source = macos::bundle_for(&runtime.executable).ok_or_else(|| io::Error::other("--install requires an app bundle"))?;
+    let source = macos::bundle_for(&runtime.executable)
+        .ok_or_else(|| io::Error::other("--install requires an app bundle"))?;
     let root = environment.home.join("Applications");
     fs::create_dir_all(&root)?;
     let target = root.join("Arcade Box.app");
     if fs::canonicalize(&source).ok() != fs::canonicalize(&target).ok() {
-        let stage = root.join(format!(".arcade-box-{}", arcade_link::endpoint::new_token()?));
+        let stage = root.join(format!(
+            ".arcade-box-{}",
+            arcade_link::endpoint::new_token()?
+        ));
         let staged = macos::move_to_applications(environment, &source, Some(&stage))?;
         if target.exists() {
             if !detection.receipt.as_ref().is_some_and(|r| r.path == target) {
-                return Err(io::Error::other("Applications already contains an Arcade Box bundle without its receipt"));
+                return Err(io::Error::other(
+                    "Applications already contains an Arcade Box bundle without its receipt",
+                ));
             }
             fs::remove_dir_all(&target)?;
         }
         fs::rename(staged, &target)?;
     }
     let executable = target.join("Contents/MacOS/arcade-desktop");
-    let cli = if options.install_cli { Some(macos::install_cli(environment, CLI_NAME, &executable)?) } else { None };
-    let autostart = detection.receipt.as_ref().and_then(|r| r.integration.autostart.clone());
+    let cli = if options.install_cli {
+        Some(macos::install_cli(environment, CLI_NAME, &executable)?)
+    } else {
+        None
+    };
+    let autostart = detection
+        .receipt
+        .as_ref()
+        .and_then(|r| r.integration.autostart.clone());
     let receipt = macos_receipt(environment, &target, cli, autostart, &options.channel)?;
     environment.receipts().write(&receipt)?;
     Ok(receipt)
 }
 
 #[cfg(windows)]
-pub fn install_copy(_environment: &Environment, _runtime: &Runtime, _options: &Options) -> io::Result<Receipt> {
-    Err(io::Error::other("Use the Arcade Box per-user installer on Windows"))
+pub fn install_copy(
+    _environment: &Environment,
+    _runtime: &Runtime,
+    _options: &Options,
+) -> io::Result<Receipt> {
+    Err(io::Error::other(
+        "Use the Arcade Box per-user installer on Windows",
+    ))
 }
 
 #[cfg(target_os = "macos")]
-fn macos_receipt(environment: &Environment, bundle: &Path, cli: Option<PathBuf>, autostart: Option<PathBuf>, channel: &str) -> io::Result<Receipt> {
+fn macos_receipt(
+    environment: &Environment,
+    bundle: &Path,
+    cli: Option<PathBuf>,
+    autostart: Option<PathBuf>,
+    channel: &str,
+) -> io::Result<Receipt> {
     let old = environment.receipts().read(ME)?;
     let now = arcade_link::manifest::now_rfc3339();
     Ok(Receipt {
@@ -285,11 +418,19 @@ fn macos_receipt(environment: &Environment, bundle: &Path, cli: Option<PathBuf>,
         version: VERSION.into(),
         channel: channel.into(),
         method: InstallMethod::MacosBundle,
-        managed_by: old.as_ref().map_or(ManagedBy::SelfManaged, |r| r.managed_by),
+        managed_by: old
+            .as_ref()
+            .map_or(ManagedBy::SelfManaged, |r| r.managed_by),
         path: bundle.into(),
-        integration: arcade_link::receipt::Integration { cli, autostart, ..Default::default() },
+        integration: arcade_link::receipt::Integration {
+            cli,
+            autostart,
+            ..Default::default()
+        },
         previous: None,
-        installed_at: old.as_ref().map_or_else(|| now.clone(), |r| r.installed_at.clone()),
+        installed_at: old
+            .as_ref()
+            .map_or_else(|| now.clone(), |r| r.installed_at.clone()),
         updated_at: now,
     })
 }
@@ -306,7 +447,8 @@ pub fn repair(environment: &Environment, runtime: &Runtime) -> io::Result<Receip
     let detection = install::detect(environment, ME, runtime)?;
     #[cfg(target_os = "linux")]
     {
-        let moved = (detection.state != State::DevBuild && detection.is_app_image).then_some(detection.running_from.as_path());
+        let moved = (detection.state != State::DevBuild && detection.is_app_image)
+            .then_some(detection.running_from.as_path());
         let receipt = install::repair(environment, &app_info(), moved)?;
         add_window_class(&receipt)?;
         Ok(receipt)
@@ -314,7 +456,9 @@ pub fn repair(environment: &Environment, runtime: &Runtime) -> io::Result<Receip
     #[cfg(target_os = "macos")]
     {
         use arcade_link::install::platform::macos;
-        let mut receipt = detection.receipt.ok_or_else(|| io::Error::other("no Arcade Box receipt"))?;
+        let mut receipt = detection
+            .receipt
+            .ok_or_else(|| io::Error::other("no Arcade Box receipt"))?;
         if let Some(bundle) = macos::bundle_for(&runtime.executable) {
             if detection.state != State::DevBuild {
                 receipt.path = bundle;
@@ -322,7 +466,9 @@ pub fn repair(environment: &Environment, runtime: &Runtime) -> io::Result<Receip
         }
         let executable = launch_path(&receipt);
         if !executable.is_file() {
-            return Err(io::Error::other("installed Arcade Box executable is missing"));
+            return Err(io::Error::other(
+                "installed Arcade Box executable is missing",
+            ));
         }
         if receipt.integration.cli.is_some() {
             receipt.integration.cli = Some(macos::install_cli(environment, CLI_NAME, &executable)?);
@@ -334,7 +480,9 @@ pub fn repair(environment: &Environment, runtime: &Runtime) -> io::Result<Receip
     #[cfg(windows)]
     {
         let _ = (detection, runtime);
-        Err(io::Error::other("Repair Arcade Box with its Windows installer"))
+        Err(io::Error::other(
+            "Repair Arcade Box with its Windows installer",
+        ))
     }
 }
 
@@ -353,7 +501,14 @@ pub fn uninstall(environment: &Environment, remove_data: bool) -> io::Result<boo
             .status();
     }
     let data_folders: Vec<PathBuf> = crate::link::data_dir().into_iter().collect();
-    install::uninstall(environment, ME, install::UninstallOptions { remove_data, data_folders: &data_folders })
+    install::uninstall(
+        environment,
+        ME,
+        install::UninstallOptions {
+            remove_data,
+            data_folders: &data_folders,
+        },
+    )
 }
 
 pub fn tools_installed(environment: &Environment) -> bool {
@@ -365,16 +520,31 @@ pub fn tools_installed(environment: &Environment) -> bool {
 /// Updates of a Tools-managed copy go through Tools (`tools.install`).
 pub fn handoff_to_tools(environment: &Environment) -> Result<(), arcade_link::LinkError> {
     let registry = arcade_link::Registry::load(&environment.locations);
-    let tools = registry.get(arcade_link::ids::TOOLS).ok_or_else(|| arcade_link::LinkError::unavailable("Arcade Tools isn't installed"))?;
+    let tools = registry
+        .get(arcade_link::ids::TOOLS)
+        .ok_or_else(|| arcade_link::LinkError::unavailable("Arcade Tools isn't installed"))?;
     let action = tools
         .action("tools.install")
         .filter(|a| a.available)
-        .ok_or_else(|| arcade_link::LinkError::unavailable("This version of Arcade Tools cannot install Box"))?;
-    let request = arcade_link::InvokeRequest::new(action.id.split('#').next().unwrap_or(&action.id), ME)
-        .input(arcade_link::Content::text("text/plain", ME))
-        .options(serde_json::json!({ "app": ME }));
-    let me = arcade_link::PeerInfo { id: ME.into(), version: VERSION.into() };
-    arcade_link::client::invoke_action(&environment.locations, &me, tools, &request, Default::default()).map(|_| ())
+        .ok_or_else(|| {
+            arcade_link::LinkError::unavailable("This version of Arcade Tools cannot install Box")
+        })?;
+    let request =
+        arcade_link::InvokeRequest::new(action.id.split('#').next().unwrap_or(&action.id), ME)
+            .input(arcade_link::Content::text("text/plain", ME))
+            .options(serde_json::json!({ "app": ME }));
+    let me = arcade_link::PeerInfo {
+        id: ME.into(),
+        version: VERSION.into(),
+    };
+    arcade_link::client::invoke_action(
+        &environment.locations,
+        &me,
+        tools,
+        &request,
+        Default::default(),
+    )
+    .map(|_| ())
 }
 
 /// The original arguments minus the install flags, for the relaunch.
@@ -395,7 +565,9 @@ pub fn launch_args(args: &[String]) -> Vec<std::ffi::OsString> {
 
 #[cfg(target_os = "linux")]
 fn add_window_class(receipt: &Receipt) -> io::Result<()> {
-    let Some(entry) = &receipt.integration.desktop_entry else { return Ok(()) };
+    let Some(entry) = &receipt.integration.desktop_entry else {
+        return Ok(());
+    };
     let text = fs::read_to_string(entry)?;
     if text.contains("\nStartupWMClass=") {
         return Ok(());
@@ -425,7 +597,10 @@ pub fn install_cli(silent: bool, no_launch: bool, channel: &str) -> Result<Strin
     let args: Vec<String> = std::env::args().collect();
     let (output, launch) = if silent {
         let receipt = install_copy(&environment, &runtime, &options).map_err(|e| e.to_string())?;
-        if let Some(hint) = integration_status(&environment).map_err(|e| e.to_string())?.path_hint {
+        if let Some(hint) = integration_status(&environment)
+            .map_err(|e| e.to_string())?
+            .path_hint
+        {
             eprintln!("arcade-desktop: {hint}");
         }
         (json(&receipt)?, Some(launch_path(&receipt)))
@@ -471,7 +646,9 @@ pub fn integration_status_cli() -> Result<String, String> {
 /// Before the first window: offer to install a downloaded copy. `true` when
 /// this process is done (relaunched the installed copy, or handed to Tools).
 pub fn first_run_prompt(args: &[String]) -> bool {
-    let (Ok(environment), Ok(runtime)) = (Environment::discover(), Runtime::discover()) else { return false };
+    let (Ok(environment), Ok(runtime)) = (Environment::discover(), Runtime::discover()) else {
+        return false;
+    };
     let (detection, state) = match automatic_prompt(args, &environment, &runtime) {
         Ok(Some(prompt)) => prompt,
         Ok(None) => return false,
@@ -482,7 +659,10 @@ pub fn first_run_prompt(args: &[String]) -> bool {
     };
     let options = Options::defaults(&environment);
     match crate::installer_ui::run(environment, runtime, detection, state, options) {
-        Ok(crate::installer_ui::Outcome::Launch(path)) => match install::reexec(&path, &args.iter().skip(1).map(Into::into).collect::<Vec<_>>()) {
+        Ok(crate::installer_ui::Outcome::Launch(path)) => match install::reexec(
+            &path,
+            &args.iter().skip(1).map(Into::into).collect::<Vec<_>>(),
+        ) {
             Ok(()) => true,
             Err(e) => {
                 eprintln!("arcade-desktop: relaunch: {e}");
@@ -503,34 +683,72 @@ mod tests {
     use super::*;
 
     fn detection(state: State) -> Detection {
-        Detection { state, running_from: PathBuf::from("/test/Arcade-Box.AppImage"), is_app_image: true, receipt: None, installed_path: None }
+        Detection {
+            state,
+            running_from: PathBuf::from("/test/Arcade-Box.AppImage"),
+            is_app_image: true,
+            receipt: None,
+            installed_path: None,
+        }
     }
 
     #[test]
     fn dialog_state_covers_new_update_open_and_dev_copies() {
-        assert_eq!(dialog_state(&detection(State::NotInstalled), "0.2.0"), Some(DialogState::Install));
         assert_eq!(
-            dialog_state(&detection(State::InstalledElsewhere { version: "0.1.2".into() }), "0.2.0"),
-            Some(DialogState::Update { from: "0.1.2".into() })
+            dialog_state(&detection(State::NotInstalled), "0.2.0"),
+            Some(DialogState::Install)
         );
         assert_eq!(
-            dialog_state(&detection(State::InstalledElsewhere { version: "0.2.0".into() }), "0.2.0"),
-            Some(DialogState::OpenInstalled { version: "0.2.0".into() })
+            dialog_state(
+                &detection(State::InstalledElsewhere {
+                    version: "0.1.2".into()
+                }),
+                "0.2.0"
+            ),
+            Some(DialogState::Update {
+                from: "0.1.2".into()
+            })
         );
-        assert_eq!(dialog_state(&detection(State::InstalledHere), "0.2.0"), None);
+        assert_eq!(
+            dialog_state(
+                &detection(State::InstalledElsewhere {
+                    version: "0.2.0".into()
+                }),
+                "0.2.0"
+            ),
+            Some(DialogState::OpenInstalled {
+                version: "0.2.0".into()
+            })
+        );
+        assert_eq!(
+            dialog_state(&detection(State::InstalledHere), "0.2.0"),
+            None
+        );
         assert_eq!(dialog_state(&detection(State::DevBuild), "0.2.0"), None);
     }
 
     #[test]
     fn relaunch_drops_install_flags() {
-        let args: Vec<String> = ["box", "--install", "--silent", "--channel", "nightly", "a.txt"].map(String::from).into();
+        let args: Vec<String> = [
+            "box",
+            "--install",
+            "--silent",
+            "--channel",
+            "nightly",
+            "a.txt",
+        ]
+        .map(String::from)
+        .into();
         assert_eq!(launch_args(&args), vec![std::ffi::OsString::from("a.txt")]);
     }
 
     #[cfg(target_os = "linux")]
     #[test]
     fn appimage_install_repair_and_uninstall_use_a_temp_environment() {
-        let root = std::env::temp_dir().join(format!("box-install-{}", arcade_link::endpoint::new_token().unwrap()));
+        let root = std::env::temp_dir().join(format!(
+            "box-install-{}",
+            arcade_link::endpoint::new_token().unwrap()
+        ));
         let env = Environment::under(&root.join("home"));
         let appdir = root.join("mount");
         let exe = appdir.join("usr/bin/arcade-desktop");
@@ -538,17 +756,41 @@ mod tests {
         fs::create_dir_all(exe.parent().unwrap()).unwrap();
         fs::write(&exe, b"test binary").unwrap();
         fs::write(&image, b"test appimage").unwrap();
-        let runtime = Runtime { executable: exe, appimage: Some(image), appdir: Some(appdir), dev_build: false };
-        let opts = Options { channel: "stable".into(), start_at_login: true, remove_download: false, install_cli: false };
+        let runtime = Runtime {
+            executable: exe,
+            appimage: Some(image),
+            appdir: Some(appdir),
+            dev_build: false,
+        };
+        let opts = Options {
+            channel: "stable".into(),
+            start_at_login: true,
+            remove_download: false,
+            install_cli: false,
+        };
         assert!(!Options::defaults(&env).start_at_login);
         let receipt = install_copy(&env, &runtime, &opts).unwrap();
         assert!(receipt.path.is_file());
-        let desktop = fs::read_to_string(receipt.integration.desktop_entry.as_ref().unwrap()).unwrap();
-        assert!(desktop.contains("StartupWMClass=arcade-desktop") && desktop.contains("X-Arcade-Id=arcade.box"));
+        let desktop =
+            fs::read_to_string(receipt.integration.desktop_entry.as_ref().unwrap()).unwrap();
+        assert!(
+            desktop.contains("StartupWMClass=arcade-desktop")
+                && desktop.contains("X-Arcade-Id=arcade.box")
+        );
         assert!(receipt.integration.autostart.as_ref().unwrap().is_file());
         let repaired = install::repair(&env, &app_info(), None).unwrap();
         assert_eq!(repaired.path, receipt.path);
-        assert!(install::uninstall(&env, ME, install::UninstallOptions { remove_data: false, data_folders: &[] }).unwrap());
+        assert!(
+            install::uninstall(
+                &env,
+                ME,
+                install::UninstallOptions {
+                    remove_data: false,
+                    data_folders: &[]
+                }
+            )
+            .unwrap()
+        );
         assert!(env.receipts().read(ME).unwrap().is_none());
         assert!(!receipt.path.exists());
         fs::remove_dir_all(root).unwrap();

@@ -63,7 +63,14 @@ fn integration_command(args: &[String]) -> Result<(), String> {
             "--silent" => silent = true,
             "--no-launch" => no_launch = true,
             "--remove-data" => remove_data = true,
-            "--channel" => channel = Some(it.next().filter(|c| !c.is_empty() && !c.starts_with('-')).ok_or("--channel needs a channel name")?.clone()),
+            "--channel" => {
+                channel = Some(
+                    it.next()
+                        .filter(|c| !c.is_empty() && !c.starts_with('-'))
+                        .ok_or("--channel needs a channel name")?
+                        .clone(),
+                )
+            }
             other => return Err(format!("unexpected argument {other:?} for {action}")),
         }
     }
@@ -77,7 +84,9 @@ fn integration_command(args: &[String]) -> Result<(), String> {
         return Err("--silent requires --install or --uninstall".into());
     }
     let output = match action {
-        "--install" => installer::install_cli(silent, no_launch, channel.as_deref().unwrap_or("stable"))?,
+        "--install" => {
+            installer::install_cli(silent, no_launch, channel.as_deref().unwrap_or("stable"))?
+        }
         "--uninstall" => installer::uninstall_cli(silent, remove_data)?,
         "--repair" => installer::repair_cli()?,
         _ => installer::integration_status_cli()?,

@@ -24,9 +24,9 @@ mod artifact_image;
 mod clipboard_history;
 #[cfg(target_os = "linux")]
 mod hyprland;
-mod link;
 pub mod installer;
 mod installer_ui;
+mod link;
 mod media_preview;
 mod open_url;
 mod paste_plain;
@@ -152,7 +152,13 @@ fn set_shortcut(
         .setting("global_shortcut")
         .ok()
         .flatten()
-        .unwrap_or_else(|| if cfg!(target_os = "macos") { "Super+Shift+Space".into() } else { "Ctrl+Alt+Space".into() });
+        .unwrap_or_else(|| {
+            if cfg!(target_os = "macos") {
+                "Super+Shift+Space".into()
+            } else {
+                "Ctrl+Alt+Space".into()
+            }
+        });
     let result = apply_shortcut_on_ui(&app, &trigger)?;
     if let Err(error) = runtime.storage().set_setting("global_shortcut", &trigger) {
         let _ = apply_shortcut_on_ui(&app, &previous);
@@ -170,6 +176,7 @@ fn set_shortcut(
     Ok(status)
 }
 
+#[cfg(target_os = "linux")]
 fn portal_accelerator(canonical: &str) -> String {
     canonical
         .split('+')
@@ -199,8 +206,8 @@ fn apply_shortcut_on_ui(
     #[cfg(target_os = "linux")]
     if let Some(controller) = app.try_state::<wayland_shortcut::WaylandShortcutController>() {
         if canonical.contains(' ') {
-            return Ok(manual_shortcut(format!(
-                "Bind `arcade-desktop --toggle` in your desktop's keyboard settings; this portal accepts one chord."
+            return Ok(manual_shortcut(String::from(
+                "Bind `arcade-desktop --toggle` in your desktop's keyboard settings; this portal accepts one chord.",
             )));
         }
         controller.set_preferred_trigger(portal_accelerator(canonical))?;
@@ -257,7 +264,7 @@ pub(crate) fn set_shortcut_from_link(
     accelerator: String,
 ) -> Result<arcade_link::app::ShortcutSetResult, arcade_link::LinkError> {
     let canonical = arcade_link::accelerator::normalize(&accelerator)
-        .map_err(|error| arcade_link::LinkError::denied(error.to_string()))?;
+        .map_err(|error| arcade_link::LinkError::denied(&error.to_string()))?;
     let (send, receive) = std::sync::mpsc::sync_channel(1);
     let app_handle = app.clone();
     app.run_on_main_thread(move || {
@@ -900,7 +907,7 @@ fn detect_context(app: tauri::AppHandle) -> Vec<ContextSuggestion> {
 #[tauri::command]
 fn profile_motion(sample: String) {
     if std::env::var_os("ARCADE_MOTION_PROBE").is_some() {
-        eprintln!("MOTION_PROFILE {}", sample);
+        eprintln!("MOTION_PROFILE {sample}");
     }
 }
 // TEMPORARY_MOTION_PROBE_END
@@ -970,13 +977,12 @@ fn open_reviewed_url(url: String, app: tauri::AppHandle) -> Result<(), String> {
 }
 
 fn active_monitor(window: &tauri::WebviewWindow) -> Option<tauri::Monitor> {
-    let monitor = window
+    window
         .cursor_position()
         .ok()
         .and_then(|cursor| window.monitor_from_point(cursor.x, cursor.y).ok().flatten())
         .or_else(|| window.current_monitor().ok().flatten())
-        .or_else(|| window.primary_monitor().ok().flatten());
-    monitor
+        .or_else(|| window.primary_monitor().ok().flatten())
 }
 
 fn fit_surface_size(window: &tauri::WebviewWindow, width: f64, height: f64) -> (f64, f64) {
@@ -1159,7 +1165,7 @@ fn request_hide_island(window: &tauri::WebviewWindow) {
 }
 
 struct PreparedRecoveryTray {
-    menu: Menu,
+    menu: Menu<tauri::Wry>,
     icon: tauri::image::Image<'static>,
 }
 
@@ -1174,14 +1180,26 @@ thread_local! {
 
 /// Construct toolkit resources before the first host answer, but delay OS
 /// tray registration until Box owns its icon (tray-icon has no hidden ctor).
-fn prepare_recovery_tray<M: tauri::Manager<tauri::Wry>>(app: &M) -> tauri::Result<PreparedRecoveryTray> {
+fn prepare_recovery_tray<M: tauri::Manager<tauri::Wry>>(
+    app: &M,
+) -> tauri::Result<PreparedRecoveryTray> {
     let show = MenuItem::with_id(app, "show-island", "Open Box", true, None::<&str>)?;
     let pipelines = MenuItem::with_id(app, "open-pipelines", "Open pipelines", true, None::<&str>)?;
     let settings = MenuItem::with_id(app, "settings", "Open Settings", true, None::<&str>)?;
     let restart_item = MenuItem::with_id(app, "restart", "Restart Arcade Box", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "Quit Arcade Box", true, None::<&str>)?;
     let separator = tauri::menu::PredefinedMenuItem::separator(app)?;
-    let menu = Menu::with_items(app, &[&show, &pipelines, &settings, &restart_item, &separator, &quit])?;
+    let menu = Menu::with_items(
+        app,
+        &[
+            &show,
+            &pipelines,
+            &settings,
+            &restart_item,
+            &separator,
+            &quit,
+        ],
+    )?;
     let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/icon.png"))?;
     Ok(PreparedRecoveryTray { menu, icon })
 }
@@ -1192,7 +1210,12 @@ fn set_recovery_tray(app: &tauri::AppHandle, state: arcade_link::trayhost::TrayS
         if slot.is_none() {
             let prepared = prepare_recovery_tray(app).map_err(|error| error.to_string());
             match prepared {
-                Ok(prepared) => *slot = Some(RecoveryTray { prepared: Some(prepared), icon: None }),
+                Ok(prepared) => {
+                    *slot = Some(RecoveryTray {
+                        prepared: Some(prepared),
+                        icon: None,
+                    })
+                }
                 Err(error) => {
                     eprintln!("Arcade Box tray preparation failed: {error}");
                     return;
@@ -1279,7 +1302,7 @@ fn start_tray_host_watcher(app: &tauri::AppHandle, runtime: &Arc<Arcade>) -> Res
                 id: arcade_link::ids::BOX.into(),
                 version: env!("CARGO_PKG_VERSION").into(),
             },
-            link_enabled: core_link::LinkSettings::load(runtime).enabled,
+            link_enabled: arcade_core::link::LinkSettings::load(runtime).enabled,
             has_tray: true,
         },
         move |state| {

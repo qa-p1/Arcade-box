@@ -1,6 +1,7 @@
 schema_version: 1
 reviewed_on: "2026-10-03"
-workspace_rust_msrv: "1.95"
+workspace_rust_msrv: "1.88"
+msrv_adjusted_on: "2026-10-12"
 application_license_candidate: "GPL-3.0-or-later"
 application_license_status: "candidate; finalize only after full release dependency audit"
 inventory_policy:
@@ -61,7 +62,7 @@ dependencies:
   - id: wasmtime
     name: Wasmtime
     decision: selected
-    version_line: "48.x LTS reviewed"
+    version_line: "38.0.4 pinned for Rust 1.88"
     upstream_license: "Apache-2.0 WITH LLVM-exception"
     distribution: application dependency
     source: https://github.com/bytecodealliance/wasmtime
@@ -270,7 +271,7 @@ dependencies:
     distribution: application dependency
     source: https://github.com/bilelmoussaoui/ashpd
     obligations: "Retain MIT notice; inventory zbus and other transitive crates."
-    notes: "Enable global_shortcuts Cargo feature. Requires Rust 1.87; compatible with current workspace MSRV 1.95. Keep portal API behind the platform abstraction."
+    notes: "Enable global_shortcuts Cargo feature. Requires Rust 1.87; compatible with workspace MSRV 1.88. Keep portal API behind the platform abstraction."
 
   - id: windows-sys
     name: windows-sys Win32 bindings

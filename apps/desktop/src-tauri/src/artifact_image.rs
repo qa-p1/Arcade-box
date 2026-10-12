@@ -220,7 +220,7 @@ fn rasterize_qr_svg(bytes: &[u8]) -> Result<DynamicImage, String> {
         }
         match child.tag_name().name() {
             "desc" if child.text() == Some("Zint Generated Symbol") => {
-                if !child.attributes().next().is_none() || has_zint_description {
+                if child.attributes().next().is_some() || has_zint_description {
                     return Err("This SVG contains unsupported description data".into());
                 }
                 check_element_text(child, false)?;

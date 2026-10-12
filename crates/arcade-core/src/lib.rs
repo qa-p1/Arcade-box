@@ -69,6 +69,8 @@ pub enum CoreError {
     Execution(String),
 }
 
+type PipelineConfirmation = Arc<dyn Fn(&pipeline::Pipeline, &[String]) -> bool + Send + Sync>;
+
 pub struct Arcade {
     base_catalog: Catalog,
     catalog: RwLock<Catalog>,
@@ -77,8 +79,7 @@ pub struct Arcade {
     artifact_staging_root: PathBuf,
     default_output_directory: String,
     plugins: plugins::PluginRuntime,
-    pub(crate) pipeline_confirmation:
-        OnceLock<Arc<dyn Fn(&pipeline::Pipeline, &[String]) -> bool + Send + Sync>>,
+    pub(crate) pipeline_confirmation: OnceLock<PipelineConfirmation>,
     pub(crate) link_registry: OnceLock<arcade_link::SharedRegistry>,
     _ephemeral_data: Option<tempfile::TempDir>,
 }
