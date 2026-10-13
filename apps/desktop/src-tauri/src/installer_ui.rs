@@ -25,7 +25,8 @@ fn format(s: &str, version: &str, from: &str) -> String {
     strings::format(s, NAME, version, from, VERSION)
 }
 
-/// Title, body and buttons for a dialog state.
+/// Title, body and buttons for a dialog state. Windows has no dialog of its own.
+#[cfg(any(not(windows), test))]
 pub fn text(state: &DialogState) -> (String, Option<String>, Vec<String>) {
     let all = strings::get();
     let (dialog, version, from) = match state {
