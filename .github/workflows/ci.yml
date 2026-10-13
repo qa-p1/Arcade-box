@@ -31,7 +31,9 @@ jobs:
           - os: ubuntu-24.04
             bundle: appimage
             installer: Arcade-box/target/release/bundle/appimage/*.AppImage
-          - os: windows-latest
+          # windows-latest now resolves Visual Studio 2026 without a C/C++
+          # toolchain, so zxing-cpp cannot configure; stay on the 2022 image.
+          - os: windows-2022
             bundle: nsis
             installer: Arcade-box/target/release/bundle/nsis/*-setup.exe
           - os: macos-latest
