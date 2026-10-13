@@ -27,7 +27,7 @@ sidecars into the ignored `binaries` directory. It accepts `--target` for an
 installed Rust target; cross-platform toolchains are not provided by this repo.
 No WASM fixture rebuild, installation, app launch or startup-file edit is needed.
 
-CI checks out Box; Cargo resolves Arcade Link from the pinned `v0.2.0` git tag.
+CI checks out Box; Cargo resolves Arcade Link from the pinned `v0.3.0` git tag.
 It runs Rust/frontend checks, builds native installers, and uploads one artifact
 per platform. Linux, Windows and macOS jobs passed on 2026-10-08; interactive
 Windows/macOS behavior is still unverified (see [status](STATUS.md)).
@@ -44,12 +44,12 @@ run on main. The workflow verifies the run and the three installer kinds, then
 uploads installers, `arcade-release.json`, and `SHA256SUMS.txt`. Publishing is
 left to the owner; no release or tag is created during local verification.
 
-The generator is vendored unchanged from Arcade-link commit `539fa91` (see
-[VENDORED](../VENDORED.md)):
+The generator is vendored unchanged from Arcade Link `v0.3.0`, commit
+`33650a8` (see [VENDORED](../VENDORED.md)):
 
 ```sh
-python3 scripts/arcade-release.py --id arcade.box --version 0.1.0 --channel stable \
-  --notes https://github.com/qa-p1/Arcade-box/releases/tag/v0.1.0 dist/
+python3 scripts/arcade-release.py --id arcade.box --version 0.2.0 --channel stable \
+  --notes https://github.com/qa-p1/Arcade-box/releases/tag/v0.2.0 dist/
 (cd dist && sha256sum -c SHA256SUMS.txt)
 ```
 

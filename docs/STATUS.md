@@ -1,10 +1,13 @@
 # Arcade Box: status
 
+Current source version: 0.2.0, Arcade Link `v0.3.0`. The verification and
+documentation-prep baseline below are historical records.
+
 Verified 2026-10-08 on branch `arcade/link` (version 0.1.0, Arcade Link
 `v0.1.0`). This page records what is implemented and how it was checked;
 the other documents describe design and behavior.
 
-Box now pins Arcade Link `v0.2.0`, which adds Arcade Shelf and Arcade Find to
+The earlier Arcade Link `v0.2.0` pin added Arcade Shelf and Arcade Find to
 the shared app metadata, so Connected apps lists both with a Get link. The
 checks below were recorded against `v0.1.0`; the 2026-10-08 figures are not
 re-measured for the new pin.
@@ -17,9 +20,10 @@ mock Shelf manifest; a run against a real Shelf is not recorded here yet.
 ## Tools hub standard (documentation prep, 2026-10-11)
 
 This section records the required Phase 8 target, not a claim that the runtime
-work is complete. The source baseline in this worktree is Box 0.1.2 at
-`360e6e8` (Arcade Link `v0.2.0`). This checkout has no verified runtime-worker
-evidence for the newer tray-host, receipt, self-install or settings methods.
+work is complete. The source baseline for this documentation prep was Box
+0.1.2 at `360e6e8` (Arcade Link `v0.2.0`). At that baseline, no verified
+runtime-worker evidence was recorded for the newer tray-host, receipt,
+self-install or settings methods.
 The dated verification below remains historical evidence for the commits and
 flows it names.
 
