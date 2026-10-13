@@ -12,7 +12,9 @@ use std::{
     path::PathBuf,
     sync::{Arc, Mutex},
 };
+#[cfg(not(target_os = "linux"))]
 use tauri::menu::{Menu, MenuItem};
+#[cfg(not(target_os = "linux"))]
 use tauri::tray::TrayIconBuilder;
 use tauri::{Emitter, LogicalSize, Manager, PhysicalPosition, Position, Size};
 use tauri_plugin_clipboard_manager::ClipboardExt;
@@ -1164,22 +1166,26 @@ fn request_hide_island(window: &tauri::WebviewWindow) {
     });
 }
 
+#[cfg(not(target_os = "linux"))]
 struct PreparedRecoveryTray {
     menu: Menu<tauri::Wry>,
     icon: tauri::image::Image<'static>,
 }
 
+#[cfg(not(target_os = "linux"))]
 struct RecoveryTray {
     prepared: Option<PreparedRecoveryTray>,
     icon: Option<tauri::tray::TrayIcon>,
 }
 
+#[cfg(not(target_os = "linux"))]
 thread_local! {
     static RECOVERY_TRAY: std::cell::RefCell<Option<RecoveryTray>> = const { std::cell::RefCell::new(None) };
 }
 
 /// Construct toolkit resources before the first host answer, but delay OS
 /// tray registration until Box owns its icon (tray-icon has no hidden ctor).
+#[cfg(not(target_os = "linux"))]
 fn prepare_recovery_tray<M: tauri::Manager<tauri::Wry>>(
     app: &M,
 ) -> tauri::Result<PreparedRecoveryTray> {
@@ -1205,6 +1211,148 @@ fn prepare_recovery_tray<M: tauri::Manager<tauri::Wry>>(
 }
 
 fn set_recovery_tray(app: &tauri::AppHandle, state: arcade_link::trayhost::TrayState) {
+    #[cfg(target_os = "linux")]
+    linux_tray::set_state(app, state);
+    #[cfg(not(target_os = "linux"))]
+    set_native_tray(app, state);
+}
+
+/// Linux draws the tray over D-Bus with ksni. Only Own registers an item:
+/// hosts such as Caelestia and Waybar still show Passive items, and Tauri's
+/// libappindicator item stays registered (Passive) after removal, so a hosted
+/// icon is unregistered by shutting the ksni service down.
+#[cfg(target_os = "linux")]
+mod linux_tray {
+    use arcade_link::trayhost::TrayState;
+    use ksni::TrayMethods;
+    use std::sync::OnceLock;
+    use std::sync::atomic::{AtomicBool, Ordering};
+    use tauri::{AppHandle, Manager};
+
+    struct Tray {
+        app: AppHandle,
+    }
+
+    fn on_main(app: &AppHandle, action: fn(&AppHandle)) {
+        let handle = app.clone();
+        let _ = app.run_on_main_thread(move || action(&handle));
+    }
+    fn show(app: &AppHandle) {
+        if let Some(window) = app.get_webview_window("island") {
+            super::show_island(&window);
+        }
+    }
+    fn quit(app: &AppHandle) {
+        app.exit(0);
+    }
+
+    impl ksni::Tray for Tray {
+        fn id(&self) -> String {
+            "arcade-box".into()
+        }
+        fn title(&self) -> String {
+            "Arcade Box".into()
+        }
+        fn category(&self) -> ksni::Category {
+            ksni::Category::ApplicationStatus
+        }
+        fn icon_pixmap(&self) -> Vec<ksni::Icon> {
+            static ICONS: OnceLock<Vec<ksni::Icon>> = OnceLock::new();
+            ICONS
+                .get_or_init(|| {
+                    image::load_from_memory(include_bytes!("../icons/icon.png"))
+                        .map(|image| {
+                            [32, 64, 128]
+                                .into_iter()
+                                .map(|size| {
+                                    let image = image
+                                        .resize_exact(
+                                            size,
+                                            size,
+                                            image::imageops::FilterType::Lanczos3,
+                                        )
+                                        .into_rgba8();
+                                    let mut data = image.into_vec();
+                                    // RGBA → ARGB32 in network byte order.
+                                    for pixel in data.chunks_exact_mut(4) {
+                                        pixel.rotate_right(1);
+                                    }
+                                    ksni::Icon {
+                                        width: size as i32,
+                                        height: size as i32,
+                                        data,
+                                    }
+                                })
+                                .collect()
+                        })
+                        .unwrap_or_default()
+                })
+                .clone()
+        }
+        fn tool_tip(&self) -> ksni::ToolTip {
+            ksni::ToolTip {
+                title: "Arcade Box".into(),
+                ..Default::default()
+            }
+        }
+        fn activate(&mut self, _x: i32, _y: i32) {
+            on_main(&self.app, super::open_settings);
+        }
+        fn menu(&self) -> Vec<ksni::MenuItem<Self>> {
+            use ksni::menu::StandardItem;
+            let item = |label: &str, action: fn(&AppHandle)| -> ksni::MenuItem<Self> {
+                StandardItem {
+                    label: label.into(),
+                    activate: Box::new(move |tray: &mut Self| on_main(&tray.app, action)),
+                    ..Default::default()
+                }
+                .into()
+            };
+            vec![
+                item("Open Box", show),
+                item("Open pipelines", super::open_pipelines),
+                item("Open Settings", super::open_settings),
+                item("Restart Arcade Box", super::restart),
+                ksni::MenuItem::Separator,
+                item("Quit Arcade Box", quit),
+            ]
+        }
+    }
+
+    /// The latest requested state; one serialized task reconciles to it, so an
+    /// old item is gone before a new one registers.
+    static VISIBLE: AtomicBool = AtomicBool::new(false);
+    static HANDLE: OnceLock<tauri::async_runtime::Mutex<Option<ksni::Handle<Tray>>>> =
+        OnceLock::new();
+
+    pub fn set_state(app: &AppHandle, state: TrayState) {
+        VISIBLE.store(state == TrayState::Own, Ordering::SeqCst);
+        let app = app.clone();
+        tauri::async_runtime::spawn(async move {
+            let mut handle = HANDLE
+                .get_or_init(|| tauri::async_runtime::Mutex::new(None))
+                .lock()
+                .await;
+            if handle.as_ref().is_some_and(ksni::Handle::is_closed) {
+                *handle = None;
+            }
+            let visible = VISIBLE.load(Ordering::SeqCst);
+            if visible && handle.is_none() {
+                match (Tray { app }).assume_sni_available(true).spawn().await {
+                    Ok(spawned) => *handle = Some(spawned),
+                    Err(error) => eprintln!("Arcade Box tray registration failed: {error}"),
+                }
+            } else if !visible {
+                if let Some(old) = handle.take() {
+                    old.shutdown().await;
+                }
+            }
+        });
+    }
+}
+
+#[cfg(not(target_os = "linux"))]
+fn set_native_tray(app: &tauri::AppHandle, state: arcade_link::trayhost::TrayState) {
     RECOVERY_TRAY.with(|slot| {
         let mut slot = slot.borrow_mut();
         if slot.is_none() {
@@ -1318,6 +1466,7 @@ fn start_tray_host_watcher(app: &tauri::AppHandle, runtime: &Arc<Arcade>) -> Res
 
 /// Build the tray state before watching. A hosted startup retains the menu and
 /// image without registering a duplicate OS icon.
+#[cfg(not(target_os = "linux"))]
 fn initialize_recovery_tray(app: &tauri::App) -> tauri::Result<()> {
     let prepared = prepare_recovery_tray(app)?;
     RECOVERY_TRAY.with(|slot| {
@@ -1561,6 +1710,7 @@ pub fn run(args: Vec<String>) {
             // item's title; it defaults to the binary name.
             #[cfg(target_os = "linux")]
             gtk::glib::set_application_name("Arcade Box");
+            #[cfg(not(target_os = "linux"))]
             if let Err(error) = initialize_recovery_tray(app) {
                 eprintln!("Arcade Box recovery tray unavailable: {error}");
             }

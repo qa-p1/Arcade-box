@@ -40,6 +40,9 @@ ashpd = { version = "0.13.13", default-features = false, features = ["global_sho
 libc = "0.2"
 futures-channel = "0.3"
 futures-util = "0.3"
+# The Linux tray uses ksni (as Arcade Look does), so a hosted icon can be
+# unregistered; libappindicator only marks it Passive.
+ksni = { version = "0.3", default-features = false, features = ["tokio"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 windows-capture = "2.0.1"

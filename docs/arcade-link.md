@@ -111,9 +111,11 @@ actions as before.
 | `app.settings.import` | Exactly one settings file (a regular file, at most 1 MiB). Box validates it, writes a backup of the current settings, replaces favorites, pipelines and preferences, and rolls everything back if a step fails. |
 
 **Tray hosting.** Box's `TrayHostWatcher` connects to Arcade Tools when Tools
-runs with tray hosting on. While Tools hosts it, Box's own icon stays built but
-hidden; it comes back at once when Tools quits, crashes or turns hosting off,
-and after a 5 s grace period when Tools announces a restart. At startup Box
+runs with tray hosting on. While Tools hosts it, Box removes its own icon (on
+Linux it unregisters its StatusNotifierItem, drawn with ksni, because hosts
+such as Caelestia and Waybar still show hidden "Passive" items; Windows and
+macOS hide it). The icon comes back at once when Tools quits, crashes or turns
+hosting off, and after a 5 s grace period when Tools announces a restart. At startup Box
 waits at most 300 ms for Tools' answer before showing its icon. `app.status`
 reports `tray` as `own`, `hosted` or `none`. With "Connect with other Arcade
 apps" off, Box always shows its own icon.
