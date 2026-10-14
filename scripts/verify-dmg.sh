@@ -19,11 +19,16 @@ mkdir -p "$mount" "$root/home" "$root/config" "$root/data" "$root/cache" "$root/
 chmod 700 "$root/run"
 # All environment changes are confined to this process and its children.
 export HOME="$root/home" ARCADE_HOME="$root/arcade" XDG_CONFIG_HOME="$root/config" XDG_DATA_HOME="$root/data" XDG_CACHE_HOME="$root/cache" XDG_RUNTIME_DIR="$root/run" ARCADE_NO_INSTALL_PROMPT=1
+export PATH="$ARCADE_HOME/.local/bin:$PATH"
 hdiutil attach "$image" -readonly -nobrowse -mountpoint "$mount" >/dev/null
 mounted=1
 source="$mount/$name.app"
 [[ -x "$source/Contents/MacOS/$executable" ]]
 plutil -lint "$source/Contents/Info.plist"
+# Check the desktop app and both bundled tools have Apple Silicon and Intel slices.
+for binary in "$executable" arcade-box arcade-plugin-worker; do
+  lipo "$source/Contents/MacOS/$binary" -verify_arch arm64 x86_64
+done
 "$source/Contents/MacOS/$executable" --install --silent --no-launch
 installed="$ARCADE_HOME/Applications/$name.app"
 [[ -x "$installed/Contents/MacOS/$executable" ]]
@@ -34,6 +39,20 @@ from pathlib import Path
 r = json.loads(Path(sys.argv[1]).read_text())
 assert r['schema'] == 1 and r['method'] == 'macos-bundle'
 assert Path(r['path']) == Path(sys.argv[2])
+assert Path(r['integration']['cli']) == Path(sys.argv[1]).parents[1] / '.local/bin/arcade-desktop'
 PY
+cli="$ARCADE_HOME/.local/bin/arcade-desktop"
+[[ -L "$cli" ]]
+[[ "$(readlink "$cli")" == "$installed/Contents/MacOS/$executable" ]]
+python3 - "$ARCADE_HOME" <<'PY'
+from pathlib import Path
+import sys
+assert not list((Path(sys.argv[1]) / "Applications").glob(".arcade-*"))
+PY
+"$installed/Contents/MacOS/$executable" --uninstall --silent
+[[ ! -e "$installed" ]]
+[[ ! -e "$ARCADE_HOME/installs/$id.json" ]]
+# -e alone misses a dangling symlink.
+[[ ! -e "$cli" && ! -L "$cli" ]]
 [[ ! -e "$HOME/.zprofile" && ! -e "$HOME/.bash_profile" && ! -e "$HOME/.profile" ]]
-echo 'macOS CI passed: DMG mount, silent Applications copy and receipt; no interactive desktop run.'
+echo 'macOS CI passed: universal DMG, install, receipt, CLI and uninstall; no interactive desktop run.'

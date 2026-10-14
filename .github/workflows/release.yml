@@ -105,6 +105,7 @@ jobs:
           assets = json.load(open(sys.argv[1]))['assets']
           assert len(assets) == 3 and {a['kind'] for a in assets} == {'nsis', 'appimage', 'dmg'}
           assert {a['os'] for a in assets} == {'windows', 'linux', 'macos'}
+          assert next(a for a in assets if a['os'] == 'macos')['arch'] == 'universal'
           PY
           (cd "$RUNNER_TEMP/release" && sha256sum -c SHA256SUMS.txt)
       - name: Write release notes

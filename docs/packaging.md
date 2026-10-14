@@ -27,8 +27,17 @@ sidecars into the ignored `binaries` directory. It accepts `--target` for an
 installed Rust target; cross-platform toolchains are not provided by this repo.
 No WASM fixture rebuild, installation, app launch or startup-file edit is needed.
 
+macOS CI builds a universal DMG for Apple Silicon and Intel. The desktop app,
+CLI and trusted worker all contain both architectures. On a Mac, add the
+`aarch64-apple-darwin` and `x86_64-apple-darwin` Rust targets, stage with
+`python3 scripts/prepare-bundle.py --target universal-apple-darwin`, then pass
+`--target universal-apple-darwin --bundles dmg` to the Tauri command above.
+The staging script combines the CLI and worker with `lipo` before bundling.
+The DMG smoke check verifies all three binaries' slices, installs into a
+temporary home, and checks receipt, bundle and CLI removal after uninstall.
+
 CI checks out Box; Cargo resolves Arcade Link from the pinned `v0.3.0` git tag.
-It runs Rust/frontend checks, builds native installers, and uploads one artifact
+It runs Rust/frontend checks, builds installers, and uploads one artifact
 per platform. Linux, Windows and macOS jobs passed on 2026-10-08; interactive
 Windows/macOS behavior is still unverified (see [status](STATUS.md)).
 The macOS adapter minimum is 14 for screen selection; recording output requires
