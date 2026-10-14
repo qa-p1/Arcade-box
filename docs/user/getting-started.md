@@ -14,14 +14,14 @@ You can install Box from **Arcade Tools → Apps**, where Tools can install, upd
 
 Download the AppImage and run it. On first launch, Box asks **Install Arcade Box?**
 
-- Choose **Install** to add Box to your app launcher, place it in **~/Applications/Arcade/**, add the **arcade-box** command in **~/.local/bin**, and choose whether it starts at login.
+- Choose **Install** to add Box to your app launcher, place it in **~/Applications/Arcade/**, add the **arcade-desktop** command in **~/.local/bin**, and choose whether it starts at login.
 - Choose **Just run it once** to use Box without installing it.
 
-To remove an installed copy, run **arcade-box --uninstall**, choose **Uninstall** from its launcher entry, or remove it in Arcade Tools. Your settings stay unless you choose to remove them. If **~/.local/bin** is not on PATH, Box shows the exact line to add for your shell.
+To remove an installed copy, run **arcade-desktop --uninstall**, choose **Uninstall** from its launcher entry, or remove it in Arcade Tools. Your settings stay unless you choose to remove them. If **~/.local/bin** is not on PATH, Box shows the exact line to add for your shell.
 
 ### Windows
 
-Run the installer. It installs for your user and does not need administrator access. It adds a Start menu entry, offers a desktop shortcut and start-at-login options, and adds **arcade-box** to PATH. If SmartScreen warns about the unsigned installer, choose **More info → Run anyway**. Uninstall from **Settings → Apps** or Arcade Tools.
+Run the installer. It installs for your user and does not need administrator access. It adds a Start menu entry, offers a desktop shortcut and start-at-login options, and adds **arcade-desktop** to PATH. If SmartScreen warns about the unsigned installer, choose **More info → Run anyway**. Uninstall from **Settings → Apps** or Arcade Tools.
 
 ### macOS
 
@@ -39,4 +39,4 @@ Search for **Change Case**, enter a short sentence, choose uppercase, and run it
 
 ## Use the command line
 
-The installed command **arcade-box** can run tools without opening the Island. Run **arcade-box --help** to see its options. The separate developer CLI is documented in the repository README.
+The installed command **arcade-desktop** opens Box, starts it in the background, restarts or quits it, and manages its installation. Run **arcade-desktop --help** to see its options. To run tools without opening the Island, use the terminal tool runtime **arcadebox** (alias **arcade-box**), which ships beside the desktop app; it is documented in the repository README.
