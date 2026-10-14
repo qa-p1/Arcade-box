@@ -32,7 +32,7 @@ Jobs can continue after you close the Island. Reopen Box and check **Background 
 
 ## The command is not found on Linux
 
-Box installs **arcade-box** in **~/.local/bin**. If that directory is not on PATH, use the exact shell line shown by the installer, then open a new terminal.
+Box installs the **arcade-desktop** command in **~/.local/bin** (the terminal tool `arcadebox` ships beside it). If that directory is not on PATH, use the exact shell line shown by the installer, then open a new terminal.
 
 ## I am on Windows or macOS
 

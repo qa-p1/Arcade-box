@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/logo.svg" width="96" alt="Arcade Box logo">
+  <img src="apps/desktop/src-tauri/icons/icon.svg" width="112" alt="Arcade Box icon">
 </p>
 
 <h1 align="center">Arcade Box</h1>
