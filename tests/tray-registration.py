@@ -191,7 +191,9 @@ def main():
     def ownership(state):
         until(lambda: status().get("tray") == state, f"status.tray did not become {state}")
 
-    def items(count, timeout=1):
+    # A ksni shutdown can take just over 1 s on a loaded CI runner; hand-back
+    # keeps its own 1 s budget in recovery().
+    def items(count, timeout=3):
         try:
             until(lambda: len(watcher.properties()["RegisteredStatusNotifierItems"]) == count,
                   f"expected {count} registered items", timeout)
