@@ -1,5 +1,12 @@
 # Arcade Box: status
 
+## Release status (2026-10-15)
+
+- Released: [v0.2.0](https://github.com/qa-p1/Arcade-box/releases/tag/v0.2.0) with a Linux self-installing AppImage, a per-user Windows installer, a macOS dmg, `arcade-release.json` and `SHA256SUMS.txt`.
+- Merged to `main` from PR #3 (a9e806f) after CI passed on Linux, Windows and macOS: [run 38600230680](https://github.com/qa-p1/Arcade-box/actions/runs/38600230680). That covers the build, tests, clippy or analyzers, installer smoke tests on each OS, and the Linux AppImage install, repair and uninstall check in a temporary profile.
+- Ecosystem e2e (Arcade Link `tools/e2e.py`, real CI builds of all eight apps): install, tray hosting (hosted by Tools, own icon back within 1 s after Tools is killed, no flash on restart) and shortcuts pass. Tools 0.2.0 adopts, updates, rolls back, uninstalls and backs up Box.
+- Not yet verified: a real Windows or macOS desktop (CI runners only), and the owner's real-desktop checks. Builds are unsigned, so SmartScreen and Gatekeeper ask for approval.
+
 Current source version: 0.2.0, Arcade Link `v0.3.0`. The verification and
 documentation-prep baseline below are historical records.
 
