@@ -2510,6 +2510,7 @@ fn capture_windows_frame(output_path: PathBuf) -> Result<bool, String> {
     Ok(true)
 }
 
+#[cfg(any(target_os = "linux", test))]
 fn local_screenshot_path(uri: &str) -> Result<PathBuf, String> {
     let parsed = url::Url::parse(uri)
         .map_err(|_| "The screenshot portal returned an invalid URI".to_owned())?;
@@ -2569,14 +2570,27 @@ fn validate_png_screenshot(path: &std::path::Path) -> Result<(), String> {
     checked_dimensions(width, height)
 }
 
+fn checked_dimensions(width: u32, height: u32) -> Result<(), String> {
+    let pixels = u64::from(width).saturating_mul(u64::from(height));
+    if width == 0 || height == 0 || width > 32_768 || height > 32_768 || pixels > MAX_CAPTURE_PIXELS
+    {
+        return Err("The selected screen image dimensions exceed the safe capture limit".into());
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn screenshot_uri_must_be_local_file_uri() {
-        assert!(local_screenshot_path("file:///home/user/screen.png").is_ok());
-        assert!(local_screenshot_path("file://localhost/home/user/screen.png").is_ok());
+        let path = std::env::temp_dir().join("screen.png");
+        let uri = url::Url::from_file_path(&path).unwrap();
+        assert_eq!(local_screenshot_path(uri.as_str()).unwrap(), path);
+        let mut localhost = uri;
+        localhost.set_host(Some("localhost")).unwrap();
+        assert_eq!(local_screenshot_path(localhost.as_str()).unwrap(), path);
         assert!(local_screenshot_path("https://example.test/screen.png").is_err());
         assert!(local_screenshot_path("file://remote-host/home/user/screen.png").is_err());
     }
@@ -2588,13 +2602,4 @@ mod tests {
         assert!(checked_dimensions(32_768, 32_768).is_err());
         assert!(checked_dimensions(32_769, 1).is_err());
     }
-}
-
-fn checked_dimensions(width: u32, height: u32) -> Result<(), String> {
-    let pixels = u64::from(width).saturating_mul(u64::from(height));
-    if width == 0 || height == 0 || width > 32_768 || height > 32_768 || pixels > MAX_CAPTURE_PIXELS
-    {
-        return Err("The selected screen image dimensions exceed the safe capture limit".into());
-    }
-    Ok(())
 }

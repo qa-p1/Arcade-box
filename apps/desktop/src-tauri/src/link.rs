@@ -8,30 +8,36 @@
 //! and nothing listens.
 
 use std::collections::{HashMap, VecDeque};
-use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::{
+    Arc, Mutex, OnceLock,
+    atomic::{AtomicU8, Ordering},
+};
 
+use crate::portable_settings;
 use arcade_contract::ToolResult;
 use arcade_core::Arcade;
 use arcade_core::jobs::{JobManager, JobSnapshot, JobStatus};
 use arcade_core::link::{self as core_link, LinkSettings, Prepared, ProviderCache, consumer};
+use arcade_link::manifest::{Docs, ManifestAdditions, ManifestDocument, MenuItem, MenuKind};
 use arcade_link::server::{Handler, InvokeContext, Job, Reply};
-use arcade_link::{Action, InvokeRequest, InvokeResult, LinkError, Locations, Manifest, Presence};
+use arcade_link::{Action, Content, InvokeRequest, InvokeResult, LinkError, Locations, Presence};
 use serde::Serialize;
 use tauri::{AppHandle, Emitter, Manager};
 
 /// The shortcut Box uses now, for clash warnings in other apps.
 pub fn effective_shortcut(runtime: &Arcade) -> String {
-    runtime
+    let saved = runtime
         .storage()
         .setting("global_shortcut")
         .ok()
         .flatten()
-        .unwrap_or_else(|| default_shortcut().into())
+        .unwrap_or_else(|| default_shortcut().into());
+    arcade_link::accelerator::normalize(&saved).unwrap_or_else(|_| default_shortcut().into())
 }
 
 fn default_shortcut() -> &'static str {
     if cfg!(target_os = "macos") {
-        "Cmd+Shift+Space"
+        "Super+Shift+Space"
     } else {
         "Ctrl+Alt+Space"
     }
@@ -40,10 +46,64 @@ fn default_shortcut() -> &'static str {
 /// The data directory the desktop app uses (Tauri's `app_data_dir`), for
 /// code that runs before Tauri starts (`--arcade-manifest`, one-shot mode).
 pub fn data_dir() -> Option<std::path::PathBuf> {
-    directories::BaseDirs::new().map(|d| d.data_dir().join("dev.arcadebox.app"))
+    if let Some(root) = std::env::var_os("ARCADE_HOME").filter(|value| !value.is_empty()) {
+        let root = std::path::PathBuf::from(root);
+        return root.is_absolute().then(|| root.join("dev.arcadebox.app"));
+    }
+    if cfg!(target_os = "macos") {
+        return std::env::var_os("HOME")
+            .map(std::path::PathBuf::from)
+            .map(|home| home.join("Library/Application Support/dev.arcadebox.app"));
+    }
+    if cfg!(windows) {
+        return std::env::var_os("APPDATA")
+            .map(std::path::PathBuf::from)
+            .map(|roaming| roaming.join("dev.arcadebox.app"));
+    }
+    std::env::var_os("XDG_DATA_HOME")
+        .map(std::path::PathBuf::from)
+        .filter(|path| path.is_absolute())
+        .or_else(|| {
+            std::env::var_os("HOME")
+                .map(std::path::PathBuf::from)
+                .map(|home| home.join(".local/share"))
+        })
+        .map(|base| base.join("dev.arcadebox.app"))
 }
 
-fn build(runtime: &Arcade) -> Manifest {
+pub const OPEN_PIPELINES_MENU_ID: &str = "open-pipelines";
+
+fn menu_items() -> Vec<MenuItem> {
+    vec![MenuItem {
+        id: OPEN_PIPELINES_MENU_ID.into(),
+        title: "Open pipelines".into(),
+        kind: MenuKind::Action,
+        checked: None,
+        enabled: true,
+        effects: vec!["opens-ui".into()],
+    }]
+}
+
+fn install_method() -> arcade_link::receipt::InstallMethod {
+    let Ok(environment) = arcade_link::install::Environment::discover() else {
+        return arcade_link::receipt::InstallMethod::Manual;
+    };
+    let Ok(runtime) = arcade_link::install::Runtime::discover() else {
+        return arcade_link::receipt::InstallMethod::Manual;
+    };
+    if runtime.dev_build || arcade_link::install::is_dev_build(&runtime.running_from()) {
+        return arcade_link::receipt::InstallMethod::Dev;
+    }
+    environment
+        .receipts()
+        .read("arcade.box")
+        .ok()
+        .flatten()
+        .map(|receipt| receipt.method)
+        .unwrap_or(arcade_link::receipt::InstallMethod::Manual)
+}
+
+fn build_document(runtime: &Arcade) -> ManifestDocument {
     let mut manifest = core_link::manifest(
         &LinkSettings::load(runtime),
         &arcade_link::manifest::current_executable(),
@@ -58,28 +118,49 @@ fn build(runtime: &Arcade) -> Manifest {
             core_link::load_provider_cache(runtime).as_ref(),
         ));
     }
-    manifest
+    ManifestDocument {
+        manifest,
+        additions: ManifestAdditions {
+            menu: menu_items(),
+            logs: None,
+            docs: Some(Docs {
+                version: env!("CARGO_PKG_VERSION").into(),
+            }),
+            install: Some(install_method()),
+            ..Default::default()
+        },
+    }
 }
 
 /// `--arcade-manifest`: the manifest from the saved settings. Doesn't create
 /// Box's database if it doesn't exist yet.
 pub fn print_manifest() {
     let db = data_dir().map(|d| d.join("arcade.sqlite3"));
-    let m = match db
+    let document = match db
         .filter(|p| p.is_file())
         .and_then(|p| Arcade::open(&p).ok())
     {
-        Some(runtime) => build(&runtime),
-        None => core_link::manifest(
-            &LinkSettings::default(),
-            &arcade_link::manifest::current_executable(),
-            env!("CARGO_PKG_VERSION"),
-            Some(default_shortcut()),
-            &[],
-            None,
-        ),
+        Some(runtime) => build_document(&runtime),
+        None => ManifestDocument {
+            manifest: core_link::manifest(
+                &LinkSettings::default(),
+                &arcade_link::manifest::current_executable(),
+                env!("CARGO_PKG_VERSION"),
+                Some(default_shortcut()),
+                &[],
+                None,
+            ),
+            additions: ManifestAdditions {
+                menu: menu_items(),
+                docs: Some(Docs {
+                    version: env!("CARGO_PKG_VERSION").into(),
+                }),
+                install: Some(install_method()),
+                ..Default::default()
+            },
+        },
     };
-    println!("{}", m.to_json());
+    println!("{}", document.to_json());
 }
 
 /// `--arcade-invoke`: one request on stdin, no UI, tray, shortcut or listener.
@@ -245,8 +326,144 @@ impl BoxHandler {
 }
 
 impl Handler for BoxHandler {
+    fn methods(&self) -> Vec<String> {
+        [
+            arcade_link::wire::method::APP_SETTINGS,
+            arcade_link::wire::method::APP_RESTART,
+            arcade_link::wire::method::APP_MENU,
+            arcade_link::wire::method::APP_MENU_INVOKE,
+            arcade_link::wire::method::APP_SHORTCUTS_SET,
+            arcade_link::wire::method::APP_SETTINGS_EXPORT,
+            arcade_link::wire::method::APP_SETTINGS_IMPORT,
+        ]
+        .into_iter()
+        .map(str::to_owned)
+        .collect()
+    }
+
+    fn settings(&self) -> Result<(), LinkError> {
+        crate::open_settings(&self.app);
+        Ok(())
+    }
+
+    fn restart_ready(&self, mode: &str) -> Result<(), LinkError> {
+        if mode != "force"
+            && self
+                .app
+                .state::<JobManager>()
+                .list()
+                .iter()
+                .any(|job| !terminal(job.status))
+        {
+            return Err(LinkError::busy());
+        }
+        Ok(())
+    }
+
+    fn restart(&self, _mode: &str) -> Result<(), LinkError> {
+        crate::restart(&self.app);
+        Ok(())
+    }
+
+    fn menu(&self) -> Result<Vec<MenuItem>, LinkError> {
+        Ok(menu_items())
+    }
+
+    fn menu_invoke(&self, id: &str) -> Result<(), LinkError> {
+        if id != OPEN_PIPELINES_MENU_ID {
+            return Err(LinkError::denied("unknown menu item"));
+        }
+        crate::open_pipelines(&self.app);
+        Ok(())
+    }
+
+    fn shortcuts_set(
+        &self,
+        id: &str,
+        accelerator: &str,
+    ) -> Result<arcade_link::app::ShortcutSetResult, LinkError> {
+        if id != "island" {
+            return Err(LinkError::denied("unknown shortcut id"));
+        }
+        let shortcut = arcade_link::accelerator::normalize(accelerator)
+            .map_err(|error| LinkError::denied(&error.to_string()))?;
+        let _change = HUB_SETTINGS_CHANGE
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        let runtime = self.runtime();
+        let old = effective_shortcut(&runtime);
+        let result = crate::set_shortcut_from_link(&self.app, shortcut.clone())?;
+        runtime
+            .storage()
+            .set_setting("global_shortcut", &shortcut)
+            .map_err(|error| LinkError::unavailable(error.to_string()))?;
+        if let Err(error) = publish_document(&runtime) {
+            let _ = runtime.storage().set_setting("global_shortcut", &old);
+            let _ = crate::set_shortcut_from_link(&self.app, old);
+            let _ = publish_document(&runtime);
+            return Err(error);
+        }
+        Ok(result)
+    }
+
+    fn settings_export(&self) -> Result<Vec<Content>, LinkError> {
+        portable_settings::export_file(&self.runtime(), &Locations::discover())
+    }
+
+    fn settings_import(
+        &self,
+        inputs: &[Content],
+    ) -> Result<arcade_link::app::ImportResult, LinkError> {
+        let runtime = self.runtime();
+        let next = portable_settings::read_import(inputs, &runtime)?;
+        let _change = HUB_SETTINGS_CHANGE
+            .lock()
+            .unwrap_or_else(|e| e.into_inner());
+        let old = portable_settings::PortableSettings::export(&runtime)?;
+        let data_dir = data_dir()
+            .ok_or_else(|| LinkError::unavailable("application data directory is unavailable"))?;
+        let backup = portable_settings::write_backup(&old, &data_dir)?;
+        crate::set_shortcut_from_link(&self.app, next.preferences.global_shortcut.clone())?;
+        let (pipelines, settings) = next.storage_rows()?;
+        if let Err(error) =
+            runtime
+                .storage()
+                .replace_portable_settings(&next.favorites, &pipelines, &settings)
+        {
+            let _ =
+                crate::set_shortcut_from_link(&self.app, old.preferences.global_shortcut.clone());
+            return Err(LinkError::unavailable(error.to_string()));
+        }
+        if let Err(error) = runtime
+            .refresh_pipeline_catalog()
+            .map_err(|e| LinkError::unavailable(e.to_string()))
+            .and_then(|_| publish_document(&runtime))
+        {
+            if let Ok((old_pipelines, old_settings)) = old.storage_rows() {
+                let _ = runtime.storage().replace_portable_settings(
+                    &old.favorites,
+                    &old_pipelines,
+                    &old_settings,
+                );
+            }
+            let _ = runtime.refresh_pipeline_catalog();
+            let _ =
+                crate::set_shortcut_from_link(&self.app, old.preferences.global_shortcut.clone());
+            let _ = publish_document(&runtime);
+            return Err(LinkError::unavailable(format!(
+                "couldn't publish imported settings; backup saved at {}: {error}",
+                backup.display()
+            )));
+        }
+        let _ = self.app.emit("arcade://settings-imported", ());
+        Ok(arcade_link::app::ImportResult {
+            imported: true,
+            restart_required: false,
+        })
+    }
+
     fn describe(&self) -> Vec<Action> {
-        build(&self.runtime()).actions
+        build_document(&self.runtime()).manifest.actions
     }
 
     fn invoke(&self, request: InvokeRequest, ctx: &InvokeContext) -> Result<Reply, LinkError> {
@@ -322,7 +539,7 @@ impl Handler for BoxHandler {
         } else {
             "foreground"
         };
-        serde_json::json!({ "mode": mode, "jobs": self.app.state::<JobManager>().list().iter().filter(|j| !terminal(j.status)).count() })
+        serde_json::json!({ "mode": mode, "jobs": self.app.state::<JobManager>().list().iter().filter(|j| !terminal(j.status)).count(), "tray": tray_state() })
     }
 
     fn activate(&self) -> Result<(), LinkError> {
@@ -339,9 +556,64 @@ impl Handler for BoxHandler {
 }
 
 static PRESENCE: OnceLock<Mutex<Option<Arc<Presence>>>> = OnceLock::new();
+static HUB_SETTINGS_CHANGE: Mutex<()> = Mutex::new(());
+static TRAY_STATE: AtomicU8 = AtomicU8::new(0);
+
+pub fn set_tray_state(state: arcade_link::trayhost::TrayState) {
+    TRAY_STATE.store(
+        match state {
+            arcade_link::trayhost::TrayState::None => 0,
+            arcade_link::trayhost::TrayState::Own => 1,
+            arcade_link::trayhost::TrayState::Hosted => 2,
+        },
+        Ordering::Release,
+    );
+}
+
+pub(crate) fn settings_change_lock() -> std::sync::MutexGuard<'static, ()> {
+    HUB_SETTINGS_CHANGE
+        .lock()
+        .unwrap_or_else(|error| error.into_inner())
+}
+
+fn tray_state() -> &'static str {
+    match TRAY_STATE.load(Ordering::Acquire) {
+        1 => "own",
+        2 => "hosted",
+        _ => "none",
+    }
+}
 
 fn slot() -> &'static Mutex<Option<Arc<Presence>>> {
     PRESENCE.get_or_init(|| Mutex::new(None))
+}
+
+/// Publish and verify the current schema-1 document. Link's Presence update
+/// intentionally returns (), so callers that persist shortcut settings must
+/// compare the written manifest before reporting success.
+fn publish_document(runtime: &Arcade) -> Result<(), LinkError> {
+    let document = build_document(runtime);
+    let locations = Locations::discover();
+    if let Some(presence) = slot().lock().unwrap_or_else(|e| e.into_inner()).clone() {
+        presence.update_document(document.clone());
+    } else {
+        arcade_link::manifest::write_document(&locations, &document)
+            .map_err(|error| LinkError::unavailable(error.to_string()))?;
+    }
+    let text = std::fs::read_to_string(locations.manifest("arcade.box"))
+        .map_err(|error| LinkError::unavailable(error.to_string()))?;
+    let mut written = ManifestDocument::from_json(&text).map_err(LinkError::unavailable)?;
+    written.manifest.written_at = document.manifest.written_at.clone();
+    if written != document {
+        return Err(LinkError::unavailable(
+            "couldn't publish settings in the manifest",
+        ));
+    }
+    Ok(())
+}
+
+pub(crate) fn publish_settings(runtime: &Arc<Arcade>) -> Result<(), LinkError> {
+    publish_document(runtime)
 }
 
 /// Re-checks providers and rewrites the manifest if availability changed.
@@ -352,11 +624,10 @@ fn reprobe(runtime: &Arcade, full: bool) {
         _ => core_link::probe_providers(),
     };
     cache.extend(core_link::peer_provider_cache(runtime));
-    if core_link::save_provider_cache(runtime, &cache) {
-        let p = slot().lock().unwrap_or_else(|e| e.into_inner()).clone();
-        if let Some(p) = p {
-            p.update(build(runtime));
-        }
+    if core_link::save_provider_cache(runtime, &cache)
+        && slot().lock().unwrap_or_else(|e| e.into_inner()).is_some()
+    {
+        let _ = publish_document(runtime);
     }
 }
 
@@ -370,9 +641,9 @@ pub fn start(app: &AppHandle) {
             let Some(runtime) = app.try_state::<Arc<Arcade>>().map(|r| r.inner().clone()) else {
                 return;
             };
-            let p = Presence::start(
+            let p = Presence::start_document(
                 Locations::discover(),
-                build(&runtime),
+                build_document(&runtime),
                 Arc::new(BoxHandler { app: app.clone() }),
             );
             if let Some(e) = p.last_error() {
@@ -384,12 +655,13 @@ pub fn start(app: &AppHandle) {
             consumer::registry(&runtime).watch(move |_| {
                 let _ = watched_runtime.refresh_pipeline_catalog();
                 core_link::refresh_peer_providers(&watched_runtime);
-                if let Some(p) = slot().lock().unwrap_or_else(|e| e.into_inner()).clone() {
-                    p.update(build(&watched_runtime));
+                if slot().lock().unwrap_or_else(|e| e.into_inner()).is_some() {
+                    let _ = publish_document(&watched_runtime);
                 }
                 let _ = watched_app.emit("arcade://link-changed", ());
             });
             let _ = runtime.refresh_pipeline_catalog();
+            let _ = publish_document(&runtime);
             let _ = app.emit("arcade://link-changed", ());
             reprobe(&runtime, false);
         });
@@ -400,9 +672,10 @@ pub fn refresh(app: &AppHandle) {
     let Some(runtime) = app.try_state::<Arc<Arcade>>().map(|r| r.inner().clone()) else {
         return;
     };
-    let p = slot().lock().unwrap_or_else(|e| e.into_inner()).clone();
-    if let Some(p) = p {
-        std::thread::spawn(move || p.update(build(&runtime)));
+    if slot().lock().unwrap_or_else(|e| e.into_inner()).is_some() {
+        std::thread::spawn(move || {
+            let _ = publish_document(&runtime);
+        });
     }
 }
 
@@ -502,9 +775,12 @@ pub fn set_link_settings(
         return Err("Unknown Arcade app".into());
     }
     settings.save(&runtime)?;
+    if let Some(watcher) = app.try_state::<arcade_link::trayhost::TrayHostWatcher>() {
+        watcher.set_link_enabled(settings.enabled);
+    }
     core_link::refresh_peer_providers(&runtime);
-    if let Some(p) = slot().lock().unwrap_or_else(|e| e.into_inner()).clone() {
-        p.update(build(&runtime));
+    if slot().lock().unwrap_or_else(|e| e.into_inner()).is_some() {
+        let _ = publish_document(&runtime);
     }
     let _ = app.emit("arcade://link-changed", ());
     Ok(())

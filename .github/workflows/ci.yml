@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 env:
+  PYTHONUTF8: "1"
   CARGO_BUILD_JOBS: 3
 
 permissions:
@@ -14,6 +15,10 @@ permissions:
 defaults:
   run:
     working-directory: Arcade-box
+
+concurrency:
+  group: ci-${{ github.event.pull_request.head.ref || github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
   check:
@@ -26,12 +31,16 @@ jobs:
           - os: ubuntu-24.04
             bundle: appimage
             installer: Arcade-box/target/release/bundle/appimage/*.AppImage
-          - os: windows-latest
+          # windows-latest now resolves Visual Studio 2026 without a C/C++
+          # toolchain, so zxing-cpp cannot configure; stay on the 2022 image.
+          - os: windows-2022
             bundle: nsis
             installer: Arcade-box/target/release/bundle/nsis/*-setup.exe
           - os: macos-latest
             bundle: dmg
-            installer: Arcade-box/target/release/bundle/dmg/*.dmg
+            args: --target universal-apple-darwin
+            sidecar-args: --target universal-apple-darwin
+            installer: Arcade-box/target/universal-apple-darwin/release/bundle/dmg/*.dmg
     steps:
       - uses: actions/checkout@v7
         with:
@@ -46,8 +55,9 @@ jobs:
           python-version: '3.13'
       - uses: dtolnay/rust-toolchain@v1
         with:
-          toolchain: 1.95.0
+          toolchain: 1.88.0
           components: rustfmt, clippy
+          targets: ${{ runner.os == 'macOS' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
       - uses: Swatinem/rust-cache@v2
         with:
           workspaces: Arcade-box -> target
@@ -68,10 +78,14 @@ jobs:
         run: npm run build
       - name: Check Rust formatting
         run: cargo fmt --all --check
+      - name: Clippy on every target
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+      - name: Documentation, shortcuts and vendored sources
+        run: python scripts/check-docs.py && python scripts/check-vendored.py
       - name: Test shared runtime
         env:
           ARCADE_HOME: ${{ runner.temp }}/arcade-box-ci
-        run: cargo test --workspace --exclude arcade-desktop --locked
+        run: python scripts/isolate.py cargo test --workspace --locked
       - name: Build desktop on target OS
         run: cargo build -p arcade-desktop --locked
       - name: Check tool catalog matrix
@@ -79,12 +93,34 @@ jobs:
       - name: Check locked license inventory
         run: python scripts/license_inventory.py --check
       - name: Stage the CLI and trusted plugin worker
-        run: python scripts/prepare-bundle.py
+        run: python scripts/prepare-bundle.py ${{ matrix.sidecar-args }}
       - name: Install the pinned Tauri bundler
         run: npm install --prefix target/tauri-cli --cache target/npm-cache --no-audit --no-fund @tauri-apps/cli@2.12.1
       - name: Build the installer
         working-directory: Arcade-box/apps/desktop/src-tauri
-        run: node ../../../target/tauri-cli/node_modules/@tauri-apps/cli/tauri.js build --ci --config tauri.bundle.conf.json --bundles ${{ matrix.bundle }}
+        run: node ../../../target/tauri-cli/node_modules/@tauri-apps/cli/tauri.js build --ci --config tauri.bundle.conf.json --bundles ${{ matrix.bundle }} ${{ matrix.args }} -- --locked
+      - name: Verify AppImage install, repair and uninstall in a temporary profile
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get install -y xvfb dbus-x11
+          dbus-run-session -- xvfb-run -a python3 scripts/verify-appimage.py target/release/bundle/appimage/*.AppImage arcade.box Arcade-Box.AppImage arcade-desktop
+      - name: Tray icon registration (real StatusNotifierWatcher, isolated)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get install -y xdotool python3-dbus python3-gi
+          git -c advice.detachedHead=false clone -q --depth 1 --branch v0.3.0 https://github.com/qa-p1/Arcade-Link "$RUNNER_TEMP/link"
+          cargo build --release --manifest-path "$RUNNER_TEMP/link/Cargo.toml" -p arcade-link-cli
+          /usr/bin/python3 "$RUNNER_TEMP/link/tools/e2e.py" run -- /usr/bin/python3 tests/tray-registration.py target/release/arcade-desktop "$RUNNER_TEMP/link/target/release/arcade-link" box
+      - name: Verify NSIS silent install and uninstall
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: scripts/verify-nsis.ps1 -SetupPattern 'target/release/bundle/nsis/*-setup.exe' -Id arcade.box -Name 'Arcade Box' -CliName arcade-desktop
+      - name: Verify universal DMG install and uninstall in a temporary home
+        if: runner.os == 'macOS'
+        shell: bash
+        run: scripts/verify-dmg.sh target/universal-apple-darwin/release/bundle/dmg/*.dmg 'Arcade Box' arcade-desktop arcade.box
       - name: Upload the installer
         uses: actions/upload-artifact@v4
         with:

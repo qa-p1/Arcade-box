@@ -76,6 +76,7 @@ pub fn capability_status() -> PastePlainStatus {
     }
 }
 
+#[cfg(any(target_os = "linux", target_os = "macos"))]
 fn executable_on_path(name: &str) -> bool {
     let Some(path) = std::env::var_os("PATH") else {
         return false;

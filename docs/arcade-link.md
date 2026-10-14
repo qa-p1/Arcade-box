@@ -94,6 +94,36 @@ change the startup mode. Arcade Tools uses it when relaunching after updates.
   temporary handoff folder are first copied into Box's own artifact folder,
   so the output never lands in a folder its creator deletes.
 
+## Arcade Tools hub (Link v0.3.0)
+
+Box advertises `app.settings`, `app.restart`, `app.menu`, `app.menu.invoke`,
+`app.shortcuts.set`, `app.settings.export` and `app.settings.import` in
+`describe.methods`. Older clients that don't know them see the same v1
+actions as before.
+
+| Method | What Box does |
+|---|---|
+| `app.settings` | Opens Box's Settings. |
+| `app.restart` | `busy` while any job is still running, unless the mode is `force`. Otherwise Box restarts through the same path as its tray's Restart. |
+| `app.menu` / `app.menu.invoke` | One extra, **Open pipelines** (`open-pipelines`), which opens the Pipelines view like the tray item. Unknown IDs are `denied`. |
+| `app.shortcuts.set` | Only `island`. Box normalizes the accelerator, applies it live, saves it and republishes its manifest. If publishing fails, the previous shortcut is restored. |
+| `app.settings.export` | One private `file/any` handoff with a schema-1 allowlist: favorites, saved pipelines and preferences (theme, onboarding state, global shortcut). Never history, job outputs or device state. |
+| `app.settings.import` | Exactly one settings file (a regular file, at most 1 MiB). Box validates it, writes a backup of the current settings, replaces favorites, pipelines and preferences, and rolls everything back if a step fails. |
+
+**Tray hosting.** Box's `TrayHostWatcher` connects to Arcade Tools when Tools
+runs with tray hosting on. While Tools hosts it, Box removes its own icon (on
+Linux it unregisters its StatusNotifierItem, drawn with ksni, because hosts
+such as Caelestia and Waybar still show hidden "Passive" items; Windows and
+macOS hide it). The icon comes back at once when Tools quits, crashes or turns
+hosting off, and after a 5 s grace period when Tools announces a restart. At startup Box
+waits at most 300 ms for Tools' answer before showing its icon. `app.status`
+reports `tray` as `own`, `hosted` or `none`. With "Connect with other Arcade
+apps" off, Box always shows its own icon.
+
+**Manifest additions.** The manifest caches `menu` (Open pipelines),
+`docs.version` and `install` (the receipt method, or `dev` for source builds).
+Box writes no log files, so it has no `logs` entry.
+
 ## Command line
 
 ```sh

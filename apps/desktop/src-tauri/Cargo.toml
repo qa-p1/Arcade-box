@@ -1,6 +1,6 @@
 [package]
 name = "arcade-desktop"
-version = "0.1.2"
+version = "0.2.0"
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
@@ -32,6 +32,7 @@ roxmltree = "0.21"
 url = "2.5"
 tempfile = "3.27"
 tokio = { version = "1", features = ["time", "sync"] }
+fs2 = "0.4"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 gtk = "0.18"
@@ -39,6 +40,9 @@ ashpd = { version = "0.13.13", default-features = false, features = ["global_sho
 libc = "0.2"
 futures-channel = "0.3"
 futures-util = "0.3"
+# The Linux tray uses ksni (as Arcade Look does), so a hosted icon can be
+# unregistered; libappindicator only marks it Passive.
+ksni = { version = "0.3", default-features = false, features = ["tokio"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 windows-capture = "2.0.1"

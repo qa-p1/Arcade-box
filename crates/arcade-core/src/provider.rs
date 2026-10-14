@@ -1145,7 +1145,7 @@ mod tests {
         let providers = discover_ffmpeg(None);
         for provider in providers {
             assert!(provider.executable_path.is_absolute());
-            assert!(provider.version.len() > 0);
+            assert!(!provider.version.is_empty());
             if provider.compatible {
                 assert!(provider.capabilities.contains(&"probe:streams".to_string()));
                 // Capabilities are derived from the executable's actual

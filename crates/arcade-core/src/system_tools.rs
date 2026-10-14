@@ -10,9 +10,9 @@ use std::{
 };
 #[cfg(target_os = "windows")]
 use std::{path::PathBuf, process::Command};
-use sysinfo::{
-    Disks, Networks, Pid, ProcessRefreshKind, ProcessesToUpdate, Signal, System, UpdateKind,
-};
+#[cfg(not(target_os = "windows"))]
+use sysinfo::Signal;
+use sysinfo::{Disks, Networks, Pid, ProcessRefreshKind, ProcessesToUpdate, System, UpdateKind};
 
 const MAX_PROCESSES_LISTED: usize = 200;
 

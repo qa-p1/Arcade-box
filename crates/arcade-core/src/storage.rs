@@ -227,6 +227,37 @@ impl Storage {
         Ok(())
     }
 
+    /// Replace only portable user preferences. History, jobs, aliases,
+    /// provider choices and plugin state are outside this transaction.
+    pub fn replace_portable_settings(
+        &self,
+        favorites: &[String],
+        pipelines: &[(String, u32, String)],
+        settings: &[(String, String)],
+    ) -> Result<(), rusqlite::Error> {
+        let mut connection = self.connection.lock().expect("storage mutex poisoned");
+        let transaction = connection.transaction()?;
+        transaction.execute("DELETE FROM favorites", [])?;
+        transaction.execute("DELETE FROM pipelines", [])?;
+        for tool_id in favorites {
+            transaction.execute("INSERT INTO favorites (tool_id) VALUES (?1)", [tool_id])?;
+        }
+        for (id, version, definition) in pipelines {
+            transaction.execute(
+                "INSERT INTO pipelines (id, version, definition_json) VALUES (?1, ?2, ?3)",
+                params![id, version, definition],
+            )?;
+        }
+        for (key, value) in settings {
+            transaction.execute(
+                "INSERT INTO settings (key, value) VALUES (?1, ?2) \
+                 ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+                params![key, value],
+            )?;
+        }
+        transaction.commit()
+    }
+
     pub fn setting(&self, key: &str) -> Result<Option<String>, rusqlite::Error> {
         let connection = self.connection.lock().expect("storage mutex poisoned");
         connection
@@ -363,6 +394,37 @@ mod tests {
                 .favorites
                 .contains("arcade.text.case")
         );
+    }
+
+    #[test]
+    fn portable_import_replaces_allowlisted_data_without_touching_history() {
+        let db = Storage::in_memory().unwrap();
+        db.set_favorite("arcade.text.old", true).unwrap();
+        db.set_setting("theme", "dark").unwrap();
+        db.record_usage(
+            "arcade.text.old",
+            &ToolResult {
+                tool_id: "arcade.text.old".into(),
+                status: ResultStatus::Success,
+                outputs: vec![],
+                message: None,
+                warnings: vec![],
+                metadata: Default::default(),
+            },
+        )
+        .unwrap();
+
+        db.replace_portable_settings(
+            &["arcade.text.new".into()],
+            &[("sample".into(), 1, "{}".into())],
+            &[("theme".into(), "light".into())],
+        )
+        .unwrap();
+
+        assert_eq!(db.favorites().unwrap(), ["arcade.text.new"]);
+        assert_eq!(db.list_pipeline_definitions().unwrap()[0].0, "sample");
+        assert_eq!(db.setting("theme").unwrap().as_deref(), Some("light"));
+        assert_eq!(db.history_count().unwrap(), 1);
     }
 
     #[test]

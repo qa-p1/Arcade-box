@@ -38,6 +38,7 @@ pub fn prepare_private_artifact_root(parent_path: &Path) -> io::Result<PathBuf> 
             }
         }
         Err(error) if error.kind() == io::ErrorKind::NotFound => {
+            #[cfg_attr(not(unix), allow(unused_mut))]
             let mut builder = DirBuilder::new();
             #[cfg(unix)]
             builder.mode(0o700);
@@ -78,10 +79,10 @@ pub fn prepare_private_artifact_root(parent_path: &Path) -> io::Result<PathBuf> 
             "job-artifacts changed while opening it",
         ));
     }
-    let path_meta = fs::metadata(&canonical)?;
-    let handle_meta = artifact_dir.dir_metadata()?;
     #[cfg(unix)]
     {
+        let path_meta = fs::metadata(&canonical)?;
+        let handle_meta = artifact_dir.dir_metadata()?;
         use cap_std::fs::MetadataExt as CapMetadataExt;
         use std::os::unix::fs::MetadataExt;
         if path_meta.dev() != handle_meta.dev() || path_meta.ino() != handle_meta.ino() {

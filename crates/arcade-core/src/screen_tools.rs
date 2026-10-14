@@ -123,8 +123,7 @@ pub fn measure_screen_points(
     for [x, y] in [start, end] {
         if x >= source_width || y >= source_height {
             return Err(format!(
-                "Measurement points must be within the image ({} × {})",
-                source_width, source_height
+                "Measurement points must be within the image ({source_width} × {source_height})"
             ));
         }
     }
