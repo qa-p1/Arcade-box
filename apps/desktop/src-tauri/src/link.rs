@@ -317,10 +317,9 @@ impl BoxHandler {
                 }
             }
         }
-        if let Some(window) = self.app.get_webview_window("island") {
-            crate::show_island(&window);
-        }
-        let _ = self.app.emit("arcade://link-open", open);
+        let open =
+            serde_json::to_value(open).map_err(|error| LinkError::internal(error.to_string()))?;
+        crate::open_link_request(&self.app, open);
         Ok(Reply::Done(InvokeResult::message("Opened in Arcade Box")))
     }
 }
@@ -543,9 +542,7 @@ impl Handler for BoxHandler {
     }
 
     fn activate(&self) -> Result<(), LinkError> {
-        if let Some(window) = self.app.get_webview_window("island") {
-            crate::show_island(&window);
-        }
+        crate::open_island(&self.app);
         Ok(())
     }
 
