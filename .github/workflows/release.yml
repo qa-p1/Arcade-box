@@ -121,6 +121,8 @@ jobs:
             echo
             echo "Verify installer downloads with SHA256SUMS.txt. Arcade Tools uses arcade-release.json."
             echo "Native Windows/macOS interaction is build only until verified by a real run."
+            echo
+            echo "User guide: https://github.com/qa-p1/Arcade-box/tree/main/docs/user"
           } > "$RUNNER_TEMP/notes.md"
       - name: Publish stable release
         if: steps.plan.outputs.channel == 'stable'

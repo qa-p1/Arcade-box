@@ -6,7 +6,7 @@
 - `box.open` requests that arrive while the Island is loading are delivered once it is ready.
 - Closing the last window (the Island or a pinned image) no longer ends the resident process.
 
-## 0.2.0 — 2026-10-15
+## 0.2.0 — 2026-10-14
 
 - Add Arcade Link v0.3.0 hub methods, tray hosting and portable settings.
 - Add receipt-owned installation, repair and removal, with Linux first-run setup and macOS Applications support.
