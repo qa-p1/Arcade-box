@@ -916,7 +916,7 @@ fn profile_motion(sample: String) {
 
 #[tauri::command]
 fn hide_island(window: tauri::WebviewWindow) -> Result<(), String> {
-    request_hide_island(&window);
+    request_hide_island(&window, ISLAND_IDLE_RELEASE);
     Ok(())
 }
 
@@ -1029,12 +1029,23 @@ fn island_ready(window: tauri::WebviewWindow) {
     };
     if pending {
         show_island(&window);
+    } else {
+        // Created for a request that was cancelled before the page loaded.
+        schedule_island_release(&window, ISLAND_IDLE_RELEASE);
     }
     if PENDING_SETTINGS.swap(false, std::sync::atomic::Ordering::SeqCst) {
         let _ = window.emit("arcade://open-settings", ());
     }
     if PENDING_PIPELINES.swap(false, std::sync::atomic::Ordering::SeqCst) {
         let _ = window.emit("arcade://open-pipelines", ());
+    }
+    let link_opens = std::mem::take(
+        &mut *PENDING_LINK_OPENS
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner),
+    );
+    for open in link_opens {
+        let _ = window.emit("arcade://link-open", open);
     }
 }
 
@@ -1117,19 +1128,171 @@ pub(crate) fn show_island(window: &tauri::WebviewWindow) {
 pub(crate) fn toggle_island(window: &tauri::WebviewWindow) {
     let island = window.clone();
     let _ = window.run_on_main_thread(move || {
-        let hiding = ISLAND_VISIBILITY
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner)
-            .hiding;
+        let hiding = {
+            let mut state = ISLAND_VISIBILITY
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            if !state.ready && state.pending_show {
+                // A second press while the WebView is still loading.
+                state.pending_show = false;
+                return;
+            }
+            state.hiding
+        };
         if hiding || !island.is_visible().unwrap_or(false) {
             show_island(&island);
         } else {
-            request_hide_island(&island);
+            request_hide_island(&island, ISLAND_IDLE_RELEASE);
         }
     });
 }
 
-fn request_hide_island(window: &tauri::WebviewWindow) {
+/// The Island's WebView is created on demand and destroyed once it has been
+/// hidden this long, so a resident Box holds no WebKit/WebView2 processes
+/// while idle (SPEC §17.5). The short grace keeps quick re-toggles instant.
+const ISLAND_IDLE_RELEASE: std::time::Duration = std::time::Duration::from_secs(15);
+
+/// `box.open` requests that arrived before the Island's WebView was ready.
+static PENDING_LINK_OPENS: Mutex<Vec<serde_json::Value>> = Mutex::new(Vec::new());
+
+/// Runs `action` on the main thread with the Island, creating its WebView
+/// first when none exists. Nothing in Box's background paths (tray, Link,
+/// jobs) needs the WebView, so this is only called for UI requests.
+pub(crate) fn with_island(
+    app: &tauri::AppHandle,
+    action: impl FnOnce(&tauri::WebviewWindow) + Send + 'static,
+) {
+    let handle = app.clone();
+    let _ = app.run_on_main_thread(move || {
+        if let Some(window) = island_window(&handle) {
+            action(&window);
+        }
+    });
+}
+
+/// Shows the Island, creating it if needed.
+pub(crate) fn open_island(app: &tauri::AppHandle) {
+    with_island(app, show_island);
+}
+
+/// Toggles the Island, creating it (shown) if needed.
+pub(crate) fn toggle_island_app(app: &tauri::AppHandle) {
+    with_island(app, toggle_island);
+}
+
+/// Delivers a `box.open` request to the Island, now or once it has loaded.
+pub(crate) fn open_link_request(app: &tauri::AppHandle, open: serde_json::Value) {
+    with_island(app, move |window| {
+        let ready = ISLAND_VISIBILITY
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .ready;
+        show_island(window);
+        if ready {
+            let _ = window.emit("arcade://link-open", open);
+        } else {
+            PENDING_LINK_OPENS
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .push(open);
+        }
+    });
+}
+
+/// The existing Island, or a new one built from its `tauri.conf.json` entry
+/// (`"create": false`). Must run on the main thread.
+fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
+    if let Some(window) = app.get_webview_window("island") {
+        return Some(window);
+    }
+    let config = app
+        .config()
+        .app
+        .windows
+        .iter()
+        .find(|window| window.label == "island")?
+        .clone();
+    {
+        let mut state = ISLAND_VISIBILITY
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        state.ready = false;
+        state.hiding = false;
+    }
+    let window = match tauri::WebviewWindowBuilder::from_config(app, &config)
+        .and_then(tauri::WebviewWindowBuilder::build)
+    {
+        Ok(window) => window,
+        Err(error) => {
+            eprintln!("Could not create Arcade Island: {error}");
+            return None;
+        }
+    };
+    let close_window = window.clone();
+    let destroyed_app = app.clone();
+    window.on_window_event(move |event| match event {
+        tauri::WindowEvent::CloseRequested { api, .. } => {
+            // Closing the window releases its WebView; Box stays resident.
+            api.prevent_close();
+            request_hide_island(&close_window, std::time::Duration::ZERO);
+        }
+        tauri::WindowEvent::Destroyed => {
+            {
+                let mut state = ISLAND_VISIBILITY
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner);
+                state.ready = false;
+                state.hiding = false;
+            }
+            reclaim_island_memory(destroyed_app.clone());
+        }
+        _ => {}
+    });
+    let _ = apply_surface_mode("compact", &window, true);
+    Some(window)
+}
+
+/// Destroys the Island's WebView after `delay` unless it was shown again.
+fn schedule_island_release(window: &tauri::WebviewWindow, delay: std::time::Duration) {
+    let generation = ISLAND_VISIBILITY
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+        .generation;
+    let island = window.clone();
+    tauri::async_runtime::spawn(async move {
+        if !delay.is_zero() {
+            tokio::time::sleep(delay).await;
+        }
+        let release = island.clone();
+        let _ = island.run_on_main_thread(move || {
+            let state = ISLAND_VISIBILITY
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            let shown_again = state.generation != generation || state.hiding || state.pending_show;
+            drop(state);
+            if !shown_again && !release.is_visible().unwrap_or(false) {
+                let _ = release.destroy();
+            }
+        });
+    });
+}
+
+/// Lets GTK/WebKit finish deferred destruction, then returns freed heap pages
+/// to the system once. No periodic timer.
+fn reclaim_island_memory(app: tauri::AppHandle) {
+    std::thread::spawn(move || {
+        std::thread::sleep(std::time::Duration::from_millis(500));
+        if app.get_webview_window("island").is_none() {
+            #[cfg(all(target_os = "linux", target_env = "gnu"))]
+            // SAFETY: malloc_trim is thread-safe and only releases free memory.
+            unsafe {
+                libc::malloc_trim(0);
+            }
+        }
+    });
+}
+
+fn request_hide_island(window: &tauri::WebviewWindow, release_after: std::time::Duration) {
     let island = window.clone();
     let _ = window.run_on_main_thread(move || {
         let generation = {
@@ -1157,10 +1320,13 @@ fn request_hide_island(window: &tauri::WebviewWindow) {
                 if let Err(error) = finish.hide() {
                     eprintln!("Could not hide Arcade Island: {error}");
                     let _ = finish.emit("arcade://island-shown", ());
+                    state.hiding = false;
                 } else {
                     let _ = finish.emit("arcade://island-hidden", ());
+                    state.hiding = false;
+                    drop(state);
+                    schedule_island_release(&finish, release_after);
                 }
-                state.hiding = false;
             });
         });
     });
@@ -1227,7 +1393,7 @@ mod linux_tray {
     use ksni::TrayMethods;
     use std::sync::OnceLock;
     use std::sync::atomic::{AtomicBool, Ordering};
-    use tauri::{AppHandle, Manager};
+    use tauri::AppHandle;
 
     struct Tray {
         app: AppHandle,
@@ -1238,9 +1404,7 @@ mod linux_tray {
         let _ = app.run_on_main_thread(move || action(&handle));
     }
     fn show(app: &AppHandle) {
-        if let Some(window) = app.get_webview_window("island") {
-            super::show_island(&window);
-        }
+        super::open_island(app);
     }
     fn quit(app: &AppHandle) {
         app.exit(0);
@@ -1398,11 +1562,7 @@ fn set_native_tray(app: &tauri::AppHandle, state: arcade_link::trayhost::TraySta
                         .icon(prepared.icon)
                         .show_menu_on_left_click(menu_on_left)
                         .on_menu_event(|app, event| match event.id().as_ref() {
-                            "show-island" => {
-                                if let Some(window) = app.get_webview_window("island") {
-                                    show_island(&window);
-                                }
-                            }
+                            "show-island" => open_island(app),
                             "open-pipelines" => open_pipelines(app),
                             "settings" => open_settings(app),
                             "restart" => restart(app),
@@ -1565,35 +1725,31 @@ static PENDING_PIPELINES: std::sync::atomic::AtomicBool = std::sync::atomic::Ato
 
 /// Opens Settings in the Island (now, or once the WebView is ready).
 pub(crate) fn open_settings(app: &tauri::AppHandle) {
-    let ready = ISLAND_VISIBILITY
-        .lock()
-        .unwrap_or_else(std::sync::PoisonError::into_inner)
-        .ready;
-    if !ready {
-        PENDING_SETTINGS.store(true, std::sync::atomic::Ordering::SeqCst);
-    }
-    if let Some(window) = app.get_webview_window("island") {
-        show_island(&window);
-    }
-    if ready {
-        let _ = app.emit("arcade://open-settings", ());
-    }
+    open_island_view(app, &PENDING_SETTINGS, "arcade://open-settings");
 }
 
 pub(crate) fn open_pipelines(app: &tauri::AppHandle) {
-    let ready = ISLAND_VISIBILITY
-        .lock()
-        .unwrap_or_else(std::sync::PoisonError::into_inner)
-        .ready;
-    if !ready {
-        PENDING_PIPELINES.store(true, std::sync::atomic::Ordering::SeqCst);
-    }
-    if let Some(window) = app.get_webview_window("island") {
-        show_island(&window);
-    }
-    if ready {
-        let _ = app.emit("arcade://open-pipelines", ());
-    }
+    open_island_view(app, &PENDING_PIPELINES, "arcade://open-pipelines");
+}
+
+fn open_island_view(
+    app: &tauri::AppHandle,
+    pending: &'static std::sync::atomic::AtomicBool,
+    event: &'static str,
+) {
+    with_island(app, move |window| {
+        let ready = ISLAND_VISIBILITY
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .ready;
+        if !ready {
+            pending.store(true, std::sync::atomic::Ordering::SeqCst);
+        }
+        show_island(window);
+        if ready {
+            let _ = window.emit(event, ());
+        }
+    });
 }
 
 /// Another launch of Arcade Box (the applications menu, `--settings`,
@@ -1609,17 +1765,9 @@ fn handle_second_instance(app: &tauri::AppHandle, argv: &[String]) {
         Some("--settings") => open_settings(app),
         Some("--restart") => restart(app),
         Some("--pipelines") => open_pipelines(app),
-        Some("--toggle") => {
-            if let Some(window) = app.get_webview_window("island") {
-                toggle_island(&window);
-            }
-        }
+        Some("--toggle") => toggle_island_app(app),
         Some("--background") => {}
-        _ => {
-            if let Some(window) = app.get_webview_window("island") {
-                show_island(&window);
-            }
-        }
+        _ => open_island(app),
     }
 }
 
@@ -1722,20 +1870,8 @@ pub fn run(args: Vec<String>) {
                 link::set_tray_state(arcade_link::trayhost::TrayState::Own);
                 set_recovery_tray(app.handle(), arcade_link::trayhost::TrayState::Own);
             }
-            {
-                if let Some(window) = app.get_webview_window("island") {
-                    let close_window = window.clone();
-                    window.on_window_event(move |event| {
-                        if let tauri::WindowEvent::CloseRequested { api, .. } = event {
-                            api.prevent_close();
-                            request_hide_island(&close_window);
-                        }
-                    });
-                }
-            }
-            if let Some(window) = app.get_webview_window("island") {
-                let _ = apply_surface_mode("compact", &window, true);
-            }
+            // The Island's WebView is not created here: `island_window` builds
+            // it on the first UI request, so a background start costs no WebView.
             let default_shortcut = if cfg!(target_os = "macos") {
                 Shortcut::new(Some(Modifiers::SUPER | Modifiers::SHIFT), Code::Space)
             } else {
@@ -1769,9 +1905,7 @@ pub fn run(args: Vec<String>) {
             } else if first_flag.as_deref() == Some("--pipelines") {
                 open_pipelines(app.handle());
             } else if first_flag.as_deref() == Some("--toggle") {
-                if let Some(window) = app.get_webview_window("island") {
-                    toggle_island(&window);
-                }
+                toggle_island_app(app.handle());
             }
             Ok(())
         })
@@ -1865,6 +1999,15 @@ pub fn run(args: Vec<String>) {
     app.run(|handle, event| {
         #[cfg(not(target_os = "linux"))]
         let _ = handle;
+        // Box is resident (tray, shortcut, Link): destroying its last window,
+        // the Island or a pinned image, must not end the process. Explicit
+        // quits pass an exit code and are not prevented.
+        if let tauri::RunEvent::ExitRequested {
+            code: None, api, ..
+        } = &event
+        {
+            api.prevent_exit();
+        }
         if let tauri::RunEvent::Exit = event {
             link::stop();
         }
@@ -1897,9 +2040,7 @@ fn register_native_shortcut(
                     .unwrap_or_else(std::sync::PoisonError::into_inner)
                     .current;
                 if Some(*pressed) == active && event.state() == ShortcutState::Pressed {
-                    if let Some(window) = handle.get_webview_window("island") {
-                        toggle_island(&window);
-                    }
+                    toggle_island_app(handle);
                 }
             })
             .build(),

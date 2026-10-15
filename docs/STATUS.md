@@ -7,7 +7,7 @@
 - Ecosystem e2e (Arcade Link `tools/e2e.py`, real CI builds of all eight apps): install, tray hosting (hosted by Tools, own icon back within 1 s after Tools is killed, no flash on restart) and shortcuts pass. Tools 0.2.0 adopts, updates, rolls back, uninstalls and backs up Box.
 - Not yet verified: a real Windows or macOS desktop (CI runners only), and the owner's real-desktop checks. Builds are unsigned, so SmartScreen and Gatekeeper ask for approval.
 
-Current source version: 0.2.0, Arcade Link `v0.3.0`. The verification and
+Current source version: 0.2.1, Arcade Link `v0.3.0`. The verification and
 documentation-prep baseline below are historical records.
 
 Verified 2026-10-08 on branch `arcade/link` (version 0.1.0, Arcade Link

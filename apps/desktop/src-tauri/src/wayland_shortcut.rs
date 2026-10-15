@@ -13,7 +13,7 @@ use std::{
     sync::{Arc, RwLock},
     time::Duration,
 };
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{AppHandle, Emitter};
 
 const SHORTCUT_ID: &str = "arcade-box-toggle";
 const SHORTCUT_DESCRIPTION: &str = "Show or hide Arcade Box";
@@ -412,10 +412,10 @@ async fn register_and_listen(
                         activation_token,
                     };
 
-                    if let Some(window) = controller.app.get_webview_window("island") {
-                        super::toggle_island(&window);
+                    super::with_island(&controller.app, move |window| {
+                        super::toggle_island(window);
                         let _ = window.emit(ACTIVATED_EVENT, payload);
-                    }
+                    });
                 }
                 Some(_) => {}
                 None => {
