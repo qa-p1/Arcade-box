@@ -2,12 +2,12 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
 env:
   PYTHONUTF8: "1"
-  CARGO_BUILD_JOBS: 3
 
 permissions:
   contents: read
@@ -17,8 +17,8 @@ defaults:
     working-directory: Arcade-box
 
 concurrency:
-  group: ci-${{ github.event.pull_request.head.ref || github.ref_name }}
-  cancel-in-progress: true
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   check:
