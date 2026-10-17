@@ -29,7 +29,7 @@ Download the file for your system from [Releases](https://github.com/qa-p1/Arcad
 | Windows x64 | `Arcade-Box_<version>_x64-setup.exe` | Run Setup (NSIS, per-user, no admin). Adds a Start menu entry, an optional desktop shortcut and start at login, and an `arcade-desktop` command on the user PATH. |
 | macOS (universal) | `Arcade-Box_<version>_universal.dmg` | Open the dmg and drag Arcade Box to Applications. Run from the dmg or Downloads, it offers to move itself to Applications. |
 
-- Scripted install: `arcade-desktop --install --silent` (add `--no-launch`, or `--channel C`). `--repair` rewrites the launcher, command and login entries; `--integration-status` prints the integration as JSON.
+- Scripted install: `arcade-desktop --install --silent` (add `--no-launch`, or `--channel C`). `--repair` rewrites the launcher, command and login entries; `--integration-status` prints the integration as JSON. A silent install removes the AppImage it was started from only when that file is in your Downloads folder; add `--keep-download` to keep it there too. Files elsewhere are never removed.
 - Every installer also contains the `arcade-box` terminal tool runtime (alias `arcadebox`) and the trusted plugin worker beside the desktop app.
 - If `~/.local/bin` is not on PATH, Box shows the exact line to add for your shell.
 - Builds are unsigned. On Windows, SmartScreen may warn: choose **More info → Run anyway**. On macOS the app is not notarized: right-click it and choose **Open** the first time.
@@ -101,7 +101,7 @@ arcade-desktop --background      Start in the tray without showing anything
 arcade-desktop --settings        Open Settings
 arcade-desktop --restart         Restart the running instance
 arcade-desktop --quit            Quit the running instance
-arcade-desktop --install [--silent] [--no-launch] [--channel C]
+arcade-desktop --install [--silent] [--no-launch] [--keep-download] [--channel C]
                                  Install this AppImage / macOS app bundle
 arcade-desktop --uninstall [--silent] [--remove-data]
                                  Remove this installation via its receipt
