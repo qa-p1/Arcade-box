@@ -394,9 +394,15 @@ fn parse_number_before(text: &str, marker: &str) -> Option<u64> {
 }
 
 /// Query each record type with the system resolver and merge the answers.
+/// Configured resolvers are tried in order, like the system's own lookup:
+/// one that is down or unreachable doesn't fail the whole check.
 fn dns_records(host: &str, types: &[&str], cancelled: &AtomicBool) -> Result<Value, String> {
     let name = validate_host(host)?;
-    let resolver = default_resolver()?;
+    let resolvers = system_resolvers();
+    if resolvers.is_empty() {
+        return Err("Could not find a configured DNS resolver".into());
+    }
+    let mut current = 0;
     let mut records = Vec::new();
     for record in types {
         let qtype = match *record {
@@ -408,34 +414,105 @@ fn dns_records(host: &str, types: &[&str], cancelled: &AtomicBool) -> Result<Val
             "AAAA" => 28,
             other => return Err(format!("Unsupported DNS record type {other}")),
         };
-        let (answers, _) = dns_query(&name, qtype, resolver, cancelled)?;
+        let answers = loop {
+            match dns_query(&name, qtype, resolvers[current], cancelled) {
+                Ok((answers, _)) => break answers,
+                Err(error) if cancelled.load(Ordering::Relaxed) => return Err(error),
+                Err(error) if current + 1 == resolvers.len() => {
+                    return Err(if resolvers.len() == 1 {
+                        error
+                    } else {
+                        format!(
+                            "None of the {} configured DNS resolvers answered: {error}",
+                            resolvers.len()
+                        )
+                    });
+                }
+                Err(_) => current += 1,
+            }
+        };
         records.extend(answers);
     }
     let mut seen = std::collections::HashSet::new();
     records.retain(|record| seen.insert(record.to_string()));
-    Ok(json!({ "query": name, "resolver": resolver.to_string(), "records": records }))
+    Ok(json!({ "query": name, "resolver": resolvers[current].to_string(), "records": records }))
 }
 
-fn default_resolver() -> Result<IpAddr, String> {
+/// The DNS servers this computer is configured to use, in order.
+fn system_resolvers() -> Vec<IpAddr> {
     #[cfg(unix)]
-    if let Ok(contents) = std::fs::read_to_string("/etc/resolv.conf") {
-        for line in contents.lines() {
-            let mut words = line.split_whitespace();
-            if words.next() == Some("nameserver") {
-                if let Some(address) = words.next().and_then(|value| value.parse().ok()) {
-                    return Ok(address);
-                }
-            }
-        }
+    {
+        std::fs::read_to_string("/etc/resolv.conf")
+            .map(|contents| resolv_conf_nameservers(&contents))
+            .unwrap_or_default()
     }
     #[cfg(windows)]
     {
-        Ok("1.1.1.1".parse().expect("static resolver IP"))
+        windows_dns_servers()
     }
-    #[cfg(not(windows))]
+    #[cfg(not(any(unix, windows)))]
     {
-        Err("Could not find a configured DNS resolver; enter a resolver IP address".into())
+        Vec::new()
     }
+}
+
+#[cfg_attr(not(unix), allow(dead_code))]
+fn resolv_conf_nameservers(contents: &str) -> Vec<IpAddr> {
+    let mut servers = Vec::new();
+    for line in contents.lines() {
+        let mut words = line.split_whitespace();
+        if words.next() != Some("nameserver") {
+            continue;
+        }
+        // A link-local IPv6 server may carry a zone (`fe80::1%eth0`).
+        let address = words.next().and_then(|value| value.split('%').next());
+        if let Some(address) = address.and_then(|value| value.parse().ok()) {
+            if !servers.contains(&address) {
+                servers.push(address);
+            }
+        }
+    }
+    servers
+}
+
+/// The adapters' DNS servers, as `ipconfig /all` lists them (IPv4).
+#[cfg(windows)]
+fn windows_dns_servers() -> Vec<IpAddr> {
+    use windows_sys::Win32::NetworkManagement::IpHelper::{FIXED_INFO_W2KSP1, GetNetworkParams};
+    let mut size = 0u32;
+    // SAFETY: a null buffer asks only for the size needed.
+    unsafe { GetNetworkParams(std::ptr::null_mut(), &mut size) };
+    if size == 0 {
+        return Vec::new();
+    }
+    // u64 words keep the structure aligned.
+    let mut buffer = vec![0u64; (size as usize).div_ceil(8)];
+    let info = buffer.as_mut_ptr().cast::<FIXED_INFO_W2KSP1>();
+    // SAFETY: the buffer holds `size` bytes, as the first call asked for.
+    if unsafe { GetNetworkParams(info, &mut size) } != 0 {
+        return Vec::new();
+    }
+    let mut servers = Vec::new();
+    // SAFETY: the list lives inside `buffer`, linked through `Next`.
+    let mut entry = unsafe { std::ptr::addr_of!((*info).DnsServerList) };
+    while !entry.is_null() {
+        let text = unsafe { (*entry).IpAddress.String };
+        let bytes: Vec<u8> = text
+            .iter()
+            .take_while(|&&c| c != 0)
+            .map(|&c| c as u8)
+            .collect();
+        if let Some(address) = std::str::from_utf8(&bytes)
+            .ok()
+            .and_then(|s| s.trim().parse::<IpAddr>().ok())
+        {
+            if !address.is_unspecified() && !servers.contains(&address) {
+                servers.push(address);
+            }
+        }
+        entry = unsafe { (*entry).Next };
+    }
+    servers
 }
 
 fn dns_query(
@@ -1595,6 +1672,16 @@ mod tests {
         assert!(validate_http_url("https://user:pass@example.com").is_err());
         assert!(validate_http_url("https://good.example/\nInjected: yes").is_err());
         assert!(validate_host("bad host").is_err());
+    }
+
+    #[test]
+    fn every_resolv_conf_nameserver_is_kept_in_order() {
+        let conf = "# generated\nsearch lan\nnameserver 10.8.0.1\nnameserver fe80::1%eth0\noptions edns0\nnameserver 10.8.0.1\nnameserver 192.168.1.1\n";
+        let servers: Vec<String> = resolv_conf_nameservers(conf)
+            .iter()
+            .map(ToString::to_string)
+            .collect();
+        assert_eq!(servers, ["10.8.0.1", "fe80::1", "192.168.1.1"]);
     }
 
     #[test]
