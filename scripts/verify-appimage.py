@@ -63,10 +63,11 @@ def main():
         integration = receipt["integration"]
         desktop = Path(integration["desktopEntry"])
         cli = Path(integration["cli"])
-        # Box has never started at login on its own, so a silent install leaves it off.
-        assert not integration.get("autostart"), integration
+        # A fresh install starts at login, like every Arcade app.
+        autostart = Path(integration["autostart"])
+        assert autostart == install_home / ".config/autostart/arcade-box.desktop", integration
         icons = [Path(path) for path in integration["icons"]]
-        entries = [installed, desktop, cli, *icons]
+        entries = [installed, desktop, cli, autostart, *icons]
         assert icons, "No installed icons"
         for path in entries:
             assert path.is_relative_to(root) and path.exists(), path

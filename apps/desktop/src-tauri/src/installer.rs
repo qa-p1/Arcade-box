@@ -130,7 +130,7 @@ pub struct Options {
 }
 
 impl Options {
-    /// Box has never started at login on its own, so the box starts unchecked.
+    /// A fresh install starts at login, like every Arcade app.
     pub fn defaults(environment: &Environment) -> Self {
         let receipt = environment.receipts().read(ME).ok().flatten();
         let start_at_login = receipt

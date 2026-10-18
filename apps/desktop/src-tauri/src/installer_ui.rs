@@ -25,6 +25,7 @@ fn format(s: &str, version: &str, from: &str) -> String {
     strings::format(s, NAME, version, from, VERSION)
 }
 
+#[cfg(any(not(windows), test))]
 fn newer_installed(installed: &str) -> bool {
     installer::parse_version(installed)
         .zip(installer::parse_version(VERSION))
