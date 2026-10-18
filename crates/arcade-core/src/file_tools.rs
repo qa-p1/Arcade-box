@@ -333,13 +333,24 @@ fn duplicate_finder(
     }
     let mut by_hash: BTreeMap<String, Vec<Value>> = BTreeMap::new();
     let mut hashed_files = 0usize;
+    // One buffer for every candidate: a fresh zeroed 1 MiB per small file
+    // cost more than hashing it.
+    let mut buffer = vec![0; COPY_BUFFER];
+    // Overlapping roots (a folder and one inside it) reach the same entry
+    // twice; it is one file, not its own duplicate.
+    let mut seen = std::collections::HashSet::new();
     for candidates in by_size.into_values().filter(|group| group.len() > 1) {
         for entry in candidates {
             check_cancelled(cancelled)?;
+            if let Some(identity) = entry_identity(&roots[entry.root], &entry.relative) {
+                if !seen.insert(identity) {
+                    continue;
+                }
+            }
             let mut file = roots[entry.root]
                 .open(&entry.relative)
                 .map_err(|error| format!("Read {}: {error}", entry.display))?;
-            let digest = hash_reader(&mut file, cancelled)?;
+            let digest = hash_with(&mut file, &mut buffer, cancelled)?;
             by_hash
                 .entry(format!("{}:{digest}", entry.size))
                 .or_default()
@@ -696,19 +707,49 @@ fn copy_checked(
 }
 
 fn hash_reader(reader: &mut dyn Read, cancelled: &AtomicBool) -> Result<String, String> {
+    hash_with(reader, &mut vec![0; COPY_BUFFER], cancelled)
+}
+
+fn hash_with(
+    reader: &mut dyn Read,
+    buffer: &mut [u8],
+    cancelled: &AtomicBool,
+) -> Result<String, String> {
     let mut hasher = blake3::Hasher::new();
-    let mut buffer = vec![0; COPY_BUFFER];
     loop {
         check_cancelled(cancelled)?;
-        let count = reader
-            .read(&mut buffer)
-            .map_err(|error| error.to_string())?;
+        let count = reader.read(buffer).map_err(|error| error.to_string())?;
         if count == 0 {
             break;
         }
         hasher.update(&buffer[..count]);
     }
     Ok(hasher.finalize().to_hex().to_string())
+}
+
+/// The directory entry itself: the file, the folder holding it, and its
+/// name there. Hard links (the file under another name or in another folder)
+/// stay distinct, as byte-identical files the finder reports.
+#[cfg(unix)]
+fn entry_identity(root: &Dir, relative: &Path) -> Option<(u64, u64, u64, u64, std::ffi::OsString)> {
+    use cap_std::fs::MetadataExt;
+    let file = root.symlink_metadata(relative).ok()?;
+    let parent = match relative.parent().filter(|p| !p.as_os_str().is_empty()) {
+        Some(parent) => root.symlink_metadata(parent).ok()?,
+        None => root.dir_metadata().ok()?,
+    };
+    Some((
+        file.dev(),
+        file.ino(),
+        parent.dev(),
+        parent.ino(),
+        relative.file_name()?.to_os_string(),
+    ))
+}
+
+#[cfg(not(unix))]
+fn entry_identity(_: &Dir, _: &Path) -> Option<(u64, u64, u64, u64, std::ffi::OsString)> {
+    None
 }
 
 #[cfg(test)]
@@ -754,6 +795,38 @@ mod tests {
         assert_eq!(duplicates.status, ResultStatus::Success);
         let groups: Value = serde_json::from_str(&duplicates.outputs[0].value).unwrap();
         assert_eq!(groups["duplicateGroups"], 1);
+    }
+
+    #[test]
+    fn overlapping_roots_do_not_make_a_file_its_own_duplicate() {
+        let runtime = Arcade::in_memory().unwrap();
+        let temp = tempfile::tempdir().unwrap();
+        let parent = temp.path().join("parent");
+        fs::create_dir_all(parent.join("sub")).unwrap();
+        fs::write(parent.join("sub/file.bin"), b"only one file").unwrap();
+        let folder = |path: &Path| ToolValue {
+            kind: ValueKind::Artifact,
+            value: runtime.grant_input_directory(path).unwrap().token,
+            mime: "folder/reference".into(),
+        };
+        let inputs = vec![folder(&parent), folder(&parent.join("sub"))];
+        let result = run(
+            &runtime,
+            "arcade.files.duplicates",
+            inputs.clone(),
+            json!({}),
+        );
+        let groups: Value = serde_json::from_str(&result.outputs[0].value).unwrap();
+        assert_eq!(groups["duplicateGroups"], 0, "{groups}");
+        // A hard link is a second name for the same bytes: still reported.
+        #[cfg(unix)]
+        {
+            fs::hard_link(parent.join("sub/file.bin"), parent.join("link.bin")).unwrap();
+            let result = run(&runtime, "arcade.files.duplicates", inputs, json!({}));
+            let groups: Value = serde_json::from_str(&result.outputs[0].value).unwrap();
+            assert_eq!(groups["duplicateGroups"], 1, "{groups}");
+            assert_eq!(groups["groups"][0].as_array().unwrap().len(), 2, "{groups}");
+        }
     }
 
     #[test]

@@ -1,8 +1,11 @@
 //! Images to PDF without an external program. JPEGs are embedded as they are
 //! (no re-encoding, so no quality loss); other formats are decoded and stored
-//! losslessly with Flate. Transparency is flattened onto white.
+//! losslessly with Flate. Transparency is flattened onto white. A camera
+//! photo's EXIF orientation is honoured: decoded images are turned, embedded
+//! JPEGs are turned by the page's drawing transform instead.
 
 use crate::tool_kit::check_cancelled;
+use image::{ImageDecoder, metadata::Orientation};
 use lopdf::{
     Document, Object, Stream,
     content::{Content, Operation},
@@ -41,7 +44,7 @@ pub(crate) fn build(
             .map(|name| name.to_string_lossy().into_owned())
             .unwrap_or_default();
         let bytes = fs::read(source).map_err(|error| format!("Cannot read {name}: {error}"))?;
-        let (image, width, height) =
+        let (image, width, height, orientation) =
             image_stream(&bytes).map_err(|error| format!("{name}: {error}"))?;
         let image_id = doc.add_object(image);
         let natural = (
@@ -57,11 +60,13 @@ pub(crate) fn build(
                 Operation::new("n", vec![]),
             ]);
         }
-        let (x, y, w, h) = placed;
         operations.extend([
             Operation::new(
                 "cm",
-                vec![w.into(), 0.into(), 0.into(), h.into(), x.into(), y.into()],
+                image_matrix(placed, orientation)
+                    .into_iter()
+                    .map(Object::from)
+                    .collect(),
             ),
             Operation::new("Do", vec!["Im0".into()]),
             Operation::new("Q", vec![]),
@@ -92,12 +97,16 @@ pub(crate) fn build(
     Ok(out)
 }
 
-/// An image XObject and its pixel size.
-fn image_stream(bytes: &[u8]) -> Result<(Stream, u32, u32), String> {
+/// An image XObject, its size as displayed, and the turn still to apply when
+/// drawing it (only for JPEGs embedded as they are).
+fn image_stream(bytes: &[u8]) -> Result<(Stream, u32, u32, Orientation), String> {
     let reader = image::ImageReader::new(Cursor::new(bytes))
         .with_guessed_format()
         .map_err(|error| error.to_string())?;
     if reader.format() == Some(image::ImageFormat::Jpeg) {
+        let orientation = image::codecs::jpeg::JpegDecoder::new(Cursor::new(bytes))
+            .and_then(|mut decoder| decoder.orientation())
+            .unwrap_or(Orientation::NoTransforms);
         if let Some((width, height, components)) = jpeg_frame(bytes) {
             let color_space = match components {
                 1 => Some("DeviceGray"),
@@ -117,13 +126,20 @@ fn image_stream(bytes: &[u8]) -> Result<(Stream, u32, u32), String> {
                     },
                     bytes.to_vec(),
                 );
-                return Ok((stream, width, height));
+                let (width, height) = if swaps_sides(orientation) {
+                    (height, width)
+                } else {
+                    (width, height)
+                };
+                return Ok((stream, width, height, orientation));
             }
         }
     }
-    let decoded = reader
-        .decode()
-        .map_err(|error| format!("not a readable image ({error})"))?;
+    let unreadable = |error: image::ImageError| format!("not a readable image ({error})");
+    let mut decoder = reader.into_decoder().map_err(unreadable)?;
+    let orientation = decoder.orientation().unwrap_or(Orientation::NoTransforms);
+    let mut decoded = image::DynamicImage::from_decoder(decoder).map_err(unreadable)?;
+    decoded.apply_orientation(orientation);
     let (width, height) = (decoded.width(), decoded.height());
     let (pixels, color_space) = if decoded.color().has_color() {
         let rgba = decoded.to_rgba8();
@@ -156,7 +172,45 @@ fn image_stream(bytes: &[u8]) -> Result<(Stream, u32, u32), String> {
     stream
         .compress()
         .map_err(|error| format!("cannot compress the image ({error})"))?;
-    Ok((stream, width, height))
+    Ok((stream, width, height, Orientation::NoTransforms))
+}
+
+fn swaps_sides(orientation: Orientation) -> bool {
+    use Orientation::*;
+    matches!(
+        orientation,
+        Rotate90 | Rotate270 | Rotate90FlipH | Rotate270FlipH
+    )
+}
+
+/// The `cm` matrix that draws the stored image (the unit square, origin
+/// bottom-left) into `placed` turned the way its orientation says.
+fn image_matrix((x, y, w, h): Rect, orientation: Orientation) -> [f32; 6] {
+    use Orientation::*;
+    // Stored (s, t) to displayed (S, T), both measured from the top-left.
+    let display = |s: f32, t: f32| match orientation {
+        NoTransforms => (s, t),
+        FlipHorizontal => (1.0 - s, t),
+        Rotate180 => (1.0 - s, 1.0 - t),
+        FlipVertical => (s, 1.0 - t),
+        Rotate90FlipH => (t, s),
+        Rotate90 => (1.0 - t, s),
+        Rotate270FlipH => (1.0 - t, 1.0 - s),
+        Rotate270 => (t, 1.0 - s),
+    };
+    let page = |u: f32, v: f32| {
+        let (s, t) = display(u, 1.0 - v);
+        (x + w * s, y + h * (1.0 - t))
+    };
+    let (origin, right, up) = (page(0.0, 0.0), page(1.0, 0.0), page(0.0, 1.0));
+    [
+        right.0 - origin.0,
+        right.1 - origin.1,
+        up.0 - origin.0,
+        up.1 - origin.1,
+        origin.0,
+        origin.1,
+    ]
 }
 
 fn over_white(channel: u8, alpha: u8) -> u8 {
@@ -296,6 +350,85 @@ mod tests {
         assert_eq!((small.2, small.3), (100.0, 100.0));
         let (_, _, clip) = place(&layout(Some(LETTER), "fill"), (100.0, 300.0));
         assert!(clip.is_some());
+    }
+
+    /// `jpeg` with an EXIF APP1 segment holding only `Orientation`.
+    fn with_orientation(jpeg: &[u8], orientation: u16) -> Vec<u8> {
+        let mut tiff = b"II*\0\x08\0\0\0\x01\0\x12\x01\x03\0\x01\0\0\0".to_vec();
+        tiff.extend(orientation.to_le_bytes());
+        tiff.extend([0, 0, 0, 0, 0, 0]);
+        let mut app1 = b"Exif\0\0".to_vec();
+        app1.extend(tiff);
+        let mut out = jpeg[..2].to_vec();
+        out.extend([0xFF, 0xE1]);
+        out.extend(((app1.len() + 2) as u16).to_be_bytes());
+        out.extend(app1);
+        out.extend(&jpeg[2..]);
+        out
+    }
+
+    #[test]
+    fn exif_orientation_turns_the_page_and_the_drawing() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut plain = Vec::new();
+        image::RgbImage::from_fn(40, 20, |x, _| {
+            image::Rgb(if x < 20 { [255, 0, 0] } else { [0, 0, 255] })
+        })
+        .write_to(&mut Cursor::new(&mut plain), image::ImageFormat::Jpeg)
+        .unwrap();
+        let jpeg = dir.path().join("rotated.jpg");
+        fs::write(&jpeg, with_orientation(&plain, 6)).unwrap();
+        let pdf = build(&[jpeg], &layout(None, "into"), &AtomicBool::new(false)).unwrap();
+        let doc = Document::load_mem(&pdf).unwrap();
+        let page = doc.get_pages()[&1];
+        let media: Vec<f32> = doc
+            .get_dictionary(page)
+            .unwrap()
+            .get(b"MediaBox")
+            .unwrap()
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|v| v.as_float().unwrap())
+            .collect();
+        // Shown 20×40 px: a portrait page.
+        assert_eq!(media, vec![0.0, 0.0, 15.0, 30.0]);
+        if let Ok(out) = std::env::var("ARCADE_BOX_DUMP_PDF") {
+            fs::write(out, &pdf).unwrap();
+        }
+        // Turned 90° clockwise, the stored left (red) half is on top.
+        let [a, b, c, d, e, f] = image_matrix((0.0, 0.0, 15.0, 30.0), Orientation::Rotate90);
+        let at = |u: f32, v: f32| (a * u + c * v + e, b * u + d * v + f);
+        assert_eq!(at(0.0, 0.5), (7.5, 30.0)); // stored left edge → page top
+        assert_eq!(at(1.0, 0.5), (7.5, 0.0)); // stored right edge → page bottom
+        assert_eq!(at(0.0, 1.0), (15.0, 30.0)); // stored top-left → top-right
+        for orientation in [
+            Orientation::NoTransforms,
+            Orientation::Rotate180,
+            Orientation::Rotate270FlipH,
+        ] {
+            let m = image_matrix((2.0, 3.0, 4.0, 5.0), orientation);
+            let corners: Vec<_> = [(0.0, 0.0), (1.0, 1.0)]
+                .iter()
+                .map(|&(u, v)| (m[0] * u + m[2] * v + m[4], m[1] * u + m[3] * v + m[5]))
+                .collect();
+            for (x, y) in corners {
+                assert!(
+                    [2.0, 6.0].contains(&x) && [3.0, 8.0].contains(&y),
+                    "{orientation:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn sideways_jpeg_reports_its_shown_size() {
+        let mut plain = Vec::new();
+        image::RgbImage::from_pixel(40, 20, image::Rgb([9, 9, 9]))
+            .write_to(&mut Cursor::new(&mut plain), image::ImageFormat::Jpeg)
+            .unwrap();
+        let (_, w, h, turn) = image_stream(&with_orientation(&plain, 8)).unwrap();
+        assert_eq!((w, h, turn), (20, 40, Orientation::Rotate270));
     }
 
     #[test]
