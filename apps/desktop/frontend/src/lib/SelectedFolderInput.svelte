@@ -4,18 +4,22 @@
   import type { SelectedDirectory } from './contracts';
 
   let {
-    value,
+    values,
+    maxItems = 1,
     selectionGeneration,
     disabled = false,
     onSelect,
-    onClear,
+    onRemove,
   }: {
-    value: SelectedDirectory | null;
+    values: SelectedDirectory[];
+    maxItems?: number;
     selectionGeneration: number;
     disabled?: boolean;
     onSelect: (folder: SelectedDirectory) => void;
-    onClear: () => void;
+    onRemove: (token: string) => void;
   } = $props();
+
+  const multiple = $derived(maxItems > 1);
 
   let busy = $state(false);
   let error = $state('');
@@ -46,22 +50,23 @@
   }
 </script>
 
-<div class="directory-picker input-folder-picker" role="group" aria-label="Selected input folder" aria-busy={busy}>
-  {#if value}
+<div class="directory-picker input-folder-picker" role="group" aria-label={multiple ? 'Selected input folders' : 'Selected input folder'} aria-busy={busy}>
+  {#each values as folder (folder.token)}
     <div class="directory-selected">
       <Icon name="folder" size={16} />
-      <span title={value.name}>{value.name}</span>
-      <button type="button" class="icon-button" aria-label={`Remove folder ${value.name}`} title="Remove selected folder" disabled={disabled || busy} onclick={onClear}>
+      <span title={folder.name}>{folder.name}</span>
+      <button type="button" class="icon-button" aria-label={`Remove folder ${folder.name}`} title="Remove selected folder" disabled={disabled || busy} onclick={() => onRemove(folder.token)}>
         <Icon name="close" size={13} />
       </button>
     </div>
-  {:else}
+  {/each}
+  {#if values.length === 0 || (multiple && values.length < maxItems)}
     <button type="button" class="directory-choose-button" disabled={disabled || busy} onclick={() => void choose()}>
       <Icon name="folder" size={15} />
-      <span>{busy ? 'Opening…' : 'Choose folder'}</span>
+      <span>{busy ? 'Opening…' : values.length ? 'Add another folder' : 'Choose folder'}</span>
       <Icon name="arrow" size={13} />
     </button>
   {/if}
-  <small>Read access is limited to this folder for this action.</small>
+  <small>{multiple ? 'Read access is limited to these folders for this action.' : 'Read access is limited to this folder for this action.'}</small>
   {#if error}<span class="field-error" role="alert">{error}</span>{/if}
 </div>

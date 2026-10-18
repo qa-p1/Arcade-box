@@ -131,7 +131,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
   let jobError = $state('');
   const notedJobResults = new Set<string>();
   const jobDirectoryTokens = new Map<string, string>();
-  const jobInputFolderTokens = new Map<string, string>();
+  const jobInputFolderTokens = new Map<string, string[]>();
   const pendingDirectoryTokens = new Set<string>();
   const pendingInputFolderTokens = new Set<string>();
   let providerError = $state('');
@@ -161,7 +161,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
   });
   let toolOptions = $state<Record<string, string>>({});
   let selectedFiles = $state<SelectedFile[]>([]);
-  let selectedInputFolder = $state<SelectedDirectory | null>(null);
+  let selectedInputFolders = $state<SelectedDirectory[]>([]);
   let textInputMode = $state<'text' | 'file'>('text');
   let fileSelectionError = $state('');
   let screenCaptureBusy = $state(false);
@@ -591,7 +591,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     diffBase = '';
     toolOptions = defaultOptionsFor(tool);
     selectedFiles = [];
-    selectedInputFolder = null;
+    selectedInputFolders = [];
     textInputMode = 'text';
     fileSelectionError = '';
     screenCaptureBusy = false;
@@ -740,7 +740,12 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
   function handleWindowKeydown(event: KeyboardEvent): void {
     if (event.defaultPrevented || event.isComposing) return;
     if (onboardingVisible) {
-      if (event.key === 'Escape') event.preventDefault();
+      // Esc closes the Island as everywhere else; the first-run card comes
+      // back next time until it is finished.
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        void dismissIsland();
+      }
       return;
     }
     const command = event.metaKey || event.ctrlKey;
@@ -816,11 +821,11 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     const directoryToken = typeof toolOptions.destinationGrant === 'string' && toolOptions.destinationGrant
       ? toolOptions.destinationGrant
       : '';
-    const inputFolderToken = tool.ui?.input.kind === 'folder'
-      ? selectedInputFolder?.token || ''
-      : '';
+    const inputFolderTokens = tool.ui?.input.kind === 'folder'
+      ? selectedInputFolders.map((folder) => folder.token)
+      : [];
     if (directoryToken) pendingDirectoryTokens.add(directoryToken);
-    if (inputFolderToken) pendingInputFolderTokens.add(inputFolderToken);
+    for (const token of inputFolderTokens) pendingInputFolderTokens.add(token);
     try {
       if (tool.id === 'arcade.system.clipboard-history' && overlaps.clipboardPick) {
         peerRequestId = crypto.randomUUID();
@@ -897,9 +902,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
         && !fileMode
         ? (toolOptions.operation === 'merge' ? [diffBase, inputText, diffRight] : [inputText, diffRight]).map((value) => ({ kind: 'text' as const, value, mime: 'text/plain' }))
         : uiInputKind === 'folder'
-        ? selectedInputFolder
-          ? [{ kind: 'artifact', value: selectedInputFolder.token, mime: 'folder/reference' }]
-          : []
+        ? inputFolderTokens.map((token) => ({ kind: 'artifact', value: token, mime: 'folder/reference' }))
         : fileMode
           ? selectedFiles.map((file) => ({ kind: 'artifact', value: file.token, mime: fileInputMime(file) }))
           : uiInputKind === 'none'
@@ -916,7 +919,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       {
         const job = await startJob(request);
         if (directoryToken && jobIsActive(job)) jobDirectoryTokens.set(job.id, directoryToken);
-        if (inputFolderToken && jobIsActive(job)) jobInputFolderTokens.set(job.id, inputFolderToken);
+        if (inputFolderTokens.length && jobIsActive(job)) jobInputFolderTokens.set(job.id, inputFolderTokens);
         if (generation === viewGeneration) activeJobId = job.id;
         acceptJobSnapshot(job);
         if (job.result && generation === viewGeneration) activeResult = job.result;
@@ -935,9 +938,9 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
         pendingDirectoryTokens.delete(directoryToken);
         releaseDirectoryGrantIfUnused(directoryToken, !selectedTool || toolOptions.destinationGrant !== directoryToken);
       }
-      if (inputFolderToken) {
-        pendingInputFolderTokens.delete(inputFolderToken);
-        releaseInputFolderGrantIfUnused(inputFolderToken, !selectedTool || selectedInputFolder?.token !== inputFolderToken);
+      for (const token of inputFolderTokens) {
+        pendingInputFolderTokens.delete(token);
+        releaseInputFolderGrantIfUnused(token, !selectedTool || !selectedInputFolders.some((folder) => folder.token === token));
       }
     }
   }
@@ -1120,11 +1123,11 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
         jobDirectoryTokens.delete(snapshot.id);
         releaseDirectoryGrantIfUnused(directoryToken, !selectedTool || toolOptions.destinationGrant !== directoryToken);
       }
-      const inputFolderToken = jobInputFolderTokens.get(snapshot.id);
-      if (inputFolderToken) {
+      const inputFolderTokens = jobInputFolderTokens.get(snapshot.id);
+      if (inputFolderTokens) {
         jobInputFolderTokens.delete(snapshot.id);
-        if (selectedInputFolder?.token === inputFolderToken) selectedInputFolder = null;
-        releaseInputFolderGrantIfUnused(inputFolderToken, true);
+        selectedInputFolders = selectedInputFolders.filter((folder) => !inputFolderTokens.includes(folder.token));
+        for (const token of inputFolderTokens) releaseInputFolderGrantIfUnused(token, true);
       }
     }
     if (snapshot.id !== activeJobId || !selectedTool || snapshot.toolId !== selectedTool.id) return;
@@ -1174,9 +1177,9 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
       window.clearTimeout(copyTimer);
       copyTimer = undefined;
     }
-    const inputFolderToken = selectedInputFolder?.token;
-    selectedInputFolder = null;
-    if (inputFolderToken) releaseInputFolderGrantIfUnused(inputFolderToken, true);
+    const inputFolders = selectedInputFolders;
+    selectedInputFolders = [];
+    for (const folder of inputFolders) releaseInputFolderGrantIfUnused(folder.token, true);
     const token = toolOptions.destinationGrant;
     if (typeof token !== 'string' || !token) return;
     toolOptions = { ...toolOptions, destinationGrant: '' };
@@ -1189,9 +1192,18 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
         releaseInputFolderGrantIfUnused(folder.token, true);
         return;
       }
-      const previous = selectedInputFolder?.token;
-      selectedInputFolder = folder;
-      if (previous && previous !== folder.token) releaseInputFolderGrantIfUnused(previous, true);
+      const limit = selectedTool.ui.input.maxItems ?? 1;
+      if (selectedInputFolders.some((selected) => selected.token === folder.token)) return;
+      // A single-folder tool replaces its folder; a multi-folder one adds.
+      const dropped = limit <= 1 ? selectedInputFolders : [];
+      if (limit > 1 && selectedInputFolders.length >= limit) {
+        releaseInputFolderGrantIfUnused(folder.token, true);
+        fileSelectionError = `Choose at most ${limit} folders.`;
+        return;
+      }
+      fileSelectionError = '';
+      selectedInputFolders = [...(limit <= 1 ? [] : selectedInputFolders), folder];
+      for (const previous of dropped) releaseInputFolderGrantIfUnused(previous.token, true);
     };
   }
 
@@ -1203,7 +1215,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
 
   function releaseInputFolderGrantIfUnused(token: string, noLongerSelected: boolean): void {
     if (!noLongerSelected || pendingInputFolderTokens.has(token)) return;
-    if ([...jobInputFolderTokens.values()].includes(token)) return;
+    if ([...jobInputFolderTokens.values()].some((tokens) => tokens.includes(token))) return;
     void revokeInputFolder(token).catch(() => {});
   }
 
@@ -1399,7 +1411,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
         if (selectedFiles.length < minItems || (maxItems !== undefined && selectedFiles.length > maxItems)) return false;
         return selectedFiles.every((file) => acceptsSelectedFile(selectedTool!, file));
       }
-      if (kind === 'folder') return selectedInputFolder !== null;
+      if (kind === 'folder') return selectedInputFolders.length >= Math.max(minItems, 1) && (maxItems === undefined || selectedInputFolders.length <= maxItems);
       return acceptsTextInput(selectedTool);
     }
     if (fileWorkflowActive(selectedTool)) return selectedFiles.length === 1;
@@ -1484,10 +1496,10 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     }
   }
 
-  function clearInputFolder(): void {
-    const token = selectedInputFolder?.token;
-    selectedInputFolder = null;
-    if (token) releaseInputFolderGrantIfUnused(token, true);
+  function removeInputFolder(token: string): void {
+    selectedInputFolders = selectedInputFolders.filter((folder) => folder.token !== token);
+    fileSelectionError = '';
+    releaseInputFolderGrantIfUnused(token, true);
   }
 
   async function chooseScreenArea(): Promise<void> {
@@ -1864,13 +1876,14 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
               {#if selectedTool.id === 'arcade.text.diff' && !fileWorkflowActive(selectedTool)}
                 <DiffInput bind:left={inputText} bind:right={diffRight} bind:base={diffBase} merge={toolOptions.operation === 'merge'} />
               {:else if selectedTool.ui?.input.kind === 'folder'}
-                <div class="field-label-row"><span class="field-caption">{selectedTool.ui.input.label}</span><span class="input-type"><Icon name="lock" size={13} /> Selected folder</span></div>
+                <div class="field-label-row"><span class="field-caption">{selectedTool.ui.input.label}</span><span class="input-type"><Icon name="lock" size={13} /> {(selectedTool.ui.input.maxItems ?? 1) > 1 ? 'Selected folders' : 'Selected folder'}</span></div>
                 <SelectedFolderInput
-                  value={selectedInputFolder}
+                  values={selectedInputFolders}
+                  maxItems={selectedTool.ui.input.maxItems ?? 1}
                   selectionGeneration={viewGeneration}
                   disabled={running || Boolean(activeJob && jobIsActive(activeJob))}
                   onSelect={inputFolderSelectionHandler(viewGeneration, selectedTool.id)}
-                  onClear={clearInputFolder}
+                  onRemove={removeInputFolder}
                 />
                 {#if fileSelectionError}<div class="field-error" role="alert">{fileSelectionError}</div>{/if}
               {:else if fileWorkflowActive(selectedTool)}
