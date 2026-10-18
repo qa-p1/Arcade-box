@@ -288,6 +288,15 @@ impl FileGrants {
             .remove(token);
     }
 
+    /// The canonical path a selected directory was granted under.
+    pub fn input_directory_path(&self, token: &str) -> Option<PathBuf> {
+        self.input_directories
+            .lock()
+            .expect("input directory mutex poisoned")
+            .get(token)
+            .map(|grant| grant.canonical_path.clone())
+    }
+
     /// Open a cloned capability handle after rechecking that the selected
     /// directory still names the same non-symlink directory.
     pub fn open_input_directory(&self, token: &str) -> Result<Dir, GrantError> {

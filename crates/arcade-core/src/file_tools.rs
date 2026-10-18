@@ -310,6 +310,11 @@ fn duplicate_finder(
     if roots.is_empty() {
         return Err("Select at least one folder to scan".into());
     }
+    let root_paths: Vec<Option<PathBuf>> = request
+        .inputs
+        .iter()
+        .map(|input| runtime.grants().input_directory_path(&input.value))
+        .collect();
     let mut entries = Vec::new();
     for (index, directory) in roots.iter().enumerate() {
         scan_directory(
@@ -342,7 +347,11 @@ fn duplicate_finder(
     for candidates in by_size.into_values().filter(|group| group.len() > 1) {
         for entry in candidates {
             check_cancelled(cancelled)?;
-            if let Some(identity) = entry_identity(&roots[entry.root], &entry.relative) {
+            if let Some(identity) = entry_identity(
+                &roots[entry.root],
+                root_paths[entry.root].as_deref(),
+                &entry.relative,
+            ) {
                 if !seen.insert(identity) {
                     continue;
                 }
@@ -731,7 +740,12 @@ fn hash_with(
 /// name there. Hard links (the file under another name or in another folder)
 /// stay distinct, as byte-identical files the finder reports.
 #[cfg(unix)]
-fn entry_identity(root: &Dir, relative: &Path) -> Option<(u64, u64, u64, u64, std::ffi::OsString)> {
+type EntryIdentity = (u64, u64, u64, u64, std::ffi::OsString);
+#[cfg(not(unix))]
+type EntryIdentity = PathBuf;
+
+#[cfg(unix)]
+fn entry_identity(root: &Dir, _: Option<&Path>, relative: &Path) -> Option<EntryIdentity> {
     use cap_std::fs::MetadataExt;
     let file = root.symlink_metadata(relative).ok()?;
     let parent = match relative.parent().filter(|p| !p.as_os_str().is_empty()) {
@@ -747,9 +761,12 @@ fn entry_identity(root: &Dir, relative: &Path) -> Option<(u64, u64, u64, u64, st
     ))
 }
 
+/// Without inode numbers: the granted folder's canonical path and the entry's
+/// path inside it. The scan reads names as stored, so both routes to one file
+/// agree; hard links keep their own paths and stay distinct.
 #[cfg(not(unix))]
-fn entry_identity(_: &Dir, _: &Path) -> Option<(u64, u64, u64, u64, std::ffi::OsString)> {
-    None
+fn entry_identity(_: &Dir, root: Option<&Path>, relative: &Path) -> Option<EntryIdentity> {
+    Some(root?.join(relative))
 }
 
 #[cfg(test)]
