@@ -851,6 +851,24 @@ pub fn invoke_result_link_action(
     result.map_err(|e| e.user_message(arcade_link::manifest::app_name(&app)))
 }
 
+/// Whether a job, a peer's request or one of Box's own Link requests is in
+/// flight: a restart now would cut it off.
+pub(crate) fn busy(app: &AppHandle) -> bool {
+    app.state::<JobManager>()
+        .list()
+        .iter()
+        .any(|job| !terminal(job.status))
+        || !jobs()
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .running
+            .is_empty()
+        || !outbound_requests()
+            .lock()
+            .unwrap_or_else(|e| e.into_inner())
+            .is_empty()
+}
+
 fn outbound_requests() -> &'static Mutex<HashMap<String, Arc<std::sync::atomic::AtomicBool>>> {
     static REQUESTS: OnceLock<Mutex<HashMap<String, Arc<std::sync::atomic::AtomicBool>>>> =
         OnceLock::new();

@@ -137,8 +137,32 @@ fn shortcut_status(app: tauri::AppHandle) -> serde_json::Value {
         "backend":"native",
         "state": if state.current.is_some() { "registered" } else { "unavailable" },
         "message":state.message,
-        "trigger_description":state.current.map(|shortcut| shortcut.to_string())
+        "trigger_description":state.current.as_ref().map(shortcut_label)
     })
+}
+
+/// A shortcut as people write it (`Ctrl+Alt+B`, not `control+alt+KeyB`),
+/// in a form that also parses back.
+fn shortcut_label(shortcut: &Shortcut) -> String {
+    let mac = cfg!(target_os = "macos");
+    let mut parts: Vec<String> = [
+        (Modifiers::CONTROL, "Ctrl"),
+        (Modifiers::ALT, if mac { "Option" } else { "Alt" }),
+        (Modifiers::SHIFT, "Shift"),
+        (Modifiers::SUPER, if mac { "Cmd" } else { "Super" }),
+    ]
+    .into_iter()
+    .filter(|(flag, _)| shortcut.mods.contains(*flag))
+    .map(|(_, name)| name.to_owned())
+    .collect();
+    let key = shortcut.key.to_string();
+    parts.push(
+        key.strip_prefix("Key")
+            .or_else(|| key.strip_prefix("Digit"))
+            .unwrap_or(&key)
+            .to_owned(),
+    );
+    parts.join("+")
 }
 
 #[tauri::command]
@@ -1219,6 +1243,8 @@ fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
         state.ready = false;
         state.hiding = false;
     }
+    // A pending lean restart gives way to the new WebView.
+    ISLAND_RELEASES.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
     let window = match tauri::WebviewWindowBuilder::from_config(app, &config)
         .and_then(tauri::WebviewWindowBuilder::build)
     {
@@ -1245,6 +1271,7 @@ fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
                 state.hiding = false;
             }
             reclaim_island_memory(destroyed_app.clone());
+            schedule_lean_restart(destroyed_app.clone());
         }
         _ => {}
     });
@@ -1274,6 +1301,58 @@ fn schedule_island_release(window: &tauri::WebviewWindow, delay: std::time::Dura
                 let _ = release.destroy();
             }
         });
+    });
+}
+
+/// How long the Island's WebView stays released before Box sheds its WebKit
+/// state with a restart.
+const LEAN_RESTART_AFTER: std::time::Duration = std::time::Duration::from_secs(20);
+
+/// Finished jobs keep their results in memory only; a restart waits this long
+/// after the last one so reopening the Island still shows it.
+const RESULTS_KEPT_FOR: std::time::Duration = std::time::Duration::from_secs(300);
+
+static ISLAND_RELEASES: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+static LAST_JOB_UPDATE: Mutex<Option<std::time::Instant>> = Mutex::new(None);
+
+/// Destroying the Island's WebView leaves WebKit's context, its network
+/// process and the grown heap loaded: about 60 MiB more than a Box that never
+/// opened the Island. Once nothing needs the process, restart quietly into
+/// the background; the next Island costs one fresh WebView (well under a
+/// second).
+fn schedule_lean_restart(app: tauri::AppHandle) {
+    if !cfg!(target_os = "linux") || std::env::var_os("ARCADE_BOX_NO_LEAN_RESTART").is_some() {
+        return;
+    }
+    use std::sync::atomic::Ordering;
+    let generation = ISLAND_RELEASES.fetch_add(1, Ordering::SeqCst) + 1;
+    std::thread::spawn(move || {
+        loop {
+            std::thread::sleep(LEAN_RESTART_AFTER);
+            if ISLAND_RELEASES.load(Ordering::SeqCst) != generation
+                || !app.webview_windows().is_empty()
+            {
+                return;
+            }
+            let recent_result = LAST_JOB_UPDATE
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .is_some_and(|at| at.elapsed() < RESULTS_KEPT_FOR);
+            if recent_result || link::busy(&app) {
+                continue;
+            }
+            let restart_app = app.clone();
+            let _ = app.run_on_main_thread(move || {
+                // Checked again on the main thread, where the Island is built.
+                if ISLAND_RELEASES.load(Ordering::SeqCst) == generation
+                    && restart_app.webview_windows().is_empty()
+                    && !link::busy(&restart_app)
+                {
+                    restart(&restart_app);
+                }
+            });
+            return;
+        }
     });
 }
 
@@ -1798,6 +1877,13 @@ pub fn run(args: Vec<String>) {
             match fs2::FileExt::try_lock_exclusive(&lock) {
                 Ok(()) => {
                     app.manage(ResidentInstance { _lock: lock });
+                    // Started from the menu, at login or by Tools, stderr goes
+                    // nowhere: keep it in the data folder instead.
+                    if let Err(error) =
+                        arcade_link::logs::capture_stderr(&db_dir.join("logs"), "arcade-box")
+                    {
+                        eprintln!("Arcade Box log unavailable: {error}");
+                    }
                 }
                 Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
                     eprintln!("Arcade Box is already running. Use its shortcut or tray icon.");
@@ -1847,6 +1933,10 @@ pub fn run(args: Vec<String>) {
             let jobs = JobManager::new(
                 runtime.clone(),
                 Arc::new(move |snapshot| {
+                    *LAST_JOB_UPDATE
+                        .lock()
+                        .unwrap_or_else(std::sync::PoisonError::into_inner) =
+                        Some(std::time::Instant::now());
                     link::job_update(&event_app, &snapshot);
                     let _ = event_app.emit("arcade://job-update", snapshot);
                 }),
@@ -2058,4 +2148,35 @@ fn register_native_shortcut(
     }
     drop(state);
     Ok(controller)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn shortcut_labels_are_readable_and_parse_back() {
+        for (shortcut, label) in [
+            (
+                Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::KeyB),
+                "Ctrl+Alt+B",
+            ),
+            (
+                Shortcut::new(Some(Modifiers::CONTROL | Modifiers::SHIFT), Code::Digit7),
+                "Ctrl+Shift+7",
+            ),
+            (
+                Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::Space),
+                "Ctrl+Alt+Space",
+            ),
+        ] {
+            if cfg!(not(target_os = "macos")) {
+                assert_eq!(shortcut_label(&shortcut), label);
+            }
+            assert_eq!(
+                shortcut_label(&shortcut).parse::<Shortcut>().unwrap(),
+                shortcut
+            );
+        }
+    }
 }
