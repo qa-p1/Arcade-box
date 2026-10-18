@@ -57,8 +57,8 @@ The generator is vendored unchanged from Arcade Link `v0.3.0`, commit
 `33650a8` (see [VENDORED](../VENDORED.md)):
 
 ```sh
-python3 scripts/arcade-release.py --id arcade.box --version 0.3.0 --channel stable \
-  --notes https://github.com/qa-p1/Arcade-box/releases/tag/v0.3.0 dist/
+python3 scripts/arcade-release.py --id arcade.box --version 0.3.1 --channel stable \
+  --notes https://github.com/qa-p1/Arcade-box/releases/tag/v0.3.1 dist/
 (cd dist && sha256sum -c SHA256SUMS.txt)
 ```
 
