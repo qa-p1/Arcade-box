@@ -13,13 +13,19 @@ struct Rgb {
 }
 
 pub(super) fn convert(request: &ToolRequest, text: &str) -> Result<Value, String> {
-    let color = parse(text)?;
+    let (color, alpha) = parse_alpha(text)?;
     let against_text = match option_str(request, "against", "").trim() {
         "" => "#ffffff",
         value => value,
     };
-    let against = parse(against_text).map_err(|error| format!("Contrast colour: {error}"))?;
-    let ratio = contrast(color, against);
+    let (against, against_alpha) =
+        parse_alpha(against_text).map_err(|error| format!("Contrast colour: {error}"))?;
+    // What the eye sees: a translucent background over a white page, and the
+    // translucent colour over that background. Contrast of the raw channels
+    // would grade half-transparent black on white as 21:1.
+    let against = blend(against, against_alpha, WHITE);
+    let shown = blend(color, alpha, against);
+    let ratio = contrast(shown, against);
     let grade = |minimum: f64| if ratio >= minimum { "Pass" } else { "Fail" };
     let (h, s, l) = to_hsl(color);
     let (hv, sv, v) = to_hsv(color);
@@ -37,8 +43,11 @@ pub(super) fn convert(request: &ToolRequest, text: &str) -> Result<Value, String
     } else {
         "white"
     };
+    let translucent = alpha < 1.0;
     Ok(json!({
         "hex": hex(color),
+        "alpha": translucent.then(|| (alpha * 100.0).round() / 100.0),
+        "hexWithAlpha": translucent.then(|| format!("{}{:02x}", hex(color), (alpha * 255.0).round() as u8)),
         "rgb": format!("rgb({}, {}, {})", color.r, color.g, color.b),
         "hsl": format!("hsl({h}, {s}%, {l}%)"),
         "hsv": format!("hsv({hv}, {sv}%, {v}%)"),
@@ -47,6 +56,7 @@ pub(super) fn convert(request: &ToolRequest, text: &str) -> Result<Value, String
         "bestTextColor": readable_on,
         "contrast": {
             "against": hex(against),
+            "shownAs": translucent.then(|| hex(shown)),
             "ratio": format!("{:.2}:1", (ratio * 100.0).floor() / 100.0),
             "normalTextAA": grade(4.5),
             "normalTextAAA": grade(7.0),
@@ -57,7 +67,29 @@ pub(super) fn convert(request: &ToolRequest, text: &str) -> Result<Value, String
     }))
 }
 
+const WHITE: Rgb = Rgb {
+    r: 255,
+    g: 255,
+    b: 255,
+};
+
+/// `top` at `alpha` over an opaque `bottom`.
+fn blend(top: Rgb, alpha: f64, bottom: Rgb) -> Rgb {
+    let mix = |t: u8, b: u8| (t as f64 * alpha + b as f64 * (1.0 - alpha)).round() as u8;
+    Rgb {
+        r: mix(top.r, bottom.r),
+        g: mix(top.g, bottom.g),
+        b: mix(top.b, bottom.b),
+    }
+}
+
+#[cfg(test)]
 fn parse(text: &str) -> Result<Rgb, String> {
+    parse_alpha(text).map(|(color, _)| color)
+}
+
+/// A colour and its alpha (1.0 when opaque).
+fn parse_alpha(text: &str) -> Result<(Rgb, f64), String> {
     let value = text.trim().to_ascii_lowercase();
     if value.is_empty() {
         return Err(
@@ -66,47 +98,76 @@ fn parse(text: &str) -> Result<Rgb, String> {
         );
     }
     if let Some(color) = parse_hex(&value) {
-        return Ok(color);
+        return Ok((color, hex_alpha(&value)));
     }
     if let Some((_, hex_value)) = NAMED.iter().find(|(name, _)| *name == value) {
-        return Ok(parse_hex(hex_value).expect("named colours are valid"));
+        return Ok((parse_hex(hex_value).expect("named colours are valid"), 1.0));
     }
     let (function, body) = match value.split_once('(') {
         Some((name, rest)) => (name.trim(), rest.trim_end_matches(')')),
         None => ("rgb", value.as_str()),
     };
+    // (number, written as a percentage)
     let parts = body
         .split([',', ' ', '/'])
-        .map(|part| part.trim().trim_end_matches('%').trim_end_matches("deg"))
+        .map(|part| part.trim())
         .filter(|part| !part.is_empty())
         .map(|part| {
-            part.parse::<f64>()
+            let percent = part.ends_with('%');
+            let number = part.trim_end_matches('%').trim_end_matches("deg");
+            number
+                .parse::<f64>()
+                .map(|n| (n, percent))
                 .map_err(|_| format!("`{part}` is not a number"))
         })
         .collect::<Result<Vec<_>, _>>()?;
     if parts.len() < 3 || parts.len() > 4 {
         return Err(format!("Could not read `{text}` as a colour"));
     }
-    let (a, b, c) = (parts[0], parts[1], parts[2]);
-    match function {
+    let alpha = match parts.get(3) {
+        None => 1.0,
+        Some(&(a, percent)) => {
+            let a = if percent { a / 100.0 } else { a };
+            if !(0.0..=1.0).contains(&a) {
+                return Err("Alpha must be 0 to 1 (or 0% to 100%)".into());
+            }
+            a
+        }
+    };
+    let (a, b, c) = (parts[0].0, parts[1].0, parts[2].0);
+    let color = match function {
         "rgb" | "rgba" => {
-            let channel = |v: f64| {
+            // CSS allows 0–255 or 0%–100% per channel.
+            let channel = |(v, percent): (f64, bool)| {
+                let v = if percent { v * 255.0 / 100.0 } else { v };
                 if (0.0..=255.0).contains(&v) {
                     Ok(v.round() as u8)
                 } else {
-                    Err("RGB values must be 0 to 255".to_owned())
+                    Err("RGB values must be 0 to 255 (or 0% to 100%)".to_owned())
                 }
             };
-            Ok(Rgb {
-                r: channel(a)?,
-                g: channel(b)?,
-                b: channel(c)?,
-            })
+            Rgb {
+                r: channel(parts[0])?,
+                g: channel(parts[1])?,
+                b: channel(parts[2])?,
+            }
         }
-        "hsl" | "hsla" => check_hs(b, c).map(|_| from_hsl(a, b / 100.0, c / 100.0)),
-        "hsv" | "hsb" => check_hs(b, c).map(|_| from_hsv(a, b / 100.0, c / 100.0)),
-        other => Err(format!("Unsupported colour format `{other}`")),
-    }
+        "hsl" | "hsla" => check_hs(b, c).map(|_| from_hsl(a, b / 100.0, c / 100.0))?,
+        "hsv" | "hsb" => check_hs(b, c).map(|_| from_hsv(a, b / 100.0, c / 100.0))?,
+        other => return Err(format!("Unsupported colour format `{other}`")),
+    };
+    Ok((color, alpha))
+}
+
+/// The alpha of `#rgba` / `#rrggbbaa`, else opaque.
+fn hex_alpha(value: &str) -> f64 {
+    let digits = value.strip_prefix('#').unwrap_or(value);
+    let pair = match digits.len() {
+        4 => digits[3..4].repeat(2),
+        8 => digits[6..8].to_owned(),
+        _ => return 1.0,
+    };
+    u8::from_str_radix(&pair, 16).map_or(1.0, |a| a as f64 / 255.0)
 }
 
 fn check_hs(s: f64, l: f64) -> Result<(), String> {
@@ -394,6 +455,39 @@ const NAMED: &[(&str, &str)] = &[
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn alpha_and_percent_forms_are_honoured() {
+        let request = |against: &str| ToolRequest {
+            tool_id: "t".into(),
+            inputs: vec![],
+            options: json!({ "against": against }),
+        };
+        // Half-transparent black over white is mid grey: AA fails for text.
+        let report = convert(&request("#ffffff"), "rgba(0, 0, 0, 0.5)").unwrap();
+        assert_eq!(report["contrast"]["shownAs"], "#808080");
+        assert_eq!(report["contrast"]["normalTextAA"], "Fail");
+        assert_eq!(report["alpha"], 0.5);
+        let report = convert(&request("#ffffff"), "#00000080").unwrap();
+        assert_eq!(report["contrast"]["normalTextAA"], "Fail");
+        assert_eq!(
+            parse("rgb(100%, 0%, 0%)").unwrap(),
+            Rgb { r: 255, g: 0, b: 0 }
+        );
+        assert_eq!(
+            parse("rgba(50%, 50%, 50%, 40%)").unwrap(),
+            Rgb {
+                r: 128,
+                g: 128,
+                b: 128
+            }
+        );
+        assert!(parse("rgba(0, 0, 0, 2)").is_err());
+        // Opaque input is unchanged.
+        let report = convert(&request("#ffffff"), "#000000").unwrap();
+        assert_eq!(report["contrast"]["ratio"], "21.00:1");
+        assert!(report["alpha"].is_null());
+    }
 
     #[test]
     fn formats_round_trip_and_contrast_matches_wcag() {

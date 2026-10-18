@@ -20,6 +20,10 @@ pub const NAME: &str = "Arcade Box";
 /// `arcade-box` is the separate terminal tool; the desktop app keeps its own name.
 pub const CLI_NAME: &str = "arcade-desktop";
 pub const DESKTOP_ID: &str = "dev.arcadebox.app";
+/// The terminal tool's command. On Linux it is a second link to the
+/// installed AppImage; started under this name, the AppImage runs the CLI it
+/// bundles (see [`run_terminal_alias`]).
+pub const TERMINAL_NAME: &str = "arcade-box";
 const VERSION: &str = env!("CARGO_PKG_VERSION");
 
 pub fn app_info() -> AppInfo {
@@ -94,7 +98,7 @@ pub fn dialog_state(d: &Detection, version: &str) -> Option<DialogState> {
     }
 }
 
-fn parse_version(v: &str) -> Option<(u64, u64, u64)> {
+pub(crate) fn parse_version(v: &str) -> Option<(u64, u64, u64)> {
     let core = v.split(['-', '+']).next()?;
     let mut parts = core.split('.').map(|p| p.parse::<u64>().ok());
     Some((
@@ -102,6 +106,19 @@ fn parse_version(v: &str) -> Option<(u64, u64, u64)> {
         parts.next()??,
         parts.next().flatten().unwrap_or(0),
     ))
+}
+
+/// Whether the login entry will start Box. On Linux the desktop's startup
+/// settings can switch an entry off without removing it.
+fn login_entry_runs(path: &Path) -> bool {
+    #[cfg(target_os = "linux")]
+    {
+        install::autostart_enabled(path)
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        path.exists()
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -113,12 +130,19 @@ pub struct Options {
 }
 
 impl Options {
-    /// Box has never started at login on its own, so the box starts unchecked.
+    /// A fresh install starts at login, like every Arcade app.
     pub fn defaults(environment: &Environment) -> Self {
         let receipt = environment.receipts().read(ME).ok().flatten();
         let start_at_login = receipt
             .as_ref()
-            .is_some_and(|r| r.integration.autostart.as_ref().is_some_and(|p| p.exists()));
+            // Fresh installs start at login like every Arcade app; an existing
+            // install reflects whether its entry will really run.
+            .is_none_or(|r| {
+                r.integration
+                    .autostart
+                    .as_ref()
+                    .is_some_and(|p| login_entry_runs(p))
+            });
         let install_cli = environment
             .path
             .as_ref()
@@ -281,6 +305,19 @@ pub fn install_copy(
     options: &Options,
 ) -> io::Result<Receipt> {
     if !runtime.is_appimage() {
+        // A second install window, after the first one installed (and removed) this download.
+        if runtime.appimage.as_ref().is_some_and(|p| !p.exists()) {
+            if let Some(receipt) = environment
+                .receipts()
+                .read(ME)?
+                .filter(|r| r.version == VERSION && r.path.is_file())
+            {
+                return Ok(receipt);
+            }
+            return Err(io::Error::other(
+                "This downloaded file is gone (it may have been installed from another window). Open NAME from the app launcher.".replace("NAME", NAME),
+            ));
+        }
         return Err(io::Error::other(
             "--install requires a real AppImage, not an ordinary or development binary",
         ));
@@ -345,7 +382,87 @@ pub fn install_copy(
     }
     // Box's window class keeps the launcher entry matched to its windows.
     add_window_class(&receipt)?;
+    link_terminal_command(environment, &mut receipt)?;
     Ok(receipt)
+}
+
+/// Whether `link` is Box's own `arcade-box` link (to this installation, or to
+/// an earlier Box AppImage), never someone else's command of that name.
+#[cfg(target_os = "linux")]
+fn terminal_link_is_ours(link: &Path, receipt: Option<&Receipt>) -> bool {
+    fs::read_link(link).is_ok_and(|target| {
+        receipt.is_some_and(|r| target == r.path)
+            || target
+                .file_name()
+                .is_some_and(|name| name == app_info().filename.as_str())
+    })
+}
+
+/// Adds `arcade-box` beside `arcade-desktop`, unless another program owns the
+/// name (a `cargo install`ed CLI, say), and lists it in the receipt so every
+/// uninstaller removes it. A failed link only costs the shortcut.
+#[cfg(target_os = "linux")]
+fn link_terminal_command(environment: &Environment, receipt: &mut Receipt) -> io::Result<()> {
+    let link = environment.bin.join(TERMINAL_NAME);
+    let linked = (|| -> io::Result<bool> {
+        match fs::symlink_metadata(&link) {
+            Ok(_) if !terminal_link_is_ours(&link, Some(receipt)) => return Ok(false),
+            Ok(_) => fs::remove_file(&link)?,
+            Err(error) if error.kind() == io::ErrorKind::NotFound => {}
+            Err(error) => return Err(error),
+        }
+        fs::create_dir_all(&environment.bin)?;
+        std::os::unix::fs::symlink(&receipt.path, &link)?;
+        Ok(true)
+    })();
+    let commands = match linked {
+        Ok(true) => vec![link],
+        Ok(false) => Vec::new(),
+        Err(error) => {
+            eprintln!("arcade-desktop: could not add the {TERMINAL_NAME} command: {error}");
+            Vec::new()
+        }
+    };
+    if receipt.integration.commands != commands {
+        receipt.integration.commands = commands;
+        environment.receipts().write(receipt)?;
+    }
+    Ok(())
+}
+
+/// Started as `arcade-box` (or `arcadebox`): runs the terminal tool bundled
+/// beside this executable and returns its exit code. `None` otherwise.
+pub fn run_terminal_alias(args: &[String]) -> Option<i32> {
+    // The AppImage runtime passes the name it was started under in ARGV0.
+    let invoked = std::env::var_os("ARGV0")
+        .map(PathBuf::from)
+        .or_else(|| std::env::args_os().next().map(PathBuf::from))?;
+    let name = invoked.file_stem()?.to_str()?;
+    if name != TERMINAL_NAME && name != "arcadebox" {
+        return None;
+    }
+    let cli = std::env::current_exe()
+        .ok()?
+        .with_file_name(format!("{TERMINAL_NAME}{}", std::env::consts::EXE_SUFFIX));
+    let mut command = std::process::Command::new(&cli);
+    command.args(args).env_remove("ARGV0");
+    #[cfg(unix)]
+    {
+        use std::os::unix::process::CommandExt;
+        let error = command.exec();
+        eprintln!("{TERMINAL_NAME}: cannot start {}: {error}", cli.display());
+        Some(127)
+    }
+    #[cfg(not(unix))]
+    {
+        match command.status() {
+            Ok(status) => Some(status.code().unwrap_or(1)),
+            Err(error) => {
+                eprintln!("{TERMINAL_NAME}: cannot start {}: {error}", cli.display());
+                Some(127)
+            }
+        }
+    }
 }
 
 #[cfg(target_os = "macos")]
@@ -483,8 +600,9 @@ pub fn repair(environment: &Environment, runtime: &Runtime) -> io::Result<Receip
     {
         let moved = (detection.state != State::DevBuild && detection.is_app_image)
             .then_some(detection.running_from.as_path());
-        let receipt = install::repair(environment, &app_info(), moved)?;
+        let mut receipt = install::repair(environment, &app_info(), moved)?;
         add_window_class(&receipt)?;
+        link_terminal_command(environment, &mut receipt)?;
         Ok(receipt)
     }
     #[cfg(target_os = "macos")]
@@ -525,7 +643,7 @@ pub fn integration_status(environment: &Environment) -> io::Result<install::Inte
 }
 
 /// Quits the running copy, then removes what the receipt lists.
-pub fn uninstall(environment: &Environment, remove_data: bool) -> io::Result<bool> {
+fn quit_running_instance() {
     if let Ok(exe) = std::env::current_exe() {
         let _ = std::process::Command::new(exe)
             .arg("--quit")
@@ -534,6 +652,24 @@ pub fn uninstall(environment: &Environment, remove_data: bool) -> io::Result<boo
             .stderr(std::process::Stdio::null())
             .status();
     }
+}
+
+/// Before the freshly installed copy starts: an older one still running would
+/// keep the single instance and the new copy would only show it. Asks over the
+/// Link first (and waits for it to go), else with the app's own `--quit`.
+pub fn stop_running_copy(environment: &Environment) {
+    let quit = install::quit_running(
+        &environment.locations,
+        ME,
+        std::time::Duration::from_secs(10),
+    );
+    if !matches!(quit, Ok(true)) {
+        quit_running_instance();
+    }
+}
+
+pub fn uninstall(environment: &Environment, remove_data: bool) -> io::Result<bool> {
+    quit_running_instance();
     let data_folders: Vec<PathBuf> = crate::link::data_dir().into_iter().collect();
     #[cfg(target_os = "macos")]
     let cli = bundle_cli(environment)?;
@@ -597,7 +733,7 @@ pub fn launch_args(args: &[String]) -> Vec<std::ffi::OsString> {
             "--channel" => {
                 it.next();
             }
-            "--install" | "--silent" | "--no-launch" => {}
+            "--install" | "--silent" | "--no-launch" | "--keep-download" => {}
             _ => result.push(arg.into()),
         }
     }
@@ -629,13 +765,16 @@ fn json(value: &impl Serialize) -> Result<String, String> {
     serde_json::to_string_pretty(value).map_err(|e| e.to_string())
 }
 
-/// `--install [--silent] [--no-launch] [--channel C]`.
+/// `--install [--silent] [--no-launch] [--keep-download] [--channel C]`.
 pub fn install_cli(silent: bool, no_launch: bool, channel: &str) -> Result<String, String> {
     let environment = Environment::discover().map_err(|e| e.to_string())?;
     let runtime = Runtime::discover().map_err(|e| e.to_string())?;
     let mut options = Options::defaults(&environment);
     options.channel = channel.into();
     let args: Vec<String> = std::env::args().collect();
+    if args.iter().any(|a| a == "--keep-download") {
+        options.remove_download = false;
+    }
     let (output, launch) = if silent {
         let receipt = install_copy(&environment, &runtime, &options).map_err(|e| e.to_string())?;
         if let Some(hint) = integration_status(&environment)
@@ -651,12 +790,14 @@ pub fn install_cli(silent: bool, no_launch: bool, channel: &str) -> Result<Strin
             return Err(arcade_link::install::strings::get().errors["devBuild"].clone());
         }
         let state = dialog_state(&detection, VERSION).unwrap_or(DialogState::Install);
-        match crate::installer_ui::run(environment, runtime, detection, state, options)? {
+        match crate::installer_ui::run(environment.clone(), runtime, detection, state, options)? {
             crate::installer_ui::Outcome::Launch(path) => (String::new(), Some(path)),
             _ => (String::new(), None),
         }
     };
     if let Some(path) = launch.filter(|_| !no_launch) {
+        // The installed copy replaces an older one still running.
+        stop_running_copy(&environment);
         install::reexec(&path, &launch_args(&args)).map_err(|e| e.to_string())?;
     }
     Ok(output)
@@ -900,7 +1041,8 @@ mod tests {
             remove_download: false,
             install_cli: false,
         };
-        assert!(!Options::defaults(&env).start_at_login);
+        // Fresh installs start at login, like every Arcade app.
+        assert!(Options::defaults(&env).start_at_login);
         let receipt = install_copy(&env, &runtime, &opts).unwrap();
         assert!(receipt.path.is_file());
         let desktop =
@@ -910,6 +1052,19 @@ mod tests {
                 && desktop.contains("X-Arcade-Id=arcade.box")
         );
         assert!(receipt.integration.autostart.as_ref().unwrap().is_file());
+        // The terminal tool's command links to the installation too.
+        let terminal = env.bin.join(TERMINAL_NAME);
+        assert_eq!(fs::read_link(&terminal).unwrap(), receipt.path);
+        assert_eq!(receipt.integration.commands, vec![terminal.clone()]);
+        assert_eq!(
+            env.receipts()
+                .read(ME)
+                .unwrap()
+                .unwrap()
+                .integration
+                .commands,
+            vec![terminal.clone()]
+        );
         let repaired = install::repair(&env, &app_info(), None).unwrap();
         assert_eq!(repaired.path, receipt.path);
         assert!(
@@ -925,6 +1080,22 @@ mod tests {
         );
         assert!(env.receipts().read(ME).unwrap().is_none());
         assert!(!receipt.path.exists());
+        assert!(fs::symlink_metadata(&terminal).is_err());
+        // Someone else's `arcade-box` is neither replaced nor recorded.
+        fs::write(&terminal, b"#!/bin/sh\n").unwrap();
+        let receipt = install_copy(&env, &runtime, &opts).unwrap();
+        assert!(receipt.integration.commands.is_empty());
+        assert_eq!(fs::read(&terminal).unwrap(), b"#!/bin/sh\n");
+        install::uninstall(
+            &env,
+            ME,
+            install::UninstallOptions {
+                remove_data: false,
+                data_folders: &[],
+            },
+        )
+        .unwrap();
+        assert_eq!(fs::read(&terminal).unwrap(), b"#!/bin/sh\n");
         fs::remove_dir_all(root).unwrap();
     }
 }

@@ -367,12 +367,29 @@ impl Pipeline {
         self.confirm_effects(runtime)?;
         let mut workspace =
             Workspace::new(runtime).map_err(|e| PipelineError::StageFailed(self.id.clone(), e))?;
-        let external = external
-            .iter()
-            .map(|v| workspace.keep(v, cancelled, false))
+        let mut external = external
+            .into_iter()
+            .map(|v| workspace.keep(v, cancelled, false).map(Some))
             .collect::<Result<Vec<_>, _>>()
             .map_err(|e| PipelineError::StageFailed(self.id.clone(), e))?;
-        let mut results: HashMap<String, Vec<ToolValue>> = HashMap::new();
+        // Uses left of each value (`None` = external input). A value is moved
+        // to its last consumer instead of cloned, so a long text chain holds
+        // one or two copies rather than one per stage. Final outputs are
+        // never released.
+        let mut uses: HashMap<(Option<&str>, usize), usize> = HashMap::new();
+        for source in order.iter().flat_map(|node| &node.inputs) {
+            let key = match source {
+                InputSource::External { index } => (None, *index),
+                InputSource::Node {
+                    node_id,
+                    output_index,
+                } => (Some(node_id.as_str()), *output_index),
+            };
+            *uses.entry(key).or_default() += 1;
+        }
+        let kept: HashSet<&str> = self.output_nodes.iter().map(String::as_str).collect();
+        let mut take = |key, slot: &mut Option<ToolValue>| take_use(&mut uses, &kept, key, slot);
+        let mut results: HashMap<String, Vec<Option<ToolValue>>> = HashMap::new();
         for node in order {
             if cancelled.load(Ordering::Relaxed) {
                 return Err(PipelineError::Cancelled);
@@ -382,16 +399,16 @@ impl Pipeline {
                 .iter()
                 .map(|source| match source {
                     InputSource::External { index } => external
-                        .get(*index)
-                        .cloned()
+                        .get_mut(*index)
+                        .and_then(|slot| take((None, *index), slot))
                         .ok_or(PipelineError::MissingExternal(*index)),
                     InputSource::Node {
                         node_id,
                         output_index,
                     } => results
-                        .get(node_id)
-                        .and_then(|v| v.get(*output_index))
-                        .cloned()
+                        .get_mut(node_id)
+                        .and_then(|v| v.get_mut(*output_index))
+                        .and_then(|slot| take((Some(node_id.as_str()), *output_index), slot))
                         .ok_or_else(|| PipelineError::MissingOutput(node_id.clone())),
                 })
                 .collect::<Result<Vec<_>, _>>()?;
@@ -485,19 +502,24 @@ impl Pipeline {
                 }
                 result
                     .outputs
-                    .iter()
+                    .into_iter()
                     .map(|v| workspace.keep(v, cancelled, true))
                     .collect::<Result<Vec<_>, _>>()
                     .map_err(|e| PipelineError::StageFailed(node.id.clone(), e))?
             };
-            results.insert(node.id.clone(), outputs);
+            results.insert(node.id.clone(), outputs.into_iter().map(Some).collect());
         }
         let mut published: HashMap<String, Vec<ToolValue>> = HashMap::new();
         let mut created: Vec<crate::SelectedFile> = Vec::new();
         let publishing = (|| -> Result<(), String> {
             for id in &self.output_nodes {
                 let mut values = Vec::new();
-                for value in results.get(id).ok_or("missing final stage")? {
+                for value in results
+                    .get(id)
+                    .ok_or("missing final stage")?
+                    .iter()
+                    .flatten()
+                {
                     if value.kind == arcade_contract::ValueKind::Artifact {
                         let path = runtime
                             .grants()
@@ -541,6 +563,25 @@ impl Pipeline {
     }
 }
 
+/// A value for one consumer: moved out on its last use (unless it is a
+/// final output), cloned before that.
+fn take_use<'a>(
+    uses: &mut HashMap<(Option<&'a str>, usize), usize>,
+    kept: &HashSet<&str>,
+    key: (Option<&'a str>, usize),
+    slot: &mut Option<ToolValue>,
+) -> Option<ToolValue> {
+    let left = uses.get_mut(&key).map(|left| {
+        *left -= 1;
+        *left
+    });
+    match (left, key.0) {
+        (Some(0), Some(id)) if kept.contains(id) => slot.clone(),
+        (Some(0), _) => slot.take(),
+        _ => slot.clone(),
+    }
+}
+
 /// All intermediates and their grants end with this run, including failures.
 struct Workspace<'a> {
     runtime: &'a Arcade,
@@ -568,7 +609,7 @@ impl<'a> Workspace<'a> {
     }
     fn keep(
         &mut self,
-        value: &ToolValue,
+        value: ToolValue,
         cancel: &AtomicBool,
         owned: bool,
     ) -> Result<ToolValue, String> {
@@ -576,7 +617,7 @@ impl<'a> Workspace<'a> {
         if !matches!(value.kind, ValueKind::Artifact | ValueKind::File)
             || value.mime == "folder/reference"
         {
-            return Ok(value.clone());
+            return Ok(value);
         }
         let mut selected = None;
         let token = if value.kind == ValueKind::File {
@@ -601,7 +642,7 @@ impl<'a> Workspace<'a> {
             return Ok(if value.kind == ValueKind::File {
                 selected.as_ref().unwrap().as_tool_value()
             } else {
-                value.clone()
+                value
             });
         }
         let destination = self.root.path().join(format!(
@@ -639,7 +680,7 @@ impl<'a> Workspace<'a> {
             "file" => {
                 for path in content.all_paths() {
                     values.push(self.keep(
-                        &ToolValue {
+                        ToolValue {
                             kind: arcade_contract::ValueKind::File,
                             value: path.to_owned(),
                             mime: content.kind.clone(),
@@ -996,6 +1037,73 @@ mod tests {
             )
             .unwrap();
         assert_eq!(results["trim"][0].value, "HELLO");
+    }
+
+    #[test]
+    fn shared_values_reach_every_consumer_and_final_outputs() {
+        // `upper` feeds two stages and is itself a final output; the
+        // external input feeds two stages. Moving a value to its last
+        // consumer must not starve the others.
+        let runtime = Arcade::in_memory().unwrap();
+        let node = |id: &str, tool: &str, inputs: Vec<InputSource>, options| PipelineNode {
+            id: id.into(),
+            link: None,
+            tool_id: tool.into(),
+            inputs,
+            options,
+        };
+        let from = |id: &str| InputSource::Node {
+            node_id: id.into(),
+            output_index: 0,
+        };
+        let pipeline = Pipeline {
+            id: "branch".into(),
+            name: "Branch".into(),
+            version: 1,
+            nodes: vec![
+                node(
+                    "upper",
+                    "arcade.text.case",
+                    vec![InputSource::External { index: 0 }],
+                    serde_json::json!({"mode":"upper"}),
+                ),
+                node(
+                    "lower",
+                    "arcade.text.case",
+                    vec![InputSource::External { index: 0 }],
+                    serde_json::json!({"mode":"lower"}),
+                ),
+                node(
+                    "trim",
+                    "arcade.text.clean",
+                    vec![from("upper")],
+                    serde_json::json!({"trim":true}),
+                ),
+                node(
+                    "again",
+                    "arcade.text.case",
+                    vec![from("upper")],
+                    serde_json::json!({"mode":"lower"}),
+                ),
+            ],
+            output_nodes: vec![
+                "upper".into(),
+                "lower".into(),
+                "trim".into(),
+                "again".into(),
+            ],
+        };
+        let results = pipeline
+            .run(
+                &runtime,
+                vec![ToolValue::text(" Hello ", "text/plain")],
+                &AtomicBool::new(false),
+            )
+            .unwrap();
+        assert_eq!(results["upper"][0].value, " HELLO ");
+        assert_eq!(results["lower"][0].value, " hello ");
+        assert_eq!(results["trim"][0].value, "HELLO");
+        assert_eq!(results["again"][0].value, " hello ");
     }
 
     #[test]

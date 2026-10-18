@@ -1883,6 +1883,17 @@ fn valid_tag(field: &str, value: &str) -> Result<(), String> {
 
 fn metadata(job: &Job, inputs: &[PathBuf]) -> Result<ToolResult, String> {
     let request = job.request;
+    // The picker adds files in the order chosen, so the cover may come first.
+    let mut inputs = inputs.to_vec();
+    let is_image = |index: usize| {
+        request
+            .inputs
+            .get(index)
+            .is_some_and(|value| value.mime == "file/image")
+    };
+    if inputs.len() == 2 && is_image(0) && !is_image(1) {
+        inputs.swap(0, 1);
+    }
     let input = &inputs[0];
     let ffmpeg = &job.provider.executable_path;
     let info = probe(ffmpeg, input, job.cancelled)?;
