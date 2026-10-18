@@ -108,6 +108,19 @@ pub(crate) fn parse_version(v: &str) -> Option<(u64, u64, u64)> {
     ))
 }
 
+/// Whether the login entry will start Box. On Linux the desktop's startup
+/// settings can switch an entry off without removing it.
+fn login_entry_runs(path: &Path) -> bool {
+    #[cfg(target_os = "linux")]
+    {
+        install::autostart_enabled(path)
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        path.exists()
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Options {
     pub channel: String,
@@ -128,7 +141,7 @@ impl Options {
                 r.integration
                     .autostart
                     .as_ref()
-                    .is_some_and(|p| install::autostart_enabled(p))
+                    .is_some_and(|p| login_entry_runs(p))
             });
         let install_cli = environment
             .path
