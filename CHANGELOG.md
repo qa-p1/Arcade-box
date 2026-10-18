@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.1 — 2026-10-18
+
+- Updating or installing from your Downloads folder, using the Island (Box
+  restarts lean afterwards) and starting other Arcade apps no longer leave the
+  old AppImage mounted and its runtime (about 20 MB) running. A program the app
+  started inherited an open handle on its AppImage mount and kept it busy.
+- `arcade-box` in a terminal accepts relative paths (`arcade-box run
+  arcade.text.csv --file people.csv`); before, only absolute paths worked.
+
 ## 0.3.0 — 2026-10-18
 
 - Tools: colour conversion keeps alpha and accepts percentage RGB; CSV keeps its

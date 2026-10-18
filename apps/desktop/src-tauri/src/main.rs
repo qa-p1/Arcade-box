@@ -21,6 +21,7 @@ const HELP: &str = "Arcade Box
 Terminal tools: arcade-box (alias arcadebox) --help";
 
 fn main() {
+    arcade_link::childenv::on_startup();
     let args: Vec<String> = std::env::args().skip(1).collect();
     if let Some(code) = arcade_desktop::installer::run_terminal_alias(&args) {
         std::process::exit(code);
