@@ -503,17 +503,20 @@ fn csv_workbench(
         return Err("CSV workbench takes one table at a time".into());
     }
     let requested_format = option_str(request, "inputFormat", "auto");
-    let json_input = match requested_format {
+    let json_table = match requested_format {
+        // Looks like JSON and parses as a JSON table; otherwise it is CSV
+        // (a header such as `[item],price` starts with a bracket too).
         "auto" => {
             let trimmed = input.trim_start();
-            trimmed.starts_with('{') || trimmed.starts_with('[')
+            (trimmed.starts_with('{') || trimmed.starts_with('['))
+                .then(|| parse_json_table(&input).ok())
+                .flatten()
         }
-        "json" => true,
-        "csv" | "tsv" => false,
+        "json" => Some(parse_json_table(&input)?),
+        "csv" | "tsv" => None,
         other => return Err(format!("Unsupported input format: {other}")),
     };
-    let (input_delimiter, headers, mut rows) = if json_input {
-        let (headers, rows) = parse_json_table(&input)?;
+    let (input_delimiter, headers, mut rows) = if let Some((headers, rows)) = json_table {
         (b',', headers, rows)
     } else {
         let input_delimiter = if requested_format == "tsv" {
@@ -697,11 +700,14 @@ fn csv_workbench(
             );
         }
         "to-json" => {
+            // A JSON object can't hold two `Name` keys: the second becomes
+            // `Name (2)` instead of overwriting the first.
+            let keys = unique_names(&headers.iter().collect::<Vec<_>>());
             let data = rows
                 .iter()
                 .map(|row| {
                     let mut record = Map::new();
-                    for (index, header) in headers.iter().enumerate() {
+                    for (index, header) in keys.iter().enumerate() {
                         record.insert(
                             header.to_owned(),
                             Value::String(row.get(index).unwrap_or("").to_owned()),
@@ -784,7 +790,9 @@ fn write_csv_result(
     })
 }
 
-fn detect_delimiter(input: &str) -> u8 {
+/// The delimiter that splits the header and the first rows into the most
+/// consistent table.
+pub(crate) fn detect_delimiter(input: &str) -> u8 {
     [b',', b'\t', b';']
         .into_iter()
         .map(|delimiter| {
@@ -1033,6 +1041,24 @@ fn plural(count: usize, noun: &str) -> String {
     format!("{count} {noun}{}", if count == 1 { "" } else { "s" })
 }
 
+/// Header names made unique for object keys: repeats get ` (2)`, ` (3)`…
+fn unique_names<S: AsRef<str>>(headers: &[S]) -> Vec<String> {
+    let mut used = std::collections::HashSet::new();
+    headers
+        .iter()
+        .map(|header| {
+            let header = header.as_ref();
+            let mut name = header.to_owned();
+            let mut n = 1;
+            while !used.insert(name.clone()) {
+                n += 1;
+                name = format!("{header} ({n})");
+            }
+            name
+        })
+        .collect()
+}
+
 #[cfg(test)]
 mod diff_tests {
     use super::*;
@@ -1107,5 +1133,42 @@ mod csv_tests {
         let output = std::fs::read_to_string(output_path).unwrap();
         // Columns keep the order they have in the JSON.
         assert_eq!(output, "name,years\nAda,36\nLin,8\n");
+    }
+
+    fn csv_json(input: &str) -> Result<Value, String> {
+        let runtime = Arcade::in_memory().unwrap();
+        let manifest = runtime
+            .list_tools()
+            .into_iter()
+            .find(|tool| tool.id == "arcade.text.csv")
+            .unwrap();
+        let request = ToolRequest {
+            tool_id: manifest.id.clone(),
+            inputs: vec![ToolValue::text(input, "text/plain")],
+            options: json!({ "operation": "to-json" }),
+        };
+        let result = csv_workbench(&manifest, &request, &runtime, &AtomicBool::new(false))?;
+        Ok(serde_json::from_str(&result.outputs[0].value).unwrap())
+    }
+
+    #[test]
+    fn repeated_headers_keep_every_value_in_json() {
+        assert_eq!(
+            csv_json("Name,Name\nAda,Smith\n").unwrap(),
+            json!([{ "Name": "Ada", "Name (2)": "Smith" }])
+        );
+        assert_eq!(
+            csv_json("First,Last\nAda,Smith\n").unwrap(),
+            json!([{ "First": "Ada", "Last": "Smith" }])
+        );
+    }
+
+    #[test]
+    fn a_bracketed_csv_header_is_csv_not_broken_json() {
+        assert_eq!(
+            csv_json("[item],price\nWidget,3.5\n").unwrap(),
+            json!([{ "[item]": "Widget", "price": "3.5" }])
+        );
+        assert_eq!(csv_json(r#"[{"a":1}]"#).unwrap(), json!([{ "a": "1" }]));
     }
 }

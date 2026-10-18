@@ -160,6 +160,16 @@ fn yaml_to_json(value: &yaml_rust2::Yaml, path: &str) -> Result<Value, String> {
         Yaml::Null => Ok(Value::Null),
         Yaml::Boolean(value) => Ok(Value::Bool(*value)),
         Yaml::Integer(value) => Ok(Value::from(*value)),
+        // yaml-rust reads integers past i64 as reals: keep them exact when
+        // they fit JSON's u64, refuse rather than round when they don't.
+        Yaml::Real(text) if is_integer_literal(text) => {
+            match text.trim_start_matches('+').parse::<u64>() {
+                Ok(number) => Ok(Value::from(number)),
+                Err(_) => Err(format!(
+                    "{path} is the integer {text}, too large to convert exactly; quote it to keep it as text"
+                )),
+            }
+        }
         Yaml::Real(text) => {
             let number = text
                 .parse::<f64>()
@@ -347,6 +357,13 @@ fn render(value: &Value, format: &str, indent: Indent) -> Result<String, String>
                     path.trim_start_matches('.')
                 ));
             }
+            if let Some((path, number)) = find_huge_integer(value, "") {
+                return Err(format!(
+                    "TOML integers stop at {}, and {} is {number}. Quote it to keep it as text.",
+                    i64::MAX,
+                    path.trim_start_matches('.')
+                ));
+            }
             let mut table = toml::Table::new();
             for (key, child) in object {
                 table.insert(key.clone(), json_to_toml(child));
@@ -355,6 +372,34 @@ fn render(value: &Value, format: &str, indent: Indent) -> Result<String, String>
         }
         "xml" => json_to_xml(value, indent),
         other => Err(format!("Unsupported target format: {other}")),
+    }
+}
+
+fn is_integer_literal(text: &str) -> bool {
+    let digits = text.strip_prefix(['+', '-']).unwrap_or(text);
+    !digits.is_empty() && digits.bytes().all(|b| b.is_ascii_digit())
+}
+
+/// An integer beyond i64 (TOML's range), which TOML would turn into a
+/// rounded float.
+fn find_huge_integer(value: &Value, path: &str) -> Option<(String, String)> {
+    match value {
+        Value::Number(number) if number.is_u64() && number.as_i64().is_none() => Some((
+            if path.is_empty() {
+                "the value".into()
+            } else {
+                path.to_owned()
+            },
+            number.to_string(),
+        )),
+        Value::Array(items) => items
+            .iter()
+            .enumerate()
+            .find_map(|(index, item)| find_huge_integer(item, &format!("{path}[{index}]"))),
+        Value::Object(object) => object
+            .iter()
+            .find_map(|(key, item)| find_huge_integer(item, &format!("{path}.{key}"))),
+        _ => None,
     }
 }
 
@@ -570,6 +615,26 @@ mod tests {
 
     fn run(input: &str, from: &str, to: &str) -> String {
         convert(input, from, to, "2").unwrap().text
+    }
+
+    #[test]
+    fn large_integers_stay_exact_or_are_refused() {
+        assert_eq!(
+            run("id: 9223372036854775809\n", "yaml", "json"),
+            "{\n  \"id\": 9223372036854775809\n}\n"
+        );
+        assert_eq!(
+            run("id: 9223372036854775807\n", "yaml", "json"),
+            "{\n  \"id\": 9223372036854775807\n}\n"
+        );
+        let too_big = convert("id: 99999999999999999999999\n", "yaml", "json", "2").unwrap_err();
+        assert!(too_big.contains("too large"), "{too_big}");
+        let toml = convert(r#"{"id": 9223372036854775809}"#, "json", "toml", "2").unwrap_err();
+        assert!(toml.contains("TOML integers stop at"), "{toml}");
+        assert_eq!(
+            run(r#"{"id": 9223372036854775807}"#, "json", "toml"),
+            "id = 9223372036854775807\n"
+        );
     }
 
     #[test]

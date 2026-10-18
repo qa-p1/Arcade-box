@@ -164,10 +164,14 @@ fn csv_to_workbook(
         let bytes = input_bytes(input, runtime, MAX_INPUT_BYTES, cancelled)?;
         let text = String::from_utf8_lossy(bytes.strip_prefix(b"\xEF\xBB\xBF").unwrap_or(&bytes))
             .into_owned();
-        let separator = if input.mime == "file/tsv" {
-            b'\t'
-        } else {
-            sniff_delimiter(&text)
+        let separator = match option_str(request, "inputDelimiter", "auto") {
+            "comma" => b',',
+            "semicolon" => b';',
+            "tab" => b'\t',
+            _ if input.mime == "file/tsv" => b'\t',
+            // Whole rows decide, not punctuation counts on the first line:
+            // `Department, sales, west;ID` is a two-column semicolon table.
+            _ => crate::text_tools::detect_delimiter(&text),
         };
         let stem = input_stem(runtime, input, "Sheet");
         let sheet_name = unique_sheet_name(&stem, &mut used_names);
@@ -240,15 +244,6 @@ fn csv_to_workbook(
     ))
 }
 
-/// The most frequent of comma, semicolon, and tab on the first line.
-fn sniff_delimiter(text: &str) -> u8 {
-    let first = text.lines().next().unwrap_or_default();
-    (*b",;\t")
-        .into_iter()
-        .max_by_key(|candidate| first.bytes().filter(|byte| byte == candidate).count())
-        .unwrap_or(b',')
-}
-
 /// A plain number, keeping codes with leading zeros (007, phone numbers) and
 /// long digit strings (card or ID numbers) as text.
 fn as_number(value: &str) -> Option<f64> {
@@ -315,6 +310,17 @@ mod tests {
         assert_eq!(unique_sheet_name("Sales_2026", &mut used), "Sales_2026 (2)");
         let long = "x".repeat(40);
         assert_eq!(unique_sheet_name(&long, &mut used).len(), 31);
-        assert_eq!(sniff_delimiter("a;b;c\n1;2;3"), b';');
+    }
+
+    #[test]
+    fn import_delimiter_follows_whole_rows() {
+        use crate::text_tools::detect_delimiter;
+        assert_eq!(detect_delimiter("a;b;c\n1;2;3"), b';');
+        // Commas inside the first header cell don't make it a comma table.
+        assert_eq!(
+            detect_delimiter("Department, sales, west;ID\nAccounts, finance;007\n"),
+            b';'
+        );
+        assert_eq!(detect_delimiter("a,b\n1,2\n"), b',');
     }
 }
