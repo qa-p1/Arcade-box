@@ -39,4 +39,4 @@ Search for **Change Case**, enter a short sentence, choose uppercase, and run it
 
 ## Use the command line
 
-The installed command **arcade-desktop** opens Box, starts it in the background, restarts or quits it, and manages its installation. Run **arcade-desktop --help** to see its options. To run tools without opening the Island, use the terminal tool runtime **arcadebox** (alias **arcade-box**), which ships beside the desktop app; it is documented in the repository README.
+The installed command **arcade-desktop** opens Box, starts it in the background, restarts or quits it, and manages its installation. Run **arcade-desktop --help** to see its options. To run tools without opening the Island, use the terminal tool runtime **arcade-box** (alias **arcadebox**), which ships beside the desktop app. On Linux, installing also adds the **arcade-box** command to `~/.local/bin`; try **arcade-box search pdf**. It is documented in the repository README.

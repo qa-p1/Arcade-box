@@ -22,6 +22,9 @@ Terminal tools: arcade-box (alias arcadebox) --help";
 
 fn main() {
     let args: Vec<String> = std::env::args().skip(1).collect();
+    if let Some(code) = arcade_desktop::installer::run_terminal_alias(&args) {
+        std::process::exit(code);
+    }
     match args.first().map(String::as_str) {
         Some("--version" | "-V") => {
             arcade_desktop::attach_console();
