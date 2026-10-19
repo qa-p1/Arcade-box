@@ -15,7 +15,8 @@ use std::{
 
 #[derive(Parser)]
 #[command(
-    name = "arcadebox",
+    // The command users type; it reports the app's version.
+    name = "arcade-box",
     version,
     about = "Arcade Box's shared tool runtime from the terminal"
 )]
