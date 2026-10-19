@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.3.4 — 2026-10-19
+
+- The Island and Settings no longer crash Arcade Box when it runs from its
+  AppImage (0.3.1 to 0.3.3). Since 0.3.1 Box moved to the folder you started it
+  from so relative paths work in `arcade-box`, and the web view behind the
+  Island and Settings then could not find its helper programs, which are looked
+  up relative to the AppImage. The terminal tools still resolve paths against
+  your folder; the desktop app goes back into the AppImage's folder first.
+- The AppImage check in CI now opens Settings from the installed AppImage and
+  fails if Box quits.
+
 ## 0.3.3 — 2026-10-19
 
 - A helper an app starts from its own image (such as a settings window) keeps

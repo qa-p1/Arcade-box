@@ -20,7 +20,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["preserve_order"] }
 thiserror = "2.0"
 # Released shared install and tray-host APIs.
-arcade-link = { git = "https://github.com/qa-p1/Arcade-link", rev = "4c75f3a7c806ae78f96127c556708e65eaeeb476", features = ["engines", "install", "trayhost"] }
+arcade-link = { git = "https://github.com/qa-p1/Arcade-link", rev = "3bbbc5d0d7d383e18c7e7e20552e942c1a971abd", features = ["engines", "install", "trayhost"] }
 
 # zxing-cpp's bundled C++ build follows the opt-level: at 0 CMake builds Debug,
 # which links MSVC's debug runtime (unresolved _CrtDbgReport on Windows).

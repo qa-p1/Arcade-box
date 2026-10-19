@@ -26,6 +26,10 @@ fn main() {
     if let Some(code) = arcade_desktop::installer::run_terminal_alias(&args) {
         std::process::exit(code);
     }
+    // The terminal tools above resolve relative paths against the user's
+    // directory; the Island and Settings are webviews, and WebKit needs the
+    // AppImage's own directory.
+    arcade_link::childenv::enter_image_dir();
     match args.first().map(String::as_str) {
         Some("--version" | "-V") => {
             arcade_desktop::attach_console();
