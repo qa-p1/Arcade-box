@@ -1135,9 +1135,16 @@ pub(crate) fn show_island(window: &tauri::WebviewWindow) {
         let (width, height) = fit_surface_size(&island, geometry.width, geometry.height);
         let _ = island.set_size(Size::Logical(LogicalSize::new(width, height)));
         place_surface(&island, geometry.centered);
+        #[cfg(target_os = "linux")]
+        let requested = stamp_user_time(&island);
         if let Err(error) = island.show() {
             eprintln!("Could not show Arcade Island: {error}");
             return;
+        }
+        #[cfg(target_os = "linux")]
+        if let Some((native, time)) = requested {
+            use gtk::prelude::GtkWindowExt;
+            native.present_with_time(time);
         }
         let _ = island.set_focus();
         // TEMPORARY_MOTION_EVAL_START
@@ -1147,6 +1154,24 @@ pub(crate) fn show_island(window: &tauri::WebviewWindow) {
         // TEMPORARY_MOTION_EVAL_END
         let _ = island.emit("arcade://island-shown", ());
     });
+}
+
+/// The Island opens from a global shortcut that GTK never sees, so its user
+/// time stays stale, and X11 window managers that prevent focus stealing
+/// (Openbox, for one) showed it without keyboard focus: what the user typed
+/// went nowhere. Stamping it with the X server's current time before it maps,
+/// and presenting it with that time, counts as the user's own request. Returns
+/// the window and the time; `None` where the window isn't an X11 one (Wayland).
+#[cfg(target_os = "linux")]
+fn stamp_user_time(window: &tauri::WebviewWindow) -> Option<(gtk::ApplicationWindow, u32)> {
+    use gtk::glib::Cast;
+    use gtk::prelude::WidgetExt;
+    let native = window.gtk_window().ok()?;
+    native.realize();
+    let x11 = native.window()?.downcast::<gdkx11::X11Window>().ok()?;
+    let time = gdkx11::functions::x11_get_server_time(&x11);
+    x11.set_user_time(time);
+    Some((native, time))
 }
 
 pub(crate) fn toggle_island(window: &tauri::WebviewWindow) {

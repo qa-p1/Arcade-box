@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.5 — 2026-10-19
+
+- The Island now takes keyboard focus when you open it with the shortcut on X11
+  window managers that prevent focus stealing, such as Openbox. It opened
+  without focus, so what you typed went nowhere and Esc did nothing until you
+  clicked into it. The shortcut is caught outside GTK, so the Island carried an
+  old user time; it is now shown with the X server's current time.
+
 ## 0.3.4 — 2026-10-19
 
 - The Island and Settings no longer crash Arcade Box when it runs from its
