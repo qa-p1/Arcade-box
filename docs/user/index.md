@@ -8,7 +8,13 @@ since: 0.2.0
 
 Arcade Box brings file, media, text, web, and system tasks into one searchable desktop tool. Open it with a shortcut, find an action, and send the result where you need it.
 
-![Arcade Box on first run: the Island search bar above the shortcut setup card](images/first-run.png)
+![The Island: searching “compress” lists matching tools grouped by category](images/island-results-light.png)
+
+![A tool run in the Island: Change Case with its input, options and result](images/tool-run-light.png)
+
+![The dashboard window on its Tools page](images/dashboard-tools-light.png)
+
+Dark-mode versions are in the same folder (`*-dark.png`).
 
 ## Three useful things to start with
 

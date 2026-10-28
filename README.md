@@ -17,7 +17,11 @@ Arcade Box brings file, media, text, web, and system tasks into one searchable d
 
 It runs on **Linux** (x86_64; X11 and Wayland), **Windows** (x64) and **macOS** (universal: Apple Silicon and Intel). Linux flows run under isolated Xvfb and selected Hyprland flows are verified; Windows and macOS are built and tested in CI, but interactive desktop behavior is unverified.
 
-<p align="center"><img src="docs/user/images/first-run.png" width="720" alt="Arcade Box on first run: the Island search bar above the shortcut setup card"></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/user/images/island-results-dark.png"><img src="docs/user/images/island-results-light.png" width="560" alt="The Island: searching “compress” lists matching tools grouped by category"></picture></p>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/user/images/tool-run-dark.png"><img src="docs/user/images/tool-run-light.png" width="560" alt="A tool run in the Island: Change Case with its input, options and result"></picture></p>
+
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/user/images/dashboard-tools-dark.png"><img src="docs/user/images/dashboard-tools-light.png" width="760" alt="The dashboard window on its Tools page, with the sidebar of pages and categories"></picture></p>
 
 ## Download and install
 
