@@ -1,5 +1,21 @@
 # Arcade Box: status
 
+## 0.4.0 (2026-10-28)
+
+- Source version 0.4.0 on Arcade Link `v0.4.0`. The overhaul (BOX.md) adopts
+  the design kit, splits the dashboard into its own window, moves to
+  `dev.arcade.Box` and `arcade/box`, fixes B1–B9 and adds `scripts/check`,
+  the one-version check and the `tag.yml` → `release.yml` flow.
+- Checked on Linux in this container: `scripts/check` (including the layout
+  check at every Island and dashboard size, light and dark), the B1–B9
+  regression tests, the data migration from a real 0.3.5 profile (isolated
+  and XDG), the window class `dev.arcade.Box` and the webview folder under
+  Xvfb. Windows and macOS are checked by CI only.
+- Still needs a real desktop: the global shortcut opening the Island on
+  Hyprland, GNOME, KDE and the other platforms; tray behaviour; overlay
+  timing; start at login on macOS and Windows; and Tools updating Box from
+  0.3.5 on a real profile.
+
 ## Release status (2026-10-18)
 
 - Latest release: [v0.3.5](https://github.com/qa-p1/Arcade-box/releases/tag/v0.3.5), published 2026-10-19 (the Island takes keyboard focus on X11; see CHANGELOG.md). The CI and e2e notes below were recorded for the earlier v0.2.0.
