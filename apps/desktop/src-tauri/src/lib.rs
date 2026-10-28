@@ -24,6 +24,7 @@ use tauri_plugin_opener::OpenerExt;
 
 mod artifact_image;
 mod clipboard_history;
+mod dashboard;
 #[cfg(target_os = "linux")]
 mod hyprland;
 pub mod installer;
@@ -85,7 +86,6 @@ fn confirm_pipeline_effects(app: &tauri::AppHandle, message: String) -> bool {
 struct SurfaceGeometry {
     width: f64,
     height: f64,
-    centered: bool,
 }
 
 #[derive(Default)]
@@ -108,7 +108,6 @@ struct ResidentInstance {
 static SURFACE_GEOMETRY: Mutex<SurfaceGeometry> = Mutex::new(SurfaceGeometry {
     width: 740.0,
     height: 740.0,
-    centered: false,
 });
 
 #[derive(Clone)]
@@ -945,17 +944,12 @@ fn apply_surface_mode(
     window: &tauri::WebviewWindow,
     force: bool,
 ) -> Result<(), String> {
-    let (width, height, dashboard) = match mode {
-        "compact" | "search" | "tool" => (740.0, 740.0, false),
-        "dashboard" => (1100.0, 760.0, true),
-        _ => return Err("Unknown surface mode".into()),
-    };
-    let (width, height) = fit_surface_size(window, width, height);
-    let next = SurfaceGeometry {
-        width,
-        height,
-        centered: dashboard,
-    };
+    // The dashboard is its own window; the Island's states share one canvas.
+    if !matches!(mode, "compact" | "search" | "tool") {
+        return Err("Unknown surface mode".into());
+    }
+    let (width, height) = fit_surface_size(window, 740.0, 740.0);
+    let next = SurfaceGeometry { width, height };
     {
         let mut geometry = SURFACE_GEOMETRY
             .lock()
@@ -976,12 +970,12 @@ fn apply_surface_mode(
     window
         .set_size(Size::Logical(LogicalSize::new(width, height)))
         .map_err(|error| error.to_string())?;
-    let _ = window.set_always_on_top(!dashboard);
+    let _ = window.set_always_on_top(true);
     let _ = window.set_skip_taskbar(true);
-    place_surface(window, dashboard);
+    place_surface(window);
     #[cfg(target_os = "linux")]
     if window.is_visible().unwrap_or(false) {
-        let _ = hyprland::place_island(width, height, dashboard);
+        let _ = hyprland::place_island(width, height, false);
     }
     Ok(())
 }
@@ -1011,7 +1005,8 @@ fn fit_surface_size(window: &tauri::WebviewWindow, width: f64, height: f64) -> (
     (width.min(max_width), height.min(max_height))
 }
 
-fn place_surface(window: &tauri::WebviewWindow, centered: bool) {
+/// Centres the Island horizontally at the top of the active monitor.
+fn place_surface(window: &tauri::WebviewWindow) {
     let Some(monitor) = active_monitor(window) else {
         return;
     };
@@ -1021,13 +1016,8 @@ fn place_surface(window: &tauri::WebviewWindow, centered: bool) {
         return;
     };
     let x_offset = (i64::from(screen.width) - i64::from(size.width)).max(0) / 2;
-    let y_offset = if centered {
-        (i64::from(screen.height) - i64::from(size.height)).max(0) / 2
-    } else {
-        0
-    };
     let x = (i64::from(origin.x) + x_offset).clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
-    let y = (i64::from(origin.y) + y_offset).clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
+    let y = origin.y;
     let _ = window.set_position(Position::Physical(PhysicalPosition::new(x, y)));
 }
 
@@ -1046,11 +1036,13 @@ fn island_ready(window: tauri::WebviewWindow) {
         // Created for a request that was cancelled before the page loaded.
         schedule_island_release(&window, ISLAND_IDLE_RELEASE);
     }
-    if PENDING_SETTINGS.swap(false, std::sync::atomic::Ordering::SeqCst) {
-        let _ = window.emit("arcade://open-settings", ());
-    }
-    if PENDING_PIPELINES.swap(false, std::sync::atomic::Ordering::SeqCst) {
-        let _ = window.emit("arcade://open-pipelines", ());
+    let tool_opens = std::mem::take(
+        &mut *PENDING_TOOL_OPENS
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner),
+    );
+    for open in tool_opens {
+        let _ = window.emit_to("island", "arcade://open-tool", open);
     }
     let link_opens = std::mem::take(
         &mut *PENDING_LINK_OPENS
@@ -1123,7 +1115,7 @@ pub(crate) fn show_island(window: &tauri::WebviewWindow) {
             .unwrap_or_else(std::sync::PoisonError::into_inner);
         let (width, height) = fit_surface_size(&island, geometry.width, geometry.height);
         let _ = island.set_size(Size::Logical(LogicalSize::new(width, height)));
-        place_surface(&island, geometry.centered);
+        place_surface(&island);
         #[cfg(target_os = "linux")]
         let requested = stamp_user_time(&island);
         if let Err(error) = island.show() {
@@ -1192,6 +1184,8 @@ const ISLAND_IDLE_RELEASE: std::time::Duration = std::time::Duration::from_secs(
 
 /// `box.open` requests that arrived before the Island's WebView was ready.
 static PENDING_LINK_OPENS: Mutex<Vec<serde_json::Value>> = Mutex::new(Vec::new());
+/// Tools the dashboard opened before the Island's WebView was ready.
+static PENDING_TOOL_OPENS: Mutex<Vec<serde_json::Value>> = Mutex::new(Vec::new());
 
 /// Runs `action` on the main thread with the Island, creating its WebView
 /// first when none exists. Nothing in Box's background paths (tray, Link,
@@ -1230,6 +1224,25 @@ pub(crate) fn open_link_request(app: &tauri::AppHandle, open: serde_json::Value)
             let _ = window.emit("arcade://link-open", open);
         } else {
             PENDING_LINK_OPENS
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .push(open);
+        }
+    });
+}
+
+/// Opens a tool (and optionally a job's result) in the Island for the dashboard.
+pub(crate) fn open_island_tool(app: &tauri::AppHandle, open: serde_json::Value) {
+    with_island(app, move |window| {
+        let ready = ISLAND_VISIBILITY
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .ready;
+        show_island(window);
+        if ready {
+            let _ = window.emit_to("island", "arcade://open-tool", open);
+        } else {
+            PENDING_TOOL_OPENS
                 .lock()
                 .unwrap_or_else(std::sync::PoisonError::into_inner)
                 .push(open);
@@ -1448,20 +1461,28 @@ thread_local! {
 fn prepare_recovery_tray<M: tauri::Manager<tauri::Wry>>(
     app: &M,
 ) -> tauri::Result<PreparedRecoveryTray> {
-    let show = MenuItem::with_id(app, "show-island", "Open Box", true, None::<&str>)?;
+    let toggle = MenuItem::with_id(
+        app,
+        "toggle-island",
+        "Show or hide Arcade Box",
+        true,
+        None::<&str>,
+    )?;
+    let dashboard = MenuItem::with_id(app, "open-dashboard", "Open dashboard", true, None::<&str>)?;
     let pipelines = MenuItem::with_id(app, "open-pipelines", "Open pipelines", true, None::<&str>)?;
-    let settings = MenuItem::with_id(app, "settings", "Open Settings", true, None::<&str>)?;
+    let settings = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
     let restart_item = MenuItem::with_id(app, "restart", "Restart Arcade Box", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "Quit Arcade Box", true, None::<&str>)?;
     let separator = tauri::menu::PredefinedMenuItem::separator(app)?;
     let menu = Menu::with_items(
         app,
         &[
-            &show,
+            &toggle,
+            &dashboard,
             &pipelines,
             &settings,
-            &restart_item,
             &separator,
+            &restart_item,
             &quit,
         ],
     )?;
@@ -1496,8 +1517,8 @@ mod linux_tray {
         let handle = app.clone();
         let _ = app.run_on_main_thread(move || action(&handle));
     }
-    fn show(app: &AppHandle) {
-        super::open_island(app);
+    fn toggle(app: &AppHandle) {
+        super::toggle_island_app(app);
     }
     fn quit(app: &AppHandle) {
         app.exit(0);
@@ -1553,7 +1574,7 @@ mod linux_tray {
             }
         }
         fn activate(&mut self, _x: i32, _y: i32) {
-            on_main(&self.app, super::open_settings);
+            on_main(&self.app, super::open_dashboard);
         }
         fn menu(&self) -> Vec<ksni::MenuItem<Self>> {
             use ksni::menu::StandardItem;
@@ -1566,11 +1587,12 @@ mod linux_tray {
                 .into()
             };
             vec![
-                item("Open Box", show),
+                item("Show or hide Arcade Box", toggle),
+                item("Open dashboard", super::open_dashboard),
                 item("Open pipelines", super::open_pipelines),
-                item("Open Settings", super::open_settings),
-                item("Restart Arcade Box", super::restart),
+                item("Settings", super::open_settings),
                 ksni::MenuItem::Separator,
+                item("Restart Arcade Box", super::restart),
                 item("Quit Arcade Box", quit),
             ]
         }
@@ -1655,7 +1677,8 @@ fn set_native_tray(app: &tauri::AppHandle, state: arcade_link::trayhost::TraySta
                         .icon(prepared.icon)
                         .show_menu_on_left_click(menu_on_left)
                         .on_menu_event(|app, event| match event.id().as_ref() {
-                            "show-island" => open_island(app),
+                            "toggle-island" => toggle_island_app(app),
+                            "open-dashboard" => open_dashboard(app),
                             "open-pipelines" => open_pipelines(app),
                             "settings" => open_settings(app),
                             "restart" => restart(app),
@@ -1670,7 +1693,7 @@ fn set_native_tray(app: &tauri::AppHandle, state: arcade_link::trayhost::TraySta
                             } = event
                                 && !menu_on_left
                             {
-                                open_settings(tray.app_handle());
+                                open_dashboard(tray.app_handle());
                             }
                         })
                         .build(app);
@@ -1814,37 +1837,17 @@ pub fn attach_console() {
 
 pub use link::{print_manifest, serve_oneshot};
 
-/// `--settings` asked for before the Island's WebView was ready.
-static PENDING_SETTINGS: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
-static PENDING_PIPELINES: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
-
-/// Opens Settings in the Island (now, or once the WebView is ready).
+/// Settings, Pipelines and the other pages live in the dashboard window.
 pub(crate) fn open_settings(app: &tauri::AppHandle) {
-    open_island_view(app, &PENDING_SETTINGS, "arcade://open-settings");
+    dashboard::open(app, Some("settings"));
 }
 
 pub(crate) fn open_pipelines(app: &tauri::AppHandle) {
-    open_island_view(app, &PENDING_PIPELINES, "arcade://open-pipelines");
+    dashboard::open(app, Some("pipelines"));
 }
 
-fn open_island_view(
-    app: &tauri::AppHandle,
-    pending: &'static std::sync::atomic::AtomicBool,
-    event: &'static str,
-) {
-    with_island(app, move |window| {
-        let ready = ISLAND_VISIBILITY
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner)
-            .ready;
-        if !ready {
-            pending.store(true, std::sync::atomic::Ordering::SeqCst);
-        }
-        show_island(window);
-        if ready {
-            let _ = window.emit(event, ());
-        }
-    });
+pub(crate) fn open_dashboard(app: &tauri::AppHandle) {
+    dashboard::open(app, None);
 }
 
 /// Another launch of Arcade Box (the applications menu, `--settings`,
@@ -1860,6 +1863,7 @@ fn handle_second_instance(app: &tauri::AppHandle, argv: &[String]) {
         Some("--settings") => open_settings(app),
         Some("--restart") => restart(app),
         Some("--pipelines") => open_pipelines(app),
+        Some("--dashboard") => open_dashboard(app),
         Some("--toggle") => toggle_island_app(app),
         Some("--background") => {}
         _ => open_island(app),
@@ -2037,12 +2041,17 @@ pub fn run(args: Vec<String>) {
                 open_settings(app.handle());
             } else if first_flag.as_deref() == Some("--pipelines") {
                 open_pipelines(app.handle());
+            } else if first_flag.as_deref() == Some("--dashboard") {
+                open_dashboard(app.handle());
             } else if first_flag.as_deref() == Some("--toggle") {
                 toggle_island_app(app.handle());
             }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            dashboard::dashboard_ready,
+            dashboard::open_dashboard,
+            dashboard::open_tool_in_island,
             link::connected_apps,
             link::set_link_settings,
             link::get_connected_app,

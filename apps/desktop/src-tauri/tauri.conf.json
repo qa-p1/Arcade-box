@@ -27,6 +27,20 @@
         "visible": false,
         "center": false,
         "create": false
+      },
+      {
+        "label": "dashboard",
+        "title": "Dashboard — Arcade Box",
+        "url": "dashboard.html",
+        "width": 1100,
+        "height": 760,
+        "minWidth": 720,
+        "minHeight": 520,
+        "decorations": true,
+        "resizable": true,
+        "visible": false,
+        "center": true,
+        "create": false
       }
     ],
     "security": {

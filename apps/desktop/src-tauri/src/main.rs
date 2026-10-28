@@ -4,7 +4,9 @@ const HELP: &str = "Arcade Box
 
   arcade-desktop                   Start Arcade Box in the tray (or show the Island if it is running)
   arcade-desktop --background      Start in the tray without showing anything
+  arcade-desktop --dashboard       Open the dashboard
   arcade-desktop --settings        Open Settings
+  arcade-desktop --pipelines       Open Pipelines
   arcade-desktop --restart         Restart the running instance
   arcade-desktop --quit            Quit the running instance
   arcade-desktop --install [--silent] [--no-launch] [--keep-download] [--channel C]

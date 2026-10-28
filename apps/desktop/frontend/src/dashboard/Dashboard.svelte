@@ -39,8 +39,7 @@
   <div class="dashboard-main">
     <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">{box.dashboardSearchAnnouncement}</div>
     <header class="dashboard-topbar">
-      <div class="breadcrumbs"><span>Arcade Box</span><Icon name="chevron" size={14} /><strong>{box.catalogMode === 'recent' ? 'Recently used' : box.catalogMode === 'favorites' ? 'Favorites' : box.catalogMode === 'jobs' ? 'Background jobs' : box.catalogMode === 'engines' ? 'Engines & dependencies' : box.catalogMode === 'pipelines' ? 'Pipelines' : box.catalogMode === 'plugins' ? 'Plugins' : box.catalogMode === 'settings' ? 'Settings' : box.categoryFilter}</strong></div>
-      <div class="topbar-actions"><span class="sync-state"><span class="runtime-dot" class:offline={Boolean(box.catalogError)} aria-hidden="true"></span>{box.catalogError ? 'Runtime offline' : 'Local runtime'}</span><button bind:this={box.dashboardCloseButton} class="quiet-button" aria-label="Close Arcade Box dashboard" onclick={box.toggleDashboard}><Icon name="close" size={16} /><span>Close</span></button></div>
+      <div class="topbar-actions"><span class="sync-state"><span class="runtime-dot" class:offline={Boolean(box.catalogError)} aria-hidden="true"></span>{box.catalogError ? 'Runtime offline' : 'Local runtime'}</span></div>
     </header>
 
     <div class="dashboard-content">

@@ -22,6 +22,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(frontendRoot, 'index.html'),
+        dashboard: resolve(frontendRoot, 'dashboard.html'),
         pin: resolve(frontendRoot, 'pin.html'),
       },
     },

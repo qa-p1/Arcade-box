@@ -1,0 +1,12 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "dashboard",
+  "description": "Minimal frontend permissions for the Arcade Box dashboard window",
+  "windows": [
+    "dashboard"
+  ],
+  "permissions": [
+    "core:event:default",
+    "core:window:allow-is-focused"
+  ]
+}

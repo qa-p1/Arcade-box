@@ -106,11 +106,13 @@ mockIPC((command, args) => {
     case 'paste_plain_status': case 'window_pin_status': return { available: false };
     case 'island_ready': void emit('arcade://island-shown'); return;
     case 'set_island_input_region': return;
-    case 'set_surface_mode': case 'set_preference': case 'set_favorite': case 'hide_island': return;
+    case 'set_surface_mode': case 'set_preference': case 'set_favorite': case 'hide_island': case 'dashboard_ready': case 'open_dashboard': case 'open_tool_in_island': return;
     case 'plugin:event|listen': return 1;
     case 'plugin:event|unlisten': return;
     case 'plugin:window|is_focused': return true;
     default: throw new Error(`Native integration required: ${command}`);
   }
 }, { shouldMockEvents: true });
+// ?surface=dashboard renders the dashboard window's page, as dashboard.html does.
+if (new URLSearchParams(location.search).get('surface') === 'dashboard') document.documentElement.dataset.surface = 'dashboard';
 mount(App, { target: document.getElementById('app')! });

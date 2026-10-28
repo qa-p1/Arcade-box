@@ -1,7 +1,7 @@
 // Arcade Box UI state and actions, shared by the Island and the dashboard.
 // Created once per window by App.svelte and handed to the surfaces through
 // context (useBox). Moved verbatim from App.svelte; behaviour is unchanged.
-import { copyText, watchIslandShown, watchIslandHiding, watchIslandHidden, watchOpenSettings, watchOpenPipelines, watchLinkOpen, islandReady, setIslandInputRegion, type LinkOpenRequest } from './lib/arcade';
+import { announceTheme, copyText, currentSurface, dashboardReady, openDashboard, openToolInIsland, watchDashboardPage, watchIslandShown, watchIslandHiding, watchIslandHidden, watchLinkOpen, watchOpenTool, watchTheme, islandReady, setIslandInputRegion, type LinkOpenRequest, type OpenToolRequest } from './lib/arcade';
 import { onMount, tick } from 'svelte';
 import { cancelResultLinkAction, overlapState, pickPeerClipboard, watchLinkChanged, type OverlapState } from './lib/arcade';
 import type { IconName } from './lib/icon-names';
@@ -11,9 +11,13 @@ import { acceptsSelectedFile, acceptsTextInput, fileInputMime, inputMime, isRunn
 import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem } from './lib/standard-ui';
 import { getContext, setContext } from 'svelte';
 
+/** The dashboard's pages, as the tray, CLI and Link name them (dashboard.rs PAGES). */
+const DASHBOARD_PAGES = ['all', 'favorites', 'recent', 'jobs', 'pipelines', 'plugins', 'engines', 'settings'] as const;
+
 export function createBox() {
 
   type Surface = 'island' | 'dashboard';
+  type CatalogMode = (typeof DASHBOARD_PAGES)[number];
   const commandKey = /macintosh|mac os/i.test(navigator.userAgent) ? '⌘' : 'Ctrl';
 
   interface MediaFormat {
@@ -80,7 +84,8 @@ export function createBox() {
 
   let processTerminationRequests = $state<Record<string, string>>({});
 
-  let surface = $state<Surface>('island');
+  // Each window runs its own copy: the Island, or the dashboard (dashboard.html).
+  const surface: Surface = currentSurface();
   let dismissing = $state(false);
   let islandContent: HTMLDivElement | undefined = $state();
   let islandHeight = $state<number | undefined>();
@@ -168,13 +173,12 @@ export function createBox() {
   let catalogError = $state('');
   let copyState = $state<'idle' | 'copied' | 'error'>('idle');
   let categoryFilter = $state('All tools');
-  let catalogMode = $state<'all' | 'recent' | 'favorites' | 'engines' | 'jobs' | 'pipelines' | 'plugins' | 'settings'>('all');
+  let catalogMode = $state<CatalogMode>('all');
   let dashboardQuery = $state('');
   let returnToDashboard = $state(false);
   let islandShell: HTMLElement | undefined = $state();
   let searchInput: HTMLInputElement | undefined = $state();
   let catalogSearchInput: HTMLInputElement | undefined = $state();
-  let dashboardCloseButton: HTMLButtonElement | undefined = $state();
   let selectedToolHeading: HTMLHeadingElement | undefined = $state();
   let shortcutField: HTMLInputElement | undefined = $state();
   let onboardingDialog: HTMLDialogElement | undefined = $state();
@@ -182,6 +186,8 @@ export function createBox() {
   let stopWatchingFocus = () => {};
   let stopWatchingJobs = () => {};
   let stopWatchingShortcut = () => {};
+  let stopWatchingTheme = () => {};
+  let initialLoad: Promise<void> = Promise.resolve();
   let appliedSurfaceMode = '';
   let searchRequestId = 0;
   let contextRequestId = 0;
@@ -225,7 +231,8 @@ export function createBox() {
     : '');
 
   $effect(() => {
-    const mode = surface === 'dashboard' ? 'dashboard' : selectedTool || onboardingVisible ? 'tool' : isCompact ? 'compact' : 'search';
+    if (surface === 'dashboard') return;
+    const mode = selectedTool || onboardingVisible ? 'tool' : isCompact ? 'compact' : 'search';
     if (mode !== appliedSurfaceMode) {
       appliedSurfaceMode = mode;
       void setSurfaceMode(mode).catch((error) => (catalogError = messageOf(error)));
@@ -258,12 +265,13 @@ export function createBox() {
     return () => observer.disconnect();
   });
 
-  let surfaceVisible = $state(!hasDesktopBridge());
+  // The dashboard is a normal window, shown by the OS; the Island fades in.
+  let surfaceVisible = $state(!hasDesktopBridge() || surface === 'dashboard');
   let lastFocusedElement: HTMLElement | null = null;
   let stopWatchingHiding = () => {};
   let stopWatchingHidden = () => {};
-  let stopWatchingOpenSettings = () => {};
   let stopWatchingLinkOpen = () => {};
+  let stopWatchingWindow = () => {};
   /** Input from another Arcade app waiting for the user to choose a tool. */
   let pendingLink = $state<LinkOpenRequest | null>(null);
 
@@ -272,15 +280,13 @@ export function createBox() {
   let appliedInputRegion = '';
   let inputRegionFrame = 0;
   function queueInputRegion(): void {
-    if (inputRegionFrame) return;
+    if (surface === 'dashboard' || inputRegionFrame) return;
     inputRegionFrame = requestAnimationFrame(() => {
       inputRegionFrame = 0;
       let region: [number, number, number, number] | null = null;
       if (onboardingVisible && onboardingDialog?.open) {
         const rect = onboardingDialog.getBoundingClientRect();
         region = [rect.x, rect.y, rect.width, rect.height];
-      } else if (surface === 'dashboard') {
-        region = [0, 0, window.innerWidth, window.innerHeight];
       } else if (islandShell) {
         region = [islandShell.offsetLeft, islandShell.offsetTop, islandShell.offsetWidth, islandHeight ?? islandShell.offsetHeight];
       }
@@ -322,14 +328,13 @@ export function createBox() {
     animateInvocation();
     if (onboardingVisible) shortcutField?.focus();
     else if (lastFocusedElement?.isConnected) lastFocusedElement.focus({ preventScroll: true });
-    else if (surface === 'dashboard') focusDashboardEntry();
     else if (!selectedTool) searchInput?.focus();
     else islandShell?.querySelector<HTMLElement>('textarea, input, select, button')?.focus();
   }
 
   onMount(() => {
-    void loadInitialData();
-    void tick().then(() => searchInput?.focus());
+    initialLoad = loadInitialData();
+    void tick().then(() => (surface === 'dashboard' ? catalogSearchInput : searchInput)?.focus());
     const systemTheme = window.matchMedia('(prefers-color-scheme: light)');
     const onSystemThemeChange = () => {
       if (themeMode === 'system') document.documentElement.dataset.theme = systemTheme.matches ? 'light' : 'dark';
@@ -337,27 +342,41 @@ export function createBox() {
     onSystemThemeChange();
     systemTheme.addEventListener('change', onSystemThemeChange);
     let disposed = false;
-    void Promise.all([
-      watchIslandShown(() => { void revealIsland(); }),
-      watchIslandHiding(() => {
-        lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-        islandShell?.getAnimations().forEach((animation) => animation.cancel());
-        dismissing = true;
-      }),
-      watchIslandHidden(() => { surfaceVisible = false; dismissing = false; }),
-      watchOpenSettings(() => openSettings()),
-      watchOpenPipelines(() => openPipelines()),
-      watchLinkOpen((request) => openFromLink(request)),
-    ]).then(async ([shown, hiding, hidden, settings, linkOpen]) => {
-      if (disposed) { shown(); hiding(); hidden(); settings(); linkOpen(); return; }
-      stopWatchingShown = shown; stopWatchingHiding = hiding; stopWatchingHidden = hidden; stopWatchingOpenSettings = settings; stopWatchingLinkOpen = linkOpen;
-      await islandReady();
-    }).catch((error) => (catalogError = messageOf(error)));
+    void watchTheme((theme) => {
+      themeMode = theme === 'light' || theme === 'dark' ? theme : 'system';
+      applyTheme(themeMode);
+    }).then((unlisten) => { if (disposed) unlisten(); else stopWatchingTheme = unlisten; });
+    if (surface === 'dashboard') {
+      // Register for pages first, so a page asked for while loading is kept.
+      void watchDashboardPage((page) => showPage(page)).then(async (unlisten) => {
+        if (disposed) { unlisten(); return; }
+        stopWatchingWindow = unlisten;
+        await dashboardReady();
+      }).catch((error) => (catalogError = messageOf(error)));
+    } else {
+      void Promise.all([
+        watchIslandShown(() => { void revealIsland(); }),
+        watchIslandHiding(() => {
+          lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+          islandShell?.getAnimations().forEach((animation) => animation.cancel());
+          dismissing = true;
+        }),
+        watchIslandHidden(() => { surfaceVisible = false; dismissing = false; }),
+        watchOpenTool((request) => void openFromDashboard(request)),
+        watchLinkOpen((request) => openFromLink(request)),
+      ]).then(async ([shown, hiding, hidden, openTool, linkOpen]) => {
+        if (disposed) { shown(); hiding(); hidden(); openTool(); linkOpen(); return; }
+        stopWatchingShown = shown; stopWatchingHiding = hiding; stopWatchingHidden = hidden; stopWatchingWindow = openTool; stopWatchingLinkOpen = linkOpen;
+        await islandReady();
+      }).catch((error) => (catalogError = messageOf(error)));
+    }
     void watchIslandFocus((isFocused) => {
-      if (isFocused) {
-        void refreshContext();
-        if (surface === 'island' && !selectedTool) void tick().then(() => searchInput?.focus());
-      }
+      if (!isFocused) return;
+      // Favourites, recents and jobs change in the other window too.
+      void refreshSharedState();
+      if (surface === 'dashboard') return;
+      void refreshContext();
+      if (!selectedTool) void tick().then(() => searchInput?.focus());
     }).then((unlisten) => { if (disposed) unlisten(); else stopWatchingFocus = unlisten; });
     void watchJobUpdates(acceptJobSnapshot).then((unlisten) => { if (disposed) unlisten(); else stopWatchingJobs = unlisten; });
     let stopPeers = () => {};
@@ -371,7 +390,8 @@ export function createBox() {
       stopWatchingShown();
       stopWatchingHiding();
       stopWatchingHidden();
-      stopWatchingOpenSettings();
+      stopWatchingWindow();
+      stopWatchingTheme();
       stopWatchingLinkOpen();
       stopWatchingJobs();
       stopWatchingShortcut();
@@ -422,7 +442,7 @@ export function createBox() {
       applyTheme(themeMode);
       shortcutInput = shortcutDescription(shortcut) || (shortcut?.backend.includes('portal') ? 'CTRL+ALT+space' : defaultShortcutForPlatform());
       onboardingReady = true;
-      onboardingVisible = hasDesktopBridge() && !onboardingComplete;
+      onboardingVisible = hasDesktopBridge() && !onboardingComplete && surface === 'island';
       catalogError = '';
       // Optional providers and desktop portals must not hold up search or onboarding.
       void listProviders().then((items) => { providers = items; providersLoaded = true; providerError = ''; })
@@ -461,6 +481,19 @@ export function createBox() {
     await setPreference('theme', value);
     themeMode = value;
     applyTheme(value);
+    void announceTheme(value).catch(() => {});
+  }
+
+  /** Reloads what the other window may have changed since this one last looked. */
+  async function refreshSharedState(): Promise<void> {
+    const [favoriteList, historyList, jobs] = await Promise.all([
+      listFavorites().catch(() => null),
+      getHistory().catch(() => null),
+      listJobs().catch(() => null),
+    ]);
+    if (favoriteList) favorites = favoriteList;
+    if (historyList) history = historyList;
+    if (jobs) mergeBackgroundJobs(jobs);
   }
 
   function shortcutDescription(status: ShortcutStatus | null): string {
@@ -565,6 +598,10 @@ export function createBox() {
   }
 
   function openTool(tool: ToolSummary, fromDashboard = false): void {
+    if (surface === 'dashboard') {
+      void openToolInIsland(tool.id).catch((error) => (catalogError = messageOf(error)));
+      return;
+    }
     if (peerRequestId) { void cancelResultLinkAction(peerRequestId); peerRequestId = ''; }
     running = false;
     releaseCurrentDirectoryGrant();
@@ -588,7 +625,6 @@ export function createBox() {
     runError = '';
     copyState = 'idle';
     returnToDashboard = fromDashboard;
-    surface = 'island';
     focused = false;
     if (pendingLink) {
       applyLinkInput(pendingLink);
@@ -614,9 +650,22 @@ export function createBox() {
     releaseCurrentDirectoryGrant();
     selectedTool = null;
     activeResult = null;
-    surface = 'island';
     query = '';
     void tick().then(() => searchInput?.focus());
+  }
+
+  /** The dashboard opened a tool, or a job's result, in this Island. */
+  async function openFromDashboard(request: OpenToolRequest): Promise<void> {
+    await initialLoad;
+    const tool = toolById.get(request.tool);
+    if (!tool) return;
+    const job = request.job ? (await listJobs().catch(() => [])).find((entry) => entry.id === request.job) : undefined;
+    openTool(tool, true);
+    if (job?.result) {
+      acceptJobSnapshot(job);
+      activeJobId = job.id;
+      activeResult = job.result;
+    }
   }
 
   function applyLinkInput(request: LinkOpenRequest): void {
@@ -647,18 +696,25 @@ export function createBox() {
     activeJobId = '';
     activeResult = null;
     runError = '';
+    // A tool opened from the dashboard goes back there.
     if (returnToDashboard) {
-      surface = 'dashboard';
       returnToDashboard = false;
-      focusDashboardEntry();
-    } else {
-      surface = 'island';
-      void tick().then(() => searchInput?.focus());
+      void openDashboard();
     }
+    void tick().then(() => searchInput?.focus());
   }
 
   function focusDashboardEntry(): void {
-    void tick().then(() => (catalogSearchInput ?? dashboardCloseButton)?.focus());
+    void tick().then(() => catalogSearchInput?.focus());
+  }
+
+  /** The dashboard's page, asked for by the tray, `--settings`, Link or the Island. */
+  function showPage(page: string): void {
+    if (!DASHBOARD_PAGES.includes(page as CatalogMode)) return;
+    catalogMode = page as CatalogMode;
+    categoryFilter = 'All tools';
+    dashboardQuery = '';
+    focusDashboardEntry();
   }
 
   function acceptToolCatalog(catalog: ToolSummary[]): void {
@@ -724,6 +780,16 @@ export function createBox() {
 
   function handleWindowKeydown(event: KeyboardEvent): void {
     if (event.defaultPrevented || event.isComposing) return;
+    const command = event.metaKey || event.ctrlKey;
+    if (surface === 'dashboard') {
+      // A normal window: Esc doesn't close it; ⌘K and / go to the catalog search.
+      if ((command && event.key.toLowerCase() === 'k') || (event.key === '/' && !isEditableTarget(event.target))) {
+        event.preventDefault();
+        catalogSearchInput?.focus();
+        catalogSearchInput?.select();
+      }
+      return;
+    }
     if (onboardingVisible) {
       // Esc closes the Island as everywhere else; the first-run card comes
       // back next time until it is finished.
@@ -733,7 +799,6 @@ export function createBox() {
       }
       return;
     }
-    const command = event.metaKey || event.ctrlKey;
     if (selectedTool && command && event.key === 'Enter') {
       event.preventDefault();
       void submitTool();
@@ -763,15 +828,11 @@ export function createBox() {
       void dismissIsland();
     } else if (command && event.key.toLowerCase() === 'k') {
       event.preventDefault();
-      if (surface === 'dashboard') catalogSearchInput?.focus();
-      else {
-        if (selectedTool) { returnToDashboard = false; backFromTool(); }
-        void tick().then(() => { searchInput?.focus(); searchInput?.select(); });
-      }
+      if (selectedTool) { returnToDashboard = false; backFromTool(); }
+      void tick().then(() => { searchInput?.focus(); searchInput?.select(); });
     } else if (event.key === '/' && !isEditableTarget(event.target)) {
       event.preventDefault();
       releaseCurrentDirectoryGrant();
-      surface = 'island';
       selectedTool = null;
       activeJobId = '';
       activeResult = null;
@@ -1006,16 +1067,14 @@ export function createBox() {
     }
   }
 
+  /** "Browse all tools": the Island opens the dashboard on Tools; in the
+   * dashboard it shows all tools. */
   function toggleDashboard(): void {
-    releaseCurrentDirectoryGrant();
-    selectedTool = null;
-    activeResult = null;
-    surface = surface === 'dashboard' ? 'island' : 'dashboard';
-    dashboardQuery = '';
-    categoryFilter = 'All tools';
-    catalogMode = 'all';
-    if (surface === 'island') void tick().then(() => searchInput?.focus());
-    else focusDashboardEntry();
+    if (surface === 'island') {
+      void openDashboard('all').catch((error) => (catalogError = messageOf(error)));
+      return;
+    }
+    showPage('all');
   }
 
   const categoryIcons: Record<string, IconName> = {
@@ -1231,6 +1290,10 @@ export function createBox() {
   function viewJobResult(job: JobSnapshot): void {
     const tool = tools.find((item) => item.id === job.toolId);
     if (!tool || !job.result) return;
+    if (surface === 'dashboard') {
+      void openToolInIsland(tool.id, job.id).catch((error) => (jobError = messageOf(error)));
+      return;
+    }
     openTool(tool, true);
     activeJobId = job.id;
     activeResult = job.result;
@@ -1287,27 +1350,18 @@ export function createBox() {
     }
   }
 
+  /** Opens a dashboard page: in this window, or in the dashboard window from the Island. */
+  function openPage(page: CatalogMode): void {
+    if (surface === 'island') void openDashboard(page).catch((error) => (catalogError = messageOf(error)));
+    else showPage(page);
+  }
+
   function openSettings(): void {
-    releaseCurrentDirectoryGrant();
-    selectedTool = null;
-    activeJobId = '';
-    activeResult = null;
-    surface = 'dashboard';
-    catalogMode = 'settings';
-    categoryFilter = 'All tools';
-    dashboardQuery = '';
+    openPage('settings');
   }
 
   function openPipelines(): void {
-    releaseCurrentDirectoryGrant();
-    selectedTool = null;
-    activeJobId = '';
-    activeResult = null;
-    surface = 'dashboard';
-    catalogMode = 'pipelines';
-    categoryFilter = 'All tools';
-    dashboardQuery = '';
-    focusDashboardEntry();
+    openPage('pipelines');
   }
 
   async function getTesseract(): Promise<void> {
@@ -1324,17 +1378,7 @@ export function createBox() {
   }
 
   function openEngines(): void {
-    releaseCurrentDirectoryGrant();
-    selectedTool = null;
-    activeJobId = '';
-    activeResult = null;
-    screenCaptureBusy = false;
-    artifactActionBusy = false;
-    surface = 'dashboard';
-    catalogMode = 'engines';
-    categoryFilter = 'All tools';
-    dashboardQuery = '';
-    focusDashboardEntry();
+    openPage('engines');
   }
 
   function providerIcon(capability: string): IconName {
@@ -1779,7 +1823,6 @@ export function createBox() {
     get processTerminationRequests() { return processTerminationRequests; },
     set processTerminationRequests(value) { processTerminationRequests = value; },
     get surface() { return surface; },
-    set surface(value) { surface = value; },
     get dismissing() { return dismissing; },
     set dismissing(value) { dismissing = value; },
     get islandContent() { return islandContent; },
@@ -1933,8 +1976,6 @@ export function createBox() {
     set searchInput(value) { searchInput = value; },
     get catalogSearchInput() { return catalogSearchInput; },
     set catalogSearchInput(value) { catalogSearchInput = value; },
-    get dashboardCloseButton() { return dashboardCloseButton; },
-    set dashboardCloseButton(value) { dashboardCloseButton = value; },
     get selectedToolHeading() { return selectedToolHeading; },
     set selectedToolHeading(value) { selectedToolHeading = value; },
     get shortcutField() { return shortcutField; },
@@ -1982,8 +2023,6 @@ export function createBox() {
     set stopWatchingHiding(value) { stopWatchingHiding = value; },
     get stopWatchingHidden() { return stopWatchingHidden; },
     set stopWatchingHidden(value) { stopWatchingHidden = value; },
-    get stopWatchingOpenSettings() { return stopWatchingOpenSettings; },
-    set stopWatchingOpenSettings(value) { stopWatchingOpenSettings = value; },
     get stopWatchingLinkOpen() { return stopWatchingLinkOpen; },
     set stopWatchingLinkOpen(value) { stopWatchingLinkOpen = value; },
     get pendingLink() { return pendingLink; },

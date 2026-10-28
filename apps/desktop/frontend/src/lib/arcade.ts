@@ -1,5 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
+import { emit, listen } from '@tauri-apps/api/event';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import type { AudioPreview, ClipboardHistoryItem, ClipboardHistoryStatus, ContextSuggestion, HistoryEntry, ImageResultPreview, JobSnapshot, LoudnessReport, PastePlainStatus, Pipeline, PinWindowStatus, PluginPermissionGrant, PluginPreview, PluginSummary, ProviderInfo, ProcessInfo, SampledScreenPixel, ScreenCaptureStatus, ScreenImagePreview, ScreenRecordingSnapshot, SelectedDirectory, SelectedFile, ShortcutStatus, SystemWindowPinStatus, ToolInput, ToolRequest, ToolResult, ToolSummary, ToolOutput, VideoEstimate, VideoPreview } from './contracts';
 
@@ -381,7 +381,7 @@ export async function hideIsland(): Promise<void> {
   await invoke<void>('hide_island');
 }
 
-export type SurfaceMode = 'compact' | 'search' | 'tool' | 'dashboard';
+export type SurfaceMode = 'compact' | 'search' | 'tool';
 
 export async function setSurfaceMode(mode: SurfaceMode): Promise<void> {
   if (!isDesktopRuntime()) return;
@@ -417,16 +417,48 @@ export function arcadeAppName(id: string): string {
   return ({ 'arcade.box': 'Arcade Box', 'arcade.lens': 'Arcade Lens', 'arcade.look': 'Arcade Look', 'arcade.wheel': 'Arcade Wheel', 'arcade.clipboard': 'Arcade Clipboard', 'arcade.shelf': 'Arcade Shelf', 'arcade.find': 'Arcade Find' } as Record<string, string>)[id] ?? 'another Arcade app';
 }
 
-/** `arcade-desktop --settings` (or another app) asked Box to open Settings. */
-export async function watchOpenSettings(handler: () => void): Promise<() => void> {
-  if (!isDesktopRuntime()) return () => {};
-  return listen('arcade://open-settings', handler);
+/** Which window this page runs in: the Island, or the dashboard (dashboard.html). */
+export function currentSurface(): 'island' | 'dashboard' {
+  return document.documentElement.dataset.surface === 'dashboard' ? 'dashboard' : 'island';
 }
 
-/** Tray and Link menu request that Box open its pipelines view. */
-export async function watchOpenPipelines(handler: () => void): Promise<() => void> {
+/** Opens or focuses the dashboard window, on `page` when one is given. */
+export async function openDashboard(page?: string): Promise<void> {
+  if (!isDesktopRuntime()) return;
+  await invoke<void>('open_dashboard', { page: page ?? null });
+}
+
+/** The dashboard's tool cards and job results open in the Island. */
+export async function openToolInIsland(tool: string, job?: string): Promise<void> {
+  requireDesktopRuntime();
+  await invoke<void>('open_tool_in_island', { tool, job: job ?? null });
+}
+
+export interface OpenToolRequest { tool: string; job: string | null }
+
+export async function watchOpenTool(handler: (request: OpenToolRequest) => void): Promise<() => void> {
   if (!isDesktopRuntime()) return () => {};
-  return listen('arcade://open-pipelines', handler);
+  return listen<OpenToolRequest>('arcade://open-tool', ({ payload }) => handler(payload));
+}
+
+/** The tray, `--settings`, `--pipelines` and Link ask the dashboard for a page. */
+export async function watchDashboardPage(handler: (page: string) => void): Promise<() => void> {
+  if (!isDesktopRuntime()) return () => {};
+  return listen<string>('arcade://dashboard-page', ({ payload }) => handler(payload));
+}
+
+export async function dashboardReady(): Promise<void> {
+  if (isDesktopRuntime()) await invoke<void>('dashboard_ready');
+}
+
+/** Both windows follow a theme chosen in either of them. */
+export async function announceTheme(theme: string): Promise<void> {
+  if (isDesktopRuntime()) await emit('arcade://theme-changed', theme);
+}
+
+export async function watchTheme(handler: (theme: string) => void): Promise<() => void> {
+  if (!isDesktopRuntime()) return () => {};
+  return listen<string>('arcade://theme-changed', ({ payload }) => handler(payload));
 }
 
 export interface LinkSettings { enabled: boolean; disabledPeers: string[] }
