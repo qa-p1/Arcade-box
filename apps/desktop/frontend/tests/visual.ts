@@ -96,7 +96,8 @@ mockIPC((command, args) => {
       const query = String(args?.query ?? '').toLowerCase();
       return catalog.tools.filter((tool) => [tool.name, tool.description, ...tool.aliases].join(' ').toLowerCase().includes(query)).slice(0, 12);
     }
-    case 'get_preference': return args?.key === 'theme' ? 'dark' : 'true';
+    // ?onboarding=1 shows the first-run welcome.
+    case 'get_preference': return args?.key === 'theme' ? 'dark' : String(new URLSearchParams(location.search).get('onboarding') !== '1');
     case 'shortcut_status': return { backend: 'visual-fixture', state: 'registered', triggerDescription: 'Ctrl+Alt+Space', message: 'Visual fixture only' };
     case 'list_providers': return fixture.providers;
     case 'list_jobs': case 'get_history': case 'list_favorites':

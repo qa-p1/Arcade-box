@@ -25,19 +25,17 @@
 {#if box.selectedTool}
 <div class="tool-view" in:fade|global={{ duration: 140 }}>
   <header class="tool-header">
-    <button class="icon-button tool-back" onclick={box.backFromTool} aria-label="Back to search" title="Back · Alt+←"><Icon name="back" size={16} /></button>
-    <div class="tool-symbol" class:planned={!isRunnable(box.selectedTool)}>
-      <Icon name={box.iconForCategory(box.selectedTool.category)} size={18} />
-    </div>
+    <button type="button" class="btn ghost icon-only sm tool-back" onclick={box.backFromTool} aria-label="Back to search" title="Back (Esc)"><Icon name="back" size={15} /></button>
+    <span class="glyph-tile sm"><Icon name={box.iconForCategory(box.selectedTool.category)} size={14} /></span>
     <div class="tool-title-block">
       <div class="tool-title-line">
-        <h1 bind:this={box.selectedToolHeading} tabindex="-1">{box.selectedTool.name}</h1>
-        <span class="privacy-tag" class:network={privacyLabel(box.selectedTool.privacyClass) === 'NETWORK'} class:cloud={privacyLabel(box.selectedTool.privacyClass) === 'CLOUD'}>{privacyLabel(box.selectedTool.privacyClass)}</span>
-        {#if box.selectedTool.status !== 'implemented'}<span class="status-tag" class:partial={box.selectedTool.status === 'partial'}>{box.statusText(box.selectedTool)}</span>{/if}
+        <h1 class="t-title-sm" bind:this={box.selectedToolHeading} tabindex="-1">{box.selectedTool.name}</h1>
+        {#if privacyLabel(box.selectedTool.privacyClass) !== 'LOCAL'}<span class="badge warn" title="Uses an online service">online</span>{/if}
       </div>
       <p>{box.selectedTool.description}</p>
     </div>
-    <button class="icon-button dashboard-toggle" aria-label="Browse all tools" title="Browse all tools" onclick={box.toggleDashboard}><Icon name="grid" size={16} /></button>
+    <button type="button" class="btn ghost icon-only sm" class:favorite-on={box.isFavorite(box.selectedTool.id)} aria-label={box.isFavorite(box.selectedTool.id) ? `Remove ${box.selectedTool.name} from favorites` : `Add ${box.selectedTool.name} to favorites`} aria-pressed={box.isFavorite(box.selectedTool.id)} title={box.isFavorite(box.selectedTool.id) ? 'Remove from favorites' : 'Add to favorites'} onclick={(event) => box.selectedTool && void box.toggleFavorite(box.selectedTool, event)}><Icon name="star" size={15} /></button>
+    <button type="button" class="btn ghost sm" onclick={box.toggleDashboard}><Icon name="apps" size={14} />Open dashboard</button>
   </header>
 
   {#if !isRunnable(box.selectedTool)}

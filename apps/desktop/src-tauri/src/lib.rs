@@ -44,7 +44,9 @@ mod window_pin;
 
 // Called only on pipeline workers. GTK's callback keeps the main loop free;
 // the portal dialog backend would require an unrelated Zenity executable.
-fn confirm_pipeline_effects(app: &tauri::AppHandle, message: String) -> bool {
+// The dialog layout follows the kit's confirm dialog: the question, what the
+// pipeline can do as a list, then Cancel and the primary "Run pipeline".
+fn confirm_pipeline_effects(app: &tauri::AppHandle, question: String, detail: String) -> bool {
     #[cfg(target_os = "linux")]
     {
         let (send, receive) = std::sync::mpsc::sync_channel(1);
@@ -55,10 +57,18 @@ fn confirm_pipeline_effects(app: &tauri::AppHandle, message: String) -> bool {
                     None::<&gtk::Window>,
                     gtk::DialogFlags::MODAL,
                     gtk::MessageType::Question,
-                    gtk::ButtonsType::OkCancel,
-                    &message,
+                    gtk::ButtonsType::None,
+                    &question,
                 );
-                dialog.set_title("Confirm pipeline effects");
+                dialog.set_title("Run pipeline — Arcade Box");
+                dialog.set_secondary_text(Some(&detail));
+                dialog.add_button("Cancel", gtk::ResponseType::Cancel);
+                if let Some(run) = dialog
+                    .add_button("Run pipeline", gtk::ResponseType::Ok)
+                    .downcast_ref::<gtk::Button>()
+                {
+                    run.style_context().add_class("suggested-action");
+                }
                 dialog.set_default_response(gtk::ResponseType::Ok);
                 dialog.connect_response(move |dialog, response| {
                     let _ = send.send(response == gtk::ResponseType::Ok);
@@ -77,11 +87,40 @@ fn confirm_pipeline_effects(app: &tauri::AppHandle, message: String) -> bool {
     {
         use tauri_plugin_dialog::MessageDialogButtons;
         app.dialog()
-            .message(message)
-            .title("Confirm pipeline effects")
-            .buttons(MessageDialogButtons::OkCancel)
+            .message(format!("{question}\n\n{detail}"))
+            .title("Run pipeline — Arcade Box")
+            .buttons(MessageDialogButtons::OkCancelCustom(
+                "Run pipeline".into(),
+                "Cancel".into(),
+            ))
             .blocking_show()
     }
+}
+
+/// What a pipeline's effects mean, one per line, for the confirm dialog.
+fn effects_detail(effects: &[String]) -> String {
+    let lines: Vec<String> = effects
+        .iter()
+        .map(|effect| {
+            let text = match effect.as_str() {
+                "sends-to-device" => "Send content to your devices",
+                "network" => "Use the network",
+                "executes-commands" => "Run commands",
+                "writes-files" => "Create files",
+                "opens-ui" => "Open app windows",
+                "clipboard" => "Change the clipboard",
+                "uploads-content" => "Upload content",
+                "persists" => "Save data",
+                "launch-apps" => "Start apps",
+                other => other,
+            };
+            format!("• {text}")
+        })
+        .collect();
+    format!(
+        "It can:\n{}\n\nYou're asked once for this version of the pipeline.",
+        lines.join("\n")
+    )
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -2004,23 +2043,11 @@ pub fn run(args: Vec<String>) {
             let runtime = Arc::new(Arcade::open(&db_dir.join("arcade.sqlite3"))?);
             let confirmation_app = app.handle().clone();
             runtime.set_pipeline_confirmation(move |pipeline, effects| {
-                let message = format!(
-                    "Run \"{}\"?\n\nThis pipeline can: {}.\n\nApprove once for this version and these effects.",
-                    pipeline.name,
-                    effects.iter().map(|effect| match effect.as_str() {
-                        "sends-to-device" => "send content to your devices",
-                        "network" => "access the network",
-                        "executes-commands" => "run commands",
-                        "writes-files" => "create files",
-                        "opens-ui" => "open app windows",
-                        "clipboard" => "change the clipboard",
-                        "uploads-content" => "upload content",
-                        "persists" => "save data",
-                        "launch-apps" => "launch apps",
-                        other => other,
-                    }).collect::<Vec<_>>().join(", ")
-                );
-                confirm_pipeline_effects(&confirmation_app, message)
+                confirm_pipeline_effects(
+                    &confirmation_app,
+                    format!("Run \"{}\"?", pipeline.name),
+                    effects_detail(effects),
+                )
             });
             let clipboard_history =
                 clipboard_history::ClipboardHistory::open(db_dir.join("clipboard-history.json"))
@@ -2048,7 +2075,11 @@ pub fn run(args: Vec<String>) {
             // saved, so record it once; new installs get ⌃⌥Space.
             #[cfg(target_os = "macos")]
             let saved_shortcut = saved_shortcut.or_else(|| {
-                runtime.storage().setting("onboarding_complete").ok().flatten()?;
+                runtime
+                    .storage()
+                    .setting("onboarding_complete")
+                    .ok()
+                    .flatten()?;
                 let previous = shortcut_syntax::MACOS_PREVIOUS_DEFAULT;
                 let _ = runtime.storage().set_setting("global_shortcut", previous);
                 Some(previous.into())
@@ -2076,17 +2107,17 @@ pub fn run(args: Vec<String>) {
             if let Err(error) = initialize_recovery_tray(app) {
                 eprintln!("Arcade Box recovery tray unavailable: {error}");
             }
-            if let Err(error) = start_tray_host_watcher(
-                app.handle(),
-                app.state::<Arc<Arcade>>().inner(),
-            ) {
+            if let Err(error) =
+                start_tray_host_watcher(app.handle(), app.state::<Arc<Arcade>>().inner())
+            {
                 eprintln!("Arcade Box tray host watcher unavailable: {error}");
                 link::set_tray_state(arcade_link::trayhost::TrayState::Own);
                 set_recovery_tray(app.handle(), arcade_link::trayhost::TrayState::Own);
             }
             // The Island's WebView is not created here: `island_window` builds
             // it on the first UI request, so a background start costs no WebView.
-            let default_shortcut = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::Space);
+            let default_shortcut =
+                Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::Space);
             #[cfg(target_os = "linux")]
             if wayland_shortcut::is_wayland_session() {
                 let preferred = saved_shortcut

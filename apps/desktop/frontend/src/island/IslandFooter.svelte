@@ -3,7 +3,21 @@
 
   const box = useBox();
 </script>
-<footer class="island-footer">
-  <div class="footer-left">{#if box.selectedTool}<span class="key-hint"><kbd>Alt</kbd><kbd>←</kbd><span>back</span></span>{:else}<span class="key-hint"><kbd>↑</kbd><kbd>↓</kbd><span>navigate</span></span><span class="key-hint"><kbd>↵</kbd><span>open</span></span>{/if}</div>
-  <div class="footer-right"><span class="privacy-footer"><span></span>Private by default</span><button class="dismiss-button" onclick={() => void box.dismissIsland()} aria-label="Close Arcade Box"><kbd>Esc</kbd><span>close</span></button></div>
+<footer class="hint-bar island-footer">
+  {#if box.onboardingVisible}
+    <span class="hint"><kbd class="key-chip">Tab</kbd>Next</span>
+    <span class="hint"><kbd class="key-chip">↵</kbd>Choose</span>
+  {:else if box.selectedTool}
+    <span class="hint"><kbd class="key-chip">↵</kbd>Run</span>
+    <span class="hint"><kbd class="key-chip">Tab</kbd>Next field</span>
+  {:else}
+    <span class="hint"><kbd class="key-chip">↑</kbd><kbd class="key-chip">↓</kbd>Move</span>
+    <span class="hint"><kbd class="key-chip">↵</kbd>Open</span>
+  {/if}
+  <button type="button" class="hint dismiss" onclick={() => (box.selectedTool && !box.onboardingVisible ? box.backFromTool() : void box.dismissIsland())} aria-label={box.selectedTool && !box.onboardingVisible ? 'Back' : 'Close Arcade Box'}><kbd class="key-chip">Esc</kbd>{box.selectedTool && !box.onboardingVisible ? 'Back' : 'Close'}</button>
 </footer>
+
+<style>
+  .dismiss { margin-left: auto; padding: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+  .dismiss:hover { color: var(--text); }
+</style>

@@ -5,7 +5,7 @@ import { announceTheme, copyText, currentSurface, dashboardReady, openDashboard,
 import { onMount, tick } from 'svelte';
 import { cancelResultLinkAction, overlapState, pickPeerClipboard, watchLinkChanged, type OverlapState } from './lib/arcade';
 import type { IconName } from './lib/icon-names';
-import { cancelJob, cancelScreenRecording, detectContext, downloadTesseract, getHistory, getPreference, hideIsland, listFavorites, listJobs, listProviders, listTools, openArtifact, openReviewedUrl, pastePlainStatus, pastePlainText, pinScreenCapture, revokeInputFolder, revokeOutputDirectory, revealArtifact, runContextAction, runScreenTool, saveArtifactAs, screenCaptureStatus, screenRecordingStatus, searchTools, selectFiles, setAlias, setFavorite, setPreference, setShortcut, setSurfaceMode, setWindowPin, shortcutStatus, startJob, startScreenRecording, stopScreenRecording, tesseractDownloadSize, terminateProcess, watchIslandFocus, watchJobUpdates, watchShortcutStatus, windowPinStatus } from './lib/arcade';
+import { cancelJob, cancelScreenRecording, detectContext, downloadTesseract, getHistory, getPreference, hideIsland, listFavorites, listJobs, listProviders, listTools, openArtifact, openReviewedUrl, pastePlainStatus, pastePlainText, pinScreenCapture, revokeInputFolder, revokeOutputDirectory, revealArtifact, runContextAction, runScreenTool, saveArtifactAs, screenCaptureStatus, screenRecordingStatus, searchTools, selectFiles, setAlias, setFavorite, setPreference, setSurfaceMode, setWindowPin, shortcutStatus, startJob, startScreenRecording, stopScreenRecording, tesseractDownloadSize, terminateProcess, watchIslandFocus, watchJobUpdates, watchShortcutStatus, windowPinStatus } from './lib/arcade';
 import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, ProcessInfo, ProcessList, ProviderInfo, ScreenCaptureStatus, ScreenRecordingSnapshot, SelectedDirectory, SelectedFile, ShortcutStatus, SystemWindowPinStatus, ToolInput, ToolResult, ToolSummary } from './lib/contracts';
 import { acceptsSelectedFile, acceptsTextInput, fileInputMime, inputMime, isRunnable, privacyHint, usesFileInput } from './lib/tool-utils';
 import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem } from './lib/standard-ui';
@@ -133,11 +133,7 @@ export function createBox() {
   let onboardingVisible = $state(false);
   let onboardingComplete = $state(false);
   let shortcutInfo = $state<ShortcutStatus | null>(null);
-  let shortcutInput = $state('');
-  let shortcutError = $state('');
-  let shortcutSaving = $state(false);
   let themeMode = $state<'system' | 'light' | 'dark'>('system');
-  let finishAfterShortcut = $state(false);
   let selectedTool = $state<ToolSummary | null>(null);
   let activeResult = $state<ToolResult | null>(null);
   let outputPage = $state(0);
@@ -180,8 +176,8 @@ export function createBox() {
   let searchInput: HTMLInputElement | undefined = $state();
   let catalogSearchInput: HTMLInputElement | undefined = $state();
   let selectedToolHeading: HTMLHeadingElement | undefined = $state();
-  let shortcutField: HTMLInputElement | undefined = $state();
-  let onboardingDialog: HTMLDialogElement | undefined = $state();
+  /** The onboarding's shortcut step; its recorder takes focus. */
+  let shortcutField: HTMLElement | undefined = $state();
   let copyTimer: number | undefined;
   let stopWatchingFocus = () => {};
   let stopWatchingJobs = () => {};
@@ -194,8 +190,15 @@ export function createBox() {
 
   const toolById = $derived(new Map(tools.map((tool) => [tool.id, tool])));
   const catalogSearchText = $derived(new Map(tools.map((tool) => [tool.id, [tool.name, tool.description, tool.category, ...tool.aliases].join(' ').toLowerCase()])));
-  const runnableSearchResults = $derived(searchResults.filter(isRunnable));
-  const plannedSearchResults = $derived(searchResults.filter((tool) => !isRunnable(tool)));
+  // Grouped by category, each group where its best match ranks, so the
+  // arrow keys move through the rows in the order they are shown.
+  const runnableSearchResults = $derived.by(() => {
+    const groups = new Map<string, ToolSummary[]>();
+    for (const tool of searchResults.filter((item) => item.status === 'implemented')) {
+      groups.set(tool.category, [...(groups.get(tool.category) ?? []), tool]);
+    }
+    return [...groups.values()].flat();
+  });
   const runnableContextSuggestions = $derived(contextSuggestions.filter((suggestion) => Boolean(toolById.get(suggestion.toolId) && isRunnable(toolById.get(suggestion.toolId)!))));
   // Categories keep the catalog's order, which groups the most-used tools first.
   const categories = $derived([...new Set(tools.map((tool) => tool.category))]);
@@ -252,11 +255,12 @@ export function createBox() {
   });
 
   $effect(() => {
-    if (onboardingVisible) void tick().then(() => {
-      if (onboardingDialog && !onboardingDialog.open) onboardingDialog.showModal();
-      shortcutField?.focus();
-    });
+    if (onboardingVisible) void tick().then(focusOnboarding);
   });
+
+  function focusOnboarding(): void {
+    shortcutField?.querySelector<HTMLElement>('button')?.focus();
+  }
 
   $effect(() => {
     if (!islandContent) return;
@@ -287,10 +291,7 @@ export function createBox() {
     inputRegionFrame = requestAnimationFrame(() => {
       inputRegionFrame = 0;
       let region: [number, number, number, number] | null = null;
-      if (onboardingVisible && onboardingDialog?.open) {
-        const rect = onboardingDialog.getBoundingClientRect();
-        region = [rect.x, rect.y, rect.width, rect.height];
-      } else if (islandShell) {
+      if (islandShell) {
         region = [islandShell.offsetLeft, islandShell.offsetTop, islandShell.offsetWidth, islandHeight ?? islandShell.offsetHeight];
       }
       if (!region) return;
@@ -302,16 +303,13 @@ export function createBox() {
   }
 
   $effect(() => {
-    void [surface, onboardingVisible, islandShell, onboardingDialog, islandHeight];
+    void [surface, onboardingVisible, islandShell, islandHeight];
     queueInputRegion();
   });
 
   $effect(() => {
-    const dialog = onboardingDialog;
     window.addEventListener('resize', queueInputRegion);
-    const observer = dialog ? new ResizeObserver(queueInputRegion) : null;
-    if (dialog) observer?.observe(dialog);
-    return () => { observer?.disconnect(); window.removeEventListener('resize', queueInputRegion); };
+    return () => window.removeEventListener('resize', queueInputRegion);
   });
 
   function animateInvocation(): void {
@@ -333,7 +331,7 @@ export function createBox() {
     surfaceVisible = true;
     await tick();
     animateInvocation();
-    if (onboardingVisible) shortcutField?.focus();
+    if (onboardingVisible) focusOnboarding();
     else if (lastFocusedElement?.isConnected) lastFocusedElement.focus({ preventScroll: true });
     else if (!selectedTool) searchInput?.focus();
     else islandShell?.querySelector<HTMLElement>('textarea, input, select, button')?.focus();
@@ -436,7 +434,7 @@ export function createBox() {
         listFavorites().catch(() => []),
         listJobs().catch(() => []),
         getPreference('onboarding_complete').catch(() => null),
-        shortcutStatus().catch((error) => { shortcutError = messageOf(error); return null; }),
+        shortcutStatus().catch(() => null),
         getPreference('theme').catch(() => null),
       ]);
       tools = catalog;
@@ -447,7 +445,6 @@ export function createBox() {
       shortcutInfo = shortcut;
       themeMode = theme === 'light' || theme === 'dark' ? theme : 'system';
       applyTheme(themeMode);
-      shortcutInput = shortcutDescription(shortcut) || (shortcut?.backend.includes('portal') ? 'CTRL+ALT+space' : defaultShortcutForPlatform());
       onboardingReady = true;
       onboardingVisible = hasDesktopBridge() && !onboardingComplete && surface === 'island';
       catalogError = '';
@@ -514,39 +511,6 @@ export function createBox() {
 
   function acceptShortcutStatus(status: ShortcutStatus): void {
     shortcutInfo = status;
-    const state = status.state.toLowerCase();
-    if (state === 'registered') {
-      shortcutError = '';
-      if (finishAfterShortcut) void finishOnboarding();
-    } else if (['unsupported', 'unavailable', 'error', 'not_bound', 'registration_rejected', 'user_declined', 'invalid_trigger', 'hyprland_binding_unavailable'].includes(state)) {
-      finishAfterShortcut = false;
-      shortcutError = status.message;
-    }
-  }
-
-  async function applyShortcutAndContinue(): Promise<void> {
-    if (!shortcutInput.trim()) {
-      shortcutError = 'Enter a shortcut such as Ctrl+Alt+Space.';
-      return;
-    }
-    shortcutSaving = true;
-    shortcutError = '';
-    finishAfterShortcut = true;
-    try {
-      const status = await setShortcut(shortcutInput.trim());
-      acceptShortcutStatus(status);
-      if (status.state.toLowerCase() === 'updating' || status.state.toLowerCase() === 'checking') {
-        if (onboardingVisible) shortcutError = 'Waiting for the desktop to confirm this shortcut. You can also continue and adjust it later in settings.';
-      } else if (status.state.toLowerCase() !== 'registered') {
-        finishAfterShortcut = false;
-        shortcutError = status.message || 'The shortcut could not be registered.';
-      }
-    } catch (error) {
-      finishAfterShortcut = false;
-      shortcutError = messageOf(error);
-    } finally {
-      shortcutSaving = false;
-    }
   }
 
   /** Settings › General: run the first-run welcome again in the Island. */
@@ -556,17 +520,11 @@ export function createBox() {
   }
 
   async function finishOnboarding(): Promise<void> {
-    finishAfterShortcut = false;
-    try {
-      await setPreference('onboarding_complete', 'true');
-      onboardingComplete = true;
-      onboardingVisible = false;
-      finishAfterShortcut = false;
-      shortcutError = '';
-      void tick().then(() => searchInput?.focus());
-    } catch (error) {
-      shortcutError = messageOf(error);
-    }
+    // Hidden either way; if saving fails the welcome shows again next time.
+    onboardingVisible = false;
+    void tick().then(() => searchInput?.focus());
+    await setPreference('onboarding_complete', 'true').catch(() => {});
+    onboardingComplete = true;
   }
 
   async function refreshContext(): Promise<void> {
@@ -1912,16 +1870,8 @@ export function createBox() {
     set onboardingComplete(value) { onboardingComplete = value; },
     get shortcutInfo() { return shortcutInfo; },
     set shortcutInfo(value) { shortcutInfo = value; },
-    get shortcutInput() { return shortcutInput; },
-    set shortcutInput(value) { shortcutInput = value; },
-    get shortcutError() { return shortcutError; },
-    set shortcutError(value) { shortcutError = value; },
-    get shortcutSaving() { return shortcutSaving; },
-    set shortcutSaving(value) { shortcutSaving = value; },
     get themeMode() { return themeMode; },
     set themeMode(value) { themeMode = value; },
-    get finishAfterShortcut() { return finishAfterShortcut; },
-    set finishAfterShortcut(value) { finishAfterShortcut = value; },
     get selectedTool() { return selectedTool; },
     set selectedTool(value) { selectedTool = value; },
     get activeResult() { return activeResult; },
@@ -1993,8 +1943,6 @@ export function createBox() {
     set selectedToolHeading(value) { selectedToolHeading = value; },
     get shortcutField() { return shortcutField; },
     set shortcutField(value) { shortcutField = value; },
-    get onboardingDialog() { return onboardingDialog; },
-    set onboardingDialog(value) { onboardingDialog = value; },
     get copyTimer() { return copyTimer; },
     set copyTimer(value) { copyTimer = value; },
     get stopWatchingFocus() { return stopWatchingFocus; },
@@ -2012,7 +1960,6 @@ export function createBox() {
     get toolById() { return toolById; },
     get catalogSearchText() { return catalogSearchText; },
     get runnableSearchResults() { return runnableSearchResults; },
-    get plannedSearchResults() { return plannedSearchResults; },
     get runnableContextSuggestions() { return runnableContextSuggestions; },
     get categories() { return categories; },
     get implementedTools() { return implementedTools; },
@@ -2058,7 +2005,6 @@ export function createBox() {
     defaultShortcutForPlatform,
     showWelcomeAgain,
     acceptShortcutStatus,
-    applyShortcutAndContinue,
     finishOnboarding,
     refreshContext,
     performSearch,

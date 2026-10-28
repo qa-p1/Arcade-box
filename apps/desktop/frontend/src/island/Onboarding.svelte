@@ -1,29 +1,65 @@
 <script lang="ts">
+  // First run (STANDARD §5.1): the kit hero inside the Island, the shortcut
+  // set with the same recorder as Settings, then "Browse tools". "Skip" is
+  // always there, and Settings › General can show this again.
   import Icon from '../lib/Icon.svelte';
-  import ShortcutClash from '../lib/ShortcutClash.svelte';
+  import ShortcutRecorder from '../lib/ShortcutRecorder.svelte';
+  import boxGlyph from '../design/glyphs/arcade.box.svg';
+  import { setShortcut, shortcutOwner } from '../lib/arcade';
   import { useBox } from '../box.svelte';
 
   const box = useBox();
+  const shortcut = $derived(box.shortcutInfo?.triggerDescription || box.shortcutInfo?.trigger_description || '');
+  const registered = $derived(box.shortcutInfo?.state.toLowerCase() === 'registered');
+
+  async function apply(chord: string): Promise<void> {
+    const status = await setShortcut(chord);
+    box.acceptShortcutStatus(status);
+    if (!['registered', 'starting', 'checking', 'updating'].includes(status.state.toLowerCase())) throw new Error(status.message);
+  }
+  async function owners(chord: string): Promise<string[]> {
+    const owner = await shortcutOwner(chord);
+    return owner ? [owner] : [];
+  }
 </script>
-<div class="onboarding-backdrop" role="presentation">
-  <dialog bind:this={box.onboardingDialog} class="onboarding-card" aria-modal="true" aria-labelledby="onboarding-title" aria-describedby="onboarding-description" oncancel={(event) => event.preventDefault()}>
-    <div class="onboarding-brand"><span class="brand-mark"><Icon name="command" size={19} /></span><span class="brand-name">Arcade <span>Box</span></span><span class="onboarding-step">First run</span></div>
-    <h1 id="onboarding-title">Meet Arcade Box.</h1>
-    <p id="onboarding-description">Open the Arcade Island, type what you need, and press Enter. It closes back to the app you were using.</p>
-    <div class="onboarding-shortcut-block">
-      <label for="onboarding-shortcut">Global shortcut</label>
-      <div class="onboarding-shortcut-input"><Icon name="command" size={17} /><input bind:this={box.shortcutField} bind:value={box.shortcutInput} id="onboarding-shortcut" autocomplete="off" spellcheck="false" aria-describedby="shortcut-status" /><span class="shortcut-edit-hint">Editable</span></div>
-      <ShortcutClash accelerator={box.shortcutInput} />
-      <div class="shortcut-status" id="shortcut-status" class:shortcut-good={box.shortcutInfo?.state === 'registered'} class:shortcut-bad={box.shortcutInfo && box.shortcutInfo.state !== 'registered' && box.shortcutInfo.state !== 'starting' && box.shortcutInfo.state !== 'checking' && box.shortcutInfo.state !== 'updating'}><span class="runtime-dot" class:offline={box.shortcutInfo?.state !== 'registered'}></span><span>{box.shortcutInfo?.message || 'A platform default will be tested when you continue.'}</span></div>
-      {#if box.shortcutInfo?.backend.toLowerCase().includes('portal')}
-        <p class="portal-note">Wayland registers shortcuts through the XDG Desktop Portal. Your desktop may remap or decline a shortcut; if the portal is unavailable, Arcade Box will explain the limitation.</p>
-        <small class="shortcut-syntax">Portal format example: CTRL+ALT+space</small>
-      {:else}
-        <small class="shortcut-syntax">Use a modifier and key, for example Ctrl+Alt+Space.</small>
-      {/if}
-    </div>
-    {#if box.shortcutError}<div class="onboarding-error" role="status">{box.shortcutError}</div>{/if}
-    <div class="onboarding-actions"><button class="onboarding-primary" disabled={box.shortcutSaving} onclick={() => void box.applyShortcutAndContinue()}>{box.shortcutSaving ? 'Checking shortcut…' : 'Save shortcut & continue'}<Icon name="arrow" size={15} /></button><button class="onboarding-secondary" onclick={() => void box.finishOnboarding()}>Continue without changing it</button></div>
-    <div class="onboarding-flow"><span><kbd>⌘</kbd> invoke</span><Icon name="chevron" size={13} /><span>type</span><Icon name="chevron" size={13} /><span><kbd>↵</kbd> perform</span></div>
-  </dialog>
-</div>
+<section class="onboarding" aria-labelledby="onboarding-title" aria-describedby="onboarding-description">
+  <div class="hero">
+    <span class="glyph-tile lg brand-tile" aria-hidden="true"><img src={boxGlyph} alt="" width="26" height="26" /></span>
+    <h1 id="onboarding-title">Welcome to Arcade Box</h1>
+    <p id="onboarding-description">Press your shortcut, type what you need and press Enter. Box closes back to the app you were in.</p>
+  </div>
+  <ol class="list steps">
+    <li class="row step" bind:this={box.shortcutField}>
+      <span class="step-number" class:done={registered}>{#if registered}<Icon name="check" size={13} />{:else}1{/if}</span>
+      <div class="row-main">
+        <div class="row-title">Set a shortcut</div>
+        <div class="row-sub">{box.shortcutInfo && !registered ? box.shortcutInfo.message : 'Opens the Island from any app.'}</div>
+      </div>
+      <ShortcutRecorder value={shortcut} label="Shortcut for the Island" defaultValue={box.defaultShortcutForPlatform()} conflictsFor={owners} onApply={apply} />
+    </li>
+    <li class="row step">
+      <span class="step-number">2</span>
+      <div class="row-main">
+        <div class="row-title">Browse tools</div>
+        <div class="row-sub">See all {box.runnableTools.length} tools in the dashboard.</div>
+      </div>
+      <button type="button" class="btn sm" onclick={() => void box.finishOnboarding().then(() => box.toggleDashboard())}>Browse tools</button>
+    </li>
+  </ol>
+  <div class="dialog-actions">
+    <button type="button" class="btn ghost" onclick={() => void box.finishOnboarding()}>Skip</button>
+    <button type="button" class="btn primary" onclick={() => void box.finishOnboarding()}>Start using Box<Icon name="arrow" size={14} /></button>
+  </div>
+</section>
+
+<style>
+  .onboarding { padding: var(--sp-32) var(--sp-24) var(--sp-20); }
+  .brand-tile { width: 52px; height: 52px; background: var(--text); box-shadow: none; }
+  .brand-tile img { width: 26px; height: 26px; filter: invert(1); }
+  :global(html[data-theme="dark"]) .brand-tile img { filter: none; }
+  .steps { margin: var(--sp-24) 0 0; padding: 0; list-style: none; }
+  .step { flex-wrap: wrap; }
+  .step-number { display: grid; flex: none; width: 24px; height: 24px; place-items: center; border-radius: var(--radius-pill); background: var(--sunken); box-shadow: inset 0 0 0 1px var(--line); color: var(--muted); font-size: var(--fs-small); font-weight: var(--fw-semibold); }
+  .step-number.done { background: var(--ok-soft); box-shadow: none; color: var(--ok); }
+  .step .row-main { flex: 1 1 200px; }
+</style>

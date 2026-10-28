@@ -135,7 +135,7 @@ pub fn pin_screen_capture(
         &label,
         WebviewUrl::App(PathBuf::from("pin.html")),
     ))
-    .title("Arcade Box · Pinned reference")
+    .title("Pinned reference — Arcade Box")
     .inner_size(width, height)
     .min_inner_size(200.0, 140.0)
     .resizable(true)

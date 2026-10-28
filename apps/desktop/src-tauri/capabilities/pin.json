@@ -1,7 +1,11 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "pinned-image",
-  "description": "No plugin or operating-system bridge permissions for the bounded pinned-image preview",
-  "windows": ["arcade-pin-*"],
-  "permissions": []
+  "description": "The pinned-image preview may only close its own window; no plugin or operating-system bridge",
+  "windows": [
+    "arcade-pin-*"
+  ],
+  "permissions": [
+    "core:window:allow-close"
+  ]
 }

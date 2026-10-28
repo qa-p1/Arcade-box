@@ -2,7 +2,6 @@
   import { createBox, provideBox } from './box.svelte';
   import Island from './island/Island.svelte';
   import Dashboard from './dashboard/Dashboard.svelte';
-  import Onboarding from './island/Onboarding.svelte';
 
   const box = provideBox(createBox());
 </script>
@@ -17,8 +16,5 @@
     <Island />
   {:else}
     <Dashboard />
-  {/if}
-  {#if box.onboardingReady && box.onboardingVisible}
-    <Onboarding />
   {/if}
 </main>

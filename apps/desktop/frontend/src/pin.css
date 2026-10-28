@@ -1,0 +1,28 @@
+/* The pinned reference window: the kit's tokens, so it follows the theme. */
+@import './design/arcade.css';
+
+@font-face {
+  font-family: Inter;
+  src: url('./design/fonts/InterVariable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+html, body, #app { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+body { background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: var(--fs-body); }
+
+.pin-window { position: relative; display: grid; width: 100%; height: 100%; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); box-shadow: var(--shadow-pop); }
+.pin-image-stage { display: grid; place-items: center; min-width: 0; min-height: 0; padding: var(--sp-4); }
+.pin-image-stage img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; user-select: none; -webkit-user-select: none; transition: opacity var(--dur-fast) var(--ease); }
+
+/* The toolbar shows on hover or keyboard focus. */
+.pin-toolbar { position: absolute; top: var(--sp-8); right: var(--sp-8); display: flex; gap: var(--sp-2); padding: var(--sp-2); border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--panel); box-shadow: var(--shadow-pop); opacity: 0; transition: opacity var(--dur-fast) var(--ease); }
+.pin-window:hover .pin-toolbar, .pin-toolbar:focus-within { opacity: 1; }
+.pin-size { position: absolute; left: var(--sp-8); bottom: var(--sp-8); padding: var(--sp-2) var(--sp-6); border-radius: var(--radius-xs); background: var(--panel); color: var(--muted); font-size: var(--fs-caption); font-variant-numeric: tabular-nums; opacity: 0; transition: opacity var(--dur-fast) var(--ease); }
+.pin-window:hover .pin-size { opacity: 1; }
+.pin-message { display: grid; place-items: center; padding: var(--sp-16); color: var(--muted); font-size: var(--fs-small); text-align: center; }
+.pin-status { position: absolute; left: 50%; bottom: var(--sp-8); transform: translateX(-50%); padding: var(--sp-4) var(--sp-10); border-radius: var(--radius-pill); background: var(--text); color: var(--bg); font-size: var(--fs-caption); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

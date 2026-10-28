@@ -34,6 +34,22 @@
     return !capabilities || !choice.requires?.length || choice.requires.every((capability) => capabilities.has(capability));
   }
 
+  // OCR languages (B9): installed Tesseract packs as a multi-select whose
+  // value is Tesseract's "eng+deu" form. Unknown packs fall back to the text field.
+  const LANGUAGE_NAMES: Record<string, string> = {
+    eng: 'English', deu: 'German', fra: 'French', spa: 'Spanish', ita: 'Italian', por: 'Portuguese', nld: 'Dutch',
+    pol: 'Polish', rus: 'Russian', ukr: 'Ukrainian', tur: 'Turkish', jpn: 'Japanese', kor: 'Korean', ara: 'Arabic',
+    hin: 'Hindi', chi_sim: 'Chinese (Simplified)', chi_tra: 'Chinese (Traditional)', osd: 'Orientation and script',
+  };
+  const installedLanguages = $derived(capabilities ? [...capabilities].filter((item) => item.startsWith('ocr:language:')).map((item) => item.slice('ocr:language:'.length)).sort((a, b) => (a === 'eng' ? -1 : b === 'eng' ? 1 : a.localeCompare(b))) : []);
+  const isLanguageControl = (control: UiControl) => control.key === 'language' && /\bOCR\b/.test(control.label) && installedLanguages.length > 0;
+  const chosenLanguages = (value: string | undefined) => (value ?? '').split('+').map((code) => code.trim()).filter(Boolean);
+  function toggleLanguage(control: UiControl, code: string, on: boolean): void {
+    const chosen = chosenLanguages(values[control.key]).filter((item) => item !== code);
+    const next = on ? [...chosen, code] : chosen;
+    onValueChange(control.key, next.join('+'));
+  }
+
   function isMultilineControl(control: UiControl): boolean {
     if (control.type !== 'text') return false;
     const copy = `${control.label} ${control.help ?? ''}`;
@@ -66,6 +82,18 @@
       {:else}
         <p class="standard-directory-note">Choose a save folder when you run this action. Pipeline results stay in Arcade Box.</p>
       {/if}
+    {:else if isLanguageControl(control)}
+      {@const chosen = chosenLanguages(values[control.key])}
+      <fieldset class="language-choices" aria-describedby={helpId} {disabled}>
+        <legend class="visually-hidden">{control.label}</legend>
+        {#each [...installedLanguages, ...chosen.filter((code) => !installedLanguages.includes(code))] as code (code)}
+          {@const installed = installedLanguages.includes(code)}
+          <label class="language-choice" class:missing={!installed}>
+            <input type="checkbox" checked={chosen.includes(code)} onchange={(event) => toggleLanguage(control, code, event.currentTarget.checked)} />
+            <span>{LANGUAGE_NAMES[code] ?? code}{installed ? '' : ' — not installed'}</span>
+          </label>
+        {/each}
+      </fieldset>
     {:else if isMultilineControl(control)}
       <textarea
         id={id}
@@ -115,3 +143,10 @@
     {/if}
   </div>
 {/if}
+
+<style>
+  .language-choices { display: flex; flex-wrap: wrap; gap: var(--sp-6); min-width: 0; margin: 0; padding: 0; border: 0; }
+  .language-choice { display: inline-flex; align-items: center; gap: var(--sp-6); padding: var(--sp-4) var(--sp-10); border: 1px solid var(--line); border-radius: var(--radius-pill); font-size: var(--fs-small); cursor: pointer; }
+  .language-choice:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+  .language-choice.missing { color: var(--warn); }
+</style>

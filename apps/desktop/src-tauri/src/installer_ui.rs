@@ -208,8 +208,14 @@ fn ask(
         content.add(&login);
         content.add(&remove);
     }
+    // Tools' order: ghost, secondary, then the primary action on the right.
     for (i, label) in buttons.iter().enumerate().rev() {
-        dialog.add_button(label, gtk::ResponseType::Other(i as u16));
+        let button = dialog.add_button(label, gtk::ResponseType::Other(i as u16));
+        if i == 0 {
+            button.style_context().add_class("suggested-action");
+        } else if i + 1 == buttons.len() && buttons.len() > 2 {
+            button.style_context().add_class("flat");
+        }
     }
     dialog.set_default_response(gtk::ResponseType::Other(0));
     dialog.show_all();
