@@ -38,7 +38,7 @@ Arcade Lens provides `ocr.lens` and `screen.select.lens` when installed, enabled
 and available. Automatic OCR prefers Lens on Windows/macOS and Tesseract on Linux;
 explicit language packs remain a Tesseract operation. Screen selection delegates
 to Lens on all platforms when present. Lens exposes no recording action over Link: recording remains
-Box's own platform implementation. See [Arcade Link](arcade-link.md).
+Box's own platform implementation. See [Arcade Link](link.md).
 
 ## Groq API key
 

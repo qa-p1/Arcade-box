@@ -22,7 +22,7 @@
         { "id": "focus-search", "title": "Focus search", "keys": { "default": "Ctrl+K", "macos": "Super+K" } },
         { "id": "show-search", "title": "Open the Island search", "keys": { "default": "Slash" } },
         { "id": "dismiss-window", "title": "Dismiss the Island", "keys": { "default": "Escape" } },
-        { "id": "back-to-dashboard", "title": "Return to the dashboard", "keys": { "default": "Alt+Left" } },
+        { "id": "back-to-dashboard", "title": "Back from a tool", "keys": { "default": "Alt+Left" } },
         { "id": "submit-tool", "title": "Run the selected tool", "keys": { "default": "Ctrl+Enter", "macos": "Super+Enter" } },
         { "id": "copy-result", "title": "Copy the current result", "keys": { "default": "Ctrl+Shift+C", "macos": "Shift+Super+C" } },
         { "id": "choose-input-file", "title": "Choose an input file", "keys": { "default": "Ctrl+O", "macos": "Super+O" } }

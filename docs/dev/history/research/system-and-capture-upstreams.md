@@ -23,7 +23,7 @@ Reviewed 2026-09-24 against upstream documentation and package metadata. Recheck
 - macOS still capture uses `screencapturekit` 10.0.3 (MIT OR Apache-2.0) with `AsyncSCContentSharingPicker` and `AsyncSCScreenshotManager`, available on macOS 14+. The user chooses a display, window, or application in system UI; macOS Screen Recording permission is required. `NSScreenCaptureUsageDescription` is merged into the application bundle Info.plist. The adapter bounds capture dimensions and stages the PNG privately before publishing a scoped artifact.
 - Capture returns a scoped selected-file/artifact reference; screen pixels do not cross frontend IPC. Dedicated screenshot, OCR, QR, color, ruler and pin flows are implemented, including standalone X11 and Lens delegation paths.
 - Screen recording is implemented with stop/discard and output publication. X11 was exercised under Xvfb. The Wayland portal/PipeWire path needs a real desktop pass; Windows uses Graphics Capture and macOS recording requires macOS 15+. Those native paths compile in CI but are not interactively verified.
-- Windows/macOS adapters are cfg-gated and now compile in native CI. Successful compilation and tests do not replace native interactive capture/recording validation; see [platform evidence](../platform.md).
+- Windows/macOS adapters are cfg-gated and now compile in native CI. Successful compilation and tests do not replace native interactive capture/recording validation; see [platform evidence](../../platform.md).
 
 ## Primary references
 

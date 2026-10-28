@@ -4,6 +4,9 @@ const HELP: &str = "Arcade Box
 
   arcade-desktop                   Start Arcade Box in the tray (or show the Island if it is running)
   arcade-desktop --background      Start in the tray without showing anything
+  arcade-desktop --show            Show the Island
+  arcade-desktop --hide            Hide the Island
+  arcade-desktop --toggle          Show or hide the Island
   arcade-desktop --dashboard       Open the dashboard
   arcade-desktop --settings        Open Settings
   arcade-desktop --pipelines       Open Pipelines
@@ -16,6 +19,7 @@ const HELP: &str = "Arcade Box
   arcade-desktop --repair          Rewrite the launcher, command and login entries
   arcade-desktop --integration-status
                                    Print the integration as JSON (no side effects)
+  arcade-desktop --status          Print whether Box is running, its version and Link state (JSON)
   arcade-desktop --version         Print the version
   arcade-desktop --arcade-manifest Print the Arcade Link manifest (no side effects)
   arcade-desktop --arcade-invoke   Run one Arcade Link request from stdin, without any UI
@@ -40,6 +44,10 @@ fn main() {
         Some("--help" | "-h") => {
             arcade_desktop::attach_console();
             println!("{HELP}");
+        }
+        Some("--status") => {
+            arcade_desktop::attach_console();
+            arcade_desktop::print_status();
         }
         Some("--arcade-manifest") => {
             arcade_desktop::attach_console();

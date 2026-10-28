@@ -4,9 +4,9 @@ The public tool contract is shared by first-party tools and community plugins. F
 
 ## Component Model ABI
 
-The v1 interface is [`sdk/wit/arcade-tool/1.0.0/world.wit`](../sdk/wit/arcade-tool/1.0.0/world.wit), package `arcade:tool@1.0.0`. It takes a `tool-request` with plural `inputs` and returns typed outputs, warnings, and JSON metadata. The Rust ABI is generated from WIT; Rust struct layout is not the compatibility boundary. `apiVersion` is a string and must equal `1`; the package schema version is currently `1`.
+The v1 interface is [`sdk/wit/arcade-tool/1.0.0/world.wit`](../../sdk/wit/arcade-tool/1.0.0/world.wit), package `arcade:tool@1.0.0`. It takes a `tool-request` with plural `inputs` and returns typed outputs, warnings, and JSON metadata. The Rust ABI is generated from WIT; Rust struct layout is not the compatibility boundary. `apiVersion` is a string and must equal `1`; the package schema version is currently `1`.
 
-The host uses Wasmtime `38.0.4` (compatible with Rust 1.88) and the Component Model. The plugin host is a workspace member; the default members are the contract, core and CLI. The core uses the host protocol/install APIs, while Wasmtime execution is isolated in the trusted `arcade-plugin-worker` sidecar and initialized only for a plugin invocation. Guest components are built for `wasm32-wasip2` with `wit-bindgen` 0.57.1. See the external sample under [`sdk/examples/community-uppercase`](../sdk/examples/community-uppercase).
+The host uses Wasmtime `38.0.4` (compatible with Rust 1.88) and the Component Model. The plugin host is a workspace member; the default members are the contract, core and CLI. The core uses the host protocol/install APIs, while Wasmtime execution is isolated in the trusted `arcade-plugin-worker` sidecar and initialized only for a plugin invocation. Guest components are built for `wasm32-wasip2` with `wit-bindgen` 0.57.1. See the external sample under [`sdk/examples/community-uppercase`](../../sdk/examples/community-uppercase).
 
 ## Host capabilities
 

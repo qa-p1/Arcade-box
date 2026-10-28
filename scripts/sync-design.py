@@ -9,7 +9,9 @@ that tag's commit. The files land in apps/desktop/frontend/src/design/
 (stylesheet, icons, format helpers, Inter, the app glyphs) and
 apps/desktop/src-tauri/icons/ (Box's launcher icon set), and their hashes go
 into the "Arcade design kit" section of VENDORED.md, which
-scripts/check-vendored.py checks.
+scripts/check-vendored.py checks. It then renders the tray icons
+(apps/desktop/src-tauri/icons/tray-white.png and tray-black.png) from Box's
+glyph with rsvg-convert: the glyph, monochrome (STANDARD §8).
 """
 from __future__ import annotations
 
@@ -100,6 +102,16 @@ def sync(link: Path, tag: str) -> None:
         text = text.rstrip("\n") + "\n\n" + section + "\n"
     vendored.write_text(text)
     print(f"Synced {len(lines)} design kit files from Link {tag} ({commit[:12]})")
+    render_tray_icons()
+
+
+def render_tray_icons() -> None:
+    glyph = (ROOT / DESIGN / "glyphs" / "arcade.box.svg").read_text()
+    for name, colour in (("white", "#ffffff"), ("black", "#000000")):
+        out = ROOT / "apps/desktop/src-tauri/icons" / f"tray-{name}.png"
+        subprocess.run(["rsvg-convert", "-w", "64", "-h", "64", "-o", str(out)],
+                       input=glyph.replace("currentColor", colour).encode(), check=True)
+    print("Rendered the tray icons")
 
 
 def main(argv: list[str]) -> int:

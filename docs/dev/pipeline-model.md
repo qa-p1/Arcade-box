@@ -40,4 +40,4 @@ batch input support; this is not a general batch scheduler. Failed outbound
 or destructive actions are not automatically retried. Output behavior remains
 subject to each tool's scoped-file and never-overwrite rules.
 
-See [Arcade Link](arcade-link.md), [storage](storage.md) and [status](STATUS.md).
+See [Arcade Link](link.md), [storage](storage.md) and [status](../STATUS.md).

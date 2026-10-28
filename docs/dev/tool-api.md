@@ -1,6 +1,6 @@
 # Tool API, version 1
 
-The serialized manifest and request/result types are the compatibility boundary. Rust struct layout is not an ABI. [`catalog/tools.json`](../catalog/tools.json) demonstrates the manifest fields; [`catalog/tools.schema.json`](../catalog/tools.schema.json) validates its JSON shape. The shared Rust definitions live in `arcade-contract`.
+The serialized manifest and request/result types are the compatibility boundary. Rust struct layout is not an ABI. [`catalog/tools.json`](../../catalog/tools.json) demonstrates the manifest fields; [`catalog/tools.schema.json`](../../catalog/tools.schema.json) validates its JSON shape. The shared Rust definitions live in `arcade-contract`.
 
 ## Manifest
 
@@ -20,7 +20,7 @@ Input and output types are MIME-like strings such as `text/plain`, `text/url`, `
 
 `ToolRequest.inputs` is plural so a tool can accept batches and multi-file work without special request shapes. `ToolValue` carries a kind, value/reference, and MIME type. File and artifact values must be scoped references, not inline bytes or caller-controlled arbitrary paths. The host verifies user selection, canonicalizes the target, and checks that operations remain within the granted scope. Large objects stay outside IPC and SQLite.
 
-Plugin API v1 is defined by [`sdk/wit/arcade-tool/1.0.0/world.wit`](../sdk/wit/arcade-tool/1.0.0/world.wit). For WASM components, user-selected file values cross the component boundary only as opaque input-index tokens; a scoped host call reads a bounded chunk from an already-open handle. The host does not pass source paths to the plugin. File writes, network requests, and file/artifact outputs are rejected by the current plugin host until their scoped capabilities are implemented.
+Plugin API v1 is defined by [`sdk/wit/arcade-tool/1.0.0/world.wit`](../../sdk/wit/arcade-tool/1.0.0/world.wit). For WASM components, user-selected file values cross the component boundary only as opaque input-index tokens; a scoped host call reads a bounded chunk from an already-open handle. The host does not pass source paths to the plugin. File writes, network requests, and file/artifact outputs are rejected by the current plugin host until their scoped capabilities are implemented.
 
 ## Execution and results
 

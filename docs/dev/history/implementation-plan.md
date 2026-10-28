@@ -1,6 +1,6 @@
 # Implementation plan
 
-> Roadmap, not a completion ledger: signed distribution, archive tools and some polish remain outside the implemented ecosystem scope. Current implementation and limits: [status](STATUS.md).
+> Roadmap, not a completion ledger: signed distribution, archive tools and some polish remain outside the implemented ecosystem scope. Current implementation and limits: [status](../../STATUS.md).
 
 The sequence below records the original intended implementation order. Each stage produces a usable, reviewable increment and keeps existing contracts in use.
 

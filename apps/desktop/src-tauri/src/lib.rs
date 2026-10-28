@@ -1558,6 +1558,53 @@ thread_local! {
     static RECOVERY_TRAY: std::cell::RefCell<Option<RecoveryTray>> = const { std::cell::RefCell::new(None) };
 }
 
+/// The tray icon: Box's glyph, monochrome (STANDARD §8). White on Linux
+/// panels (dark on GNOME, Plasma's default and the usual Hyprland bars),
+/// black on macOS (a template image the menu bar recolours), and the
+/// taskbar's contrast colour on Windows.
+fn tray_glyph_png() -> &'static [u8] {
+    if tray_panel_is_dark() {
+        include_bytes!("../icons/tray-white.png")
+    } else {
+        include_bytes!("../icons/tray-black.png")
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn tray_panel_is_dark() -> bool {
+    use windows_sys::Win32::System::Registry::{HKEY_CURRENT_USER, RRF_RT_REG_DWORD, RegGetValueW};
+    let key: Vec<u16> = "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize\0"
+        .encode_utf16()
+        .collect();
+    let name: Vec<u16> = "SystemUsesLightTheme\0".encode_utf16().collect();
+    let mut value: u32 = 0;
+    let mut size = std::mem::size_of::<u32>() as u32;
+    // SAFETY: both strings are NUL-terminated and the output is a u32.
+    let status = unsafe {
+        RegGetValueW(
+            HKEY_CURRENT_USER,
+            key.as_ptr(),
+            name.as_ptr(),
+            RRF_RT_REG_DWORD,
+            std::ptr::null_mut(),
+            (&mut value as *mut u32).cast(),
+            &mut size,
+        )
+    };
+    // A missing value means the classic dark taskbar.
+    status != 0 || value == 0
+}
+
+#[cfg(target_os = "macos")]
+fn tray_panel_is_dark() -> bool {
+    false
+}
+
+#[cfg(not(any(target_os = "windows", target_os = "macos")))]
+fn tray_panel_is_dark() -> bool {
+    true
+}
+
 /// Construct toolkit resources before the first host answer, but delay OS
 /// tray registration until Box owns its icon (tray-icon has no hidden ctor).
 #[cfg(not(target_os = "linux"))]
@@ -1589,7 +1636,7 @@ fn prepare_recovery_tray<M: tauri::Manager<tauri::Wry>>(
             &quit,
         ],
     )?;
-    let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/icon.png"))?;
+    let icon = tauri::image::Image::from_bytes(tray_glyph_png())?;
     Ok(PreparedRecoveryTray { menu, icon })
 }
 
@@ -1641,7 +1688,7 @@ mod linux_tray {
             static ICONS: OnceLock<Vec<ksni::Icon>> = OnceLock::new();
             ICONS
                 .get_or_init(|| {
-                    image::load_from_memory(include_bytes!("../icons/icon.png"))
+                    image::load_from_memory(super::tray_glyph_png())
                         .map(|image| {
                             [32, 64, 128]
                                 .into_iter()
@@ -1778,6 +1825,7 @@ fn set_native_tray(app: &tauri::AppHandle, state: arcade_link::trayhost::TraySta
                         .tooltip("Arcade Box")
                         .menu(&prepared.menu)
                         .icon(prepared.icon)
+                        .icon_as_template(cfg!(target_os = "macos"))
                         .show_menu_on_left_click(menu_on_left)
                         .on_menu_event(|app, event| match event.id().as_ref() {
                             "toggle-island" => toggle_island_app(app),
@@ -1968,9 +2016,52 @@ fn handle_second_instance(app: &tauri::AppHandle, argv: &[String]) {
         Some("--pipelines") => open_pipelines(app),
         Some("--dashboard") => open_dashboard(app),
         Some("--toggle") => toggle_island_app(app),
+        Some("--hide") => hide_island_app(app),
         Some("--background") => {}
+        // `--show` and a plain launch.
         _ => open_island(app),
     }
+}
+
+/// `--hide`: hides the Island if it is open; nothing else changes.
+fn hide_island_app(app: &tauri::AppHandle) {
+    if let Some(window) = app.get_webview_window("island") {
+        request_hide_island(&window, std::time::Duration::ZERO);
+    }
+}
+
+/// `--status`: one line of JSON (running, version, Link state) without
+/// starting anything.
+pub fn print_status() {
+    let locations = arcade_link::Locations::discover();
+    let registry = arcade_link::Registry::load(&locations);
+    let me = arcade_link::PeerInfo {
+        id: format!("{}.status", installer::ME),
+        version: env!("CARGO_PKG_VERSION").into(),
+    };
+    let running = match arcade_link::client::app_state(&locations, &registry, installer::ME, &me) {
+        arcade_link::AppState::Running { version } => Some(version),
+        _ => None,
+    };
+    let link = registry
+        .get(installer::ME)
+        .map_or("unregistered", |manifest| {
+            if manifest.settings.link_enabled {
+                "on"
+            } else {
+                "off"
+            }
+        });
+    println!(
+        "{}",
+        serde_json::json!({
+            "app": installer::ME,
+            "version": env!("CARGO_PKG_VERSION"),
+            "running": running.is_some(),
+            "runningVersion": running,
+            "link": link,
+        })
+    );
 }
 
 pub fn run(args: Vec<String>) {
@@ -2155,6 +2246,8 @@ pub fn run(args: Vec<String>) {
                 open_dashboard(app.handle());
             } else if first_flag.as_deref() == Some("--toggle") {
                 toggle_island_app(app.handle());
+            } else if first_flag.as_deref() == Some("--show") {
+                open_island(app.handle());
             }
             Ok(())
         })

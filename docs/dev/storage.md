@@ -26,10 +26,14 @@ error text. Results stay in memory; `arcade.security.*` tools skip usage and
 history recording. File artifacts use scoped references rather than database
 blobs. Saved pipeline options are persisted, but password controls are rejected.
 
-The CLI and desktop currently use separate database locations. They do not
-share saved pipelines, favorites or history automatically. The CLI uses its
-application data directory; the desktop uses its Tauri application data
-directory. See About/diagnostics and the CLI options for the active paths.
+The CLI and desktop share one database in Box's data folder,
+`arcade_core::dirs::data_dir()` (Link's data folder for Box: `arcade/box` on Linux, `Arcade/Box` on Windows and macOS; under
+`$ARCADE_HOME` when that is set). Before 0.4.0 they used separate folders
+(`dev.arcadebox.app` and the CLI's `arcadebox` / `Arcade Box` folder);
+`arcade_core::dirs::prepare()` moves both with Link's verified migration on
+the first start, refuses while an old desktop still holds `desktop.lock`, and
+leaves a conflicting older file in place and says so in the log. The
+webview's own data lives in `webview` inside Box's cache folder.
 
 ## Files and credentials
 
@@ -48,4 +52,4 @@ Keys are not returned in results, logged, or put in provider argument vectors.
 Interrupted jobs are marked during recovery and terminal job metadata can be
 pruned. A general configurable retention policy for all tool history, migration
 checksums and automatic credential-store migration are design work, not shipped
-features. See [status](STATUS.md) and [threat model](security/threat-model.md).
+features. See [status](../STATUS.md) and [threat model](threat-model.md).

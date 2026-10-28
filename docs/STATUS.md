@@ -26,7 +26,7 @@ re-measured for the new pin.
 
 Version 0.1.2 adds **Add to Shelf** to the result action row: output files,
 folders and text go to Arcade Shelf's `shelf.add` as references (see
-[Arcade Link](arcade-link.md)). It is covered by core unit tests against a
+[Arcade Link](dev/link.md)). It is covered by core unit tests against a
 mock Shelf manifest; a run against a real Shelf is not recorded here yet.
 
 ## Tools hub verification (2026-10-14)
@@ -61,7 +61,7 @@ The dated measurements below remain historical performance evidence.
   downloaded per user from Engines (Link's shared `engines` folder).
 - Arcade Link: every tool and preset as `box:<tool>[#preset]`, `box.open`,
   `box.pipelines`, `box.pipeline.run`, one-shot mode, and the Lens, Look,
-  Clipboard, Wheel, Shelf and Tools integrations listed in [Arcade Link](arcade-link.md).
+  Clipboard, Wheel, Shelf and Tools integrations listed in [Arcade Link](dev/link.md).
 - Hyprland: window-pin floats and pins the previous window; paste-plain sends
   Ctrl+Shift+V to it.
 
@@ -98,25 +98,24 @@ and WAV.
 - Idle CPU is about one 10 ms scheduler tick every few seconds, not zero.
 - On a brand-new profile the first engine check takes about 6 s; during it,
   tools that need an engine report "still checking" to other apps.
-- The CLI and the desktop keep separate databases ([storage](storage.md)).
 - Release gates still open: signing/notarization, signed updates and plugin
-  registry, the main application license text ([release](release.md)).
+  registry, the main application license text ([release](dev/release.md)).
 
 ## Documents
 
 | Document | Contents |
 |---|---|
 | [README](../README.md) | What Box is, CLI, desktop, verification |
-| [product](product.md) | Product direction |
-| [architecture](architecture.md) | Boundaries, startup, performance |
-| [tool API](tool-api.md), [tool catalog](tool-catalog.md), [tool matrix](tool-matrix.md), [tools/](tools) | Contract, catalog rules, per-tool status and notes |
-| [providers](providers.md) | Engines and how they are found |
-| [pipelines](pipeline-model.md) | Pipeline model |
-| [search](search.md), [storage](storage.md) | Search and context, persistence |
-| [platform](platform.md) | Platform adapters and verified scope |
-| [plugin model](plugin-model.md) | WASM plugins and the worker |
-| [Arcade Link](arcade-link.md) | What Box exposes and consumes, verification |
-| [packaging](packaging.md), [release](release.md) | Builds, manifests, release gates |
-| [security/threat-model](security/threat-model.md) | Threats and controls |
-| [adr/](adr) | Architecture decisions |
-| [implementation plan](implementation-plan.md), [recovery audit](recovery-audit.md), [research/](research) | Historical planning and research (dated) |
+| [product](dev/history/product.md) | Product direction |
+| [architecture](dev/architecture.md) | Boundaries, startup, performance |
+| [tool API](dev/tool-api.md), [tool catalog](tool-catalog.md), [tool matrix](tool-matrix.md), [tools/](dev/history/tools) | Contract, catalog rules, per-tool status and notes |
+| [providers](dev/providers.md) | Engines and how they are found |
+| [pipelines](dev/pipeline-model.md) | Pipeline model |
+| [search](dev/search.md), [storage](dev/storage.md) | Search and context, persistence |
+| [platform](dev/platform.md) | Platform adapters and verified scope |
+| [plugin model](dev/plugin-model.md) | WASM plugins and the worker |
+| [Arcade Link](dev/link.md) | What Box exposes and consumes, verification |
+| [packaging](dev/packaging.md), [release](dev/release.md) | Builds, manifests, release gates |
+| [security/threat-model](dev/threat-model.md) | Threats and controls |
+| [adr/](dev/adr) | Architecture decisions |
+| [implementation plan](dev/history/implementation-plan.md), [recovery audit](dev/history/recovery-audit.md), [research/](dev/history/research) | Historical planning and research (dated) |

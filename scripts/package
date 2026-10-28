@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Build this OS's installer the way CI does, then check it installs, repairs
+# and uninstalls in a disposable profile.
+#   scripts/package
+# On macOS the build is universal-apple-darwin
+# (rustup target add aarch64-apple-darwin x86_64-apple-darwin).
+set -euo pipefail
+cd "$(dirname "$0")/.."
+python=$(command -v python || command -v python3)
+frontend=apps/desktop/frontend
+args=()
+case "$(uname -s)" in
+  Linux) bundle=appimage ;;
+  Darwin) bundle=dmg; args=(--target universal-apple-darwin) ;;
+  *) bundle=nsis ;;
+esac
+[ -d "$frontend/node_modules" ] || npm ci --prefix "$frontend"
+"$python" scripts/prepare-bundle.py "${args[@]}"
+[ -f target/tauri-cli/node_modules/@tauri-apps/cli/tauri.js ] ||
+  npm install --prefix target/tauri-cli --cache target/npm-cache --no-audit --no-fund @tauri-apps/cli@2.12.1
+(cd apps/desktop/src-tauri &&
+  node ../../../target/tauri-cli/node_modules/@tauri-apps/cli/tauri.js build --ci \
+    --config tauri.bundle.conf.json --bundles "$bundle" "${args[@]}" -- --locked)
+case "$bundle" in
+  appimage) dbus-run-session -- xvfb-run -a "$python" scripts/verify-appimage.py \
+    target/release/bundle/appimage/*.AppImage arcade.box Arcade-Box.AppImage arcade-desktop ;;
+  dmg) scripts/verify-dmg.sh target/universal-apple-darwin/release/bundle/dmg/*.dmg 'Arcade Box' arcade-desktop arcade.box ;;
+  nsis) pwsh scripts/verify-nsis.ps1 -SetupPattern 'target/release/bundle/nsis/*-setup.exe' -Id arcade.box \
+    -Name 'Arcade Box' -CliName arcade-desktop ;;
+esac

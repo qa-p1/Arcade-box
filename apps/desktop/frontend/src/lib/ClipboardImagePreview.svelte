@@ -32,6 +32,6 @@
 {/if}
 
 <style>
-  canvas { display:block; width:auto; max-width:100%; max-height:132px; object-fit:contain; border:1px solid var(--border-subtle); border-radius:6px; background: var(--panel); }
-  .clipboard-image-fallback { color:var(--text-muted); font-size: var(--fs-caption); }
+  canvas { display:block; width:auto; max-width:100%; max-height:132px; object-fit:contain; border:1px solid var(--line); border-radius:6px; background: var(--panel); }
+  .clipboard-image-fallback { color:var(--muted); font-size: var(--fs-caption); }
 </style>

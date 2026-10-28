@@ -422,10 +422,10 @@ impl StandardUi {
         if self.input.max_items == Some(0) {
             return Err("input maximum must be positive".into());
         }
-        if let (Some(min), Some(max)) = (self.input.min_items, self.input.max_items) {
-            if min > max || max == 0 {
-                return Err("invalid input item bounds".into());
-            }
+        if let (Some(min), Some(max)) = (self.input.min_items, self.input.max_items)
+            && (min > max || max == 0)
+        {
+            return Err("invalid input item bounds".into());
         }
         if self.controls.len() > 32 {
             return Err("more than 32 option controls".into());
@@ -490,14 +490,13 @@ impl StandardUi {
                     {
                         return Err("select option has duplicate choices".into());
                     }
-                    if let Some(default) = &control.default {
-                        if !control
+                    if let Some(default) = &control.default
+                        && !control
                             .choices
                             .iter()
                             .any(|choice| Some(choice.value.as_str()) == default.as_str())
-                        {
-                            return Err("select default is not a choice".into());
-                        }
+                    {
+                        return Err("select default is not a choice".into());
                     }
                 }
                 UiControlKind::Number => {

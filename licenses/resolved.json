@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "purpose": "Locked third-party dependency inventory; human license and notice review remains required",
-  "packageCount": 1001,
+  "packageCount": 1003,
   "unresolvedLicenseMetadata": [],
   "packages": [
     {
@@ -9806,6 +9806,24 @@
       "repository": null,
       "source": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.7.tgz",
       "checksum": "sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA=="
+    },
+    {
+      "ecosystem": "npm",
+      "name": "playwright",
+      "version": "1.63.0",
+      "license": "Apache-2.0",
+      "repository": null,
+      "source": "https://registry.npmjs.org/playwright/-/playwright-1.63.0.tgz",
+      "checksum": "sha512-+7ziBLidS4NaNCdt57SUDT+wYmmd5fmiQejUic/kb+YsYSCPyOOE9sebzMjNmQrsnNpDJqd4WHvV/8lfKfUDUg=="
+    },
+    {
+      "ecosystem": "npm",
+      "name": "playwright-core",
+      "version": "1.63.0",
+      "license": "Apache-2.0",
+      "repository": null,
+      "source": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.63.0.tgz",
+      "checksum": "sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg=="
     },
     {
       "ecosystem": "npm",

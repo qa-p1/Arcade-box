@@ -10,11 +10,11 @@
 
 ## Install or update
 
-Install or update Arcade Box through Arcade Tools → Apps, or follow the [getting-started guide](user/getting-started.md).
+Install or update Arcade Box through Arcade Tools → Apps, or follow the [getting-started guide](../user/getting-started.md).
 
 ## Works with other Arcade apps
 
-See [how Arcade Box works with other Arcade apps](user/with-other-apps.md).
+See [how Arcade Box works with other Arcade apps](../user/with-other-apps.md).
 
 ## Checksums
 

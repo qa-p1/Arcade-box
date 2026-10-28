@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+  # release.yml builds its installers with this workflow.
+  workflow_call:
 
 env:
   PYTHONUTF8: "1"
@@ -17,7 +19,7 @@ defaults:
     working-directory: Arcade-box
 
 concurrency:
-  group: ci-${{ github.event_name }}-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -70,28 +72,18 @@ jobs:
       - name: Install frontend dependencies
         working-directory: Arcade-box/apps/desktop/frontend
         run: npm ci
-      - name: Check frontend types and accessibility diagnostics
+      - name: Install Chromium for the layout check
+        if: runner.os == 'Linux'
         working-directory: Arcade-box/apps/desktop/frontend
-        run: npm run check
-      - name: Build frontend
-        working-directory: Arcade-box/apps/desktop/frontend
-        run: npm run build
-      - name: Check Rust formatting
-        run: cargo fmt --all --check
-      - name: Clippy on every target
-        run: cargo clippy --workspace --all-targets --locked -- -D warnings
-      - name: Documentation, shortcuts and vendored sources
-        run: python scripts/check-docs.py && python scripts/check-vendored.py
-      - name: Test shared runtime
+        run: npx playwright install --with-deps chromium
+      # Types, unit and layout tests, frontend build, CSS variables, the one
+      # version, docs, vendored hashes, fmt, clippy, isolated tests, the
+      # desktop build, the tool matrix and the licence inventory.
+      - name: Run scripts/check
+        shell: bash
         env:
           ARCADE_HOME: ${{ runner.temp }}/arcade-box-ci
-        run: python scripts/isolate.py cargo test --workspace --locked
-      - name: Build desktop on target OS
-        run: cargo build -p arcade-desktop --locked
-      - name: Check tool catalog matrix
-        run: python catalog/render_tool_matrix.py --check
-      - name: Check locked license inventory
-        run: python scripts/license_inventory.py --check
+        run: scripts/check
       - name: Stage the CLI and trusted plugin worker
         run: python scripts/prepare-bundle.py ${{ matrix.sidecar-args }}
       - name: Install the pinned Tauri bundler
@@ -110,7 +102,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get install -y xdotool python3-dbus python3-gi
-          git -c advice.detachedHead=false clone -q --depth 1 --branch v0.3.0 https://github.com/qa-p1/Arcade-Link "$RUNNER_TEMP/link"
+          git -c advice.detachedHead=false clone -q --depth 1 --branch v0.4.0 https://github.com/qa-p1/Arcade-Link "$RUNNER_TEMP/link"
           cargo build --release --manifest-path "$RUNNER_TEMP/link/Cargo.toml" -p arcade-link-cli
           /usr/bin/python3 "$RUNNER_TEMP/link/tools/e2e.py" run -- /usr/bin/python3 tests/tray-registration.py target/release/arcade-desktop "$RUNNER_TEMP/link/target/release/arcade-link" box
       - name: Verify NSIS silent install and uninstall

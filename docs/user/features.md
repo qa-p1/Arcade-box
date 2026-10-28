@@ -76,4 +76,4 @@ Save compatible actions as a pipeline and run it again from search. Pipelines ca
 
 The Plugins page can install community plugins that run in a restricted WebAssembly worker. Review each plugin’s declared permissions before installing it. Plugins are optional; Box’s built-in tools remain available without them.
 
-For tool input formats and detailed limits, see the [tool catalog](../tool-catalog.md), [tool matrix](../tool-matrix.md), and [provider notes](../providers.md).
+For tool input formats and detailed limits, see the [tool catalog](https://github.com/qa-p1/Arcade-box/blob/main/docs/tool-catalog.md), [tool matrix](https://github.com/qa-p1/Arcade-box/blob/main/docs/tool-matrix.md), and [provider notes](https://github.com/qa-p1/Arcade-box/blob/main/docs/dev/providers.md).

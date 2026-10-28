@@ -10,7 +10,7 @@ Linux standalone and ecosystem flows run under isolated Xvfb. Selected Hyprland
 flows (including window-pin and paste-plain) were also verified. Windows/macOS
 builds, tests and installer creation passed in native CI; interactive desktop
 behavior remains unverified. "Build only" below means built/tested in CI, not
-an unexecuted workflow. See [current status](STATUS.md) for evidence.
+an unexecuted workflow. See [current status](../STATUS.md) for evidence.
 
 | Adapter | Windows | macOS | Linux evidence / limit |
 |---|---|---|---|

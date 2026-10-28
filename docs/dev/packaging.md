@@ -39,22 +39,31 @@ temporary home, and checks receipt, bundle and CLI removal after uninstall.
 CI checks out Box; Cargo resolves Arcade Link from the pinned `v0.3.0` git tag.
 It runs Rust/frontend checks, builds installers, and uploads one artifact
 per platform. Linux, Windows and macOS jobs passed on 2026-10-08; interactive
-Windows/macOS behavior is still unverified (see [status](STATUS.md)).
+Windows/macOS behavior is still unverified (see [status](../STATUS.md)).
 The macOS adapter minimum is 14 for screen selection; recording output requires
 15. The NSIS installation is per user. Linux CI uses Ubuntu 24.04; an AppImage
 built on a newer system does not prove compatibility with older glibc versions.
 
 ## Stable and nightly
 
-The release workflow downloads installers from a successful non-PR CI run on
-`main`. An unpublished app version produces `v<version>`; subsequent builds
-refresh the `nightly` pre-release. Manual dispatch can select a successful CI
-run on main. The workflow verifies the run and the three installer kinds, then
-uploads installers, `arcade-release.json`, and `SHA256SUMS.txt`. Publishing is
-left to the owner; no release or tag is created during local verification.
+Releases start by hand, the same way in every Arcade repo:
+
+1. Run **Tag a release** (`tag.yml`) with the tag (`v0.4.0`) and the full SHA
+   of a commit on `main`. It checks that the commit is on `main` and that
+   `Cargo.toml`'s `[workspace.package] version` matches the tag, then pushes
+   an annotated tag.
+2. Run **Release** (`release.yml`) on that tag with the `stable` channel. Run it
+   on `main` with `nightly` to refresh the rolling `nightly` pre-release.
+
+`release.yml` calls `ci.yml`, so the installers it publishes are the ones CI
+built and installed, repaired and uninstalled on each OS. It then checks the
+three installer kinds, writes `arcade-release.json` and `SHA256SUMS.txt`, and
+publishes. Asset names are unchanged from earlier releases (spaces become
+`-`; nightly files carry `nightly` in place of the version). Tags are never
+pushed by hand.
 
 The generator is vendored unchanged from Arcade Link `v0.3.0`, commit
-`33650a8` (see [VENDORED](../VENDORED.md)):
+`33650a8` (see [VENDORED](../../VENDORED.md)):
 
 ```sh
 python3 scripts/arcade-release.py --id arcade.box --version 0.3.5 --channel stable \

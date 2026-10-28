@@ -11,7 +11,7 @@
 | Focus search | Ctrl+K | Ctrl+K | ⌘K |
 | Open the Island search | / | / | / |
 | Dismiss the Island | Escape | Escape | ⎋ |
-| Return to the dashboard | Alt+← | Alt+← | ⌥← |
+| Back from a tool | Alt+← | Alt+← | ⌥← |
 | Run the selected tool | Ctrl+Enter | Ctrl+Enter | ⌘↩ |
 | Copy the current result | Ctrl+Shift+C | Ctrl+Shift+C | ⇧⌘C |
 | Choose an input file | Ctrl+O | Ctrl+O | ⌘O |
