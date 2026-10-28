@@ -1134,7 +1134,6 @@ fn compare_images(
         .collect::<Result<Vec<_>, _>>()?;
     let provider = image_provider(&[
         "image:operation:subtract",
-        "image:operation:add",
         "image:operation:abs",
         "image:operation:avg",
         "image:operation:max",
@@ -1162,14 +1161,35 @@ fn compare_images(
     if left_dimensions != right_dimensions {
         return Err("Images must have the same dimensions for pixel-difference statistics".into());
     }
-    let bands = image_bands(&provider.executable_path, &first, cancelled)?;
-    if bands != image_bands(&provider.executable_path, &second, cancelled)? {
-        return Err("Images must have the same number of color/alpha channels for pixel-difference statistics".into());
-    }
-    let first_minus = temp.path().join("left-minus-right.v");
-    let second_minus = temp.path().join("right-minus-left.v");
-    let first_abs = temp.path().join("left-absolute.v");
-    let second_abs = temp.path().join("right-absolute.v");
+    let left_bands = image_bands(&provider.executable_path, &first, cancelled)?;
+    let right_bands = image_bands(&provider.executable_path, &second, cancelled)?;
+    // A PNG with transparency against its JPEG copy is the usual case: compare
+    // both as flat sRGB when their channels differ.
+    let (first, second, bands) = if left_bands == right_bands {
+        (first, second, left_bands)
+    } else {
+        (
+            flat_srgb(
+                &provider,
+                &first,
+                left_bands,
+                "left",
+                temp.path(),
+                cancelled,
+            )?,
+            flat_srgb(
+                &provider,
+                &second,
+                right_bands,
+                "right",
+                temp.path(),
+                cancelled,
+            )?,
+            3,
+        )
+    };
+    // |left - right| per channel; vips subtract keeps the sign.
+    let signed = temp.path().join("left-minus-right.v");
     let difference = temp.path().join("difference.v");
     run_vips(
         &provider,
@@ -1177,19 +1197,7 @@ fn compare_images(
             "subtract".into(),
             first.as_os_str().to_os_string(),
             second.as_os_str().to_os_string(),
-            first_minus.as_os_str().to_os_string(),
-        ],
-        temp.path(),
-        cancelled,
-        "compare image pixels",
-    )?;
-    run_vips(
-        &provider,
-        vec![
-            "subtract".into(),
-            second.as_os_str().to_os_string(),
-            first.as_os_str().to_os_string(),
-            second_minus.as_os_str().to_os_string(),
+            signed.as_os_str().to_os_string(),
         ],
         temp.path(),
         cancelled,
@@ -1199,35 +1207,12 @@ fn compare_images(
         &provider,
         vec![
             "abs".into(),
-            first_minus.as_os_str().to_os_string(),
-            first_abs.as_os_str().to_os_string(),
-        ],
-        temp.path(),
-        cancelled,
-        "calculate absolute image differences",
-    )?;
-    run_vips(
-        &provider,
-        vec![
-            "abs".into(),
-            second_minus.as_os_str().to_os_string(),
-            second_abs.as_os_str().to_os_string(),
-        ],
-        temp.path(),
-        cancelled,
-        "calculate absolute image differences",
-    )?;
-    run_vips(
-        &provider,
-        vec![
-            "add".into(),
-            first_abs.as_os_str().to_os_string(),
-            second_abs.as_os_str().to_os_string(),
+            signed.as_os_str().to_os_string(),
             difference.as_os_str().to_os_string(),
         ],
         temp.path(),
         cancelled,
-        "combine pixel differences",
+        "calculate absolute image differences",
     )?;
     let average = scalar_vips(&provider, "avg", &difference, temp.path(), cancelled)?;
     let maximum = scalar_vips(&provider, "max", &difference, temp.path(), cancelled)?;
@@ -1246,6 +1231,49 @@ fn compare_images(
         warnings: vec!["The current form returns difference statistics only; side-by-side, overlay, slider, and diff-image previews remain pending.".into()],
         metadata: Default::default(),
     })
+}
+
+/// `input` as three-band sRGB: alpha flattened onto white, grey expanded.
+fn flat_srgb(
+    provider: &ProviderInfo,
+    input: &Path,
+    bands: u32,
+    name: &str,
+    temp: &Path,
+    cancelled: &AtomicBool,
+) -> Result<std::path::PathBuf, String> {
+    let mut current = input.to_path_buf();
+    if bands == 2 || bands == 4 {
+        let flat = temp.join(format!("{name}-flat.v"));
+        run_vips(
+            provider,
+            vec![
+                "flatten".into(),
+                current.as_os_str().to_os_string(),
+                flat.as_os_str().to_os_string(),
+                "--background".into(),
+                "255".into(),
+            ],
+            temp,
+            cancelled,
+            "flatten image transparency",
+        )?;
+        current = flat;
+    }
+    let srgb = temp.join(format!("{name}-srgb.v"));
+    run_vips(
+        provider,
+        vec![
+            "colourspace".into(),
+            current.as_os_str().to_os_string(),
+            srgb.as_os_str().to_os_string(),
+            "srgb".into(),
+        ],
+        temp,
+        cancelled,
+        "convert the image to sRGB",
+    )?;
+    Ok(srgb)
 }
 
 fn image_bands(vips: &Path, input: &Path, cancelled: &AtomicBool) -> Result<u32, String> {
@@ -1984,6 +2012,77 @@ mod tests {
         let image = ::image::open(&path).unwrap().to_rgba8();
         assert_eq!(image.dimensions(), (svg::DEFAULT_SIZE, svg::DEFAULT_SIZE));
         assert_eq!(image.get_pixel(0, 0)[3], 0, "transparency is kept");
+    }
+
+    #[test]
+    fn compare_matches_a_transparent_png_against_its_jpeg() {
+        // 0.3.5 refused this pair: "same number of color/alpha channels".
+        let Some(provider) = discover_vips(None)
+            .into_iter()
+            .find(|provider| provider.compatible)
+        else {
+            return;
+        };
+        let temp = tempfile::tempdir().unwrap();
+        let svg = temp.path().join("art.svg");
+        fs::write(
+            &svg,
+            r##"<svg xmlns="http://www.w3.org/2000/svg" width="64" height="48"><circle cx="32" cy="24" r="18" fill="#00aaee"/></svg>"##,
+        )
+        .unwrap();
+        let png = temp.path().join("art.png");
+        let jpg = temp.path().join("art.jpg");
+        for args in [
+            vec![
+                OsString::from("copy"),
+                svg.clone().into(),
+                png.clone().into(),
+            ],
+            vec![
+                OsString::from("flatten"),
+                svg.clone().into(),
+                jpg.clone().into(),
+                "--background".into(),
+                "255".into(),
+            ],
+        ] {
+            run_vips(
+                &provider,
+                args,
+                temp.path(),
+                &AtomicBool::new(false),
+                "make fixtures",
+            )
+            .unwrap();
+        }
+        let runtime = crate::Arcade::in_memory().unwrap();
+        let inputs = [&png, &jpg]
+            .map(|path| runtime.grants().grant(path).unwrap().as_tool_value())
+            .to_vec();
+        let compared = runtime
+            .run_tool(ToolRequest {
+                tool_id: "arcade.image.compare".into(),
+                inputs,
+                options: json!({}),
+            })
+            .unwrap();
+        assert_eq!(
+            compared.status,
+            ResultStatus::Success,
+            "{:?}",
+            compared.message
+        );
+        let data: Value = serde_json::from_str(&compared.outputs[0].value).unwrap();
+        assert_eq!(data["bands"], 3);
+        assert!(
+            data["meanAbsoluteDifference"].as_f64().unwrap() < 6.0,
+            "{data}"
+        );
+        // 0.3.5 added |a-b| and |b-a|, so 8-bit differences reached 510.
+        assert!(
+            data["maximumChannelDifference"].as_f64().unwrap() <= 255.0,
+            "{data}"
+        );
     }
 
     #[test]

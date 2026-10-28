@@ -281,6 +281,8 @@ impl Arcade {
             text_tools::execute(&manifest, &request, self, cancelled)
         } else if manifest.id.starts_with("arcade.utility.") {
             utility_tools::execute(&manifest, &request, cancelled)
+        } else if manifest.id.starts_with("arcade.screen.") {
+            Err("This tool uses the screen, so it runs in the Arcade Box desktop app, not in the terminal".into())
         } else {
             Err(format!("No executor is registered for {}", manifest.id))
         };

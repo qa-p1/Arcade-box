@@ -27,6 +27,10 @@
   call `log10` (B5); rounded result text changed the number (B6); Image
   convert and Favicon refused SVG files (B7); Batch barcodes refused CSV
   files (B8); multi-language OCR such as `eng+deu` was rejected (B9).
+- Fixed: Image compare refused a PNG with transparency against its JPEG copy,
+  and it reported every difference twice as large (up to 510 for 8-bit
+  images). Screen tools run from the terminal now say they need the desktop
+  app.
 - Releases are now made from a version tag (`tag.yml`, then `release.yml`);
   the assets are unchanged. The repository now includes the GPL-3.0 licence
   text.
