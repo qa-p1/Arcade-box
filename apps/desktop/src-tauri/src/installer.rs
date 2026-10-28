@@ -19,7 +19,12 @@ pub const ME: &str = arcade_link::ids::BOX;
 pub const NAME: &str = "Arcade Box";
 /// `arcade-box` is the separate terminal tool; the desktop app keeps its own name.
 pub const CLI_NAME: &str = "arcade-desktop";
-pub const DESKTOP_ID: &str = "dev.arcadebox.app";
+pub const DESKTOP_ID: &str = crate::OS_ID;
+/// The desktop file Box used before 0.4.0.
+const OLD_DESKTOP_ID: &str = "dev.arcadebox.app";
+/// The login entry Box used before 0.4.0.
+#[cfg(target_os = "linux")]
+const OLD_AUTOSTART: &str = "arcade-box.desktop";
 /// The terminal tool's command. On Linux it is a second link to the
 /// installed AppImage; started under this name, the AppImage runs the CLI it
 /// bundles (see [`run_terminal_alias`]).
@@ -34,8 +39,8 @@ pub fn app_info() -> AppInfo {
         desktop_id: DESKTOP_ID.into(),
         cli_name: CLI_NAME.into(),
         background_args: vec!["--background".into()],
-        legacy_desktop_ids: vec![DESKTOP_ID.into()],
-        autostart_id: "arcade-box".into(),
+        legacy_desktop_ids: vec![OLD_DESKTOP_ID.into()],
+        autostart_id: DESKTOP_ID.into(),
     }
 }
 
@@ -380,8 +385,8 @@ pub fn install_copy(
             environment.receipts().write(&receipt)?;
         }
     }
-    // Box's window class keeps the launcher entry matched to its windows.
-    add_window_class(&receipt)?;
+    complete_desktop_entry(&receipt)?;
+    remove_old_login_entry(environment, existing.as_ref(), &receipt)?;
     link_terminal_command(environment, &mut receipt)?;
     Ok(receipt)
 }
@@ -601,7 +606,7 @@ pub fn repair(environment: &Environment, runtime: &Runtime) -> io::Result<Receip
         let moved = (detection.state != State::DevBuild && detection.is_app_image)
             .then_some(detection.running_from.as_path());
         let mut receipt = install::repair(environment, &app_info(), moved)?;
-        add_window_class(&receipt)?;
+        complete_desktop_entry(&receipt)?;
         link_terminal_command(environment, &mut receipt)?;
         Ok(receipt)
     }
@@ -670,7 +675,7 @@ pub fn stop_running_copy(environment: &Environment) {
 
 pub fn uninstall(environment: &Environment, remove_data: bool) -> io::Result<bool> {
     quit_running_instance();
-    let data_folders: Vec<PathBuf> = crate::link::data_dir().into_iter().collect();
+    let data_folders = arcade_core::dirs::all_folders();
     #[cfg(target_os = "macos")]
     let cli = bundle_cli(environment)?;
     let removed = install::uninstall(
@@ -740,17 +745,77 @@ pub fn launch_args(args: &[String]) -> Vec<std::ffi::OsString> {
     result
 }
 
+/// The desktop entry lines STANDARD §10 adds to Link's: the tagline,
+/// keywords, a specific category and the window class that matches Box's
+/// windows to the launcher.
 #[cfg(target_os = "linux")]
-fn add_window_class(receipt: &Receipt) -> io::Result<()> {
+const ENTRY_LINES: [(&str, &str); 4] = [
+    (
+        "Comment",
+        "File, media, text, web and system tasks in one searchable desktop tool.",
+    ),
+    ("Keywords", "convert;pdf;image;video;audio;text;qr;tools;"),
+    ("Categories", "Utility;FileTools;"),
+    ("StartupWMClass", crate::OS_ID),
+];
+
+#[cfg(target_os = "linux")]
+fn complete_desktop_entry(receipt: &Receipt) -> io::Result<()> {
     let Some(entry) = &receipt.integration.desktop_entry else {
         return Ok(());
     };
     let text = fs::read_to_string(entry)?;
-    if text.contains("\nStartupWMClass=") {
+    let completed = with_entry_lines(&text);
+    if completed == text {
         return Ok(());
     }
-    let text = text.replacen("\nTerminal=false\n", "\nTerminal=false\nStartupWMClass=arcade-desktop\nComment=Tools for everyday file, text, and media tasks\n", 1);
-    arcade_link::paths::write_atomic(entry, text.as_bytes(), false)
+    arcade_link::paths::write_atomic(entry, completed.as_bytes(), false)
+}
+
+/// `text` with [`ENTRY_LINES`] set in its `[Desktop Entry]` group, replacing
+/// any earlier values; the action groups stay as they are.
+#[cfg(target_os = "linux")]
+fn with_entry_lines(text: &str) -> String {
+    let mut out = String::new();
+    let mut in_main = false;
+    for line in text.lines() {
+        if line.starts_with('[') {
+            in_main = line == "[Desktop Entry]";
+            out.push_str(line);
+            out.push('\n');
+            if in_main {
+                for (key, value) in ENTRY_LINES {
+                    out.push_str(&format!("{key}={value}\n"));
+                }
+            }
+            continue;
+        }
+        let key = line.split_once('=').map(|(key, _)| key);
+        if in_main && key.is_some_and(|key| ENTRY_LINES.iter().any(|(k, _)| *k == key)) {
+            continue;
+        }
+        out.push_str(line);
+        out.push('\n');
+    }
+    out
+}
+
+/// Box before 0.4.0 started at login from `arcade-box.desktop`. Once the
+/// install has written the entry under the new id, the old one would start a
+/// second copy, so it goes; only the entry the old receipt recorded is
+/// touched.
+#[cfg(target_os = "linux")]
+fn remove_old_login_entry(
+    environment: &Environment,
+    old: Option<&Receipt>,
+    new: &Receipt,
+) -> io::Result<()> {
+    let old_entry = environment.config.join("autostart").join(OLD_AUTOSTART);
+    let recorded = old.is_some_and(|r| r.integration.autostart.as_ref() == Some(&old_entry));
+    if recorded && new.integration.autostart.as_ref() != Some(&old_entry) {
+        remove_file(&old_entry)?;
+    }
+    Ok(())
 }
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
@@ -1017,6 +1082,18 @@ mod tests {
 
     #[cfg(target_os = "linux")]
     #[test]
+    fn desktop_entry_lines_replace_earlier_values() {
+        let text = "[Desktop Entry]\nType=Application\nName=Arcade Box\nTerminal=false\nCategories=Utility;\nStartupWMClass=arcade-desktop\nComment=Old\n\n[Desktop Action Settings]\nName=Open Settings\n";
+        let once = with_entry_lines(text);
+        assert_eq!(with_entry_lines(&once), once);
+        assert!(once.contains("\nStartupWMClass=dev.arcade.Box\n"));
+        assert!(!once.contains("arcade-desktop") && !once.contains("Comment=Old"));
+        assert_eq!(once.matches("Categories=").count(), 1);
+        assert!(once.ends_with("[Desktop Action Settings]\nName=Open Settings\n"));
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
     fn appimage_install_repair_and_uninstall_use_a_temp_environment() {
         let root = std::env::temp_dir().join(format!(
             "box-install-{}",
@@ -1048,9 +1125,27 @@ mod tests {
         let desktop =
             fs::read_to_string(receipt.integration.desktop_entry.as_ref().unwrap()).unwrap();
         assert!(
-            desktop.contains("StartupWMClass=arcade-desktop")
+            desktop.contains("\nStartupWMClass=dev.arcade.Box\n")
+                && desktop.contains("\nCategories=Utility;FileTools;\n")
                 && desktop.contains("X-Arcade-Id=arcade.box")
         );
+        assert_eq!(
+            receipt.integration.desktop_entry.as_ref().unwrap(),
+            &env.data.join("applications/dev.arcade.Box.desktop")
+        );
+        assert_eq!(
+            receipt.integration.autostart.as_ref().unwrap(),
+            &env.config.join("autostart/dev.arcade.Box.desktop")
+        );
+        assert!(receipt.integration.autostart.as_ref().unwrap().is_file());
+        // An update from 0.3: its login entry goes once the new one exists.
+        let old_login = env.config.join("autostart").join(OLD_AUTOSTART);
+        fs::copy(receipt.integration.autostart.as_ref().unwrap(), &old_login).unwrap();
+        let mut old_receipt = receipt.clone();
+        old_receipt.integration.autostart = Some(old_login.clone());
+        env.receipts().write(&old_receipt).unwrap();
+        let receipt = install_copy(&env, &runtime, &opts).unwrap();
+        assert!(!old_login.exists());
         assert!(receipt.integration.autostart.as_ref().unwrap().is_file());
         // The terminal tool's command links to the installation too.
         let terminal = env.bin.join(TERMINAL_NAME);

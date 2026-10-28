@@ -36,32 +36,9 @@ pub fn effective_shortcut(runtime: &Arcade) -> String {
         .unwrap_or_else(|_| crate::shortcut_syntax::DEFAULT.into())
 }
 
-/// The data directory the desktop app uses (Tauri's `app_data_dir`), for
-/// code that runs before Tauri starts (`--arcade-manifest`, one-shot mode).
+/// Box's data folder (`arcade/box`, see `arcade_core::dirs`).
 pub fn data_dir() -> Option<std::path::PathBuf> {
-    if let Some(root) = std::env::var_os("ARCADE_HOME").filter(|value| !value.is_empty()) {
-        let root = std::path::PathBuf::from(root);
-        return root.is_absolute().then(|| root.join("dev.arcadebox.app"));
-    }
-    if cfg!(target_os = "macos") {
-        return std::env::var_os("HOME")
-            .map(std::path::PathBuf::from)
-            .map(|home| home.join("Library/Application Support/dev.arcadebox.app"));
-    }
-    if cfg!(windows) {
-        return std::env::var_os("APPDATA")
-            .map(std::path::PathBuf::from)
-            .map(|roaming| roaming.join("dev.arcadebox.app"));
-    }
-    std::env::var_os("XDG_DATA_HOME")
-        .map(std::path::PathBuf::from)
-        .filter(|path| path.is_absolute())
-        .or_else(|| {
-            std::env::var_os("HOME")
-                .map(std::path::PathBuf::from)
-                .map(|home| home.join(".local/share"))
-        })
-        .map(|base| base.join("dev.arcadebox.app"))
+    arcade_core::dirs::data_dir()
 }
 
 pub const OPEN_PIPELINES_MENU_ID: &str = "open-pipelines";
@@ -158,8 +135,17 @@ pub fn print_manifest() {
 
 /// `--arcade-invoke`: one request on stdin, no UI, tray, shortcut or listener.
 pub fn serve_oneshot() -> i32 {
-    let Some(dir) = data_dir() else {
-        return 1;
+    let dir = match arcade_core::dirs::prepare() {
+        Ok((dir, migration)) => {
+            for line in arcade_core::dirs::describe(&migration) {
+                eprintln!("{line}");
+            }
+            dir
+        }
+        Err(error) => {
+            eprintln!("Arcade Box: {error}");
+            return 1;
+        }
     };
     if std::fs::create_dir_all(&dir).is_err() {
         return 1;

@@ -534,12 +534,13 @@ fn selected_inputs(
 /// Convert process-local artifact grants into stable file paths at the CLI
 /// boundary. The core contract continues to use opaque grants internally.
 fn open_runtime() -> Result<Arcade, Box<dyn std::error::Error>> {
-    let project_dirs = directories::ProjectDirs::from("dev", "Arcade Box", "Arcade Box")
-        .ok_or("could not locate application data directory")?;
-    fs::create_dir_all(project_dirs.data_dir())?;
-    Ok(Arcade::open(
-        &project_dirs.data_dir().join("arcade.sqlite3"),
-    )?)
+    // The desktop app's folder: the CLI and the app share one profile.
+    let (data_dir, migration) = arcade_core::dirs::prepare()?;
+    for line in arcade_core::dirs::describe(&migration) {
+        eprintln!("{line}");
+    }
+    fs::create_dir_all(&data_dir)?;
+    Ok(Arcade::open(&data_dir.join("arcade.sqlite3"))?)
 }
 
 /// `tools --json`: a stable description of the built-in tools and their

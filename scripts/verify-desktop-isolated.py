@@ -45,7 +45,10 @@ def main():
             input=json.dumps({'v':1,'id':1,'method':'invoke','params':{'action':'box.pipelines'}})+'\n',
             capture_output=True, text=True, timeout=20)
         assert initialized.returncode == 0, initialized.stdout + initialized.stderr
-        db = Path(session.env['XDG_DATA_HOME']) / 'dev.arcadebox.app/arcade.sqlite3'
+        # Box's data folder (arcade_core::dirs): Link's layout under ARCADE_HOME.
+        data = (Path(session.env['ARCADE_HOME']) / '.local/share' if session.env.get('ARCADE_HOME')
+                else Path(session.env['XDG_DATA_HOME']))
+        db = data / 'arcade/box/arcade.sqlite3'
         with sqlite3.connect(db) as connection:
             connection.execute("INSERT OR REPLACE INTO settings(key,value) VALUES('onboarding_complete','true')")
         if args.peers:

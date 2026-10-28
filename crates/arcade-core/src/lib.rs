@@ -4,6 +4,7 @@ pub mod artifacts;
 pub mod barcode;
 pub mod converter_tools;
 pub mod developer_tools;
+pub mod dirs;
 pub mod file_tools;
 pub mod grants;
 pub mod image;

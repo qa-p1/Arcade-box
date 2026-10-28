@@ -26,7 +26,7 @@ Discovery checks normal `PATH`, known platform application/package locations, an
 | Background removal | rembg CLI + cached U²-Net / U²-Net-P model | Reuse an existing local CLI and cached ONNX model in custom local-model mode with an explicit cache root. Never permit first-use model download. | Implemented on Linux |
 | Image upscaling | Real-ESRGAN NCNN/Vulkan | Reuse an executable from `PATH` or `<app data>/tools/realesrgan` with its x4plus `.param`/`.bin` pair. | Implemented on Linux |
 
-`<app data>` is the platform application data folder (`~/.local/share/dev.arcadebox.app` on Linux). Discovery also searches `~/.local/bin` and each folder under `<app data>/tools`.
+`<app data>` is Box's data folder: `~/.local/share/arcade/box` on Linux, `%APPDATA%\Arcade\Box` on Windows and `~/Library/Application Support/Arcade/Box` on macOS. Box 0.4.0 moves an older `dev.arcadebox.app` folder there on first start. Discovery also searches `~/.local/bin` and each folder under `<app data>/tools`.
 Windows probes PATH, both Program Files roots, `%LOCALAPPDATA%\Microsoft\WinGet\Links`
 and installed WinGet package directories, plus `~/scoop/shims` and `~/scoop/apps/*/current`.
 macOS probes both Homebrew prefixes (`/opt/homebrew/bin`, `/usr/local/bin`) and

@@ -344,6 +344,7 @@ dependencies = [
  "csv",
  "data-encoding",
  "emojis",
+ "fs2",
  "image",
  "infer 0.22.0",
  "libc",
@@ -386,7 +387,6 @@ dependencies = [
  "arcade-link",
  "ashpd 0.13.13",
  "base64 0.23.1",
- "directories",
  "fs2",
  "futures-channel",
  "futures-util",
@@ -453,7 +453,6 @@ dependencies = [
  "arcade-core",
  "arcade-link",
  "clap",
- "directories",
  "serde_json",
 ]
 
@@ -2015,15 +2014,6 @@ dependencies = [
  "block-buffer 0.12.1",
  "const-oid 0.10.2",
  "crypto-common 0.2.2",
-]
-
-[[package]]
-name = "directories"
-version = "6.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "16f5094c54661b38d03bd7e50df373292118db60b585c08a411c6d840017fe7d"
-dependencies = [
- "dirs-sys",
 ]
 
 [[package]]

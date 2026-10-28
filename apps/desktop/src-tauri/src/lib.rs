@@ -1250,6 +1250,20 @@ pub(crate) fn open_island_tool(app: &tauri::AppHandle, open: serde_json::Value) 
     });
 }
 
+/// The OS identifier (STANDARD §10): bundle id, desktop file, window class.
+pub const OS_ID: &str = "dev.arcade.Box";
+
+/// Keeps WebView storage in Box's cache folder; Tauri's default is a folder
+/// named after the OS identifier beside the user's other apps.
+pub(crate) fn in_box_folder<'a, R: tauri::Runtime, M: tauri::Manager<R>>(
+    builder: tauri::WebviewWindowBuilder<'a, R, M>,
+) -> tauri::WebviewWindowBuilder<'a, R, M> {
+    match arcade_core::dirs::app_dirs() {
+        Some(dirs) => builder.data_directory(dirs.cache.join("webview")),
+        None => builder,
+    }
+}
+
 /// The existing Island, or a new one built from its `tauri.conf.json` entry
 /// (`"create": false`). Must run on the main thread.
 fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
@@ -1273,6 +1287,7 @@ fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
     // A pending lean restart gives way to the new WebView.
     ISLAND_RELEASES.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
     let window = match tauri::WebviewWindowBuilder::from_config(app, &config)
+        .map(in_box_folder)
         .and_then(tauri::WebviewWindowBuilder::build)
     {
         Ok(window) => window,
@@ -1872,6 +1887,10 @@ fn handle_second_instance(app: &tauri::AppHandle, argv: &[String]) {
 
 pub fn run(args: Vec<String>) {
     wait_for_predecessor();
+    // GTK takes the Wayland app_id and the X11 WM_CLASS from the program
+    // name, which is otherwise the executable's.
+    #[cfg(target_os = "linux")]
+    gtk::glib::set_prgname(Some(OS_ID));
     let first_flag = args.iter().find(|a| a.starts_with("--")).cloned();
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
@@ -1886,7 +1905,15 @@ pub fn run(args: Vec<String>) {
                 app.handle().exit(0);
                 return Ok(());
             }
-            let db_dir = link::data_dir().ok_or("could not locate Arcade Box data directory")?;
+            // Before the lock and the database: they live in the new folder.
+            let (db_dir, migration) = match arcade_core::dirs::prepare() {
+                Ok(prepared) => prepared,
+                Err(error) => {
+                    eprintln!("Arcade Box didn't start: {error}.");
+                    app.handle().exit(0);
+                    return Ok(());
+                }
+            };
             std::fs::create_dir_all(&db_dir)?;
             let lock = std::fs::OpenOptions::new()
                 .read(true)
@@ -1903,6 +1930,9 @@ pub fn run(args: Vec<String>) {
                         arcade_link::logs::capture_stderr(&db_dir.join("logs"), "arcade-box")
                     {
                         eprintln!("Arcade Box log unavailable: {error}");
+                    }
+                    for line in arcade_core::dirs::describe(&migration) {
+                        eprintln!("{line}");
                     }
                 }
                 Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {

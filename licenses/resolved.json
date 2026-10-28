@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "purpose": "Locked third-party dependency inventory; human license and notice review remains required",
-  "packageCount": 1002,
+  "packageCount": 1001,
   "unresolvedLicenseMetadata": [],
   "packages": [
     {
@@ -1853,16 +1853,6 @@
       "repository": "https://github.com/RustCrypto/traits",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "f1dd6dbb5841937940781866fa1281a1ff7bd3bf827091440879f9994983d5c2"
-    },
-    {
-      "ecosystem": "cargo",
-      "name": "directories",
-      "version": "6.0.0",
-      "license": "MIT OR Apache-2.0",
-      "licenseFile": null,
-      "repository": "https://github.com/soc/directories-rs",
-      "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "16f5094c54661b38d03bd7e50df373292118db60b585c08a411c6d840017fe7d"
     },
     {
       "ecosystem": "cargo",

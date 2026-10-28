@@ -67,6 +67,7 @@ fn window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
         .clone();
     READY.store(false, Ordering::SeqCst);
     let window = match tauri::WebviewWindowBuilder::from_config(app, &config)
+        .map(crate::in_box_folder)
         .and_then(tauri::WebviewWindowBuilder::build)
     {
         Ok(window) => window,

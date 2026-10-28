@@ -569,18 +569,7 @@ pub fn discover_ytdlp_js_runtimes() -> Vec<ProviderInfo> {
 /// Arcade Box's per-user data folder, which holds user-installed helper tools
 /// (`tools/`) and model files (`models/`).
 pub fn app_data_dir() -> Option<PathBuf> {
-    const APP_ID: &str = "dev.arcadebox.app";
-    #[cfg(target_os = "macos")]
-    let base =
-        env::var_os("HOME").map(|home| PathBuf::from(home).join("Library/Application Support"));
-    #[cfg(windows)]
-    let base = env::var_os("APPDATA").map(PathBuf::from);
-    #[cfg(all(unix, not(target_os = "macos")))]
-    let base = env::var_os("XDG_DATA_HOME")
-        .map(PathBuf::from)
-        .filter(|path| path.is_absolute())
-        .or_else(|| env::var_os("HOME").map(|home| PathBuf::from(home).join(".local/share")));
-    base.map(|base| base.join(APP_ID))
+    crate::dirs::data_dir()
 }
 
 /// A model file the user placed under `<app data>/models/<relative>`.
