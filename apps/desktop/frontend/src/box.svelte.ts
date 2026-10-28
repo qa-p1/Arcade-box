@@ -1,7 +1,7 @@
 // Arcade Box UI state and actions, shared by the Island and the dashboard.
 // Created once per window by App.svelte and handed to the surfaces through
 // context (useBox). Moved verbatim from App.svelte; behaviour is unchanged.
-import { announceTheme, copyText, currentSurface, dashboardReady, openDashboard, openToolInIsland, watchDashboardPage, watchIslandShown, watchIslandHiding, watchIslandHidden, watchLinkOpen, watchOpenTool, watchTheme, islandReady, setIslandInputRegion, type LinkOpenRequest, type OpenToolRequest } from './lib/arcade';
+import { announceTheme, copyText, currentSurface, dashboardReady, openDashboard, openIsland, openToolInIsland, watchDashboardPage, watchIslandShown, watchIslandHiding, watchIslandHidden, watchLinkOpen, watchOpenTool, watchTheme, islandReady, setIslandInputRegion, type LinkOpenRequest, type OpenToolRequest } from './lib/arcade';
 import { onMount, tick } from 'svelte';
 import { cancelResultLinkAction, overlapState, pickPeerClipboard, watchLinkChanged, type OverlapState } from './lib/arcade';
 import type { IconName } from './lib/icon-names';
@@ -200,6 +200,8 @@ export function createBox() {
   // Categories keep the catalog's order, which groups the most-used tools first.
   const categories = $derived([...new Set(tools.map((tool) => tool.category))]);
   const implementedTools = $derived(tools.filter((tool) => tool.status === 'implemented'));
+  // The dashboard lists only what can be used today (STANDARD §8: no "planned" counters).
+  const runnableTools = $derived(implementedTools);
   const partialTools = $derived(tools.filter((tool) => tool.status === 'partial'));
   const plannedTools = $derived(tools.filter((tool) => !isRunnable(tool)));
   const resultAnnouncement = $derived(activeResult
@@ -219,6 +221,7 @@ export function createBox() {
       : catalogMode === 'favorites'
         ? favorites.map((id) => toolById.get(id)).filter((tool): tool is ToolSummary => Boolean(tool))
         : tools;
+    result = result.filter((tool) => tool.status === 'implemented');
     if (categoryFilter !== 'All tools') result = result.filter((tool) => tool.category === categoryFilter);
     const term = dashboardQuery.trim().toLowerCase();
     if (term) {
@@ -323,6 +326,10 @@ export function createBox() {
 
   async function revealIsland(): Promise<void> {
     dismissing = false;
+    // Settings › General › "Show again" clears the flag while the Island lives.
+    if (!onboardingVisible && hasDesktopBridge() && (await getPreference('onboarding_complete').catch(() => 'true')) !== 'true') {
+      onboardingVisible = true;
+    }
     surfaceVisible = true;
     await tick();
     animateInvocation();
@@ -540,6 +547,12 @@ export function createBox() {
     } finally {
       shortcutSaving = false;
     }
+  }
+
+  /** Settings › General: run the first-run welcome again in the Island. */
+  async function showWelcomeAgain(): Promise<void> {
+    await setPreference('onboarding_complete', 'false');
+    await openIsland();
   }
 
   async function finishOnboarding(): Promise<void> {
@@ -2003,6 +2016,8 @@ export function createBox() {
     get runnableContextSuggestions() { return runnableContextSuggestions; },
     get categories() { return categories; },
     get implementedTools() { return implementedTools; },
+    get runnableTools() { return runnableTools; },
+    get version() { return __BOX_VERSION__; },
     get partialTools() { return partialTools; },
     get plannedTools() { return plannedTools; },
     get resultAnnouncement() { return resultAnnouncement; },
@@ -2041,6 +2056,7 @@ export function createBox() {
     changeTheme,
     shortcutDescription,
     defaultShortcutForPlatform,
+    showWelcomeAgain,
     acceptShortcutStatus,
     applyShortcutAndContinue,
     finishOnboarding,

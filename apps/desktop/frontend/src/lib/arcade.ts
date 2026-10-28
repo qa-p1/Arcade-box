@@ -434,6 +434,57 @@ export async function openToolInIsland(tool: string, job?: string): Promise<void
   await invoke<void>('open_tool_in_island', { tool, job: job ?? null });
 }
 
+/** The Tools page's "Open Island". */
+export async function openIsland(): Promise<void> {
+  if (isDesktopRuntime()) await invoke<void>('open_island');
+}
+
+export interface LoginItem { available: boolean; enabled: boolean; reason: string | null }
+
+export async function loginItem(): Promise<LoginItem | null> {
+  if (!isDesktopRuntime()) return null;
+  return invoke<LoginItem>('login_item');
+}
+
+export async function setLoginItem(enabled: boolean): Promise<LoginItem> {
+  requireDesktopRuntime();
+  return invoke<LoginItem>('set_login_item', { enabled });
+}
+
+/** Where "Save…" starts; null when the desktop chooses. */
+export async function saveFolder(): Promise<string | null> {
+  if (!isDesktopRuntime()) return null;
+  return invoke<string | null>('save_folder');
+}
+
+export async function chooseSaveFolder(reset = false): Promise<string | null> {
+  requireDesktopRuntime();
+  return invoke<string | null>('choose_save_folder', { reset });
+}
+
+export interface AboutInfo { version: string; channel: string; updatesByTools: boolean; dataFolder: string }
+
+export async function aboutInfo(): Promise<AboutInfo | null> {
+  if (!isDesktopRuntime()) return null;
+  return invoke<AboutInfo>('about_info');
+}
+
+/** The shared diagnostics text (no inputs, document paths or keys). */
+export async function diagnostics(): Promise<string> {
+  requireDesktopRuntime();
+  return invoke<string>('diagnostics');
+}
+
+export async function openTools(): Promise<void> {
+  requireDesktopRuntime();
+  await invoke<void>('open_tools');
+}
+
+export async function openLogs(): Promise<void> {
+  requireDesktopRuntime();
+  await invoke<void>('open_logs');
+}
+
 export interface OpenToolRequest { tool: string; job: string | null }
 
 export async function watchOpenTool(handler: (request: OpenToolRequest) => void): Promise<() => void> {

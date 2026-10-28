@@ -10,6 +10,9 @@ default-members = ["crates/arcade-contract", "crates/arcade-core", "apps/cli"]
 resolver = "2"
 
 [workspace.package]
+# The one version of Box: the desktop app, its CLI, the bundle and the
+# frontend all read it (scripts/check-version.py fails on drift).
+version = "0.3.5"
 edition = "2024"
 rust-version = "1.88"
 license = "GPL-3.0-or-later"

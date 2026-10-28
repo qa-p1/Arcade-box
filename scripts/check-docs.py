@@ -39,7 +39,7 @@ def main():
                 errors.append(f"{file.relative_to(ROOT)}: missing fragment {target}")
     source = ROOT / "docs/user/shortcuts.json"
     doc = json.loads(source.read_text())
-    version = re.search(r'^version = "([^"]+)"', (ROOT / "apps/desktop/src-tauri/Cargo.toml").read_text(), re.M).group(1)
+    version = re.search(r'^\[workspace\.package\][^[]*?^version = "([^"]+)"', (ROOT / "Cargo.toml").read_text(), re.M | re.S).group(1)
     if doc["app"] != 'arcade.box' or doc["version"] != version:
         errors.append("shortcuts app/version differs from the build")
     generated = subprocess.check_output([sys.executable, str(ROOT / "scripts/validate_shortcuts.py"), str(source), "--markdown"], text=True)

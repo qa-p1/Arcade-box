@@ -1,7 +1,6 @@
 {
   "name": "@arcade-box/desktop-frontend",
   "private": true,
-  "version": "0.3.5",
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",

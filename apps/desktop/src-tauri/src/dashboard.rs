@@ -126,6 +126,12 @@ pub(crate) fn open_dashboard(app: tauri::AppHandle, page: Option<String>) {
     open(&app, page.as_deref());
 }
 
+/// The Tools page's "Open Island".
+#[tauri::command]
+pub(crate) fn open_island(app: tauri::AppHandle) {
+    crate::with_island(&app, crate::show_island);
+}
+
 /// A tool card or a job result in the dashboard opens that tool in the Island.
 #[tauri::command]
 pub(crate) fn open_tool_in_island(app: tauri::AppHandle, tool: String, job: Option<String>) {

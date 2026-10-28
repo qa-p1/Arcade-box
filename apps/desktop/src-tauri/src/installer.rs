@@ -22,9 +22,9 @@ pub const CLI_NAME: &str = "arcade-desktop";
 pub const DESKTOP_ID: &str = crate::OS_ID;
 /// The desktop file Box used before 0.4.0.
 const OLD_DESKTOP_ID: &str = "dev.arcadebox.app";
-/// The login entry Box used before 0.4.0.
-#[cfg(target_os = "linux")]
-const OLD_AUTOSTART: &str = "arcade-box.desktop";
+/// The login entry keeps the `arcade-<app>` name: Arcade Tools turns start at
+/// login on and off through that same file.
+const AUTOSTART_ID: &str = "arcade-box";
 /// The terminal tool's command. On Linux it is a second link to the
 /// installed AppImage; started under this name, the AppImage runs the CLI it
 /// bundles (see [`run_terminal_alias`]).
@@ -40,7 +40,7 @@ pub fn app_info() -> AppInfo {
         cli_name: CLI_NAME.into(),
         background_args: vec!["--background".into()],
         legacy_desktop_ids: vec![OLD_DESKTOP_ID.into()],
-        autostart_id: DESKTOP_ID.into(),
+        autostart_id: AUTOSTART_ID.into(),
     }
 }
 
@@ -115,7 +115,7 @@ pub(crate) fn parse_version(v: &str) -> Option<(u64, u64, u64)> {
 
 /// Whether the login entry will start Box. On Linux the desktop's startup
 /// settings can switch an entry off without removing it.
-fn login_entry_runs(path: &Path) -> bool {
+pub(crate) fn login_entry_runs(path: &Path) -> bool {
     #[cfg(target_os = "linux")]
     {
         install::autostart_enabled(path)
@@ -386,7 +386,6 @@ pub fn install_copy(
         }
     }
     complete_desktop_entry(&receipt)?;
-    remove_old_login_entry(environment, existing.as_ref(), &receipt)?;
     link_terminal_command(environment, &mut receipt)?;
     Ok(receipt)
 }
@@ -800,24 +799,6 @@ fn with_entry_lines(text: &str) -> String {
     out
 }
 
-/// Box before 0.4.0 started at login from `arcade-box.desktop`. Once the
-/// install has written the entry under the new id, the old one would start a
-/// second copy, so it goes; only the entry the old receipt recorded is
-/// touched.
-#[cfg(target_os = "linux")]
-fn remove_old_login_entry(
-    environment: &Environment,
-    old: Option<&Receipt>,
-    new: &Receipt,
-) -> io::Result<()> {
-    let old_entry = environment.config.join("autostart").join(OLD_AUTOSTART);
-    let recorded = old.is_some_and(|r| r.integration.autostart.as_ref() == Some(&old_entry));
-    if recorded && new.integration.autostart.as_ref() != Some(&old_entry) {
-        remove_file(&old_entry)?;
-    }
-    Ok(())
-}
-
 #[cfg(any(target_os = "linux", target_os = "macos"))]
 fn remove_file(path: &Path) -> io::Result<()> {
     match fs::remove_file(path) {
@@ -1135,17 +1116,8 @@ mod tests {
         );
         assert_eq!(
             receipt.integration.autostart.as_ref().unwrap(),
-            &env.config.join("autostart/dev.arcade.Box.desktop")
+            &env.config.join("autostart/arcade-box.desktop")
         );
-        assert!(receipt.integration.autostart.as_ref().unwrap().is_file());
-        // An update from 0.3: its login entry goes once the new one exists.
-        let old_login = env.config.join("autostart").join(OLD_AUTOSTART);
-        fs::copy(receipt.integration.autostart.as_ref().unwrap(), &old_login).unwrap();
-        let mut old_receipt = receipt.clone();
-        old_receipt.integration.autostart = Some(old_login.clone());
-        env.receipts().write(&old_receipt).unwrap();
-        let receipt = install_copy(&env, &runtime, &opts).unwrap();
-        assert!(!old_login.exists());
         assert!(receipt.integration.autostart.as_ref().unwrap().is_file());
         // The terminal tool's command links to the installation too.
         let terminal = env.bin.join(TERMINAL_NAME);

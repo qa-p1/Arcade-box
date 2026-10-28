@@ -107,6 +107,20 @@ mockIPC((command, args) => {
     case 'island_ready': void emit('arcade://island-shown'); return;
     case 'set_island_input_region': return;
     case 'set_surface_mode': case 'set_preference': case 'set_favorite': case 'hide_island': case 'dashboard_ready': case 'open_dashboard': case 'open_tool_in_island': return;
+    case 'overlap_state': return { lensCapture: false, lensActions: false, clipboardPick: false };
+    case 'shortcut_owner': case 'save_folder': return null;
+    case 'login_item': return { available: true, enabled: true, reason: null };
+    case 'about_info': return { version: '0.4.0', channel: 'stable', updatesByTools: true, dataFolder: '/home/you/.local/share/arcade/box' };
+    case 'clipboard_history_status': return { enabled: false, retentionDays: 7, itemCount: 0, pinnedCount: 0, sourceApplicationAvailable: false, excludedApplications: [], message: '' };
+    case 'connected_apps': return {
+      settings: { enabled: true, disabledPeers: [] }, registryPath: '', endpointState: 'Listening', lastError: null,
+      apps: [
+        { id: 'arcade.shelf', name: 'Arcade Shelf', state: 'Running', version: '0.4.0', enabled: true, pitch: 'Keep results on the shelf for later.', endpoint: '' },
+        { id: 'arcade.lens', name: 'Arcade Lens', state: 'Installed', version: '0.4.0', enabled: true, pitch: 'Capture a screen area and run a tool on it.', endpoint: '' },
+        { id: 'arcade.look', name: 'Arcade Look', state: 'Not installed', version: null, enabled: true, pitch: 'Preview a file, then open it in a Box tool.', endpoint: '' },
+      ],
+    };
+    case 'open_island': return;
     case 'plugin:event|listen': return 1;
     case 'plugin:event|unlisten': return;
     case 'plugin:window|is_focused': return true;

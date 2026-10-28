@@ -22,6 +22,7 @@ use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 use tauri_plugin_opener::OpenerExt;
 
+mod about;
 mod artifact_image;
 mod clipboard_history;
 mod dashboard;
@@ -30,6 +31,7 @@ mod hyprland;
 pub mod installer;
 mod installer_ui;
 mod link;
+mod login;
 mod media_preview;
 mod open_url;
 mod paste_plain;
@@ -710,12 +712,11 @@ async fn save_artifact_as(
         .file_name()
         .and_then(|name| name.to_str())
         .unwrap_or("Arcade-result");
-    let Some(destination) = app
-        .dialog()
-        .file()
-        .set_file_name(default_name)
-        .blocking_save_file()
-    else {
+    let mut dialog = app.dialog().file().set_file_name(default_name);
+    if let Some(folder) = save_folder_setting(&runtime) {
+        dialog = dialog.set_directory(folder);
+    }
+    let Some(destination) = dialog.blocking_save_file() else {
         return Ok(None);
     };
     let destination = destination.into_path().map_err(|error| error.to_string())?;
@@ -723,6 +724,54 @@ async fn save_artifact_as(
         .save_artifact_as(&token, &destination)
         .map(Some)
         .map_err(|error| error.to_string())
+}
+
+/// Settings › General › Save folder: where "Save…" starts, when it still
+/// exists. Unset, the dialog starts where the desktop chooses.
+const SAVE_FOLDER: &str = "save_folder";
+
+fn save_folder_setting(runtime: &Arcade) -> Option<std::path::PathBuf> {
+    runtime
+        .storage()
+        .setting(SAVE_FOLDER)
+        .ok()
+        .flatten()
+        .map(std::path::PathBuf::from)
+        .filter(|path| path.is_absolute() && path.is_dir())
+}
+
+#[tauri::command]
+fn save_folder(runtime: tauri::State<'_, Arc<Arcade>>) -> Option<String> {
+    save_folder_setting(&runtime).map(|path| path.to_string_lossy().into_owned())
+}
+
+/// Picks the save folder, or clears it with `reset`.
+#[tauri::command(async)]
+async fn choose_save_folder(
+    reset: bool,
+    app: tauri::AppHandle,
+    runtime: tauri::State<'_, Arc<Arcade>>,
+) -> Result<Option<String>, String> {
+    if reset {
+        runtime
+            .storage()
+            .set_setting(SAVE_FOLDER, "")
+            .map_err(|error| format!("Couldn't reset the save folder: {error}"))?;
+        return Ok(None);
+    }
+    let mut dialog = app.dialog().file();
+    if let Some(folder) = save_folder_setting(&runtime) {
+        dialog = dialog.set_directory(folder);
+    }
+    let Some(folder) = dialog.blocking_pick_folder() else {
+        return Ok(save_folder_setting(&runtime).map(|path| path.to_string_lossy().into_owned()));
+    };
+    let folder = folder.into_path().map_err(|error| error.to_string())?;
+    runtime
+        .storage()
+        .set_setting(SAVE_FOLDER, &folder.to_string_lossy())
+        .map_err(|error| format!("Couldn't save the folder: {error}"))?;
+    Ok(Some(folder.to_string_lossy().into_owned()))
 }
 
 #[tauri::command(async)]
@@ -2079,7 +2128,14 @@ pub fn run(args: Vec<String>) {
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            about::about_info,
+            about::diagnostics,
+            about::open_logs,
+            about::open_tools,
+            login::login_item,
+            login::set_login_item,
             dashboard::dashboard_ready,
+            dashboard::open_island,
             dashboard::open_dashboard,
             dashboard::open_tool_in_island,
             link::connected_apps,
@@ -2144,6 +2200,8 @@ pub fn run(args: Vec<String>) {
             set_window_pin,
             revoke_output_directory,
             save_artifact_as,
+            save_folder,
+            choose_save_folder,
             screen_capture_status,
             run_screen_tool,
             screen_recording_status,
