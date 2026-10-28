@@ -23,7 +23,7 @@
   const box = useBox();
 </script>
 {#if box.selectedTool}
-<div class="tool-view" in:fade={{ duration: 140 }}>
+<div class="tool-view" in:fade|global={{ duration: 140 }}>
   <header class="tool-header">
     <button class="icon-button tool-back" onclick={box.backFromTool} aria-label="Back to search" title="Back · Alt+←"><Icon name="back" size={16} /></button>
     <div class="tool-symbol" class:planned={!isRunnable(box.selectedTool)}>
