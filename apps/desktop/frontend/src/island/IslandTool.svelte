@@ -35,7 +35,7 @@
       <p>{box.selectedTool.description}</p>
     </div>
     <button type="button" class="btn ghost icon-only sm" class:favorite-on={box.isFavorite(box.selectedTool.id)} aria-label={box.isFavorite(box.selectedTool.id) ? `Remove ${box.selectedTool.name} from favorites` : `Add ${box.selectedTool.name} to favorites`} aria-pressed={box.isFavorite(box.selectedTool.id)} title={box.isFavorite(box.selectedTool.id) ? 'Remove from favorites' : 'Add to favorites'} onclick={(event) => box.selectedTool && void box.toggleFavorite(box.selectedTool, event)}><Icon name="star" size={15} /></button>
-    <button type="button" class="btn ghost sm" onclick={box.toggleDashboard}><Icon name="apps" size={14} />Open dashboard</button>
+    <button type="button" class="btn ghost sm open-dashboard" aria-label="Open dashboard" title="Open dashboard" onclick={box.toggleDashboard}><Icon name="apps" size={14} /><span class="open-dashboard-label">Open dashboard</span></button>
   </header>
 
   {#if !isRunnable(box.selectedTool)}
@@ -370,3 +370,8 @@
 
 </div>
 {/if}
+
+<style>
+  /* A narrow Island keeps the title readable: the dashboard button drops its label. */
+  @media (max-width: 480px) { .open-dashboard-label { display: none; } }
+</style>

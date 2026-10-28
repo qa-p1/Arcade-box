@@ -83,7 +83,7 @@ fn entry() -> Option<PathBuf> {
 /// development build.
 #[cfg(not(target_os = "linux"))]
 fn installed_executable() -> Result<PathBuf, String> {
-    let executable = arcade_link::manifest::current_executable();
+    let executable = PathBuf::from(arcade_link::manifest::current_executable());
     if arcade_link::install::is_dev_build(&executable) {
         return Err("Development builds don't start at login.".into());
     }
