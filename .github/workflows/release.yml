@@ -1,95 +1,88 @@
-# Publish only installers from a successful CI run on main. A new app version
-# gets v<version>; further builds refresh the rolling nightly pre-release.
+# Build, verify and publish Box. Stable: run this on a version tag made by
+# tag.yml (Actions → Release → Run workflow → the tag). Nightly: run it on
+# main; it refreshes the rolling nightly pre-release. The installers are the
+# ones CI builds and verifies on each OS (ci.yml is called here), so the
+# assets, arcade-release.json and SHA256SUMS.txt match earlier releases.
 name: Release
 
 on:
-  workflow_run:
-    workflows: [CI]
-    types: [completed]
-    branches: [main]
+  push:
+    tags: ['v*']
   workflow_dispatch:
     inputs:
-      run-id:
-        description: Successful CI run on main (empty = latest)
-        type: string
-        default: ''
+      channel:
+        description: Release channel (stable requires a matching version tag)
+        type: choice
+        options: [nightly, stable]
+        default: nightly
 
 permissions:
-  contents: write
-  actions: read
+  contents: read
 
 concurrency:
   group: release
   cancel-in-progress: false
 
 jobs:
-  publish:
-    if: >-
-      (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main') ||
-      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event != 'pull_request')
-    runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
-      GH_REPO: ${{ github.repository }}
+  prepare:
+    runs-on: ubuntu-24.04
+    outputs:
+      tag: ${{ steps.plan.outputs.tag }}
+      label: ${{ steps.plan.outputs.label }}
+      version: ${{ steps.plan.outputs.version }}
+      channel: ${{ steps.plan.outputs.channel }}
     steps:
-      - name: Find and validate the CI run
-        id: run
-        env:
-          INPUT_RUN: ${{ inputs.run-id }}
-          EVENT_RUN: ${{ github.event.workflow_run.id }}
-        run: |
-          run="${INPUT_RUN:-$EVENT_RUN}"
-          if [ -z "$run" ]; then
-            run="$(gh run list --workflow CI --branch main --event push --status success --limit 1 --json databaseId --jq '.[0].databaseId')"
-          fi
-          gh api "repos/$GH_REPO/actions/runs/$run" > "$RUNNER_TEMP/ci-run.json"
-          python3 - "$RUNNER_TEMP/ci-run.json" <<'PY'
-          import json, sys
-          run = json.load(open(sys.argv[1]))
-          assert run['name'] == 'CI' and run['head_branch'] == 'main'
-          assert run['conclusion'] == 'success' and run['event'] in ('push', 'workflow_dispatch')
-          PY
-          sha="$(jq -r .head_sha "$RUNNER_TEMP/ci-run.json")"
-          echo "id=$run" >> "$GITHUB_OUTPUT"
-          echo "sha=$sha" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
-          ref: ${{ steps.run.outputs.sha }}
-      - name: Download the verified installers
-        uses: actions/download-artifact@v4
-        with:
-          run-id: ${{ steps.run.outputs.id }}
-          github-token: ${{ github.token }}
-          pattern: arcade-box-*
-          merge-multiple: true
-          path: ${{ runner.temp }}/built
-      - name: Choose stable or nightly
+          python-version: '3.13'
+      - name: Validate version and choose channel
         id: plan
+        env:
+          INPUT_CHANNEL: ${{ inputs.channel }}
         run: |
-          version="$(jq -r .version apps/desktop/src-tauri/tauri.conf.json)"
-          state="$(gh release view "v$version" --json isDraft --jq 'if .isDraft then "draft" else "published" end' 2>/dev/null || echo none)"
-          if [ "$state" = published ]; then
-            tag=nightly
-            channel=nightly
-            label=nightly
+          version="$(python3 scripts/check-version.py --print)"
+          channel="${INPUT_CHANNEL:-stable}"
+          if [ "$channel" = stable ]; then
+            [ "$GITHUB_REF" = "refs/tags/v$version" ] || { echo "A stable release must run on its tag v$version, not $GITHUB_REF"; exit 1; }
+            tag="v$version"; label="$version"
+          elif [ "$channel" = nightly ]; then
+            tag=nightly; label=nightly
           else
-            tag="v$version"
-            channel=stable
-            label="$version"
+            echo "Unknown channel $channel"; exit 1
           fi
           {
             echo "tag=$tag"
-            echo "channel=$channel"
             echo "label=$label"
             echo "version=$version"
-            echo "state=$state"
+            echo "channel=$channel"
           } >> "$GITHUB_OUTPUT"
+
+  ci:
+    needs: prepare
+    uses: ./.github/workflows/ci.yml
+
+  publish:
+    needs: [prepare, ci]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
+      GH_REPO: ${{ github.repository }}
+      TAG: ${{ needs.prepare.outputs.tag }}
+      LABEL: ${{ needs.prepare.outputs.label }}
+      VERSION: ${{ needs.prepare.outputs.version }}
+      CHANNEL: ${{ needs.prepare.outputs.channel }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Download the verified installers
+        uses: actions/download-artifact@v4
+        with:
+          pattern: arcade-box-*
+          merge-multiple: true
+          path: ${{ runner.temp }}/built
       - name: Prepare manifest and checksums
-        env:
-          VERSION: ${{ steps.plan.outputs.version }}
-          LABEL: ${{ steps.plan.outputs.label }}
-          TAG: ${{ steps.plan.outputs.tag }}
-          CHANNEL: ${{ steps.plan.outputs.channel }}
         run: |
           mkdir "$RUNNER_TEMP/release"
           for f in "$RUNNER_TEMP"/built/*; do
@@ -109,12 +102,9 @@ jobs:
           PY
           (cd "$RUNNER_TEMP/release" && sha256sum -c SHA256SUMS.txt)
       - name: Write release notes
-        env:
-          TAG: ${{ steps.plan.outputs.tag }}
-          SHA: ${{ steps.run.outputs.sha }}
         run: |
           {
-            echo "Arcade Box build $SHA ($TAG)."
+            echo "Arcade Box build $GITHUB_SHA ($TAG)."
             echo
             echo "Installers: Windows per-user NSIS, Linux AppImage, and macOS dmg."
             echo "Each includes the arcade-box CLI and trusted plugin worker beside the desktop executable."
@@ -122,32 +112,22 @@ jobs:
             echo "Verify installer downloads with SHA256SUMS.txt. Arcade Tools uses arcade-release.json."
             echo "Native Windows/macOS interaction is build only until verified by a real run."
             echo
-            echo "User guide: https://github.com/qa-p1/Arcade-box/tree/main/docs/user"
+            echo "What changed: https://github.com/$GH_REPO/blob/$GITHUB_SHA/CHANGELOG.md"
+            echo "User guide: https://github.com/$GH_REPO/tree/main/docs/user"
           } > "$RUNNER_TEMP/notes.md"
       - name: Publish stable release
-        if: steps.plan.outputs.channel == 'stable'
-        env:
-          TAG: ${{ steps.plan.outputs.tag }}
-          SHA: ${{ steps.run.outputs.sha }}
-          STATE: ${{ steps.plan.outputs.state }}
+        if: env.CHANNEL == 'stable'
         run: |
-          if [ "$STATE" = draft ]; then
-            gh release upload "$TAG" "$RUNNER_TEMP"/release/* --clobber
-            gh release edit "$TAG" --draft=false --latest --title "Arcade Box $TAG" --notes-file "$RUNNER_TEMP/notes.md"
-          else
-            gh release create "$TAG" "$RUNNER_TEMP"/release/* --target "$SHA" --latest \
-              --title "Arcade Box $TAG" --notes-file "$RUNNER_TEMP/notes.md"
-          fi
+          gh release create "$TAG" "$RUNNER_TEMP"/release/* --verify-tag --latest \
+            --title "Arcade Box $TAG" --notes-file "$RUNNER_TEMP/notes.md"
       - name: Refresh nightly pre-release
-        if: steps.plan.outputs.channel == 'nightly'
-        env:
-          SHA: ${{ steps.run.outputs.sha }}
+        if: env.CHANNEL == 'nightly'
         run: |
           if gh release view nightly >/dev/null 2>&1; then
-            gh api -X PATCH "repos/$GH_REPO/git/refs/tags/nightly" -f sha="$SHA" -F force=true > /dev/null
+            gh api -X PATCH "repos/$GH_REPO/git/refs/tags/nightly" -f sha="$GITHUB_SHA" -F force=true > /dev/null
             gh release upload nightly "$RUNNER_TEMP"/release/* --clobber
             gh release edit nightly --prerelease --latest=false --title "Arcade Box nightly" --notes-file "$RUNNER_TEMP/notes.md"
           else
-            gh release create nightly "$RUNNER_TEMP"/release/* --target "$SHA" --prerelease --latest=false \
+            gh release create nightly "$RUNNER_TEMP"/release/* --target "$GITHUB_SHA" --prerelease --latest=false \
               --title "Arcade Box nightly" --notes-file "$RUNNER_TEMP/notes.md"
           fi

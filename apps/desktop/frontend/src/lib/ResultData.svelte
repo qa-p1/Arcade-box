@@ -50,21 +50,21 @@
 
 <style>
   .table-scroll { max-width: 100%; overflow: auto; max-height: 360px; border: 1px solid var(--line); border-radius: 8px; }
-  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  table { border-collapse: collapse; width: 100%; font-size: var(--fs-body); }
   th { text-align: left; font-weight: 600; color: var(--muted); background: var(--surface-raised); position: sticky; top: 0; }
   th, td { padding: 9px 12px; border-bottom: 1px solid var(--line); min-width: 90px; max-width: 280px; overflow-wrap: anywhere; vertical-align: top; }
   dl { margin: 0; display: grid; gap: 0; }
   dl > div { display: grid; grid-template-columns: minmax(110px, .65fr) minmax(0, 1fr); gap: 16px; padding: 9px 0; border-bottom: 1px solid var(--line); }
-  dt { color: var(--muted); font-size: 13px; overflow-wrap: anywhere; }
-  dd { margin: 0; min-width: 0; font-size: 13px; }
+  dt { color: var(--muted); font-size: var(--fs-body); overflow-wrap: anywhere; }
+  dd { margin: 0; min-width: 0; font-size: var(--fs-body); }
   .value { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; }
   .nested { min-width: 0; }
-  summary { color: var(--muted); cursor: pointer; padding: 2px 0; font-size: 13px; }
+  summary { color: var(--muted); cursor: pointer; padding: 2px 0; font-size: var(--fs-body); }
   ol { padding-left: 24px; margin: 0; }
   li { padding: 5px 0; overflow-wrap: anywhere; }
-  nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 12px; font-size: 12px; color: var(--muted); }
+  nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 12px; font-size: var(--fs-small); color: var(--muted); }
   button { border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; background: var(--surface-raised); cursor: pointer; }
   button:disabled { opacity: .4; cursor: default; }
-  .empty { color: var(--muted); margin: 0; font-size: 13px; }
+  .empty { color: var(--muted); margin: 0; font-size: var(--fs-body); }
   @media (max-width: 480px) { dl > div { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
 </style>

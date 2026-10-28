@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.4.0 — 2026-10-28
+
+- The dashboard is its own window: a normal, resizable window with a sidebar
+  (Tools, Jobs, Engines, Pipelines, Plugins, Settings) that you can close
+  without quitting Box. The Island stays the quick search overlay, and the
+  first-run setup happens inside it.
+- Box uses the shared Arcade design kit (Inter, the kit's colours, controls
+  and icons) in the Island, the dashboard and the pinned-reference window.
+  The tray icon is the monochrome Box glyph.
+- Settings follows the shared order: General (start at login, save folder),
+  Shortcuts, Clipboard history, Privacy, Connected apps and About (version,
+  copy diagnostics, open logs).
+- Box moves to the `dev.arcade.Box` identifier and Arcade's shared folders
+  (`arcade/box`). The first start moves your data there, checks the copy and
+  then removes the old folder. The desktop app and the `arcade-box` command
+  line now share one database. On macOS the new bundle id means screen
+  recording and accessibility permissions are asked for again.
+- The default shortcut on macOS is ⌃⌥Space for new installs; existing users
+  keep ⇧⌘Space.
+- New command-line flags: `--show`, `--hide`, `--toggle` and `--status`.
+- Fixed: the global shortcut stopped working on Wayland after it was saved
+  (B1); unit symbols lost their case, so `1 mW to W` gave 1000000 W (B2);
+  `in` (inch) was dropped as a connector word (B3); compound amounts such as
+  `5 ft 11 in` and energy prefixes were missing (B4); the calculator couldn't
+  call `log10` (B5); rounded result text changed the number (B6); Image
+  convert and Favicon refused SVG files (B7); Batch barcodes refused CSV
+  files (B8); multi-language OCR such as `eng+deu` was rejected (B9).
+- Fixed: Image compare refused a PNG with transparency against its JPEG copy,
+  and it reported every difference twice as large (up to 510 for 8-bit
+  images). Screen tools run from the terminal now say they need the desktop
+  app.
+- Releases are now made from a version tag (`tag.yml`, then `release.yml`);
+  the assets are unchanged. The repository now includes the GPL-3.0 licence
+  text.
+
 ## 0.3.5 — 2026-10-19
 
 - The Island now takes keyboard focus when you open it with the shortcut on X11

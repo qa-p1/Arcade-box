@@ -33,13 +33,17 @@ def main():
                 continue  # External URLs are not fetched by this offline check.
             path = (file.parent / unquote(url.path)).resolve() if url.path else file
             checked += 1
-            if not path.exists():
+            user_guide = ROOT / "docs/user"
+            if file.is_relative_to(user_guide) and not path.is_relative_to(user_guide):
+                # Tools shows the user guide offline: only links inside it work there.
+                errors.append(f"{file.relative_to(ROOT)}: {target} leaves docs/user; use an absolute URL")
+            elif not path.exists():
                 errors.append(f"{file.relative_to(ROOT)}: missing {target}")
             elif url.fragment and path.suffix == ".md" and unquote(url.fragment) not in anchors(path):
                 errors.append(f"{file.relative_to(ROOT)}: missing fragment {target}")
     source = ROOT / "docs/user/shortcuts.json"
     doc = json.loads(source.read_text())
-    version = re.search(r'^version = "([^"]+)"', (ROOT / "apps/desktop/src-tauri/Cargo.toml").read_text(), re.M).group(1)
+    version = re.search(r'^\[workspace\.package\][^[]*?^version = "([^"]+)"', (ROOT / "Cargo.toml").read_text(), re.M | re.S).group(1)
     if doc["app"] != 'arcade.box' or doc["version"] != version:
         errors.append("shortcuts app/version differs from the build")
     generated = subprocess.check_output([sys.executable, str(ROOT / "scripts/validate_shortcuts.py"), str(source), "--markdown"], text=True)

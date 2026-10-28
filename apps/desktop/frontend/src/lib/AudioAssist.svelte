@@ -405,24 +405,24 @@
 
 <style>
   .audio-assist { display: grid; gap: 10px; margin: 12px 14px 0; }
-  .assist-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; color: var(--ink-3); font-size: 11.5px; font-variant-numeric: tabular-nums; }
-  .chip { padding: 1px 6px; border-radius: 6px; color: var(--mint); background: var(--mint-wash); font-size: 10.5px; font-weight: 600; }
-  .assist-note { margin: 0; color: var(--ink-3); font-size: 11.5px; line-height: 1.45; }
-  .assist-error { margin: 0; color: var(--red); font-size: 12px; line-height: 1.45; }
-  .assist-loading { display: flex; align-items: center; gap: 8px; min-height: 40px; color: var(--ink-3); font-size: 12px; }
+  .assist-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; color: var(--ink-3); font-size: var(--fs-caption); font-variant-numeric: tabular-nums; }
+  .chip { padding: 1px 6px; border-radius: 6px; color: var(--mint); background: var(--mint-wash); font-size: var(--fs-caption); font-weight: 600; }
+  .assist-note { margin: 0; color: var(--ink-3); font-size: var(--fs-caption); line-height: 1.45; }
+  .assist-error { margin: 0; color: var(--red); font-size: var(--fs-small); line-height: 1.45; }
+  .assist-loading { display: flex; align-items: center; gap: 8px; min-height: 40px; color: var(--ink-3); font-size: var(--fs-small); }
 
   .waveform { width: 100%; height: 100%; }
   .waveform path { fill: none; stroke: var(--ink-2); stroke-width: .62; opacity: .75; }
   .wave-static { position: relative; height: 52px; overflow: hidden; border-radius: 9px; background: var(--field-bg); transition: opacity 120ms ease; }
   .wave-static.busy { opacity: .6; }
   .region { position: absolute; top: 0; bottom: 0; background: var(--amber-wash); box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--amber) 70%, transparent); }
-  .timeline-readout { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 22px; color: var(--ink-3); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+  .timeline-readout { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 22px; color: var(--ink-3); font-size: var(--fs-caption); font-variant-numeric: tabular-nums; }
   .timeline-readout strong { color: var(--ink); font-weight: 550; }
 
   .meter-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-height: 44px; padding: 6px 8px; border-radius: 10px; background: var(--surface-1); }
   .meter { display: grid; gap: 1px; min-width: 84px; padding: 2px 6px; }
-  .meter span { color: var(--ink-3); font-size: 11px; }
-  .meter strong { color: var(--ink); font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .meter span { color: var(--ink-3); font-size: var(--fs-caption); }
+  .meter strong { color: var(--ink); font-size: var(--fs-heading); font-weight: 600; font-variant-numeric: tabular-nums; }
   .meter.accent strong { color: var(--primary); }
   .meter-row .quiet-button { margin-left: auto; }
 
@@ -430,7 +430,7 @@
   .cover { width: 72px; height: 72px; flex: 0 0 auto; border-radius: 8px; object-fit: cover; }
   .cover.placeholder { display: grid; place-items: center; color: var(--ink-3); background: var(--surface-2); }
   .tag-list { display: grid; min-width: 0; flex: 1; gap: 3px; align-content: start; }
-  .tag-list div { display: flex; gap: 10px; min-width: 0; font-size: 12px; }
+  .tag-list div { display: flex; gap: 10px; min-width: 0; font-size: var(--fs-small); }
   .tag-list span { width: 92px; flex: 0 0 auto; color: var(--ink-3); text-transform: capitalize; }
   .tag-list strong { overflow: hidden; color: var(--ink); font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
 </style>

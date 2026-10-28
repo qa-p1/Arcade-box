@@ -65,13 +65,16 @@ pub fn install_surface_rules() -> Result<(), String> {
     if !is_hyprland() {
         return Ok(());
     }
+    // Box before 0.4.0 matched the `arcade-desktop` class; its rule can still
+    // be in the compositor after an update.
     run_lua(
-        r#"if _G.arcadeBoxSurfaceRule then
-        _G.arcadeBoxSurfaceRule:set_enabled(true)
+        r#"if _G.arcadeBoxSurfaceRule then _G.arcadeBoxSurfaceRule:set_enabled(false) end
+    if _G.arcadeBoxIslandRule then
+        _G.arcadeBoxIslandRule:set_enabled(true)
     else
-        _G.arcadeBoxSurfaceRule = hl.window_rule({
-            name = "arcade-box-island",
-            match = { class = "^arcade-desktop$", title = "^Arcade Box$" },
+        _G.arcadeBoxIslandRule = hl.window_rule({
+            name = "arcade-box-island-window",
+            match = { class = "^dev\.arcade\.Box$", title = "^Arcade Box$" },
             float = true, pin = true,
             move = {"(monitor_w-window_w)/2", 0},
             no_blur = true, no_shadow = true, no_dim = true, no_anim = true,
@@ -84,9 +87,8 @@ pub fn install_surface_rules() -> Result<(), String> {
 
 pub fn remove_surface_rules() {
     if is_hyprland() {
-        let _ = run_lua(
-            "if _G.arcadeBoxSurfaceRule then _G.arcadeBoxSurfaceRule:set_enabled(false) end",
-        );
+        let _ =
+            run_lua("if _G.arcadeBoxIslandRule then _G.arcadeBoxIslandRule:set_enabled(false) end");
     }
 }
 

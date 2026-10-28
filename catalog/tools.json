@@ -1493,7 +1493,8 @@
       ],
       "privacyClass": "LOCAL",
       "inputs": [
-        "file/image"
+        "file/image",
+        "file/svg"
       ],
       "outputs": [
         "file/image"
@@ -1559,6 +1560,16 @@
                 "webp"
               ]
             }
+          },
+          {
+            "key": "svgSize",
+            "label": "Size for SVG files (px)",
+            "type": "number",
+            "default": 512,
+            "minimum": 16,
+            "maximum": 8192,
+            "step": 1,
+            "help": "The longest side of the image an SVG is rendered to."
           }
         ]
       },
@@ -2606,7 +2617,8 @@
       ],
       "privacyClass": "LOCAL",
       "inputs": [
-        "file/image"
+        "file/image",
+        "file/svg"
       ],
       "outputs": [
         "file/image[]",
@@ -11213,7 +11225,10 @@
       "privacyClass": "LOCAL",
       "inputs": [
         "text/plain",
-        "rows/csv"
+        "rows/csv",
+        "text/csv",
+        "file/csv",
+        "file/tsv"
       ],
       "outputs": [
         "file/image[]",
@@ -11244,7 +11259,7 @@
         "version": 1,
         "input": {
           "kind": "text",
-          "label": "Values, one per line, or CSV rows"
+          "label": "Values, one per line, CSV rows or a CSV file"
         },
         "controls": [
           {

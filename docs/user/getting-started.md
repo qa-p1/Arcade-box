@@ -29,7 +29,7 @@ Open the dmg and drag Arcade Box to Applications. If you run it from the dmg or 
 
 ## Open the Island
 
-The default global shortcut is **Ctrl+Alt+Space**. On macOS it is **Cmd+Shift+Space**. Change it in Box’s Settings if another app already uses it.
+The default global shortcut is **Ctrl+Alt+Space**. On macOS it is **⌃⌥Space** (Control+Option+Space); if you installed Box before 0.4.0 you keep **⇧⌘Space**. Change it in Box’s Settings if another app already uses it.
 
 Type a task such as **compress PDF**, **resize image**, or **JSON**. Choose the matching action, then select or enter its input. The first time you run a tool, Box explains any permission, external program, or network access it needs.
 

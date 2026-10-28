@@ -15,7 +15,9 @@ import subprocess
 ROOT = Path(__file__).resolve().parent.parent
 DATA = Path(os.environ.get('XDG_DATA_HOME', str(Path.home() / '.local/share'))).resolve()
 INSTALL = DATA / 'arcade-box/local-build'
-ENTRY = DATA / 'applications/dev.arcadebox.app.desktop'
+ENTRY = DATA / 'applications/dev.arcade.Box.desktop'
+# The entry this script wrote before Box moved to the dev.arcade.Box id.
+OLD_ENTRY = DATA / 'applications/dev.arcadebox.app.desktop'
 MARKER = 'X-ArcadeBox-LocalBuild=true'
 
 
@@ -69,10 +71,11 @@ def main() -> None:
     install_file(ROOT / 'apps/desktop/src-tauri/icons/icon.png', icon)
     content = '\n'.join([
         '[Desktop Entry]', 'Type=Application', 'Name=Arcade Box',
-        'Comment=Tools for everyday file, text, and media tasks',
+        'Comment=File, media, text, web and system tasks in one searchable desktop tool.',
+        'Keywords=convert;pdf;image;video;audio;text;qr;tools;',
         f'Exec={exec_argument(INSTALL / "bin/arcade-desktop")}',
-        f'Icon={string_value(str(icon))}', 'Terminal=false', 'Categories=Utility;',
-        'StartupNotify=false', 'StartupWMClass=arcade-desktop', MARKER, '',
+        f'Icon={string_value(str(icon))}', 'Terminal=false', 'Categories=Utility;FileTools;',
+        'StartupNotify=false', 'StartupWMClass=dev.arcade.Box', MARKER, '',
     ])
     if existing is not None and MARKER not in existing:
         print(f'Keeping your existing desktop registration: {ENTRY}')
@@ -81,7 +84,7 @@ def main() -> None:
         print(f'Updated local build: {INSTALL}')
         return
     ENTRY.parent.mkdir(parents=True, exist_ok=True)
-    staging = ENTRY.with_name('.dev.arcadebox.app.new.desktop')
+    staging = ENTRY.with_name('.dev.arcade.Box.new.desktop')
     staging.write_text(content)
     try:
         validator = shutil.which('desktop-file-validate')
@@ -94,6 +97,9 @@ def main() -> None:
             print(f'Previous desktop entry backed up: {backup}')
         print(''.join(difflib.unified_diff((existing or '').splitlines(True), content.splitlines(True), fromfile=str(ENTRY), tofile=str(ENTRY))), end='')
         staging.replace(ENTRY)
+        if not OLD_ENTRY.is_symlink() and OLD_ENTRY.is_file() and MARKER in OLD_ENTRY.read_text():
+            OLD_ENTRY.unlink()
+            print(f'Removed the old local-build entry: {OLD_ENTRY}')
         if validator:
             subprocess.run([validator, str(ENTRY)], check=True)
         updater = shutil.which('update-desktop-database')

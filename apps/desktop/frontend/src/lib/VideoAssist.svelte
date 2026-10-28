@@ -378,33 +378,33 @@
 
 <style>
   .video-assist { display: grid; gap: 10px; margin: 12px 14px 0; }
-  .assist-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; color: var(--ink-3); font-size: 11.5px; font-variant-numeric: tabular-nums; }
-  .assist-note { margin: 0; color: var(--ink-3); font-size: 11.5px; line-height: 1.45; }
+  .assist-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; color: var(--ink-3); font-size: var(--fs-caption); font-variant-numeric: tabular-nums; }
+  .assist-note { margin: 0; color: var(--ink-3); font-size: var(--fs-caption); line-height: 1.45; }
   .assist-note.warning { color: var(--amber); }
-  .assist-error { margin: 0; color: var(--red); font-size: 12px; line-height: 1.45; }
-  .assist-loading { display: flex; align-items: center; gap: 8px; min-height: 56px; color: var(--ink-3); font-size: 12px; }
+  .assist-error { margin: 0; color: var(--red); font-size: var(--fs-small); line-height: 1.45; }
+  .assist-loading { display: flex; align-items: center; gap: 8px; min-height: 56px; color: var(--ink-3); font-size: var(--fs-small); }
 
   .filmstrip { display: flex; width: 100%; height: 100%; }
   .filmstrip img { min-width: 0; height: 100%; flex: 1 1 0; object-fit: cover; pointer-events: none; }
-  .timeline-readout { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 22px; color: var(--ink-3); font-size: 11.5px; font-variant-numeric: tabular-nums; }
+  .timeline-readout { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 22px; color: var(--ink-3); font-size: var(--fs-caption); font-variant-numeric: tabular-nums; }
   .timeline-readout strong { color: var(--ink); font-weight: 550; }
 
-  .crop-stage { position: relative; margin: 0 auto; overflow: hidden; border-radius: 9px; background: #000; cursor: crosshair; touch-action: none; user-select: none; }
+  .crop-stage { position: relative; margin: 0 auto; overflow: hidden; border-radius: 9px; background: var(--scrim); cursor: crosshair; touch-action: none; user-select: none; }
   .crop-stage img { display: block; width: 100%; height: 100%; object-fit: fill; pointer-events: none; }
-  .crop-rect { position: absolute; border: 1.5px solid #fff; border-radius: 2px; box-shadow: 0 0 0 9999px rgba(0, 0, 0, .5); cursor: move; pointer-events: none; }
+  .crop-rect { position: absolute; border: 1.5px solid var(--line-strong); border-radius: 2px; box-shadow: var(--shadow-pop); cursor: move; pointer-events: none; }
   .crop-rect.automatic { border-style: dashed; }
 
   .estimate-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 40px; padding: 8px 8px 8px 12px; border-radius: 10px; background: var(--surface-1); }
-  .estimate-copy { display: grid; gap: 1px; min-width: 0; font-size: 12px; color: var(--ink-3); }
-  .estimate-copy strong { color: var(--ink); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .estimate-copy { display: grid; gap: 1px; min-width: 0; font-size: var(--fs-small); color: var(--ink-3); }
+  .estimate-copy strong { color: var(--ink); font-size: var(--fs-heading); font-weight: 600; font-variant-numeric: tabular-nums; }
 
   .track-list { display: grid; gap: 2px; }
   .track-list button { display: flex; align-items: center; gap: 10px; min-height: 40px; padding: 6px 10px; border: 0; border-radius: 9px; color: inherit; background: transparent; text-align: left; cursor: pointer; transition: background-color 80ms ease; }
   .track-list button:hover:not(:disabled) { background: var(--surface-1); }
   .track-list button.active { background: var(--surface-3); }
-  .track-index { display: grid; place-items: center; width: 22px; height: 22px; flex: 0 0 auto; border-radius: 6px; color: var(--ink-2); background: var(--surface-2); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .track-index { display: grid; place-items: center; width: 22px; height: 22px; flex: 0 0 auto; border-radius: 6px; color: var(--ink-2); background: var(--surface-2); font-size: var(--fs-caption); font-variant-numeric: tabular-nums; }
   .track-copy { display: grid; min-width: 0; flex: 1; gap: 1px; }
-  .track-copy strong { overflow: hidden; color: var(--ink); font-size: 12.5px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; text-transform: capitalize; }
-  .track-copy small { color: var(--ink-3); font-size: 11.5px; }
-  .track-chip { padding: 2px 6px; border-radius: 6px; color: var(--amber); background: var(--amber-wash); font-size: 10.5px; font-weight: 600; }
+  .track-copy strong { overflow: hidden; color: var(--ink); font-size: var(--fs-control); font-weight: 550; text-overflow: ellipsis; white-space: nowrap; text-transform: capitalize; }
+  .track-copy small { color: var(--ink-3); font-size: var(--fs-caption); }
+  .track-chip { padding: 2px 6px; border-radius: 6px; color: var(--amber); background: var(--amber-wash); font-size: var(--fs-caption); font-weight: 600; }
 </style>

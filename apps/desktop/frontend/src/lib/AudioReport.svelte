@@ -57,8 +57,8 @@
 
 <style>
   .audio-tags { display: grid; gap: 8px; }
-  .audio-tags p { margin: 0; color: var(--ink-3); font-size: 12px; }
-  dl { display: grid; grid-template-columns: minmax(90px, max-content) 1fr; gap: 4px 14px; margin: 0; font-size: 12.5px; }
+  .audio-tags p { margin: 0; color: var(--ink-3); font-size: var(--fs-small); }
+  dl { display: grid; grid-template-columns: minmax(90px, max-content) 1fr; gap: 4px 14px; margin: 0; font-size: var(--fs-control); }
   dt { color: var(--ink-3); text-transform: capitalize; }
   dd { margin: 0; overflow-wrap: anywhere; color: var(--ink); }
 </style>

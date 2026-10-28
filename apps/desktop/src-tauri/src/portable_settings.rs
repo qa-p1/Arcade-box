@@ -52,7 +52,7 @@ fn setting(runtime: &Arcade, key: &str, fallback: &str) -> String {
 }
 
 fn canonical_shortcut(value: &str) -> Result<String, LinkError> {
-    arcade_link::accelerator::normalize(value)
+    crate::shortcut_syntax::canonical_trigger(value)
         .map_err(|error| LinkError::denied(&format!("invalid global shortcut: {error}")))
 }
 
@@ -108,11 +108,7 @@ impl PortableSettings {
         let shortcut = canonical_shortcut(&setting(
             runtime,
             "global_shortcut",
-            if cfg!(target_os = "macos") {
-                "Super+Shift+Space"
-            } else {
-                "Ctrl+Alt+Space"
-            },
+            crate::shortcut_syntax::DEFAULT,
         ))?;
         let settings = Self {
             schema: 1,

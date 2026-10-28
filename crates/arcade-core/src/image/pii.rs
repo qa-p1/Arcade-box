@@ -23,29 +23,16 @@ pub(super) fn suggest(
     language: &str,
     cancelled: &AtomicBool,
 ) -> Result<Value, String> {
-    if language.is_empty()
-        || language.len() > 64
-        || !language
-            .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || byte == b'_' || byte == b'+')
-    {
-        return Err("Choose a valid OCR language code".into());
-    }
+    let codes = crate::provider::ocr_language_codes(language)?;
     let provider = discover_tesseract()
         .into_iter()
         .find(|provider| {
-            provider.compatible
-                && language.split('+').all(|code| {
-                    provider
-                        .capabilities
-                        .iter()
-                        .any(|capability| capability == &format!("ocr:language:{code}"))
-                })
+            provider.compatible && crate::provider::has_ocr_languages(provider, &codes)
         })
         .ok_or_else(|| {
-            format!(
-                "Finding personal info needs Tesseract OCR with the `{language}` language installed"
-            )
+            crate::provider::missing_ocr_language(&codes).unwrap_or_else(|| {
+                "Finding personal info needs Tesseract. Add it in Arcade Tools › Engines.".into()
+            })
         })?;
     let output = process::run(
         &ProcessSpec {

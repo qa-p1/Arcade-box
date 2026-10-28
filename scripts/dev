@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Run Arcade Box from source with the Vite dev server and live reload.
+#   scripts/dev            # the desktop app (tauri dev)
+#   scripts/dev --ui       # the UI alone in a browser, on the mock backend:
+#                          # open http://127.0.0.1:1420/tests/visual.html
+set -euo pipefail
+cd "$(dirname "$0")/.."
+frontend=apps/desktop/frontend
+[ -d "$frontend/node_modules" ] || npm ci --prefix "$frontend"
+if [ "${1:-}" = --ui ]; then exec npm --prefix "$frontend" run dev; fi
+[ -f target/tauri-cli/node_modules/@tauri-apps/cli/tauri.js ] ||
+  npm install --prefix target/tauri-cli --cache target/npm-cache --no-audit --no-fund @tauri-apps/cli@2.12.1
+cd apps/desktop/src-tauri
+exec node ../../../target/tauri-cli/node_modules/@tauri-apps/cli/tauri.js dev "$@"

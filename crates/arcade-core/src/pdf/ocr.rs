@@ -31,25 +31,14 @@ pub(super) fn searchable(
         .get("language")
         .and_then(serde_json::Value::as_str)
         .unwrap_or("eng");
-    if language.is_empty()
-        || language.len() > 64
-        || !language
-            .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'_' | b'+'))
-    {
-        return Err("Choose a valid OCR language code".into());
-    }
+    let codes = crate::provider::ocr_language_codes(language)?;
     let tesseract = discover_tesseract()
         .into_iter()
         .find(|provider| provider.compatible)
         .ok_or("Searchable PDF needs Tesseract. Install it, or download it from Engines & Dependencies.")?;
-    for code in language.split('+') {
-        if !tesseract
-            .capabilities
-            .contains(&format!("ocr:language:{code}"))
-        {
-            return Err(format!("Tesseract has no `{code}` language data installed"));
-        }
+    if !crate::provider::has_ocr_languages(&tesseract, &codes) {
+        return Err(crate::provider::missing_ocr_language(&codes)
+            .unwrap_or_else(|| "Tesseract is missing a language pack".into()));
     }
     let render = poppler_provider("pdf.render")?;
     let text = poppler_provider("pdf.text")?;

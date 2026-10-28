@@ -22,25 +22,31 @@ use tauri_plugin_dialog::DialogExt;
 use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut, ShortcutState};
 use tauri_plugin_opener::OpenerExt;
 
+mod about;
 mod artifact_image;
 mod clipboard_history;
+mod dashboard;
 #[cfg(target_os = "linux")]
 mod hyprland;
 pub mod installer;
 mod installer_ui;
 mod link;
+mod login;
 mod media_preview;
 mod open_url;
 mod paste_plain;
 mod portable_settings;
 mod screen_capture;
+mod shortcut_syntax;
 #[cfg(target_os = "linux")]
 mod wayland_shortcut;
 mod window_pin;
 
 // Called only on pipeline workers. GTK's callback keeps the main loop free;
 // the portal dialog backend would require an unrelated Zenity executable.
-fn confirm_pipeline_effects(app: &tauri::AppHandle, message: String) -> bool {
+// The dialog layout follows the kit's confirm dialog: the question, what the
+// pipeline can do as a list, then Cancel and the primary "Run pipeline".
+fn confirm_pipeline_effects(app: &tauri::AppHandle, question: String, detail: String) -> bool {
     #[cfg(target_os = "linux")]
     {
         let (send, receive) = std::sync::mpsc::sync_channel(1);
@@ -51,10 +57,18 @@ fn confirm_pipeline_effects(app: &tauri::AppHandle, message: String) -> bool {
                     None::<&gtk::Window>,
                     gtk::DialogFlags::MODAL,
                     gtk::MessageType::Question,
-                    gtk::ButtonsType::OkCancel,
-                    &message,
+                    gtk::ButtonsType::None,
+                    &question,
                 );
-                dialog.set_title("Confirm pipeline effects");
+                dialog.set_title("Run pipeline — Arcade Box");
+                dialog.set_secondary_text(Some(&detail));
+                dialog.add_button("Cancel", gtk::ResponseType::Cancel);
+                if let Some(run) = dialog
+                    .add_button("Run pipeline", gtk::ResponseType::Ok)
+                    .downcast_ref::<gtk::Button>()
+                {
+                    run.style_context().add_class("suggested-action");
+                }
                 dialog.set_default_response(gtk::ResponseType::Ok);
                 dialog.connect_response(move |dialog, response| {
                     let _ = send.send(response == gtk::ResponseType::Ok);
@@ -73,18 +87,46 @@ fn confirm_pipeline_effects(app: &tauri::AppHandle, message: String) -> bool {
     {
         use tauri_plugin_dialog::MessageDialogButtons;
         app.dialog()
-            .message(message)
-            .title("Confirm pipeline effects")
-            .buttons(MessageDialogButtons::OkCancel)
+            .message(format!("{question}\n\n{detail}"))
+            .title("Run pipeline — Arcade Box")
+            .buttons(MessageDialogButtons::OkCancelCustom(
+                "Run pipeline".into(),
+                "Cancel".into(),
+            ))
             .blocking_show()
     }
+}
+
+/// What a pipeline's effects mean, one per line, for the confirm dialog.
+fn effects_detail(effects: &[String]) -> String {
+    let lines: Vec<String> = effects
+        .iter()
+        .map(|effect| {
+            let text = match effect.as_str() {
+                "sends-to-device" => "Send content to your devices",
+                "network" => "Use the network",
+                "executes-commands" => "Run commands",
+                "writes-files" => "Create files",
+                "opens-ui" => "Open app windows",
+                "clipboard" => "Change the clipboard",
+                "uploads-content" => "Upload content",
+                "persists" => "Save data",
+                "launch-apps" => "Start apps",
+                other => other,
+            };
+            format!("• {text}")
+        })
+        .collect();
+    format!(
+        "It can:\n{}\n\nYou're asked once for this version of the pipeline.",
+        lines.join("\n")
+    )
 }
 
 #[derive(Clone, Copy, PartialEq)]
 struct SurfaceGeometry {
     width: f64,
     height: f64,
-    centered: bool,
 }
 
 #[derive(Default)]
@@ -107,7 +149,6 @@ struct ResidentInstance {
 static SURFACE_GEOMETRY: Mutex<SurfaceGeometry> = Mutex::new(SurfaceGeometry {
     width: 740.0,
     height: 740.0,
-    centered: false,
 });
 
 #[derive(Clone)]
@@ -171,20 +212,15 @@ fn set_shortcut(
     app: tauri::AppHandle,
     runtime: tauri::State<'_, Arc<Arcade>>,
 ) -> Result<serde_json::Value, String> {
-    let trigger = arcade_link::accelerator::normalize(&trigger).map_err(|e| e.to_string())?;
+    let trigger = shortcut_syntax::canonical_trigger(&trigger)?;
     let _change = link::settings_change_lock();
     let previous = runtime
         .storage()
         .setting("global_shortcut")
         .ok()
         .flatten()
-        .unwrap_or_else(|| {
-            if cfg!(target_os = "macos") {
-                "Super+Shift+Space".into()
-            } else {
-                "Ctrl+Alt+Space".into()
-            }
-        });
+        .and_then(|saved| shortcut_syntax::canonical_trigger(&saved).ok())
+        .unwrap_or_else(|| shortcut_syntax::DEFAULT.into());
     let result = apply_shortcut_on_ui(&app, &trigger)?;
     if let Err(error) = runtime.storage().set_setting("global_shortcut", &trigger) {
         let _ = apply_shortcut_on_ui(&app, &previous);
@@ -200,21 +236,6 @@ fn set_shortcut(
     let _ = app.emit("arcade://shortcut-status", status.clone());
     let _ = result;
     Ok(status)
-}
-
-#[cfg(target_os = "linux")]
-fn portal_accelerator(canonical: &str) -> String {
-    canonical
-        .split('+')
-        .map(|part| match part {
-            "Ctrl" => "CTRL".into(),
-            "Alt" => "ALT".into(),
-            "Shift" => "SHIFT".into(),
-            "Super" => "LOGO".into(),
-            key => key.to_ascii_lowercase(),
-        })
-        .collect::<Vec<_>>()
-        .join("+")
 }
 
 fn manual_shortcut(hint: String) -> arcade_link::app::ShortcutSetResult {
@@ -236,7 +257,15 @@ fn apply_shortcut_on_ui(
                 "Bind `arcade-desktop --toggle` in your desktop's keyboard settings; this portal accepts one chord.",
             )));
         }
-        controller.set_preferred_trigger(portal_accelerator(canonical))?;
+        let trigger = match shortcut_syntax::xdg_trigger(canonical) {
+            Ok(trigger) => trigger,
+            Err(error) => {
+                return Ok(manual_shortcut(format!(
+                    "{error}. Bind `arcade-desktop --toggle` in your desktop's keyboard settings."
+                )));
+            }
+        };
+        controller.set_preferred_trigger(trigger)?;
         return Ok(arcade_link::app::ShortcutSetResult {
             applied: true,
             via: arcade_link::app::ShortcutVia::Portal,
@@ -722,12 +751,11 @@ async fn save_artifact_as(
         .file_name()
         .and_then(|name| name.to_str())
         .unwrap_or("Arcade-result");
-    let Some(destination) = app
-        .dialog()
-        .file()
-        .set_file_name(default_name)
-        .blocking_save_file()
-    else {
+    let mut dialog = app.dialog().file().set_file_name(default_name);
+    if let Some(folder) = save_folder_setting(&runtime) {
+        dialog = dialog.set_directory(folder);
+    }
+    let Some(destination) = dialog.blocking_save_file() else {
         return Ok(None);
     };
     let destination = destination.into_path().map_err(|error| error.to_string())?;
@@ -735,6 +763,54 @@ async fn save_artifact_as(
         .save_artifact_as(&token, &destination)
         .map(Some)
         .map_err(|error| error.to_string())
+}
+
+/// Settings › General › Save folder: where "Save…" starts, when it still
+/// exists. Unset, the dialog starts where the desktop chooses.
+const SAVE_FOLDER: &str = "save_folder";
+
+fn save_folder_setting(runtime: &Arcade) -> Option<std::path::PathBuf> {
+    runtime
+        .storage()
+        .setting(SAVE_FOLDER)
+        .ok()
+        .flatten()
+        .map(std::path::PathBuf::from)
+        .filter(|path| path.is_absolute() && path.is_dir())
+}
+
+#[tauri::command]
+fn save_folder(runtime: tauri::State<'_, Arc<Arcade>>) -> Option<String> {
+    save_folder_setting(&runtime).map(|path| path.to_string_lossy().into_owned())
+}
+
+/// Picks the save folder, or clears it with `reset`.
+#[tauri::command(async)]
+async fn choose_save_folder(
+    reset: bool,
+    app: tauri::AppHandle,
+    runtime: tauri::State<'_, Arc<Arcade>>,
+) -> Result<Option<String>, String> {
+    if reset {
+        runtime
+            .storage()
+            .set_setting(SAVE_FOLDER, "")
+            .map_err(|error| format!("Couldn't reset the save folder: {error}"))?;
+        return Ok(None);
+    }
+    let mut dialog = app.dialog().file();
+    if let Some(folder) = save_folder_setting(&runtime) {
+        dialog = dialog.set_directory(folder);
+    }
+    let Some(folder) = dialog.blocking_pick_folder() else {
+        return Ok(save_folder_setting(&runtime).map(|path| path.to_string_lossy().into_owned()));
+    };
+    let folder = folder.into_path().map_err(|error| error.to_string())?;
+    runtime
+        .storage()
+        .set_setting(SAVE_FOLDER, &folder.to_string_lossy())
+        .map_err(|error| format!("Couldn't save the folder: {error}"))?;
+    Ok(Some(folder.to_string_lossy().into_owned()))
 }
 
 #[tauri::command(async)]
@@ -956,17 +1032,12 @@ fn apply_surface_mode(
     window: &tauri::WebviewWindow,
     force: bool,
 ) -> Result<(), String> {
-    let (width, height, dashboard) = match mode {
-        "compact" | "search" | "tool" => (740.0, 740.0, false),
-        "dashboard" => (1100.0, 760.0, true),
-        _ => return Err("Unknown surface mode".into()),
-    };
-    let (width, height) = fit_surface_size(window, width, height);
-    let next = SurfaceGeometry {
-        width,
-        height,
-        centered: dashboard,
-    };
+    // The dashboard is its own window; the Island's states share one canvas.
+    if !matches!(mode, "compact" | "search" | "tool") {
+        return Err("Unknown surface mode".into());
+    }
+    let (width, height) = fit_surface_size(window, 740.0, 740.0);
+    let next = SurfaceGeometry { width, height };
     {
         let mut geometry = SURFACE_GEOMETRY
             .lock()
@@ -987,12 +1058,12 @@ fn apply_surface_mode(
     window
         .set_size(Size::Logical(LogicalSize::new(width, height)))
         .map_err(|error| error.to_string())?;
-    let _ = window.set_always_on_top(!dashboard);
+    let _ = window.set_always_on_top(true);
     let _ = window.set_skip_taskbar(true);
-    place_surface(window, dashboard);
+    place_surface(window);
     #[cfg(target_os = "linux")]
     if window.is_visible().unwrap_or(false) {
-        let _ = hyprland::place_island(width, height, dashboard);
+        let _ = hyprland::place_island(width, height, false);
     }
     Ok(())
 }
@@ -1022,7 +1093,8 @@ fn fit_surface_size(window: &tauri::WebviewWindow, width: f64, height: f64) -> (
     (width.min(max_width), height.min(max_height))
 }
 
-fn place_surface(window: &tauri::WebviewWindow, centered: bool) {
+/// Centres the Island horizontally at the top of the active monitor.
+fn place_surface(window: &tauri::WebviewWindow) {
     let Some(monitor) = active_monitor(window) else {
         return;
     };
@@ -1032,13 +1104,8 @@ fn place_surface(window: &tauri::WebviewWindow, centered: bool) {
         return;
     };
     let x_offset = (i64::from(screen.width) - i64::from(size.width)).max(0) / 2;
-    let y_offset = if centered {
-        (i64::from(screen.height) - i64::from(size.height)).max(0) / 2
-    } else {
-        0
-    };
     let x = (i64::from(origin.x) + x_offset).clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
-    let y = (i64::from(origin.y) + y_offset).clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32;
+    let y = origin.y;
     let _ = window.set_position(Position::Physical(PhysicalPosition::new(x, y)));
 }
 
@@ -1057,11 +1124,13 @@ fn island_ready(window: tauri::WebviewWindow) {
         // Created for a request that was cancelled before the page loaded.
         schedule_island_release(&window, ISLAND_IDLE_RELEASE);
     }
-    if PENDING_SETTINGS.swap(false, std::sync::atomic::Ordering::SeqCst) {
-        let _ = window.emit("arcade://open-settings", ());
-    }
-    if PENDING_PIPELINES.swap(false, std::sync::atomic::Ordering::SeqCst) {
-        let _ = window.emit("arcade://open-pipelines", ());
+    let tool_opens = std::mem::take(
+        &mut *PENDING_TOOL_OPENS
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner),
+    );
+    for open in tool_opens {
+        let _ = window.emit_to("island", "arcade://open-tool", open);
     }
     let link_opens = std::mem::take(
         &mut *PENDING_LINK_OPENS
@@ -1134,7 +1203,7 @@ pub(crate) fn show_island(window: &tauri::WebviewWindow) {
             .unwrap_or_else(std::sync::PoisonError::into_inner);
         let (width, height) = fit_surface_size(&island, geometry.width, geometry.height);
         let _ = island.set_size(Size::Logical(LogicalSize::new(width, height)));
-        place_surface(&island, geometry.centered);
+        place_surface(&island);
         #[cfg(target_os = "linux")]
         let requested = stamp_user_time(&island);
         if let Err(error) = island.show() {
@@ -1203,6 +1272,8 @@ const ISLAND_IDLE_RELEASE: std::time::Duration = std::time::Duration::from_secs(
 
 /// `box.open` requests that arrived before the Island's WebView was ready.
 static PENDING_LINK_OPENS: Mutex<Vec<serde_json::Value>> = Mutex::new(Vec::new());
+/// Tools the dashboard opened before the Island's WebView was ready.
+static PENDING_TOOL_OPENS: Mutex<Vec<serde_json::Value>> = Mutex::new(Vec::new());
 
 /// Runs `action` on the main thread with the Island, creating its WebView
 /// first when none exists. Nothing in Box's background paths (tray, Link,
@@ -1248,6 +1319,39 @@ pub(crate) fn open_link_request(app: &tauri::AppHandle, open: serde_json::Value)
     });
 }
 
+/// Opens a tool (and optionally a job's result) in the Island for the dashboard.
+pub(crate) fn open_island_tool(app: &tauri::AppHandle, open: serde_json::Value) {
+    with_island(app, move |window| {
+        let ready = ISLAND_VISIBILITY
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .ready;
+        show_island(window);
+        if ready {
+            let _ = window.emit_to("island", "arcade://open-tool", open);
+        } else {
+            PENDING_TOOL_OPENS
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .push(open);
+        }
+    });
+}
+
+/// The OS identifier (STANDARD §10): bundle id, desktop file, window class.
+pub const OS_ID: &str = "dev.arcade.Box";
+
+/// Keeps WebView storage in Box's cache folder; Tauri's default is a folder
+/// named after the OS identifier beside the user's other apps.
+pub(crate) fn in_box_folder<'a, R: tauri::Runtime, M: tauri::Manager<R>>(
+    builder: tauri::WebviewWindowBuilder<'a, R, M>,
+) -> tauri::WebviewWindowBuilder<'a, R, M> {
+    match arcade_core::dirs::app_dirs() {
+        Some(dirs) => builder.data_directory(dirs.cache.join("webview")),
+        None => builder,
+    }
+}
+
 /// The existing Island, or a new one built from its `tauri.conf.json` entry
 /// (`"create": false`). Must run on the main thread.
 fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
@@ -1271,6 +1375,7 @@ fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
     // A pending lean restart gives way to the new WebView.
     ISLAND_RELEASES.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
     let window = match tauri::WebviewWindowBuilder::from_config(app, &config)
+        .map(in_box_folder)
         .and_then(tauri::WebviewWindowBuilder::build)
     {
         Ok(window) => window,
@@ -1453,30 +1558,85 @@ thread_local! {
     static RECOVERY_TRAY: std::cell::RefCell<Option<RecoveryTray>> = const { std::cell::RefCell::new(None) };
 }
 
+/// The tray icon: Box's glyph, monochrome (STANDARD §8). White on Linux
+/// panels (dark on GNOME, Plasma's default and the usual Hyprland bars),
+/// black on macOS (a template image the menu bar recolours), and the
+/// taskbar's contrast colour on Windows.
+fn tray_glyph_png() -> &'static [u8] {
+    if tray_panel_is_dark() {
+        include_bytes!("../icons/tray-white.png")
+    } else {
+        include_bytes!("../icons/tray-black.png")
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn tray_panel_is_dark() -> bool {
+    use windows_sys::Win32::System::Registry::{HKEY_CURRENT_USER, RRF_RT_REG_DWORD, RegGetValueW};
+    let key: Vec<u16> = "Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize\0"
+        .encode_utf16()
+        .collect();
+    let name: Vec<u16> = "SystemUsesLightTheme\0".encode_utf16().collect();
+    let mut value: u32 = 0;
+    let mut size = std::mem::size_of::<u32>() as u32;
+    // SAFETY: both strings are NUL-terminated and the output is a u32.
+    let status = unsafe {
+        RegGetValueW(
+            HKEY_CURRENT_USER,
+            key.as_ptr(),
+            name.as_ptr(),
+            RRF_RT_REG_DWORD,
+            std::ptr::null_mut(),
+            (&mut value as *mut u32).cast(),
+            &mut size,
+        )
+    };
+    // A missing value means the classic dark taskbar.
+    status != 0 || value == 0
+}
+
+#[cfg(target_os = "macos")]
+fn tray_panel_is_dark() -> bool {
+    false
+}
+
+#[cfg(not(any(target_os = "windows", target_os = "macos")))]
+fn tray_panel_is_dark() -> bool {
+    true
+}
+
 /// Construct toolkit resources before the first host answer, but delay OS
 /// tray registration until Box owns its icon (tray-icon has no hidden ctor).
 #[cfg(not(target_os = "linux"))]
 fn prepare_recovery_tray<M: tauri::Manager<tauri::Wry>>(
     app: &M,
 ) -> tauri::Result<PreparedRecoveryTray> {
-    let show = MenuItem::with_id(app, "show-island", "Open Box", true, None::<&str>)?;
+    let toggle = MenuItem::with_id(
+        app,
+        "toggle-island",
+        "Show or hide Arcade Box",
+        true,
+        None::<&str>,
+    )?;
+    let dashboard = MenuItem::with_id(app, "open-dashboard", "Open dashboard", true, None::<&str>)?;
     let pipelines = MenuItem::with_id(app, "open-pipelines", "Open pipelines", true, None::<&str>)?;
-    let settings = MenuItem::with_id(app, "settings", "Open Settings", true, None::<&str>)?;
+    let settings = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
     let restart_item = MenuItem::with_id(app, "restart", "Restart Arcade Box", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "Quit Arcade Box", true, None::<&str>)?;
     let separator = tauri::menu::PredefinedMenuItem::separator(app)?;
     let menu = Menu::with_items(
         app,
         &[
-            &show,
+            &toggle,
+            &dashboard,
             &pipelines,
             &settings,
-            &restart_item,
             &separator,
+            &restart_item,
             &quit,
         ],
     )?;
-    let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/icon.png"))?;
+    let icon = tauri::image::Image::from_bytes(tray_glyph_png())?;
     Ok(PreparedRecoveryTray { menu, icon })
 }
 
@@ -1507,8 +1667,8 @@ mod linux_tray {
         let handle = app.clone();
         let _ = app.run_on_main_thread(move || action(&handle));
     }
-    fn show(app: &AppHandle) {
-        super::open_island(app);
+    fn toggle(app: &AppHandle) {
+        super::toggle_island_app(app);
     }
     fn quit(app: &AppHandle) {
         app.exit(0);
@@ -1528,7 +1688,7 @@ mod linux_tray {
             static ICONS: OnceLock<Vec<ksni::Icon>> = OnceLock::new();
             ICONS
                 .get_or_init(|| {
-                    image::load_from_memory(include_bytes!("../icons/icon.png"))
+                    image::load_from_memory(super::tray_glyph_png())
                         .map(|image| {
                             [32, 64, 128]
                                 .into_iter()
@@ -1564,7 +1724,7 @@ mod linux_tray {
             }
         }
         fn activate(&mut self, _x: i32, _y: i32) {
-            on_main(&self.app, super::open_settings);
+            on_main(&self.app, super::open_dashboard);
         }
         fn menu(&self) -> Vec<ksni::MenuItem<Self>> {
             use ksni::menu::StandardItem;
@@ -1577,11 +1737,12 @@ mod linux_tray {
                 .into()
             };
             vec![
-                item("Open Box", show),
+                item("Show or hide Arcade Box", toggle),
+                item("Open dashboard", super::open_dashboard),
                 item("Open pipelines", super::open_pipelines),
-                item("Open Settings", super::open_settings),
-                item("Restart Arcade Box", super::restart),
+                item("Settings", super::open_settings),
                 ksni::MenuItem::Separator,
+                item("Restart Arcade Box", super::restart),
                 item("Quit Arcade Box", quit),
             ]
         }
@@ -1664,9 +1825,11 @@ fn set_native_tray(app: &tauri::AppHandle, state: arcade_link::trayhost::TraySta
                         .tooltip("Arcade Box")
                         .menu(&prepared.menu)
                         .icon(prepared.icon)
+                        .icon_as_template(cfg!(target_os = "macos"))
                         .show_menu_on_left_click(menu_on_left)
                         .on_menu_event(|app, event| match event.id().as_ref() {
-                            "show-island" => open_island(app),
+                            "toggle-island" => toggle_island_app(app),
+                            "open-dashboard" => open_dashboard(app),
                             "open-pipelines" => open_pipelines(app),
                             "settings" => open_settings(app),
                             "restart" => restart(app),
@@ -1681,7 +1844,7 @@ fn set_native_tray(app: &tauri::AppHandle, state: arcade_link::trayhost::TraySta
                             } = event
                                 && !menu_on_left
                             {
-                                open_settings(tray.app_handle());
+                                open_dashboard(tray.app_handle());
                             }
                         })
                         .build(app);
@@ -1825,37 +1988,17 @@ pub fn attach_console() {
 
 pub use link::{print_manifest, serve_oneshot};
 
-/// `--settings` asked for before the Island's WebView was ready.
-static PENDING_SETTINGS: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
-static PENDING_PIPELINES: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
-
-/// Opens Settings in the Island (now, or once the WebView is ready).
+/// Settings, Pipelines and the other pages live in the dashboard window.
 pub(crate) fn open_settings(app: &tauri::AppHandle) {
-    open_island_view(app, &PENDING_SETTINGS, "arcade://open-settings");
+    dashboard::open(app, Some("settings"));
 }
 
 pub(crate) fn open_pipelines(app: &tauri::AppHandle) {
-    open_island_view(app, &PENDING_PIPELINES, "arcade://open-pipelines");
+    dashboard::open(app, Some("pipelines"));
 }
 
-fn open_island_view(
-    app: &tauri::AppHandle,
-    pending: &'static std::sync::atomic::AtomicBool,
-    event: &'static str,
-) {
-    with_island(app, move |window| {
-        let ready = ISLAND_VISIBILITY
-            .lock()
-            .unwrap_or_else(std::sync::PoisonError::into_inner)
-            .ready;
-        if !ready {
-            pending.store(true, std::sync::atomic::Ordering::SeqCst);
-        }
-        show_island(window);
-        if ready {
-            let _ = window.emit(event, ());
-        }
-    });
+pub(crate) fn open_dashboard(app: &tauri::AppHandle) {
+    dashboard::open(app, None);
 }
 
 /// Another launch of Arcade Box (the applications menu, `--settings`,
@@ -1871,14 +2014,62 @@ fn handle_second_instance(app: &tauri::AppHandle, argv: &[String]) {
         Some("--settings") => open_settings(app),
         Some("--restart") => restart(app),
         Some("--pipelines") => open_pipelines(app),
+        Some("--dashboard") => open_dashboard(app),
         Some("--toggle") => toggle_island_app(app),
+        Some("--hide") => hide_island_app(app),
         Some("--background") => {}
+        // `--show` and a plain launch.
         _ => open_island(app),
     }
 }
 
+/// `--hide`: hides the Island if it is open; nothing else changes.
+fn hide_island_app(app: &tauri::AppHandle) {
+    if let Some(window) = app.get_webview_window("island") {
+        request_hide_island(&window, std::time::Duration::ZERO);
+    }
+}
+
+/// `--status`: one line of JSON (running, version, Link state) without
+/// starting anything.
+pub fn print_status() {
+    let locations = arcade_link::Locations::discover();
+    let registry = arcade_link::Registry::load(&locations);
+    let me = arcade_link::PeerInfo {
+        id: format!("{}.status", installer::ME),
+        version: env!("CARGO_PKG_VERSION").into(),
+    };
+    let running = match arcade_link::client::app_state(&locations, &registry, installer::ME, &me) {
+        arcade_link::AppState::Running { version } => Some(version),
+        _ => None,
+    };
+    let link = registry
+        .get(installer::ME)
+        .map_or("unregistered", |manifest| {
+            if manifest.settings.link_enabled {
+                "on"
+            } else {
+                "off"
+            }
+        });
+    println!(
+        "{}",
+        serde_json::json!({
+            "app": installer::ME,
+            "version": env!("CARGO_PKG_VERSION"),
+            "running": running.is_some(),
+            "runningVersion": running,
+            "link": link,
+        })
+    );
+}
+
 pub fn run(args: Vec<String>) {
     wait_for_predecessor();
+    // GTK takes the Wayland app_id and the X11 WM_CLASS from the program
+    // name, which is otherwise the executable's.
+    #[cfg(target_os = "linux")]
+    gtk::glib::set_prgname(Some(OS_ID));
     let first_flag = args.iter().find(|a| a.starts_with("--")).cloned();
     let app = tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
@@ -1893,7 +2084,15 @@ pub fn run(args: Vec<String>) {
                 app.handle().exit(0);
                 return Ok(());
             }
-            let db_dir = link::data_dir().ok_or("could not locate Arcade Box data directory")?;
+            // Before the lock and the database: they live in the new folder.
+            let (db_dir, migration) = match arcade_core::dirs::prepare() {
+                Ok(prepared) => prepared,
+                Err(error) => {
+                    eprintln!("Arcade Box didn't start: {error}.");
+                    app.handle().exit(0);
+                    return Ok(());
+                }
+            };
             std::fs::create_dir_all(&db_dir)?;
             let lock = std::fs::OpenOptions::new()
                 .read(true)
@@ -1910,6 +2109,9 @@ pub fn run(args: Vec<String>) {
                         arcade_link::logs::capture_stderr(&db_dir.join("logs"), "arcade-box")
                     {
                         eprintln!("Arcade Box log unavailable: {error}");
+                    }
+                    for line in arcade_core::dirs::describe(&migration) {
+                        eprintln!("{line}");
                     }
                 }
                 Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
@@ -1932,30 +2134,47 @@ pub fn run(args: Vec<String>) {
             let runtime = Arc::new(Arcade::open(&db_dir.join("arcade.sqlite3"))?);
             let confirmation_app = app.handle().clone();
             runtime.set_pipeline_confirmation(move |pipeline, effects| {
-                let message = format!(
-                    "Run \"{}\"?\n\nThis pipeline can: {}.\n\nApprove once for this version and these effects.",
-                    pipeline.name,
-                    effects.iter().map(|effect| match effect.as_str() {
-                        "sends-to-device" => "send content to your devices",
-                        "network" => "access the network",
-                        "executes-commands" => "run commands",
-                        "writes-files" => "create files",
-                        "opens-ui" => "open app windows",
-                        "clipboard" => "change the clipboard",
-                        "uploads-content" => "upload content",
-                        "persists" => "save data",
-                        "launch-apps" => "launch apps",
-                        other => other,
-                    }).collect::<Vec<_>>().join(", ")
-                );
-                confirm_pipeline_effects(&confirmation_app, message)
+                confirm_pipeline_effects(
+                    &confirmation_app,
+                    format!("Run \"{}\"?", pipeline.name),
+                    effects_detail(effects),
+                )
             });
             let clipboard_history =
                 clipboard_history::ClipboardHistory::open(db_dir.join("clipboard-history.json"))
                     .map_err(std::io::Error::other)?;
             app.manage(clipboard_history.clone());
             clipboard_history.start_monitor(app.handle().clone());
-            let saved_shortcut = runtime.storage().setting("global_shortcut")?;
+            // Normalise on load: builds before 0.4.0 could save the portal's
+            // `CTRL+ALT+space` spelling, which the native path can't parse.
+            let saved_shortcut = runtime
+                .storage()
+                .setting("global_shortcut")?
+                .and_then(|saved| match shortcut_syntax::canonical_trigger(&saved) {
+                    Ok(canonical) => {
+                        if canonical != saved {
+                            let _ = runtime.storage().set_setting("global_shortcut", &canonical);
+                        }
+                        Some(canonical)
+                    }
+                    Err(error) => {
+                        eprintln!("Arcade Box ignores the saved shortcut {saved:?}: {error}");
+                        None
+                    }
+                });
+            // Existing macOS users keep 0.3's default (⇧⌘Space): it was never
+            // saved, so record it once; new installs get ⌃⌥Space.
+            #[cfg(target_os = "macos")]
+            let saved_shortcut = saved_shortcut.or_else(|| {
+                runtime
+                    .storage()
+                    .setting("onboarding_complete")
+                    .ok()
+                    .flatten()?;
+                let previous = shortcut_syntax::MACOS_PREVIOUS_DEFAULT;
+                let _ = runtime.storage().set_setting("global_shortcut", previous);
+                Some(previous.into())
+            });
             let event_app = app.handle().clone();
             let jobs = JobManager::new(
                 runtime.clone(),
@@ -1979,24 +2198,26 @@ pub fn run(args: Vec<String>) {
             if let Err(error) = initialize_recovery_tray(app) {
                 eprintln!("Arcade Box recovery tray unavailable: {error}");
             }
-            if let Err(error) = start_tray_host_watcher(
-                app.handle(),
-                app.state::<Arc<Arcade>>().inner(),
-            ) {
+            if let Err(error) =
+                start_tray_host_watcher(app.handle(), app.state::<Arc<Arcade>>().inner())
+            {
                 eprintln!("Arcade Box tray host watcher unavailable: {error}");
                 link::set_tray_state(arcade_link::trayhost::TrayState::Own);
                 set_recovery_tray(app.handle(), arcade_link::trayhost::TrayState::Own);
             }
             // The Island's WebView is not created here: `island_window` builds
             // it on the first UI request, so a background start costs no WebView.
-            let default_shortcut = if cfg!(target_os = "macos") {
-                Shortcut::new(Some(Modifiers::SUPER | Modifiers::SHIFT), Code::Space)
-            } else {
-                Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::Space)
-            };
+            let default_shortcut =
+                Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::Space);
             #[cfg(target_os = "linux")]
             if wayland_shortcut::is_wayland_session() {
-                let preferred = saved_shortcut.unwrap_or_else(|| "CTRL+ALT+space".into());
+                let preferred = saved_shortcut
+                    .as_deref()
+                    .and_then(|saved| shortcut_syntax::xdg_trigger(saved).ok())
+                    .unwrap_or_else(|| {
+                        shortcut_syntax::xdg_trigger(shortcut_syntax::DEFAULT)
+                            .expect("the default shortcut has a portal spelling")
+                    });
                 let controller = wayland_shortcut::start(
                     app.handle().clone(),
                     preferred,
@@ -2021,12 +2242,26 @@ pub fn run(args: Vec<String>) {
                 open_settings(app.handle());
             } else if first_flag.as_deref() == Some("--pipelines") {
                 open_pipelines(app.handle());
+            } else if first_flag.as_deref() == Some("--dashboard") {
+                open_dashboard(app.handle());
             } else if first_flag.as_deref() == Some("--toggle") {
                 toggle_island_app(app.handle());
+            } else if first_flag.as_deref() == Some("--show") {
+                open_island(app.handle());
             }
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
+            about::about_info,
+            about::diagnostics,
+            about::open_logs,
+            about::open_tools,
+            login::login_item,
+            login::set_login_item,
+            dashboard::dashboard_ready,
+            dashboard::open_island,
+            dashboard::open_dashboard,
+            dashboard::open_tool_in_island,
             link::connected_apps,
             link::set_link_settings,
             link::get_connected_app,
@@ -2089,6 +2324,8 @@ pub fn run(args: Vec<String>) {
             set_window_pin,
             revoke_output_directory,
             save_artifact_as,
+            save_folder,
+            choose_save_folder,
             screen_capture_status,
             run_screen_tool,
             screen_recording_status,

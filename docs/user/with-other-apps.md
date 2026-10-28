@@ -21,4 +21,4 @@ Box also provides tool and pipeline actions to other connected apps. Calls that 
 
 Arcade Tools manages Box from its **Apps** tab. When Tools is running it can host the Arcade tray icon; Box uses its own tray icon otherwise.
 
-Actions depend on the peers’ versions and platform support. See [Arcade Link](../arcade-link.md) for the current action list and behavior.
+Actions depend on the peers’ versions and platform support. See [Arcade Link](https://github.com/qa-p1/Arcade-box/blob/main/docs/dev/link.md) for the current action list and behavior.

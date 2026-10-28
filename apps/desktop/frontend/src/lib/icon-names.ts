@@ -1,1 +1,19 @@
-export type IconName = 'spark' | 'search' | 'grid' | 'arrow' | 'close' | 'chevron' | 'clock' | 'star' | 'copy' | 'check' | 'play' | 'pause' | 'back' | 'file' | 'lock' | 'external' | 'dots' | 'plus' | 'command' | 'moon' | 'sun' | 'globe' | 'code' | 'image' | 'video' | 'audio' | 'document' | 'folder' | 'network' | 'shield' | 'calculator' | 'settings' | 'type' | 'trash' | 'pin' | 'clipboard' | 'refresh' | 'download' | 'qr' | 'monitor';
+import type { IconName as KitIconName } from '../design/icons';
+
+/** Box's names for kit icons that the kit calls something else. */
+const ALIASES = {
+  spark: 'sparkle',
+  grid: 'apps',
+  arrow: 'arrowRight',
+  close: 'x',
+  chevron: 'chevronRight',
+  back: 'arrowLeft',
+  dots: 'more',
+  network: 'link',
+} as const satisfies Record<string, KitIconName>;
+
+export type IconName = KitIconName | keyof typeof ALIASES;
+
+export function kitName(name: IconName): KitIconName {
+  return (ALIASES as Record<string, KitIconName>)[name] ?? (name as KitIconName);
+}

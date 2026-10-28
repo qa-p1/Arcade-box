@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Everything CI's check job runs before packaging, in the same order; ci.yml
+# calls this script, so a green run here is a green CI step on this OS.
+#   scripts/check            # needs `npm ci` in apps/desktop/frontend first
+# On Linux the layout check needs Playwright's Chromium
+# (npx playwright install chromium, or PLAYWRIGHT_CHROMIUM=<binary>).
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+step() { printf '\n== %s\n' "$*"; "$@"; }
+python=$(command -v python || command -v python3)
+frontend=apps/desktop/frontend
+
+step npm --prefix "$frontend" run check
+step npm --prefix "$frontend" test
+step npm --prefix "$frontend" run build
+if [ "$(uname -s)" = Linux ]; then step npm --prefix "$frontend" run test:layout; fi
+step "$python" scripts/check-css-vars.py
+step "$python" scripts/check-version.py
+step "$python" scripts/check-docs.py
+step "$python" scripts/check-vendored.py
+step cargo fmt --all --check
+step cargo clippy --workspace --all-targets --locked -- -D warnings
+step "$python" scripts/isolate.py cargo test --workspace --locked
+step cargo build -p arcade-desktop --locked
+step "$python" catalog/render_tool_matrix.py --check
+step "$python" scripts/license_inventory.py --check

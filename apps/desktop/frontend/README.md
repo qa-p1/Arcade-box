@@ -10,7 +10,7 @@ Run `npm ci`, `npm run check` and `npm run build` here. `npm run dev` serves
 `127.0.0.1:5173` for Tauri development. From the repository root,
 `scripts/run-desktop.sh` builds the embedded frontend and runs the installed local
 build; this is a user launch, not an isolated test. Use the ecosystem runner for
-GUI verification as described in [Arcade Link](../../../docs/arcade-link.md).
+GUI verification as described in [Arcade Link](../../../docs/dev/link.md).
 Outside Tauri the frontend reports the missing backend instead of returning fake
 results.
 

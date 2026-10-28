@@ -130,17 +130,21 @@ pub fn pin_screen_capture(
     let width = f64::from(preview.width.clamp(180, 560)) + 28.0;
     let height = f64::from(preview.height.clamp(120, 340)) + 46.0;
     let script = format!("window.__ARCADE_PIN_IMAGE = {preview_js};");
-    WebviewWindowBuilder::new(&app, &label, WebviewUrl::App(PathBuf::from("pin.html")))
-        .title("Arcade Box · Pinned reference")
-        .inner_size(width, height)
-        .min_inner_size(200.0, 140.0)
-        .resizable(true)
-        .decorations(true)
-        .always_on_top(true)
-        .skip_taskbar(true)
-        .initialization_script(&script)
-        .build()
-        .map_err(|error| format!("Could not open the pinned image window: {error}"))?;
+    crate::in_box_folder(WebviewWindowBuilder::new(
+        &app,
+        &label,
+        WebviewUrl::App(PathBuf::from("pin.html")),
+    ))
+    .title("Pinned reference — Arcade Box")
+    .inner_size(width, height)
+    .min_inner_size(200.0, 140.0)
+    .resizable(true)
+    .decorations(true)
+    .always_on_top(true)
+    .skip_taskbar(true)
+    .initialization_script(&script)
+    .build()
+    .map_err(|error| format!("Could not open the pinned image window: {error}"))?;
 
     let message = if cfg!(target_os = "linux") && std::env::var_os("WAYLAND_DISPLAY").is_some() {
         "Pinned reference opened. The Wayland compositor may limit always-on-top behavior."

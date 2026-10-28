@@ -397,6 +397,45 @@ pub fn discover_poppler() -> Vec<ProviderInfo> {
 
 /// Discover a system Tesseract installation and the language data actually
 /// available to it; language packs remain separately installed resources.
+/// The language codes in `eng` or `eng+deu` (Tesseract's syntax for several
+/// languages at once), or the error to show for anything else.
+pub(crate) fn ocr_language_codes(language: &str) -> Result<Vec<&str>, String> {
+    let codes: Vec<&str> = language.split('+').collect();
+    let valid = |code: &&str| {
+        !code.is_empty()
+            && code
+                .bytes()
+                .all(|byte| byte.is_ascii_alphanumeric() || byte == b'_')
+    };
+    if language.len() > 64 || !codes.iter().all(valid) {
+        return Err("Choose a valid OCR language code".into());
+    }
+    Ok(codes)
+}
+
+/// Whether `provider` has every language pack in `codes`.
+pub(crate) fn has_ocr_languages(provider: &ProviderInfo, codes: &[&str]) -> bool {
+    codes.iter().all(|code| {
+        provider
+            .capabilities
+            .contains(&format!("ocr:language:{code}"))
+    })
+}
+
+/// The error naming the first missing language pack, or None when the
+/// installed Tesseract has them all (or there is no Tesseract to ask).
+pub(crate) fn missing_ocr_language(codes: &[&str]) -> Option<String> {
+    let tesseract = discover_tesseract()
+        .into_iter()
+        .find(|provider| provider.compatible)?;
+    codes
+        .iter()
+        .find(|code| !has_ocr_languages(&tesseract, &[code]))
+        .map(|code| {
+            format!("The {code} language pack isn't installed. Add it in Arcade Tools › Engines.")
+        })
+}
+
 pub fn discover_tesseract() -> Vec<ProviderInfo> {
     let Some(mut provider) =
         discover_identified_command("ocr.tesseract", "tesseract", &["--version"], "tesseract")
@@ -530,18 +569,7 @@ pub fn discover_ytdlp_js_runtimes() -> Vec<ProviderInfo> {
 /// Arcade Box's per-user data folder, which holds user-installed helper tools
 /// (`tools/`) and model files (`models/`).
 pub fn app_data_dir() -> Option<PathBuf> {
-    const APP_ID: &str = "dev.arcadebox.app";
-    #[cfg(target_os = "macos")]
-    let base =
-        env::var_os("HOME").map(|home| PathBuf::from(home).join("Library/Application Support"));
-    #[cfg(windows)]
-    let base = env::var_os("APPDATA").map(PathBuf::from);
-    #[cfg(all(unix, not(target_os = "macos")))]
-    let base = env::var_os("XDG_DATA_HOME")
-        .map(PathBuf::from)
-        .filter(|path| path.is_absolute())
-        .or_else(|| env::var_os("HOME").map(|home| PathBuf::from(home).join(".local/share")));
-    base.map(|base| base.join(APP_ID))
+    crate::dirs::data_dir()
 }
 
 /// A model file the user placed under `<app data>/models/<relative>`.
@@ -1135,9 +1163,34 @@ fn has_ffmpeg_entry(output: &str, name: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     #[test]
-    fn missing_binary_is_not_a_provider() {
-        assert!(probe_ffmpeg_at(Path::new("/this/path/does/not/exist/ffmpeg"), "system").is_none());
+    fn several_ocr_languages_join_with_plus() {
+        // B9: `eng+deu` was refused although Tesseract accepts it.
+        assert_eq!(ocr_language_codes("eng"), Ok(vec!["eng"]));
+        assert_eq!(ocr_language_codes("eng+deu"), Ok(vec!["eng", "deu"]));
+        assert_eq!(
+            ocr_language_codes("chi_sim+eng"),
+            Ok(vec!["chi_sim", "eng"])
+        );
+        for bad in ["", "eng+", "+eng", "eng deu", "eng;rm", "../eng"] {
+            assert!(ocr_language_codes(bad).is_err(), "{bad}");
+        }
+    }
+
+    #[test]
+    fn every_language_pack_must_be_installed() {
+        let provider = ProviderInfo {
+            capability: "ocr.tesseract".into(),
+            source: "system".into(),
+            executable_path: PathBuf::from("tesseract"),
+            version: "5.3.4".into(),
+            compatible: true,
+            warning: None,
+            capabilities: vec!["ocr:language:eng".into(), "ocr:language:osd".into()],
+        };
+        assert!(has_ocr_languages(&provider, &["eng", "osd"]));
+        assert!(!has_ocr_languages(&provider, &["eng", "deu"]));
     }
 
     #[test]

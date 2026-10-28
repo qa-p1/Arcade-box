@@ -25,7 +25,7 @@
 
 <style>
   .emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 4px; max-height: 340px; overflow: auto; }
-  .emoji-grid button { aspect-ratio: 1; display: grid; place-items: center; font-size: 24px; line-height: 1; border: 0; border-radius: 8px; background: transparent; cursor: pointer; }
+  .emoji-grid button { aspect-ratio: 1; display: grid; place-items: center; font-size: var(--fs-display); line-height: 1; border: 0; border-radius: 8px; background: transparent; cursor: pointer; }
   .emoji-grid button:hover, .emoji-grid button:focus-visible { background: var(--surface-2); }
-  .emoji-note { margin: 8px 0 0; font-size: 12px; color: var(--ink-3); }
+  .emoji-note { margin: 8px 0 0; font-size: var(--fs-small); color: var(--ink-3); }
 </style>

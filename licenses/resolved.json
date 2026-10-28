@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "purpose": "Locked third-party dependency inventory; human license and notice review remains required",
-  "packageCount": 986,
+  "packageCount": 1003,
   "unresolvedLicenseMetadata": [],
   "packages": [
     {
@@ -297,11 +297,11 @@
     {
       "ecosystem": "cargo",
       "name": "arcade-link",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "license": "MIT OR Apache-2.0",
       "licenseFile": null,
       "repository": "https://github.com/qa-p1/Arcade-link",
-      "source": "git+https://github.com/qa-p1/Arcade-link?rev=3bbbc5d0d7d383e18c7e7e20552e942c1a971abd#3bbbc5d0d7d383e18c7e7e20552e942c1a971abd",
+      "source": "git+https://github.com/qa-p1/Arcade-link?tag=v0.4.0#498b47f17aa35864aef765ac56a877d06b927dbe",
       "checksum": null
     },
     {
@@ -323,6 +323,16 @@
       "repository": "https://github.com/andylokandy/arraydeque",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "7d902e3d592a523def97af8f317b08ce16b7ab854c1985a0c671e6f15cebc236"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "arrayref",
+      "version": "0.3.9",
+      "license": "BSD-2-Clause",
+      "licenseFile": null,
+      "repository": "https://github.com/droundy/arrayref",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "76a2e8124351fda1ef8aaaa3bbd7ebbcb486bbcd4225aca0aa0d84bb2db8fecb"
     },
     {
       "ecosystem": "cargo",
@@ -1726,6 +1736,16 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "data-url",
+      "version": "0.3.2",
+      "license": "MIT OR Apache-2.0",
+      "licenseFile": null,
+      "repository": "https://github.com/servo/rust-url",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "be1e0bca6c3637f992fc1cc7cbc52a78c1ef6db076dbf1059c4323d6a2048376"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "dbus",
       "version": "0.9.12",
       "license": "Apache-2.0/MIT",
@@ -1833,16 +1853,6 @@
       "repository": "https://github.com/RustCrypto/traits",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "f1dd6dbb5841937940781866fa1281a1ff7bd3bf827091440879f9994983d5c2"
-    },
-    {
-      "ecosystem": "cargo",
-      "name": "directories",
-      "version": "6.0.0",
-      "license": "MIT OR Apache-2.0",
-      "licenseFile": null,
-      "repository": "https://github.com/soc/directories-rs",
-      "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "16f5094c54661b38d03bd7e50df373292118db60b585c08a411c6d840017fe7d"
     },
     {
       "ecosystem": "cargo",
@@ -2206,6 +2216,16 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "euclid",
+      "version": "0.22.14",
+      "license": "MIT OR Apache-2.0",
+      "licenseFile": null,
+      "repository": "https://github.com/servo/euclid",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "f1a05365e3b1c6d1650318537c7460c6923f1abdd272ad6842baa2b509957a06"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "event-listener",
       "version": "5.4.2",
       "license": "Apache-2.0 OR MIT",
@@ -2383,6 +2403,16 @@
       "repository": "https://github.com/rust-lang/flate2-rs",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "6e634e2e0ebac1ee034020da1ca582e17ffe4e0f5e985823721e168928136dcb"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "float-cmp",
+      "version": "0.9.0",
+      "license": "MIT",
+      "licenseFile": null,
+      "repository": "https://github.com/mikedilger/float-cmp",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "98de4bbd547a563b716d8dfa9aad1cb19bfab00f4fa09a6a4ed21dbcf44ce9c4"
     },
     {
       "ecosystem": "cargo",
@@ -3326,6 +3356,16 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "imagesize",
+      "version": "0.13.0",
+      "license": "MIT",
+      "licenseFile": null,
+      "repository": "https://github.com/Roughsketch/imagesize",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "edcd27d72f2f071c64249075f42e205ff93c9a4c5f6c6da53e79ed9f9832c285"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "imgref",
       "version": "1.12.3",
       "license": "CC0-1.0 OR Apache-2.0",
@@ -3793,6 +3833,16 @@
       "repository": "https://github.com/iovxw/ksni",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "814b44c24cd2cb236c3b8a41c7f08237b452a8e76ecaa81f1cec40b5b678215b"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "kurbo",
+      "version": "0.11.3",
+      "license": "Apache-2.0 OR MIT",
+      "licenseFile": null,
+      "repository": "https://github.com/linebender/kurbo",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "c62026ae44756f8a599ba21140f350303d4f08dcdcc71b5ad9c9bb8128c13c62"
     },
     {
       "ecosystem": "cargo",
@@ -4846,6 +4896,16 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "pico-args",
+      "version": "0.5.0",
+      "license": "MIT",
+      "licenseFile": null,
+      "repository": "https://github.com/RazrFalcon/pico-args",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "5be167a7af36ee22fe3115051bc51f6e6c7054c9348e28deb4f49bd6f705a315"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "pin-project",
       "version": "1.1.13",
       "license": "Apache-2.0 OR MIT",
@@ -5566,6 +5626,16 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "resvg",
+      "version": "0.45.1",
+      "license": "Apache-2.0 OR MIT",
+      "licenseFile": null,
+      "repository": "https://github.com/linebender/resvg",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "a8928798c0a55e03c9ca6c4c6846f76377427d2c1e1f7e6de3c06ae57942df43"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "rfd",
       "version": "0.16.0",
       "license": "MIT",
@@ -5583,6 +5653,16 @@
       "repository": "https://github.com/kornelski/rust-rgb",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "47b34b781b31e5d73e9fbc8689c70551fd1ade9a19e3e28cfec8580a79290cc4"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "roxmltree",
+      "version": "0.20.0",
+      "license": "MIT OR Apache-2.0",
+      "licenseFile": null,
+      "repository": "https://github.com/RazrFalcon/roxmltree",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "6c20b6793b5c2fa6553b250154b78d6d0db37e72700ae35fad9387a46f487c97"
     },
     {
       "ecosystem": "cargo",
@@ -6116,6 +6196,16 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "simplecss",
+      "version": "0.2.2",
+      "license": "Apache-2.0 OR MIT",
+      "licenseFile": null,
+      "repository": "https://github.com/linebender/simplecss",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "7a9c6883ca9c3c7c90e888de77b7a5c849c779d25d74a1269b0218b14e8b136c"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "siphasher",
       "version": "1.0.3",
       "license": "MIT/Apache-2.0",
@@ -6226,6 +6316,16 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "strict-num",
+      "version": "0.1.1",
+      "license": "MIT",
+      "licenseFile": null,
+      "repository": "https://github.com/RazrFalcon/strict-num",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "6637bab7722d379c8b41ba849228d680cc12d0a45ba1fa2b48f2a30577a06731"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "string_cache",
       "version": "0.9.0",
       "license": "MIT OR Apache-2.0",
@@ -6303,6 +6403,16 @@
       "repository": "https://github.com/zkat/supports-unicode",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "f850c19edd184a205e883199a261ed44471c81e39bd95b1357f5febbef00e77a"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "svgtypes",
+      "version": "0.15.3",
+      "license": "Apache-2.0 OR MIT",
+      "licenseFile": null,
+      "repository": "https://github.com/linebender/svgtypes",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "68c7541fff44b35860c1a7a47a7cadf3e4a304c457b58f9870d9706ece028afc"
     },
     {
       "ecosystem": "cargo",
@@ -6713,6 +6823,26 @@
       "repository": "https://github.com/time-rs/time",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "7e689342a48d2ea927c87ea50cabf8594854bf940e9310208848d680d668ed85"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "tiny-skia",
+      "version": "0.11.4",
+      "license": "BSD-3-Clause",
+      "licenseFile": null,
+      "repository": "https://github.com/RazrFalcon/tiny-skia",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "83d13394d44dae3207b52a326c0c85a8bf87f1541f23b0d143811088497b09ab"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "tiny-skia-path",
+      "version": "0.11.4",
+      "license": "BSD-3-Clause",
+      "licenseFile": null,
+      "repository": "https://github.com/RazrFalcon/tiny-skia/tree/master/path",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "9c9e7fc0c2e86a30b117d0462aa261b72b7a99b7ebd7deb3a14ceda95c5bdc93"
     },
     {
       "ecosystem": "cargo",
@@ -7283,6 +7413,16 @@
       "repository": "https://github.com/denoland/rust-urlpattern",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "70acd30e3aa1450bc2eece896ce2ad0d178e9c079493819301573dae3c37ba6d"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "usvg",
+      "version": "0.45.1",
+      "license": "Apache-2.0 OR MIT",
+      "licenseFile": null,
+      "repository": "https://github.com/linebender/resvg",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "80be9b06fbae3b8b303400ab20778c80bbaf338f563afe567cf3c9eea17b47ef"
     },
     {
       "ecosystem": "cargo",
@@ -8576,6 +8716,16 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "xmlwriter",
+      "version": "0.1.0",
+      "license": "MIT",
+      "licenseFile": null,
+      "repository": "https://github.com/RazrFalcon/xmlwriter",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "ec7a2a501ed189703dba8b08142f057e887dfc4b2cc4db2d343ac6376ba3e0b9"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "y4m",
       "version": "0.8.0",
       "license": "MIT",
@@ -9656,6 +9806,24 @@
       "repository": null,
       "source": "https://registry.npmjs.org/picomatch/-/picomatch-4.0.7.tgz",
       "checksum": "sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA=="
+    },
+    {
+      "ecosystem": "npm",
+      "name": "playwright",
+      "version": "1.63.0",
+      "license": "Apache-2.0",
+      "repository": null,
+      "source": "https://registry.npmjs.org/playwright/-/playwright-1.63.0.tgz",
+      "checksum": "sha512-+7ziBLidS4NaNCdt57SUDT+wYmmd5fmiQejUic/kb+YsYSCPyOOE9sebzMjNmQrsnNpDJqd4WHvV/8lfKfUDUg=="
+    },
+    {
+      "ecosystem": "npm",
+      "name": "playwright-core",
+      "version": "1.63.0",
+      "license": "Apache-2.0",
+      "repository": null,
+      "source": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.63.0.tgz",
+      "checksum": "sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg=="
     },
     {
       "ecosystem": "npm",

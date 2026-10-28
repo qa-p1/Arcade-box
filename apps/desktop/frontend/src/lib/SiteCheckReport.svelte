@@ -42,15 +42,15 @@
 
 <style>
   .site-check { display: grid; gap: 12px; }
-  .verdict { display: flex; align-items: center; gap: 9px; margin: 0; font-size: 15px; font-weight: 600; color: var(--ink); }
+  .verdict { display: flex; align-items: center; gap: 9px; margin: 0; font-size: var(--fs-heading); font-weight: 600; color: var(--ink); }
   .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 4px var(--amber-wash); }
   .verdict.up .dot { background: var(--mint); box-shadow: 0 0 0 4px var(--mint-wash); }
   .verdict.down .dot { background: var(--red); box-shadow: 0 0 0 4px var(--red-wash); }
-  dl { display: grid; grid-template-columns: minmax(96px, max-content) 1fr; gap: 6px 14px; margin: 0; font-size: 12.5px; }
+  dl { display: grid; grid-template-columns: minmax(96px, max-content) 1fr; gap: 6px 14px; margin: 0; font-size: var(--fs-control); }
   dt { color: var(--ink-3); }
   dd { margin: 0; min-width: 0; overflow-wrap: anywhere; color: var(--ink); }
   dd div + div { margin-top: 2px; }
-  code { font-size: 11.5px; color: var(--ink-2); }
+  code { font-size: var(--fs-caption); color: var(--ink-2); }
   .bad { color: var(--red); }
-  .note { margin: 0; font-size: 12px; color: var(--ink-3); }
+  .note { margin: 0; font-size: var(--fs-small); color: var(--ink-3); }
 </style>

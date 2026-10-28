@@ -27,6 +27,7 @@ use std::{
 
 mod compose;
 mod pii;
+mod svg;
 mod target_size;
 
 const MAX_DIMENSION: u32 = 100_000;
@@ -150,12 +151,42 @@ pub fn execute(
     let [input] = request.inputs.as_slice() else {
         return Err(format!("{} needs one selected image", manifest.name));
     };
-    if input.kind != ValueKind::Artifact || input.mime != "file/image" {
+    let svg_source = input.mime == "file/svg" && manifest.id == "arcade.image.convert";
+    if input.kind != ValueKind::Artifact || (input.mime != "file/image" && !svg_source) {
         return Err("Select one image through Arcade Box".into());
     }
     let source = grants
         .resolve(&input.value)
         .map_err(|error| error.to_string())?;
+    // Results are saved beside the file the user chose.
+    let destination = source
+        .parent()
+        .ok_or("Selected image has no parent folder")?
+        .to_path_buf();
+    // An SVG is rendered to a PNG first, at the size asked for (B7); the
+    // workspace lives until the conversion below has finished.
+    let _rendered_svg;
+    let source = if svg_source {
+        let size = request
+            .options
+            .get("svgSize")
+            .and_then(Value::as_u64)
+            .unwrap_or(u64::from(svg::DEFAULT_SIZE));
+        let workspace = tempfile::Builder::new()
+            .prefix(".arcade-svg-")
+            .tempdir_in(runtime.artifact_staging_root())
+            .map_err(|error| format!("Cannot create private image workspace: {error}"))?;
+        let stem = source
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .unwrap_or("image");
+        let png = workspace.path().join(format!("{stem}.png"));
+        svg::rasterize(&source, u32::try_from(size).unwrap_or(u32::MAX), &png)?;
+        _rendered_svg = workspace;
+        png
+    } else {
+        source
+    };
     match manifest.id.as_str() {
         "arcade.image.metadata" => {
             return metadata_tool(manifest, request, &source, grants, cancelled);
@@ -249,6 +280,7 @@ pub fn execute(
         manifest,
         request,
         &source,
+        &destination,
         source_format,
         output_format,
         quality as u32,
@@ -263,6 +295,7 @@ fn execute_with_provider(
     manifest: &ToolManifest,
     request: &ToolRequest,
     source: &Path,
+    destination: &Path,
     source_format: ImageFormat,
     output_format: ImageFormat,
     quality: u32,
@@ -270,12 +303,10 @@ fn execute_with_provider(
     grants: &FileGrants,
     cancelled: &AtomicBool,
 ) -> Result<ToolResult, String> {
-    let parent = source
-        .parent()
-        .ok_or("Selected image has no parent folder")?;
+    // Work beside the destination so publishing is a same-folder rename.
     let temp = tempfile::Builder::new()
         .prefix(".arcade-image-")
-        .tempdir_in(parent)
+        .tempdir_in(destination)
         .map_err(|error| format!("Cannot create private image workspace: {error}"))?;
     let local_input = temp
         .path()
@@ -543,7 +574,7 @@ fn execute_with_provider(
             output_format.extension()
         ));
     }
-    let final_path = publish_without_overwrite(&local_output, parent, output_name, cancelled)
+    let final_path = publish_without_overwrite(&local_output, destination, output_name, cancelled)
         .map_err(|error| format!("Cannot save image: {error}"))?;
     let selected = grants
         .grant(&final_path)
@@ -1103,7 +1134,6 @@ fn compare_images(
         .collect::<Result<Vec<_>, _>>()?;
     let provider = image_provider(&[
         "image:operation:subtract",
-        "image:operation:add",
         "image:operation:abs",
         "image:operation:avg",
         "image:operation:max",
@@ -1131,14 +1161,35 @@ fn compare_images(
     if left_dimensions != right_dimensions {
         return Err("Images must have the same dimensions for pixel-difference statistics".into());
     }
-    let bands = image_bands(&provider.executable_path, &first, cancelled)?;
-    if bands != image_bands(&provider.executable_path, &second, cancelled)? {
-        return Err("Images must have the same number of color/alpha channels for pixel-difference statistics".into());
-    }
-    let first_minus = temp.path().join("left-minus-right.v");
-    let second_minus = temp.path().join("right-minus-left.v");
-    let first_abs = temp.path().join("left-absolute.v");
-    let second_abs = temp.path().join("right-absolute.v");
+    let left_bands = image_bands(&provider.executable_path, &first, cancelled)?;
+    let right_bands = image_bands(&provider.executable_path, &second, cancelled)?;
+    // A PNG with transparency against its JPEG copy is the usual case: compare
+    // both as flat sRGB when their channels differ.
+    let (first, second, bands) = if left_bands == right_bands {
+        (first, second, left_bands)
+    } else {
+        (
+            flat_srgb(
+                &provider,
+                &first,
+                left_bands,
+                "left",
+                temp.path(),
+                cancelled,
+            )?,
+            flat_srgb(
+                &provider,
+                &second,
+                right_bands,
+                "right",
+                temp.path(),
+                cancelled,
+            )?,
+            3,
+        )
+    };
+    // |left - right| per channel; vips subtract keeps the sign.
+    let signed = temp.path().join("left-minus-right.v");
     let difference = temp.path().join("difference.v");
     run_vips(
         &provider,
@@ -1146,19 +1197,7 @@ fn compare_images(
             "subtract".into(),
             first.as_os_str().to_os_string(),
             second.as_os_str().to_os_string(),
-            first_minus.as_os_str().to_os_string(),
-        ],
-        temp.path(),
-        cancelled,
-        "compare image pixels",
-    )?;
-    run_vips(
-        &provider,
-        vec![
-            "subtract".into(),
-            second.as_os_str().to_os_string(),
-            first.as_os_str().to_os_string(),
-            second_minus.as_os_str().to_os_string(),
+            signed.as_os_str().to_os_string(),
         ],
         temp.path(),
         cancelled,
@@ -1168,35 +1207,12 @@ fn compare_images(
         &provider,
         vec![
             "abs".into(),
-            first_minus.as_os_str().to_os_string(),
-            first_abs.as_os_str().to_os_string(),
-        ],
-        temp.path(),
-        cancelled,
-        "calculate absolute image differences",
-    )?;
-    run_vips(
-        &provider,
-        vec![
-            "abs".into(),
-            second_minus.as_os_str().to_os_string(),
-            second_abs.as_os_str().to_os_string(),
-        ],
-        temp.path(),
-        cancelled,
-        "calculate absolute image differences",
-    )?;
-    run_vips(
-        &provider,
-        vec![
-            "add".into(),
-            first_abs.as_os_str().to_os_string(),
-            second_abs.as_os_str().to_os_string(),
+            signed.as_os_str().to_os_string(),
             difference.as_os_str().to_os_string(),
         ],
         temp.path(),
         cancelled,
-        "combine pixel differences",
+        "calculate absolute image differences",
     )?;
     let average = scalar_vips(&provider, "avg", &difference, temp.path(), cancelled)?;
     let maximum = scalar_vips(&provider, "max", &difference, temp.path(), cancelled)?;
@@ -1215,6 +1231,49 @@ fn compare_images(
         warnings: vec!["The current form returns difference statistics only; side-by-side, overlay, slider, and diff-image previews remain pending.".into()],
         metadata: Default::default(),
     })
+}
+
+/// `input` as three-band sRGB: alpha flattened onto white, grey expanded.
+fn flat_srgb(
+    provider: &ProviderInfo,
+    input: &Path,
+    bands: u32,
+    name: &str,
+    temp: &Path,
+    cancelled: &AtomicBool,
+) -> Result<std::path::PathBuf, String> {
+    let mut current = input.to_path_buf();
+    if bands == 2 || bands == 4 {
+        let flat = temp.join(format!("{name}-flat.v"));
+        run_vips(
+            provider,
+            vec![
+                "flatten".into(),
+                current.as_os_str().to_os_string(),
+                flat.as_os_str().to_os_string(),
+                "--background".into(),
+                "255".into(),
+            ],
+            temp,
+            cancelled,
+            "flatten image transparency",
+        )?;
+        current = flat;
+    }
+    let srgb = temp.join(format!("{name}-srgb.v"));
+    run_vips(
+        provider,
+        vec![
+            "colourspace".into(),
+            current.as_os_str().to_os_string(),
+            srgb.as_os_str().to_os_string(),
+            "srgb".into(),
+        ],
+        temp,
+        cancelled,
+        "convert the image to sRGB",
+    )?;
+    Ok(srgb)
 }
 
 fn image_bands(vips: &Path, input: &Path, cancelled: &AtomicBool) -> Result<u32, String> {
@@ -1661,14 +1720,7 @@ fn image_ocr(
         .get("language")
         .and_then(Value::as_str)
         .unwrap_or("eng");
-    if language.is_empty()
-        || language.len() > 64
-        || !language
-            .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || byte == b'_')
-    {
-        return Err("Choose a valid OCR language code".into());
-    }
+    let codes = crate::provider::ocr_language_codes(language)?;
     let choice = request
         .options
         .get("provider")
@@ -1687,11 +1739,7 @@ fn image_ocr(
     let provider = crate::provider::discover_tesseract()
         .into_iter()
         .find(|provider| {
-            provider.compatible
-                && provider
-                    .capabilities
-                    .iter()
-                    .any(|cap| cap == &format!("ocr:language:{language}"))
+            provider.compatible && crate::provider::has_ocr_languages(provider, &codes)
         });
     let provider = match provider {
         Some(provider) => provider,
@@ -1701,9 +1749,11 @@ fn image_ocr(
             );
         }
         None => {
-            return Err(format!(
-                "No compatible local Tesseract provider has the {language} language pack installed"
-            ));
+            return Err(
+                crate::provider::missing_ocr_language(&codes).unwrap_or_else(|| {
+                    "Text recognition needs Tesseract. Add it in Arcade Tools › Engines.".into()
+                }),
+            );
         }
     };
     let format = ImageFormat::from_file(source)?;
@@ -1921,6 +1971,119 @@ fn concise(stderr: &str) -> String {
 mod tests {
     use super::*;
     use arcade_contract::ToolRequest;
+
+    #[test]
+    fn svg_files_convert_to_a_png_beside_them() {
+        // B7: 0.3.5 refused file/svg. Skips without libvips, like the test below.
+        if !discover_vips(None)
+            .iter()
+            .any(|provider| provider.compatible)
+        {
+            return;
+        }
+        let temp = tempfile::tempdir().unwrap();
+        let source = temp.path().join("icon.svg");
+        fs::write(
+            &source,
+            r##"<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><circle cx="64" cy="64" r="40" fill="#00aaee"/></svg>"##,
+        )
+        .unwrap();
+        let runtime = crate::Arcade::in_memory().unwrap();
+        let selected = runtime.grants().grant(&source).unwrap();
+        assert_eq!(selected.mime, "file/svg");
+        let converted = runtime
+            .run_tool(ToolRequest {
+                tool_id: "arcade.image.convert".into(),
+                inputs: vec![selected.as_tool_value()],
+                options: json!({"format": "png"}),
+            })
+            .unwrap();
+        assert_eq!(
+            converted.status,
+            ResultStatus::Success,
+            "{:?}",
+            converted.message
+        );
+        let path = runtime
+            .grants()
+            .resolve(&converted.outputs[0].value)
+            .unwrap();
+        assert_eq!(path, temp.path().join("icon-converted.png"));
+        let image = ::image::open(&path).unwrap().to_rgba8();
+        assert_eq!(image.dimensions(), (svg::DEFAULT_SIZE, svg::DEFAULT_SIZE));
+        assert_eq!(image.get_pixel(0, 0)[3], 0, "transparency is kept");
+    }
+
+    #[test]
+    fn compare_matches_a_transparent_png_against_its_jpeg() {
+        // 0.3.5 refused this pair: "same number of color/alpha channels".
+        let Some(provider) = discover_vips(None)
+            .into_iter()
+            .find(|provider| provider.compatible)
+        else {
+            return;
+        };
+        let temp = tempfile::tempdir().unwrap();
+        let svg = temp.path().join("art.svg");
+        fs::write(
+            &svg,
+            r##"<svg xmlns="http://www.w3.org/2000/svg" width="64" height="48"><circle cx="32" cy="24" r="18" fill="#00aaee"/></svg>"##,
+        )
+        .unwrap();
+        let png = temp.path().join("art.png");
+        let jpg = temp.path().join("art.jpg");
+        for args in [
+            vec![
+                OsString::from("copy"),
+                svg.clone().into(),
+                png.clone().into(),
+            ],
+            vec![
+                OsString::from("flatten"),
+                svg.clone().into(),
+                jpg.clone().into(),
+                "--background".into(),
+                "255".into(),
+            ],
+        ] {
+            run_vips(
+                &provider,
+                args,
+                temp.path(),
+                &AtomicBool::new(false),
+                "make fixtures",
+            )
+            .unwrap();
+        }
+        let runtime = crate::Arcade::in_memory().unwrap();
+        let inputs = [&png, &jpg]
+            .map(|path| runtime.grants().grant(path).unwrap().as_tool_value())
+            .to_vec();
+        let compared = runtime
+            .run_tool(ToolRequest {
+                tool_id: "arcade.image.compare".into(),
+                inputs,
+                options: json!({}),
+            })
+            .unwrap();
+        assert_eq!(
+            compared.status,
+            ResultStatus::Success,
+            "{:?}",
+            compared.message
+        );
+        let data: Value = serde_json::from_str(&compared.outputs[0].value).unwrap();
+        assert_eq!(data["bands"], 3);
+        assert!(
+            data["meanAbsoluteDifference"].as_f64().unwrap() < 6.0,
+            "{data}"
+        );
+        // 0.3.5 added |a-b| and |b-a|, so 8-bit differences reached 510.
+        assert!(
+            data["maximumChannelDifference"].as_f64().unwrap() <= 255.0,
+            "{data}"
+        );
+    }
 
     #[test]
     fn installed_vips_converts_and_resizes_real_images() {

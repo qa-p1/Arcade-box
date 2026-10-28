@@ -58,7 +58,8 @@ def main() -> int:
     require_success(cargo, "cargo build -p arcadebox")
 
     binary_name = "arcadebox.exe" if os.name == "nt" else "arcadebox"
-    binary = ROOT / "target" / "debug" / binary_name
+    # Cargo builds into CARGO_TARGET_DIR when it is set.
+    binary = Path(os.environ.get("CARGO_TARGET_DIR") or ROOT / "target") / "debug" / binary_name
     require(binary.is_file(), f"built CLI not found at {binary}")
 
     with tempfile.TemporaryDirectory(prefix="arcadebox-smoke-") as temporary:

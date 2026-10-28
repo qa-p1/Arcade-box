@@ -65,10 +65,10 @@
   .text-preview { margin: 0; max-height: 340px; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; font: 13px/1.65 ui-monospace, monospace; tab-size: 2; }
   .output-actions { display: flex; justify-content: flex-end; margin-top: 12px; }
   .raw { margin-top: 12px; }
-  summary { color: var(--muted); cursor: pointer; font-size: 12px; padding: 6px 0; }
-  .preview-note { font-size: 12px; color: var(--muted); }
+  summary { color: var(--muted); cursor: pointer; font-size: var(--fs-small); padding: 6px 0; }
+  .preview-note { font-size: var(--fs-small); color: var(--muted); }
   .palette { display: grid; grid-template-columns: repeat(auto-fit, minmax(85px, 1fr)); gap: 10px; }
   .palette button { display: grid; gap: 8px; padding: 0 0 8px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface-raised); cursor: pointer; }
   .palette span { height: 64px; }
-  code { font-size: 12px; }
+  code { font-size: var(--fs-small); }
 </style>

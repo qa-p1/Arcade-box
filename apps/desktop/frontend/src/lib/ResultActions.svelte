@@ -46,11 +46,11 @@
 {/if}
 
 <style>
-  .arcade-result-actions { padding: 12px 14px; border-top: 1px solid var(--line); font-size: 12px; }
+  .arcade-result-actions { padding: 12px 14px; border-top: 1px solid var(--line); font-size: var(--fs-small); }
   .actions-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .actions-row button { display: flex; align-items: center; gap: 7px; }
   .wheel-preset { display: flex; align-items: center; gap: 8px; margin-top: 10px; color: var(--muted); }
-  select { max-width: 240px; font-size: 12px; }
+  select { max-width: 240px; font-size: var(--fs-small); }
   .action-reason { color: var(--muted); margin: 8px 0 0; }
   .send-preview { border: 1px solid var(--line); padding: 12px; border-radius: 12px; margin-top: 10px; }
   .send-preview p { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 120px; overflow: auto; }

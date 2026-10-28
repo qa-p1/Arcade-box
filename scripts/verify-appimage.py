@@ -121,7 +121,8 @@ def main():
         assert desktop.is_file(), "Repair did not restore the launcher"
         status = json.loads(run(installed, "--integration-status"))
         assert all(entry["exists"] for entry in status["entries"]), status
-        app_home = Path(env["XDG_DATA_HOME"]) / "dev.arcadebox.app"
+        # Box's data folder (arcade_core::dirs): Link's layout under ARCADE_HOME.
+        app_home = install_home / ".local/share/arcade/box"
         app_home.mkdir(parents=True, exist_ok=True)
         sentinel = app_home / "keep-user-data.txt"
         sentinel.write_text("preserve", encoding="utf-8")
