@@ -191,32 +191,32 @@
   .clipboard-history-view { display:grid; gap:12px; }
   .clipboard-history-head { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 11px; border:1px solid var(--border-subtle); border-radius:10px; background:var(--panel-subtle); }
   .clipboard-history-head > div { display:grid; gap:3px; }
-  .clipboard-history-head strong { font-size:12px; }
-  .clipboard-history-head span { color:var(--text-muted); font-size:10px; }
-  .clipboard-toggle { display:inline-flex; align-items:center; gap:6px; min-height:31px; padding:0 10px; border:1px solid var(--border-subtle); border-radius:8px; background:transparent; color:var(--text-secondary); font:inherit; font-size:10px; cursor:pointer; }
-  .clipboard-toggle-on { border-color:rgba(141,119,209,.45); background:rgba(141,119,209,.12); color:var(--text-primary); }
+  .clipboard-history-head strong { font-size: var(--fs-small); }
+  .clipboard-history-head span { color:var(--text-muted); font-size: var(--fs-caption); }
+  .clipboard-toggle { display:inline-flex; align-items:center; gap:6px; min-height:31px; padding:0 10px; border:1px solid var(--border-subtle); border-radius:8px; background:transparent; color:var(--text-secondary); font:inherit; font-size: var(--fs-caption); cursor:pointer; }
+  .clipboard-toggle-on { border-color: var(--accent-soft); background: var(--accent-soft); color:var(--text-primary); }
   .clipboard-history-settings { display:grid; grid-template-columns:1fr auto; align-items:center; gap:7px 9px; }
-  .clipboard-history-settings label { color:var(--text-muted); font-size:10px; }
-  .clipboard-history-settings input { grid-column:1 / -1; width:100%; min-height:34px; padding:7px 9px; border:1px solid var(--border-subtle); border-radius:8px; background:var(--panel-subtle); color:var(--text-primary); font:inherit; font-size:11px; }
-  .clipboard-history-settings select { min-width:90px; min-height:30px; border:1px solid var(--border-subtle); border-radius:7px; background:var(--panel-subtle); color:var(--text-primary); font:inherit; font-size:10px; }
+  .clipboard-history-settings label { color:var(--text-muted); font-size: var(--fs-caption); }
+  .clipboard-history-settings input { grid-column:1 / -1; width:100%; min-height:34px; padding:7px 9px; border:1px solid var(--border-subtle); border-radius:8px; background:var(--panel-subtle); color:var(--text-primary); font:inherit; font-size: var(--fs-caption); }
+  .clipboard-history-settings select { min-width:90px; min-height:30px; border:1px solid var(--border-subtle); border-radius:7px; background:var(--panel-subtle); color:var(--text-primary); font:inherit; font-size: var(--fs-caption); }
   .clipboard-clear { grid-column:1 / -1; justify-self:start; }
   .clipboard-exclusion-settings { display:grid; gap:7px; padding:8px 9px; border:1px solid var(--border-subtle); border-radius:9px; }
-  .clipboard-exclusion-settings summary { color:var(--text-secondary); font-size:10px; cursor:pointer; }
-  .clipboard-exclusion-settings label, .clipboard-exclusion-settings small { color:var(--text-muted); font-size:9px; }
-  .clipboard-exclusion-settings textarea { min-height:48px; padding:7px; border:1px solid var(--border-subtle); border-radius:7px; background:var(--panel-subtle); color:var(--text-primary); font:inherit; font-size:10px; resize:vertical; }
-  .clipboard-feedback { margin:0; color:var(--text-muted); font-size:10px; }
+  .clipboard-exclusion-settings summary { color:var(--text-secondary); font-size: var(--fs-caption); cursor:pointer; }
+  .clipboard-exclusion-settings label, .clipboard-exclusion-settings small { color:var(--text-muted); font-size: var(--fs-caption); }
+  .clipboard-exclusion-settings textarea { min-height:48px; padding:7px; border:1px solid var(--border-subtle); border-radius:7px; background:var(--panel-subtle); color:var(--text-primary); font:inherit; font-size: var(--fs-caption); resize:vertical; }
+  .clipboard-feedback { margin:0; color:var(--text-muted); font-size: var(--fs-caption); }
   .clipboard-history-empty { display:grid; justify-items:center; gap:5px; padding:22px 14px; border:1px dashed var(--border-subtle); border-radius:10px; color:var(--text-muted); text-align:center; }
-  .clipboard-history-empty strong { color:var(--text-primary); font-size:11px; }
-  .clipboard-history-empty span { max-width:380px; font-size:10px; line-height:1.5; }
+  .clipboard-history-empty strong { color:var(--text-primary); font-size: var(--fs-caption); }
+  .clipboard-history-empty span { max-width:380px; font-size: var(--fs-caption); line-height:1.5; }
   .clipboard-history-items { display:grid; gap:8px; max-height:330px; overflow:auto; }
   .clipboard-history-item { display:grid; gap:7px; padding:9px; border:1px solid var(--border-subtle); border-radius:9px; background:var(--panel-subtle); }
-  .clipboard-history-item > header { display:flex; justify-content:space-between; align-items:center; color:var(--text-muted); font-size:9px; }
+  .clipboard-history-item > header { display:flex; justify-content:space-between; align-items:center; color:var(--text-muted); font-size: var(--fs-caption); }
   .clipboard-kind { display:inline-flex; align-items:center; gap:5px; text-transform:uppercase; letter-spacing:.05em; }
-  .clipboard-text-content summary { overflow:hidden; color:var(--text-primary); font-size:10px; text-overflow:ellipsis; white-space:nowrap; cursor:pointer; }
+  .clipboard-text-content summary { overflow:hidden; color:var(--text-primary); font-size: var(--fs-caption); text-overflow:ellipsis; white-space:nowrap; cursor:pointer; }
   .clipboard-text-content pre { max-height:160px; margin:7px 0 0; overflow:auto; white-space:pre-wrap; overflow-wrap:anywhere; color:var(--text-secondary); font:10px/1.5 ui-monospace,monospace; }
-  .clipboard-text-preview { overflow:hidden; color:var(--text-primary); font-size:10px; text-overflow:ellipsis; }
-  .clipboard-source { color:var(--text-muted); font-size:9px; }
+  .clipboard-text-preview { overflow:hidden; color:var(--text-primary); font-size: var(--fs-caption); text-overflow:ellipsis; }
+  .clipboard-source { color:var(--text-muted); font-size: var(--fs-caption); }
   .clipboard-item-actions { display:flex; flex-wrap:wrap; gap:3px; }
-  .clipboard-item-actions button { min-height:27px; padding:0 7px; font-size:9px; }
+  .clipboard-item-actions button { min-height:27px; padding:0 7px; font-size: var(--fs-caption); }
   @media (max-width:560px) { .clipboard-history-head { align-items:flex-start; flex-direction:column; } }
 </style>

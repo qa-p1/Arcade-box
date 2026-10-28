@@ -594,5 +594,5 @@ import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem, 
 <style>
   .pipeline-editor-heading h2 { color: var(--ink); }
   .pipeline-name-field > label { color: var(--ink-2); }
-  .peer-stage { display: flex; align-items: center; gap: 7px; margin-top: 7px; font-size: 12px; color: var(--ink); }
+  .peer-stage { display: flex; align-items: center; gap: 7px; margin-top: 7px; font-size: var(--fs-small); color: var(--ink); }
 </style>

@@ -87,13 +87,25 @@ fn stage_inputs(
         .iter()
         .enumerate()
         .map(|(index, input)| {
-            if input.kind != ValueKind::Artifact || input.mime != "file/image" {
+            // The core only lets SVG reach tools that declare `file/svg`.
+            if input.kind != ValueKind::Artifact
+                || !matches!(input.mime.as_str(), "file/image" | "file/svg")
+            {
                 return Err("Select images through Arcade Box".to_owned());
             }
             let source = runtime
                 .grants()
                 .resolve(&input.value)
                 .map_err(|error| error.to_string())?;
+            if input.mime == "file/svg" {
+                let name = format!("in-{index}.png");
+                super::svg::rasterize(&source, super::svg::ICON_SIZE, &dir.join(&name))?;
+                return Ok(Input {
+                    name,
+                    format: ImageFormat::Png,
+                    stem: safe_stem(&source),
+                });
+            }
             let format = ImageFormat::from_file(&source)?;
             let name = format!("in-{index}.{}", format.extension());
             link_or_copy(&source, &dir.join(&name), cancelled)?;
@@ -648,6 +660,37 @@ fn passport(context: &Context, inputs: &[Input]) -> Result<ToolResult, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn svg_inputs_are_staged_as_large_pngs() {
+        // B7: Favicon builds every size from this 1024 px base.
+        let temp = tempfile::tempdir().unwrap();
+        let source = temp.path().join("logo.svg");
+        std::fs::write(
+            &source,
+            r#"<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect x="16" y="16" width="32" height="32"/></svg>"#,
+        )
+        .unwrap();
+        let runtime = Arcade::in_memory().unwrap();
+        let selected = runtime.grants().grant(&source).unwrap();
+        let request = ToolRequest {
+            tool_id: "arcade.image.favicon".into(),
+            inputs: vec![selected.as_tool_value()],
+            options: serde_json::json!({}),
+        };
+        let dir = temp.path().join("work");
+        std::fs::create_dir(&dir).unwrap();
+        let inputs = stage_inputs(&request, &runtime, &dir, &AtomicBool::new(false)).unwrap();
+        assert_eq!(inputs[0].name, "in-0.png");
+        assert_eq!(inputs[0].stem, "logo");
+        let base = ::image::open(dir.join("in-0.png")).unwrap().to_rgba8();
+        assert_eq!(
+            base.dimensions(),
+            (super::super::svg::ICON_SIZE, super::super::svg::ICON_SIZE)
+        );
+        assert_eq!(base.get_pixel(0, 0)[3], 0);
+        assert_eq!(base.get_pixel(512, 512)[3], 255);
+    }
 
     #[test]
     fn passport_presets_map_to_300_dpi_pixels() {

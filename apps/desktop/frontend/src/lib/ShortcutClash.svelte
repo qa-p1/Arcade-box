@@ -21,5 +21,5 @@
 {#if owner}<p class="shortcut-clash" role="status">Used by {owner}</p>{/if}
 
 <style>
-  .shortcut-clash { color: var(--muted); font-size: 12px; margin: 8px 0; }
+  .shortcut-clash { color: var(--muted); font-size: var(--fs-small); margin: 8px 0; }
 </style>

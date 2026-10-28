@@ -27,6 +27,7 @@ use std::{
 
 mod compose;
 mod pii;
+mod svg;
 mod target_size;
 
 const MAX_DIMENSION: u32 = 100_000;
@@ -150,12 +151,42 @@ pub fn execute(
     let [input] = request.inputs.as_slice() else {
         return Err(format!("{} needs one selected image", manifest.name));
     };
-    if input.kind != ValueKind::Artifact || input.mime != "file/image" {
+    let svg_source = input.mime == "file/svg" && manifest.id == "arcade.image.convert";
+    if input.kind != ValueKind::Artifact || (input.mime != "file/image" && !svg_source) {
         return Err("Select one image through Arcade Box".into());
     }
     let source = grants
         .resolve(&input.value)
         .map_err(|error| error.to_string())?;
+    // Results are saved beside the file the user chose.
+    let destination = source
+        .parent()
+        .ok_or("Selected image has no parent folder")?
+        .to_path_buf();
+    // An SVG is rendered to a PNG first, at the size asked for (B7); the
+    // workspace lives until the conversion below has finished.
+    let _rendered_svg;
+    let source = if svg_source {
+        let size = request
+            .options
+            .get("svgSize")
+            .and_then(Value::as_u64)
+            .unwrap_or(u64::from(svg::DEFAULT_SIZE));
+        let workspace = tempfile::Builder::new()
+            .prefix(".arcade-svg-")
+            .tempdir_in(runtime.artifact_staging_root())
+            .map_err(|error| format!("Cannot create private image workspace: {error}"))?;
+        let stem = source
+            .file_stem()
+            .and_then(|stem| stem.to_str())
+            .unwrap_or("image");
+        let png = workspace.path().join(format!("{stem}.png"));
+        svg::rasterize(&source, u32::try_from(size).unwrap_or(u32::MAX), &png)?;
+        _rendered_svg = workspace;
+        png
+    } else {
+        source
+    };
     match manifest.id.as_str() {
         "arcade.image.metadata" => {
             return metadata_tool(manifest, request, &source, grants, cancelled);
@@ -249,6 +280,7 @@ pub fn execute(
         manifest,
         request,
         &source,
+        &destination,
         source_format,
         output_format,
         quality as u32,
@@ -263,6 +295,7 @@ fn execute_with_provider(
     manifest: &ToolManifest,
     request: &ToolRequest,
     source: &Path,
+    destination: &Path,
     source_format: ImageFormat,
     output_format: ImageFormat,
     quality: u32,
@@ -270,12 +303,10 @@ fn execute_with_provider(
     grants: &FileGrants,
     cancelled: &AtomicBool,
 ) -> Result<ToolResult, String> {
-    let parent = source
-        .parent()
-        .ok_or("Selected image has no parent folder")?;
+    // Work beside the destination so publishing is a same-folder rename.
     let temp = tempfile::Builder::new()
         .prefix(".arcade-image-")
-        .tempdir_in(parent)
+        .tempdir_in(destination)
         .map_err(|error| format!("Cannot create private image workspace: {error}"))?;
     let local_input = temp
         .path()
@@ -543,7 +574,7 @@ fn execute_with_provider(
             output_format.extension()
         ));
     }
-    let final_path = publish_without_overwrite(&local_output, parent, output_name, cancelled)
+    let final_path = publish_without_overwrite(&local_output, destination, output_name, cancelled)
         .map_err(|error| format!("Cannot save image: {error}"))?;
     let selected = grants
         .grant(&final_path)
@@ -1661,14 +1692,7 @@ fn image_ocr(
         .get("language")
         .and_then(Value::as_str)
         .unwrap_or("eng");
-    if language.is_empty()
-        || language.len() > 64
-        || !language
-            .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || byte == b'_')
-    {
-        return Err("Choose a valid OCR language code".into());
-    }
+    let codes = crate::provider::ocr_language_codes(language)?;
     let choice = request
         .options
         .get("provider")
@@ -1687,11 +1711,7 @@ fn image_ocr(
     let provider = crate::provider::discover_tesseract()
         .into_iter()
         .find(|provider| {
-            provider.compatible
-                && provider
-                    .capabilities
-                    .iter()
-                    .any(|cap| cap == &format!("ocr:language:{language}"))
+            provider.compatible && crate::provider::has_ocr_languages(provider, &codes)
         });
     let provider = match provider {
         Some(provider) => provider,
@@ -1701,9 +1721,11 @@ fn image_ocr(
             );
         }
         None => {
-            return Err(format!(
-                "No compatible local Tesseract provider has the {language} language pack installed"
-            ));
+            return Err(
+                crate::provider::missing_ocr_language(&codes).unwrap_or_else(|| {
+                    "Text recognition needs Tesseract. Add it in Arcade Tools › Engines.".into()
+                }),
+            );
         }
     };
     let format = ImageFormat::from_file(source)?;
@@ -1921,6 +1943,48 @@ fn concise(stderr: &str) -> String {
 mod tests {
     use super::*;
     use arcade_contract::ToolRequest;
+
+    #[test]
+    fn svg_files_convert_to_a_png_beside_them() {
+        // B7: 0.3.5 refused file/svg. Skips without libvips, like the test below.
+        if !discover_vips(None)
+            .iter()
+            .any(|provider| provider.compatible)
+        {
+            return;
+        }
+        let temp = tempfile::tempdir().unwrap();
+        let source = temp.path().join("icon.svg");
+        fs::write(
+            &source,
+            r##"<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128"><circle cx="64" cy="64" r="40" fill="#00aaee"/></svg>"##,
+        )
+        .unwrap();
+        let runtime = crate::Arcade::in_memory().unwrap();
+        let selected = runtime.grants().grant(&source).unwrap();
+        assert_eq!(selected.mime, "file/svg");
+        let converted = runtime
+            .run_tool(ToolRequest {
+                tool_id: "arcade.image.convert".into(),
+                inputs: vec![selected.as_tool_value()],
+                options: json!({"format": "png"}),
+            })
+            .unwrap();
+        assert_eq!(
+            converted.status,
+            ResultStatus::Success,
+            "{:?}",
+            converted.message
+        );
+        let path = runtime
+            .grants()
+            .resolve(&converted.outputs[0].value)
+            .unwrap();
+        assert_eq!(path, temp.path().join("icon-converted.png"));
+        let image = ::image::open(&path).unwrap().to_rgba8();
+        assert_eq!(image.dimensions(), (svg::DEFAULT_SIZE, svg::DEFAULT_SIZE));
+        assert_eq!(image.get_pixel(0, 0)[3], 0, "transparency is kept");
+    }
 
     #[test]
     fn installed_vips_converts_and_resizes_real_images() {

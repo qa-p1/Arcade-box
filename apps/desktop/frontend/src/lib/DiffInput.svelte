@@ -12,7 +12,7 @@
 
 <style>
   .diff-inputs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 14px; }
-  label { display: grid; gap: 8px; min-width: 0; font-size: 13px; color: var(--muted); }
+  label { display: grid; gap: 8px; min-width: 0; font-size: var(--fs-body); color: var(--muted); }
   .base { grid-column: 1 / -1; }
   textarea { width: 100%; min-width: 0; min-height: 140px; max-height: 260px; resize: vertical; border: 1px solid var(--line); border-radius: 8px; padding: 10px; background: var(--surface); color: var(--ink); font: 13px/1.6 ui-monospace, monospace; }
   .base textarea { min-height: 85px; }

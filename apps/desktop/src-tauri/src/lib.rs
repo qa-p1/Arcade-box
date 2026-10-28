@@ -34,6 +34,7 @@ mod open_url;
 mod paste_plain;
 mod portable_settings;
 mod screen_capture;
+mod shortcut_syntax;
 #[cfg(target_os = "linux")]
 mod wayland_shortcut;
 mod window_pin;
@@ -171,20 +172,15 @@ fn set_shortcut(
     app: tauri::AppHandle,
     runtime: tauri::State<'_, Arc<Arcade>>,
 ) -> Result<serde_json::Value, String> {
-    let trigger = arcade_link::accelerator::normalize(&trigger).map_err(|e| e.to_string())?;
+    let trigger = shortcut_syntax::canonical_trigger(&trigger)?;
     let _change = link::settings_change_lock();
     let previous = runtime
         .storage()
         .setting("global_shortcut")
         .ok()
         .flatten()
-        .unwrap_or_else(|| {
-            if cfg!(target_os = "macos") {
-                "Super+Shift+Space".into()
-            } else {
-                "Ctrl+Alt+Space".into()
-            }
-        });
+        .and_then(|saved| shortcut_syntax::canonical_trigger(&saved).ok())
+        .unwrap_or_else(|| shortcut_syntax::DEFAULT.into());
     let result = apply_shortcut_on_ui(&app, &trigger)?;
     if let Err(error) = runtime.storage().set_setting("global_shortcut", &trigger) {
         let _ = apply_shortcut_on_ui(&app, &previous);
@@ -200,21 +196,6 @@ fn set_shortcut(
     let _ = app.emit("arcade://shortcut-status", status.clone());
     let _ = result;
     Ok(status)
-}
-
-#[cfg(target_os = "linux")]
-fn portal_accelerator(canonical: &str) -> String {
-    canonical
-        .split('+')
-        .map(|part| match part {
-            "Ctrl" => "CTRL".into(),
-            "Alt" => "ALT".into(),
-            "Shift" => "SHIFT".into(),
-            "Super" => "LOGO".into(),
-            key => key.to_ascii_lowercase(),
-        })
-        .collect::<Vec<_>>()
-        .join("+")
 }
 
 fn manual_shortcut(hint: String) -> arcade_link::app::ShortcutSetResult {
@@ -236,7 +217,15 @@ fn apply_shortcut_on_ui(
                 "Bind `arcade-desktop --toggle` in your desktop's keyboard settings; this portal accepts one chord.",
             )));
         }
-        controller.set_preferred_trigger(portal_accelerator(canonical))?;
+        let trigger = match shortcut_syntax::xdg_trigger(canonical) {
+            Ok(trigger) => trigger,
+            Err(error) => {
+                return Ok(manual_shortcut(format!(
+                    "{error}. Bind `arcade-desktop --toggle` in your desktop's keyboard settings."
+                )));
+            }
+        };
+        controller.set_preferred_trigger(trigger)?;
         return Ok(arcade_link::app::ShortcutSetResult {
             applied: true,
             via: arcade_link::app::ShortcutVia::Portal,
@@ -1955,7 +1944,32 @@ pub fn run(args: Vec<String>) {
                     .map_err(std::io::Error::other)?;
             app.manage(clipboard_history.clone());
             clipboard_history.start_monitor(app.handle().clone());
-            let saved_shortcut = runtime.storage().setting("global_shortcut")?;
+            // Normalise on load: builds before 0.4.0 could save the portal's
+            // `CTRL+ALT+space` spelling, which the native path can't parse.
+            let saved_shortcut = runtime
+                .storage()
+                .setting("global_shortcut")?
+                .and_then(|saved| match shortcut_syntax::canonical_trigger(&saved) {
+                    Ok(canonical) => {
+                        if canonical != saved {
+                            let _ = runtime.storage().set_setting("global_shortcut", &canonical);
+                        }
+                        Some(canonical)
+                    }
+                    Err(error) => {
+                        eprintln!("Arcade Box ignores the saved shortcut {saved:?}: {error}");
+                        None
+                    }
+                });
+            // Existing macOS users keep 0.3's default (⇧⌘Space): it was never
+            // saved, so record it once; new installs get ⌃⌥Space.
+            #[cfg(target_os = "macos")]
+            let saved_shortcut = saved_shortcut.or_else(|| {
+                runtime.storage().setting("onboarding_complete").ok().flatten()?;
+                let previous = shortcut_syntax::MACOS_PREVIOUS_DEFAULT;
+                let _ = runtime.storage().set_setting("global_shortcut", previous);
+                Some(previous.into())
+            });
             let event_app = app.handle().clone();
             let jobs = JobManager::new(
                 runtime.clone(),
@@ -1989,14 +2003,16 @@ pub fn run(args: Vec<String>) {
             }
             // The Island's WebView is not created here: `island_window` builds
             // it on the first UI request, so a background start costs no WebView.
-            let default_shortcut = if cfg!(target_os = "macos") {
-                Shortcut::new(Some(Modifiers::SUPER | Modifiers::SHIFT), Code::Space)
-            } else {
-                Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::Space)
-            };
+            let default_shortcut = Shortcut::new(Some(Modifiers::CONTROL | Modifiers::ALT), Code::Space);
             #[cfg(target_os = "linux")]
             if wayland_shortcut::is_wayland_session() {
-                let preferred = saved_shortcut.unwrap_or_else(|| "CTRL+ALT+space".into());
+                let preferred = saved_shortcut
+                    .as_deref()
+                    .and_then(|saved| shortcut_syntax::xdg_trigger(saved).ok())
+                    .unwrap_or_else(|| {
+                        shortcut_syntax::xdg_trigger(shortcut_syntax::DEFAULT)
+                            .expect("the default shortcut has a portal spelling")
+                    });
                 let controller = wayland_shortcut::start(
                     app.handle().clone(),
                     preferred,

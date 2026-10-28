@@ -482,8 +482,8 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
     return status?.triggerDescription || status?.trigger_description || '';
   }
 
+  // STANDARD §10: the same chord on every OS (⌃⌥Space on macOS).
   function defaultShortcutForPlatform(): string {
-    if (typeof navigator !== 'undefined' && /macintosh|mac os/i.test(navigator.userAgent)) return 'Super+Shift+Space';
     return 'Ctrl+Alt+Space';
   }
 
@@ -2269,13 +2269,13 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
         <div class="sidebar-brand"><span class="brand-mark"><Icon name="command" size={20} /></span><span class="brand-name">Arcade <span>Box</span></span></div>
         <div class="sidebar-section-label">Workspace</div>
         <nav class="main-nav" aria-label="Workspace">
-          <button class:nav-active={catalogMode === 'all' && categoryFilter === 'All tools'} aria-current={catalogMode === 'all' && categoryFilter === 'All tools' ? 'page' : undefined} onclick={() => { catalogMode = 'all'; categoryFilter = 'All tools'; }}><Icon name="grid" size={17} /><span>All tools</span><span class="nav-count">{tools.length}</span></button>
+          <button class:nav-active={catalogMode === 'all' && categoryFilter === 'All tools'} aria-current={catalogMode === 'all' && categoryFilter === 'All tools' ? 'page' : undefined} onclick={() => { catalogMode = 'all'; categoryFilter = 'All tools'; }}><Icon name="grid" size={17} /><span>Tools</span><span class="nav-count">{tools.length}</span></button>
           <button class:nav-active={catalogMode === 'favorites'} aria-current={catalogMode === 'favorites' ? 'page' : undefined} onclick={() => { catalogMode = 'favorites'; categoryFilter = 'All tools'; }}><Icon name="star" size={17} /><span>Favorites</span>{#if favorites.length}<span class="nav-count">{favorites.length}</span>{/if}</button>
-          <button class:nav-active={catalogMode === 'recent'} aria-current={catalogMode === 'recent' ? 'page' : undefined} onclick={() => { catalogMode = 'recent'; categoryFilter = 'All tools'; }}><Icon name="clock" size={17} /><span>Recently used</span>{#if recentToolIds.length}<span class="nav-count">{recentToolIds.length}</span>{/if}</button>
-          <button class:nav-active={catalogMode === 'jobs'} aria-current={catalogMode === 'jobs' ? 'page' : undefined} onclick={() => { catalogMode = 'jobs'; categoryFilter = 'All tools'; }}><Icon name="play" size={17} /><span>Background jobs</span>{#if activeJobCount}<span class="nav-count">{activeJobCount}</span>{/if}</button>
+          <button class:nav-active={catalogMode === 'recent'} aria-current={catalogMode === 'recent' ? 'page' : undefined} onclick={() => { catalogMode = 'recent'; categoryFilter = 'All tools'; }}><Icon name="clock" size={17} /><span>Recent</span>{#if recentToolIds.length}<span class="nav-count">{recentToolIds.length}</span>{/if}</button>
+          <button class:nav-active={catalogMode === 'jobs'} aria-current={catalogMode === 'jobs' ? 'page' : undefined} onclick={() => { catalogMode = 'jobs'; categoryFilter = 'All tools'; }}><Icon name="play" size={17} /><span>Jobs</span>{#if activeJobCount}<span class="nav-count">{activeJobCount}</span>{/if}</button>
           <button class:nav-active={catalogMode === 'pipelines'} aria-current={catalogMode === 'pipelines' ? 'page' : undefined} onclick={() => { catalogMode = 'pipelines'; categoryFilter = 'All tools'; }}><Icon name="spark" size={17} /><span>Pipelines</span></button>
           <button class:nav-active={catalogMode === 'plugins'} aria-current={catalogMode === 'plugins' ? 'page' : undefined} onclick={() => { catalogMode = 'plugins'; categoryFilter = 'All tools'; }}><Icon name="shield" size={17} /><span>Plugins</span></button>
-          <button class:nav-active={catalogMode === 'engines'} aria-current={catalogMode === 'engines' ? 'page' : undefined} onclick={() => { catalogMode = 'engines'; categoryFilter = 'All tools'; }}><Icon name="network" size={17} /><span>Engines &amp; dependencies</span><span class="nav-count">{providers.length}</span></button>
+          <button class:nav-active={catalogMode === 'engines'} aria-current={catalogMode === 'engines' ? 'page' : undefined} onclick={() => { catalogMode = 'engines'; categoryFilter = 'All tools'; }}><Icon name="network" size={17} /><span>Engines</span><span class="nav-count">{providers.length}</span></button>
           <button class:nav-active={catalogMode === 'settings'} aria-current={catalogMode === 'settings' ? 'page' : undefined} onclick={() => { catalogMode = 'settings'; categoryFilter = 'All tools'; }}><Icon name="settings" size={17} /><span>Settings</span></button>
         </nav>
         <div class="sidebar-section-row"><span class="sidebar-section-label">Categories</span><button aria-label="Show all categories" onclick={() => { catalogMode = 'all'; categoryFilter = 'All tools'; }}><Icon name="plus" size={14} /></button></div>

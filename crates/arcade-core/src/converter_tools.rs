@@ -73,6 +73,30 @@ fn format_number(value: f64) -> String {
     }
 }
 
+/// A result as people read it: 12 significant digits without float noise
+/// (`333.333333333`, `30.48`), scientific notation below 1e-6 or from 1e15
+/// (`1e-12`), and never `0` for a value that isn't zero. The JSON `value`
+/// keeps full precision for copying.
+pub(crate) fn format_significant(value: f64) -> String {
+    if value == 0.0 {
+        return "0".into();
+    }
+    let magnitude = value.abs();
+    if !(1e-6..1e15).contains(&magnitude) {
+        let text = format!("{value:.11e}");
+        let (mantissa, exponent) = text.split_once('e').expect("exponent");
+        let mantissa = mantissa.trim_end_matches('0').trim_end_matches('.');
+        return format!("{mantissa}e{exponent}");
+    }
+    let decimals = (11 - magnitude.log10().floor() as i32).max(0) as usize;
+    let text = format!("{value:.decimals$}");
+    if text.contains('.') {
+        text.trim_end_matches('0').trim_end_matches('.').to_owned()
+    } else {
+        text
+    }
+}
+
 /// A money amount rounded to cents with thousands separators, such as `12,345.60`.
 fn format_money(value: f64) -> String {
     let rounded = (value * 100.0).round() / 100.0;

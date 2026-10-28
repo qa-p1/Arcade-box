@@ -59,9 +59,9 @@
   .get-app-button:not(:disabled):hover { border-color: var(--accent); color: var(--accent); }
   .peer-row { display: flex; gap: 12px; align-items: center; padding: 14px 0; border-top: 1px solid var(--line); }
   .peer-copy { flex: 1; display: grid; gap: 4px; }
-  .peer-copy span, .peer-copy p { font-size: 12px; color: var(--muted); margin: 0; }
-  .peer-toggle { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-  .connection-diagnostics { margin-top: 12px; color: var(--muted); font-size: 12px; }
+  .peer-copy span, .peer-copy p { font-size: var(--fs-small); color: var(--muted); margin: 0; }
+  .peer-toggle { display: flex; align-items: center; gap: 8px; font-size: var(--fs-small); }
+  .connection-diagnostics { margin-top: 12px; color: var(--muted); font-size: var(--fs-small); }
   summary { cursor: pointer; }
   dl { display: grid; gap: 6px; }
   dt { font-weight: 600; }

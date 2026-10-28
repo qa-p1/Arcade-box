@@ -139,11 +139,11 @@
   .timeline { position: relative; height: 52px; border-radius: 9px; background: var(--field-bg); cursor: pointer; touch-action: none; user-select: none; }
   .timeline-background { position: absolute; inset: 0; display: flex; overflow: hidden; border-radius: inherit; }
   .region { position: absolute; top: 0; bottom: 0; background: var(--amber-wash); box-shadow: inset 0 -2px 0 color-mix(in srgb, var(--amber) 70%, transparent); pointer-events: none; }
-  .shade { position: absolute; top: 0; bottom: 0; background: rgba(0, 0, 0, .55); pointer-events: none; }
-  .shade.removed { background: color-mix(in srgb, var(--red) 28%, rgba(0, 0, 0, .5)); }
+  .shade { position: absolute; top: 0; bottom: 0; background: var(--scrim); pointer-events: none; }
+  .shade.removed { background: color-mix(in srgb, var(--red) 28%, var(--scrim)); }
   .selection { position: absolute; top: 0; bottom: 0; box-shadow: inset 0 0 0 2px var(--primary); border-radius: 4px; pointer-events: none; }
   .selection.removed { box-shadow: inset 0 0 0 2px var(--red); }
-  .handle { position: absolute; top: -4px; bottom: -4px; width: 14px; margin-left: -7px; padding: 0; border: 0; border-radius: 6px; background: var(--primary); box-shadow: 0 1px 4px rgba(0, 0, 0, .4); cursor: ew-resize; touch-action: none; }
+  .handle { position: absolute; top: -4px; bottom: -4px; width: 14px; margin-left: -7px; padding: 0; border: 0; border-radius: 6px; background: var(--primary); box-shadow: var(--shadow); cursor: ew-resize; touch-action: none; }
   .handle::after { position: absolute; top: 50%; left: 50%; width: 2px; height: 16px; border-radius: 1px; background: var(--primary-ink); content: ''; opacity: .45; transform: translate(-50%, -50%); }
   .handle.playhead { width: 4px; margin-left: -2px; border-radius: 2px; }
   .handle.playhead::after { display: none; }

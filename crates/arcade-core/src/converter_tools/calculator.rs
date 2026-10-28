@@ -41,6 +41,11 @@ impl<'a> ExpressionParser<'a> {
             self.position += 1;
         }
     }
+    fn starts_implicit_factor(&mut self) -> bool {
+        self.skip_space();
+        self.peek()
+            .is_some_and(|byte| byte.is_ascii_alphabetic() || byte == b'(')
+    }
     fn eat(&mut self, expected: u8) -> bool {
         self.skip_space();
         if self.peek() == Some(expected) {
@@ -79,6 +84,10 @@ impl<'a> ExpressionParser<'a> {
                     return Err("Remainder by zero".into());
                 }
                 value %= rhs;
+            } else if self.starts_implicit_factor() {
+                // `2pi`, `2(3)`, `2log10(100)`: a name or bracket right
+                // after a value multiplies it. `2 3` stays an error.
+                value *= self.parse_unary()?;
             } else {
                 return Ok(value);
             }
@@ -147,10 +156,12 @@ impl<'a> ExpressionParser<'a> {
                 .parse::<f64>()
                 .map_err(|_| "Enter a valid number".into());
         }
-        while self
-            .peek()
-            .is_some_and(|byte| byte.is_ascii_alphabetic() || byte == b'_')
-        {
+        // Names start with a letter and may contain digits after it (log10, log2).
+        while self.peek().is_some_and(|byte| {
+            byte.is_ascii_alphabetic()
+                || byte == b'_'
+                || (self.position > start && byte.is_ascii_digit())
+        }) {
             self.position += 1;
         }
         if self.position == start {
@@ -211,6 +222,7 @@ fn apply_math_function(name: &str, args: &[f64]) -> Result<f64, String> {
         "cosh" => Ok(one()?.cosh()),
         "ln" => Ok(one()?.ln()),
         "log10" => Ok(one()?.log10()),
+        "log2" => Ok(one()?.log2()),
         "exp" => Ok(one()?.exp()),
         "floor" => Ok(one()?.floor()),
         "ceil" => Ok(one()?.ceil()),
@@ -234,6 +246,27 @@ fn apply_math_function(name: &str, args: &[f64]) -> Result<f64, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn calculate(expression: &str) -> Result<f64, String> {
+        evaluate(expression).map(|result| result["value"].as_f64().unwrap())
+    }
+
+    #[test]
+    fn named_functions_may_contain_digits() {
+        // B5: the lexer stopped names at digits, so log10 read as `log`.
+        assert_eq!(calculate("log10(100)"), Ok(2.0));
+        assert_eq!(calculate("log2(8)"), Ok(3.0));
+        assert_eq!(calculate("2log10(100)"), Ok(4.0));
+    }
+
+    #[test]
+    fn a_name_or_bracket_after_a_value_multiplies_it() {
+        assert_eq!(calculate("2(3)"), Ok(6.0));
+        assert_eq!(calculate("2 pi"), Ok(2.0 * std::f64::consts::PI));
+        assert_eq!(calculate("(1+1)(2+2)"), Ok(8.0));
+        assert_eq!(calculate("2^2pi"), Ok(4.0 * std::f64::consts::PI));
+        assert!(calculate("2 3").is_err());
+    }
 
     #[test]
     fn calculator_parses_functions_and_precedence() {

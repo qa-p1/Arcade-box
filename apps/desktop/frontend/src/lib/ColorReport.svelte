@@ -26,16 +26,16 @@
   .swatch, .sample { display: flex; align-items: flex-end; min-height: 84px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); }
   .swatch span { font: 600 13px var(--mono); }
   .sample { flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; }
-  .sample strong { font-size: 26px; line-height: 1; }
-  .sample span { font-size: 12px; }
+  .sample strong { font-size: var(--fs-display); line-height: 1; }
+  .sample span { font-size: var(--fs-small); }
   .formats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 6px; }
   .formats button { display: grid; gap: 2px; padding: 8px 10px; text-align: left; border: 1px solid var(--line); border-radius: 8px; background: var(--surface-1); color: var(--ink); cursor: pointer; }
   .formats button:hover { background: var(--surface-2); }
-  .formats span { font-size: 10.5px; color: var(--ink-3); letter-spacing: .04em; }
-  .formats code { font-size: 12px; }
-  .ratio { margin: 0; font-size: 13px; color: var(--ink-2); }
-  .ratio strong { color: var(--ink); font-size: 15px; }
+  .formats span { font-size: var(--fs-caption); color: var(--ink-3); letter-spacing: .04em; }
+  .formats code { font-size: var(--fs-small); }
+  .ratio { margin: 0; font-size: var(--fs-body); color: var(--ink-2); }
+  .ratio strong { color: var(--ink); font-size: var(--fs-heading); }
   .grades { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
-  .grades li { padding: 4px 9px; border-radius: 999px; font-size: 12px; color: var(--red); background: var(--red-wash); }
+  .grades li { padding: 4px 9px; border-radius: 999px; font-size: var(--fs-small); color: var(--red); background: var(--red-wash); }
   .grades li.pass { color: var(--mint); background: var(--mint-wash); }
 </style>

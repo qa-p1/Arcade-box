@@ -31,16 +31,9 @@ pub fn effective_shortcut(runtime: &Arcade) -> String {
         .setting("global_shortcut")
         .ok()
         .flatten()
-        .unwrap_or_else(|| default_shortcut().into());
-    arcade_link::accelerator::normalize(&saved).unwrap_or_else(|_| default_shortcut().into())
-}
-
-fn default_shortcut() -> &'static str {
-    if cfg!(target_os = "macos") {
-        "Super+Shift+Space"
-    } else {
-        "Ctrl+Alt+Space"
-    }
+        .unwrap_or_else(|| crate::shortcut_syntax::DEFAULT.into());
+    crate::shortcut_syntax::canonical_trigger(&saved)
+        .unwrap_or_else(|_| crate::shortcut_syntax::DEFAULT.into())
 }
 
 /// The data directory the desktop app uses (Tauri's `app_data_dir`), for
@@ -146,7 +139,7 @@ pub fn print_manifest() {
                 &LinkSettings::default(),
                 &arcade_link::manifest::current_executable(),
                 env!("CARGO_PKG_VERSION"),
-                Some(default_shortcut()),
+                Some(crate::shortcut_syntax::DEFAULT),
                 &[],
                 None,
             ),

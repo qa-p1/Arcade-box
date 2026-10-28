@@ -20,7 +20,9 @@ const MAX_TEXT_BYTES: usize = 16 * 1024;
 const MAX_IMAGE_BYTES: u64 = 128 * 1024 * 1024;
 const MAX_IMAGE_DIMENSION: u32 = 32_768;
 const MAX_IMAGE_PIXELS: u64 = 32_000_000;
-const MAX_BATCH_ITEMS: usize = 100;
+const MAX_BATCH_ITEMS: usize = 1000;
+/// A batch CSV file is read whole; 1 MiB is far beyond a thousand rows.
+const MAX_BATCH_FILE_BYTES: u64 = 1024 * 1024;
 const MAX_DECODED_SYMBOLS: usize = 128;
 
 pub fn execute(
@@ -110,10 +112,15 @@ fn generate_batch(
     let [input] = request.inputs.as_slice() else {
         return Err("Paste one barcode value per line".into());
     };
-    if input.kind != ValueKind::Text {
-        return Err("Paste barcode values as text, one value per line".into());
-    }
-    let rows = parse_batch_rows(&input.value)?;
+    // Pasted text and a CSV file go through the same parser (B8).
+    let text = match input.kind {
+        ValueKind::Text => input.value.clone(),
+        ValueKind::Artifact if matches!(input.mime.as_str(), "file/csv" | "file/tsv") => {
+            read_batch_file(runtime, &input.value)?
+        }
+        _ => return Err("Paste barcode values, one per line, or choose a CSV file".into()),
+    };
+    let rows = parse_batch_rows(&text)?;
     if rows.is_empty() {
         return Err("Add at least one value to generate".into());
     }
@@ -193,6 +200,24 @@ fn generate_batch(
 struct BatchRow {
     label: Option<String>,
     value: String,
+}
+
+fn read_batch_file(runtime: &Arcade, token: &str) -> Result<String, String> {
+    let path = runtime
+        .grants()
+        .resolve(token)
+        .map_err(|error| error.to_string())?;
+    let size = fs::metadata(&path)
+        .map_err(|error| error.to_string())?
+        .len();
+    if size > MAX_BATCH_FILE_BYTES {
+        return Err(
+            "The CSV file is too large for one batch; split it into files under 1 MB".into(),
+        );
+    }
+    let text = fs::read_to_string(&path)
+        .map_err(|_| "Couldn't read the CSV file; save it as UTF-8 text".to_owned())?;
+    Ok(text.strip_prefix('\u{feff}').unwrap_or(&text).to_owned())
 }
 
 fn parse_batch_rows(input: &str) -> Result<Vec<BatchRow>, String> {
@@ -706,6 +731,67 @@ mod tests {
         assert_eq!(decoded.len(), 1);
         assert!(decoded[0].is_valid());
         assert_eq!(decoded[0].text(), text);
+    }
+
+    fn batch_from_csv_file(csv: &str) -> (ToolResult, std::time::Duration) {
+        let temp = tempfile::tempdir().unwrap();
+        let source = temp.path().join("barcodes.csv");
+        fs::write(&source, csv).unwrap();
+        let runtime = Arcade::in_memory().unwrap();
+        let selected = runtime.grants().grant(&source).unwrap();
+        assert_eq!(selected.mime, "file/csv");
+        let started = std::time::Instant::now();
+        let result = runtime
+            .run_tool(ToolRequest {
+                tool_id: "arcade.barcode.batch".into(),
+                inputs: vec![selected.as_tool_value()],
+                options: json!({"symbology": "Code128"}),
+            })
+            .unwrap();
+        (result, started.elapsed())
+    }
+
+    #[test]
+    fn a_csv_file_makes_one_barcode_per_row_and_a_label_sheet() {
+        // B8: the audit fixture; 0.3.5 refused file/csv.
+        let (result, _) = batch_from_csv_file(
+            "value,label\n5901234123457,Sample EAN13\n123456789012,Sample UPC\n",
+        );
+        assert_eq!(result.status, ResultStatus::Success, "{:?}", result.message);
+        let names = result
+            .outputs
+            .iter()
+            .filter(|output| output.kind == ValueKind::Artifact)
+            .count();
+        assert_eq!(
+            names, 3,
+            "two barcodes and the label sheet: {:?}",
+            result.outputs
+        );
+        assert!(
+            result
+                .message
+                .unwrap()
+                .contains("Generated 2 barcode images")
+        );
+    }
+
+    #[test]
+    fn a_200_row_csv_file_is_one_batch() {
+        // The 0.3.5 limit was 100 rows. Its 5 s budget is checked on the
+        // release build; debug test builds are several times slower.
+        let mut csv = String::from("value,label\n");
+        for row in 0..200 {
+            csv.push_str(&format!("ITEM-{row:04},Item {row}\n"));
+        }
+        let (result, _) = batch_from_csv_file(&csv);
+        assert_eq!(result.status, ResultStatus::Success, "{:?}", result.message);
+        assert!(
+            result
+                .message
+                .unwrap()
+                .contains("Generated 200 barcode images")
+        );
     }
 
     #[test]
