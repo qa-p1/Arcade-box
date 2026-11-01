@@ -15,7 +15,7 @@ You can install Box from **Arcade Tools → Apps**, where Tools can install, upd
 Download the AppImage and run it. On first launch, Box asks **Install Arcade Box?**
 
 - Choose **Install** to add Box to your app launcher, place it in **~/Applications/Arcade/**, add the **arcade-desktop** command in **~/.local/bin**, and choose whether it starts at login.
-- Choose **Just run it once** to use Box without installing it.
+- Choose **Just run it** to use Box without installing it.
 
 To remove an installed copy, run **arcade-desktop --uninstall**, choose **Uninstall** from its launcher entry, or remove it in Arcade Tools. Your settings stay unless you choose to remove them. If **~/.local/bin** is not on PATH, Box shows the exact line to add for your shell.
 

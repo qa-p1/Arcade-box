@@ -60,6 +60,6 @@
   .steps { margin: var(--sp-24) 0 0; padding: 0; list-style: none; }
   .step { flex-wrap: wrap; }
   .step-number { display: grid; flex: none; width: 24px; height: 24px; place-items: center; border-radius: var(--radius-pill); background: var(--sunken); box-shadow: inset 0 0 0 1px var(--line); color: var(--muted); font-size: var(--fs-small); font-weight: var(--fw-semibold); }
-  .step-number.done { background: var(--ok-soft); box-shadow: none; color: var(--ok); }
+  .step-number.done { background: var(--ok-soft); box-shadow: none; color: var(--ok-ink); }
   .step .row-main { flex: 1 1 200px; }
 </style>

@@ -29,7 +29,7 @@ Download the file for your system from [Releases](https://github.com/qa-p1/Arcad
 
 | Platform | File | How to install |
 |---|---|---|
-| Linux x86_64 | `Arcade-Box_<version>_amd64.AppImage` | Run it. The first run asks **Install Arcade Box?** and installs to `~/Applications/Arcade/`, adds a menu entry, the `arcade-desktop` and `arcade-box` (terminal tools) commands in `~/.local/bin` and an optional start at login. **Just run it once** skips installing. |
+| Linux x86_64 | `Arcade-Box_<version>_amd64.AppImage` | Run it. The first run asks **Install Arcade Box?** and installs to `~/Applications/Arcade/`, adds a menu entry, the `arcade-desktop` and `arcade-box` (terminal tools) commands in `~/.local/bin` and an optional start at login. **Just run it** skips installing. |
 | Windows x64 | `Arcade-Box_<version>_x64-setup.exe` | Run Setup (NSIS, per-user, no admin). Adds a Start menu entry, an optional desktop shortcut and start at login, and an `arcade-desktop` command on the user PATH. |
 | macOS (universal) | `Arcade-Box_<version>_universal.dmg` | Open the dmg and drag Arcade Box to Applications. Run from the dmg or Downloads, it offers to move itself to Applications. |
 

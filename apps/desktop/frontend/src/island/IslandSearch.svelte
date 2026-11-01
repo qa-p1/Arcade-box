@@ -101,7 +101,7 @@
   .island-mark { width: 24px; height: 24px; }
   .shortcut-hint { flex: none; }
   .search-panel, .context-panel { max-height: min(56dvh, 452px); padding: var(--sp-4) var(--sp-6) var(--sp-6); overscroll-behavior: contain; }
-  .group-label { padding: var(--sp-10) var(--sp-10) var(--sp-4); color: var(--faint); }
+  .group-label { padding: var(--sp-10) var(--sp-10) var(--sp-4); color: var(--muted); }
   .result-row { position: relative; min-width: 0; }
   .overlay-row { width: 100%; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; }
   .overlay-row .row-main { display: grid; min-width: 0; }

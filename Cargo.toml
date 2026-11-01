@@ -12,7 +12,7 @@ resolver = "2"
 [workspace.package]
 # The one version of Box: the desktop app, its CLI, the bundle and the
 # frontend all read it (scripts/check-version.py fails on drift).
-version = "0.4.0"
+version = "0.4.1"
 edition = "2024"
 rust-version = "1.88"
 license = "GPL-3.0-or-later"
@@ -23,7 +23,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = ["preserve_order"] }
 thiserror = "2.0"
 # Released shared install and tray-host APIs.
-arcade-link = { git = "https://github.com/qa-p1/Arcade-link", tag = "v0.4.0", features = ["engines", "install", "trayhost"] }
+arcade-link = { git = "https://github.com/qa-p1/Arcade-link", tag = "v0.4.15", features = ["engines", "install", "trayhost"] }
 
 # zxing-cpp's bundled C++ build follows the opt-level: at 0 CMake builds Debug,
 # which links MSVC's debug runtime (unresolved _CrtDbgReport on Windows).

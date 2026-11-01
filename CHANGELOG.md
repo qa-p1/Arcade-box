@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.1 — 2026-11-01
+
+- Small text is easier to read: captions, hints, paths, labels and placeholders
+  use the design kit's readable grey instead of its faint one, and warnings,
+  errors and confirmations use the kit's readable status colours, at least
+  4.5:1 in light and dark. This comes with Arcade Link v0.4.15, whose kit also
+  fixes the contrast of badges and links.
+- The install prompt's second button reads **Just run it**.
+
 ## 0.4.0 — 2026-10-28
 
 - The dashboard is its own window: a normal, resizable window with a sidebar

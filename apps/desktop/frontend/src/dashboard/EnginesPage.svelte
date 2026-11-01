@@ -109,7 +109,7 @@
 <style>
   .engine + .engine { border-top: 1px solid var(--line); }
   h2.row-title { font-size: var(--fs-body); font-weight: var(--fw-semibold); }
-  .row-path { margin-top: var(--sp-2); color: var(--faint); }
+  .row-path { margin-top: var(--sp-2); color: var(--muted); }
   .row-extra { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-8); padding-left: var(--sp-14); }
   .row-extra .row-sub { flex: 1 1 240px; margin: 0; }
   .skel-a { width: 30%; }
