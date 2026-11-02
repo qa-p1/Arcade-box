@@ -62,14 +62,14 @@ The template contains local Arcade adaptations. SHA-256 inventory:
 
 ## Arcade design kit
 
-Copied unchanged from [Arcade Link](https://github.com/qa-p1/Arcade-Link/tree/v0.4.0) tag `v0.4.0` (commit
-`498b47f17aa35864aef765ac56a877d06b927dbe`) by `scripts/sync-design.py`; never edit these files here.
+Copied unchanged from [Arcade Link](https://github.com/qa-p1/Arcade-Link/tree/v0.4.15) tag `v0.4.15` (commit
+`56798545d263c104ded54877239750f9645c32a3`) by `scripts/sync-design.py`; never edit these files here.
 License: MIT OR Apache-2.0; Inter is under the SIL Open Font License 1.1
 (`apps/desktop/frontend/src/design/fonts/OFL.txt`).
 
 ```text
-9d7c91751db00791c4625dfc2de92cee49d1604dfea9e4ef1c84e9d232953b10  apps/desktop/frontend/src/design/arcade.css
-69a7a24cd12ce0981eab0a10145cc1f18afc9829d6351fb8673ded33147c88ab  apps/desktop/frontend/src/design/icons.ts
+38bad47bf726e131e4d1cc9b75a0c83ef52b6f40a9140aaac6b9cf045b978842  apps/desktop/frontend/src/design/arcade.css
+d0d5377d8bb3881fe82e9a20902dcbfb5960c1d660fdb0d5607eb1406d9b0cdb  apps/desktop/frontend/src/design/icons.ts
 9f30255bf79330c12e962502f92059df256c6360f9df844c334f912aff85b9d8  apps/desktop/frontend/src/design/format.ts
 693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3  apps/desktop/frontend/src/design/fonts/InterVariable.woff2
 262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a  apps/desktop/frontend/src/design/fonts/OFL.txt

@@ -218,7 +218,7 @@
 <style>
   .notice { margin-bottom: var(--sp-16); }
   .switch-row.disabled { cursor: default; }
-  .save-folder { display: block; margin-top: var(--sp-4); color: var(--faint); }
+  .save-folder { display: block; margin-top: var(--sp-4); color: var(--muted); }
   .shortcut-head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-12); }
   .shortcut-head .row-main { flex: 1 1 200px; }
   .island-keys-head { margin-top: var(--sp-20); }

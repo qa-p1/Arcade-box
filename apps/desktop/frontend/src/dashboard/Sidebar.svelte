@@ -66,10 +66,10 @@
   .dashboard-sidebar { overflow: hidden; }
   /* minmax(0, 1fr): an auto track grows to the longest label (the 0.3 bug). */
   .tab-list { grid-template-columns: minmax(0, 1fr); }
-  .nav-caption { margin: var(--sp-20) var(--sp-10) var(--sp-6); color: var(--faint); }
+  .nav-caption { margin: var(--sp-20) var(--sp-10) var(--sp-6); color: var(--muted); }
   /* The categories scroll on their own, so a short window keeps the pages,
      the footer and every label (ellipsised) in view. */
   .category-list { flex: 1 1 auto; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; align-content: start; }
-  .sidebar-empty { padding: var(--sp-6) var(--sp-10); color: var(--faint); font-size: var(--fs-small); }
+  .sidebar-empty { padding: var(--sp-6) var(--sp-10); color: var(--muted); font-size: var(--fs-small); }
   .sidebar-foot { flex: none; margin-top: var(--sp-12); }
 </style>

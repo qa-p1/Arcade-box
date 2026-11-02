@@ -148,5 +148,5 @@
   .language-choices { display: flex; flex-wrap: wrap; gap: var(--sp-6); min-width: 0; margin: 0; padding: 0; border: 0; }
   .language-choice { display: inline-flex; align-items: center; gap: var(--sp-6); padding: var(--sp-4) var(--sp-10); border: 1px solid var(--line); border-radius: var(--radius-pill); font-size: var(--fs-small); cursor: pointer; }
   .language-choice:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
-  .language-choice.missing { color: var(--warn); }
+  .language-choice.missing { color: var(--warn-ink); }
 </style>

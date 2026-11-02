@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.1 — 2026-11-02
+
+- Secondary labels and success, warning and error text use the shared readable
+  foreground colors in both themes. This includes the Island search groups,
+  dashboard sidebar, paths, onboarding and tool results.
+- Pins Arcade Link and its design kit to v0.4.15 and adds `.editorconfig`.
+
 ## 0.4.0 — 2026-10-28
 
 - The dashboard is its own window: a normal, resizable window with a sidebar

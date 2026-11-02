@@ -81,7 +81,7 @@
   .dial.stopwatch { background: var(--surface-2); }
   .dial.finished { background: var(--amber); }
   .time { grid-area: 1 / 1; z-index: 1; font: 600 34px/1 var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
-  .dial.finished .time { font-size: var(--fs-title); color: var(--amber); }
+  .dial.finished .time { font-size: var(--fs-title); color: var(--warn-ink); }
   .fields { display: flex; gap: 10px; }
   .fields label { display: grid; gap: 4px; font-size: var(--fs-caption); color: var(--ink-3); }
   .fields input { width: 72px; padding: 7px 9px; border: 1px solid var(--field-line); border-radius: 8px; background: var(--field-bg); color: var(--ink); font: 14px var(--mono); }

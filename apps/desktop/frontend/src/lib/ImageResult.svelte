@@ -148,7 +148,7 @@
   .image-result-actions :global(.quiet-button) { min-height:28px; padding:0 7px; }
   .image-result-actions :global(.quiet-button span) { font-size: var(--fs-caption); }
   .image-result-error, .image-result-note { margin:0; overflow-wrap:anywhere; color:var(--muted); font-size: var(--fs-caption); line-height:1.4; }
-  .image-result-error { color:var(--red); }
+  .image-result-error { color:var(--danger-ink); }
   @keyframes image-result-spin { to { transform:rotate(360deg); } }
   @media (max-width: 460px) {
     .image-result { grid-template-columns:90px minmax(0, 1fr); gap:9px; padding:8px; }

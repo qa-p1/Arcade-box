@@ -1,5 +1,21 @@
 # Arcade Box: status
 
+## 0.4.1 candidate (2026-11-02)
+
+- Follow-up patch: pins Link and the design kit to `v0.4.15`; secondary text
+  uses `muted`, status/accent foregrounds use the kit's readable `*-ink`
+  tokens, and `.editorconfig` records the existing formatting conventions.
+- Local: Svelte/TypeScript reports 0 errors and 0 warnings; all 12 frontend
+  tests and the production build pass. Version, 53 vendored hashes, CSS
+  variables, docs/shortcuts and Rust formatting checks pass. Cargo.lock changes
+  only Box's version and the Link dependency.
+- Remaining release gates: full Rust and layout checks, three-OS CI and
+  installers, then `tag.yml` and stable `release.yml`, checksums, manifest and
+  Tools update verification. Native desktop checks listed below remain separate.
+- Published stable version is still
+  [v0.4.0](https://github.com/qa-p1/Arcade-box/releases/tag/v0.4.0), from successful
+  [Release run 40789177850](https://github.com/qa-p1/Arcade-box/actions/runs/40789177850).
+
 ## 0.4.0 (2026-10-28)
 
 - Source version 0.4.0 on Arcade Link `v0.4.0`. The overhaul (BOX.md) adopts
@@ -16,7 +32,7 @@
   timing; start at login on macOS and Windows; and Tools updating Box from
   0.3.5 on a real profile.
 
-## Release status (2026-10-18)
+## Historical release status (2026-10-18)
 
 - Latest release: [v0.3.5](https://github.com/qa-p1/Arcade-box/releases/tag/v0.3.5), published 2026-10-19 (the Island takes keyboard focus on X11; see CHANGELOG.md). The CI and e2e notes below were recorded for the earlier v0.2.0.
 - Previously released: [v0.3.2](https://github.com/qa-p1/Arcade-box/releases/tag/v0.3.2), published 2026-10-19 (released every inherited descriptor at start, which also cut off helpers from the app's own image).
