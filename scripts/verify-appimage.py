@@ -121,8 +121,8 @@ def main():
             env=dict(env, ARCADE_UI_CHECK='1', OWD=str(root / 'work')),
             cwd=root / 'work', capture_output=True, text=True, timeout=60)
         ui_log = install_home / '.local/share/arcade/box/logs/arcade-box.log'
-        assert checked.returncode == 0 and 'UI_CHECK passed' in ui_log.read_text(), (
-            checked.stdout, checked.stderr, ui_log.read_text()[-5000:])
+        report = checked.stdout + checked.stderr + (ui_log.read_text() if ui_log.exists() else '')
+        assert checked.returncode == 0 and 'UI_CHECK passed' in report, report[-5000:]
 
 
         # A missing launcher must be repaired from the installed package.
