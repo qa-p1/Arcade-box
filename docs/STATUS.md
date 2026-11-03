@@ -9,6 +9,10 @@
   tests and the production build pass. Version, 53 vendored hashes, CSS
   variables, docs/shortcuts and Rust formatting checks pass. Cargo.lock changes
   only Box's version and the Link dependency.
+- CI run 41491527927 passed Rust tests/builds on all three operating systems
+  and Linux's layout check, then correctly failed the stale license inventory.
+  The inventory now records the locked Link 0.4.15 source. The design sync
+  also completed locally, including rendering both tray icons (unchanged bytes).
 - Remaining release gates: full Rust and layout checks, three-OS CI and
   installers, then `tag.yml` and stable `release.yml`, checksums, manifest and
   Tools update verification. Native desktop checks listed below remain separate.
