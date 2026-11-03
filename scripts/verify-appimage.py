@@ -115,6 +115,16 @@ def main():
         # $APPDIR/usr and aborts the whole app when they aren't there.
         survives(installed, env, root / "work", *WINDOW_ARGS)
 
+        # Being alive is insufficient: exercise the packaged WebView's native
+        # catalog, dashboard event permissions, Island handoff and calculation.
+        checked = subprocess.run([str(installed), '--dashboard'],
+            env=dict(env, ARCADE_UI_CHECK='1', OWD=str(root / 'work')),
+            cwd=root / 'work', capture_output=True, text=True, timeout=60)
+        ui_log = install_home / '.local/share/arcade/box/logs/arcade-box.log'
+        assert checked.returncode == 0 and 'UI_CHECK passed' in ui_log.read_text(), (
+            checked.stdout, checked.stderr, ui_log.read_text()[-5000:])
+
+
         # A missing launcher must be repaired from the installed package.
         desktop.unlink()
         run(installed, "--repair")

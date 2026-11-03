@@ -1014,6 +1014,21 @@ fn profile_motion(sample: String) {
 }
 // TEMPORARY_MOTION_PROBE_END
 
+fn ui_check_enabled() -> bool {
+    std::env::var("ARCADE_UI_CHECK").as_deref() == Ok("1")
+        && std::env::var_os("ARCADE_HOME").is_some_and(|root| !root.is_empty())
+}
+
+/// The package gate exercises the real WebView, permissions and tool runtime.
+/// It is opt-in and requires an explicitly isolated profile.
+#[tauri::command]
+fn ui_check_report(report: String, app: tauri::AppHandle) {
+    if ui_check_enabled() {
+        eprintln!("UI_CHECK {report}");
+        app.exit(if report == "passed" { 0 } else { 1 });
+    }
+}
+
 #[tauri::command]
 fn hide_island(window: tauri::WebviewWindow) -> Result<(), String> {
     request_hide_island(&window, ISLAND_IDLE_RELEASE);
@@ -1346,6 +1361,11 @@ pub const OS_ID: &str = "dev.arcade.Box";
 pub(crate) fn in_box_folder<'a, R: tauri::Runtime, M: tauri::Manager<R>>(
     builder: tauri::WebviewWindowBuilder<'a, R, M>,
 ) -> tauri::WebviewWindowBuilder<'a, R, M> {
+    let builder = if ui_check_enabled() {
+        builder.initialization_script(include_str!("ui-check.js"))
+    } else {
+        builder
+    };
     match arcade_core::dirs::app_dirs() {
         Some(dirs) => builder.data_directory(dirs.cache.join("webview")),
         None => builder,
@@ -2345,6 +2365,7 @@ pub fn run(args: Vec<String>) {
             profile_motion,
             hide_island,
             island_ready,
+            ui_check_report,
             set_island_input_region,
             set_surface_mode
         ])

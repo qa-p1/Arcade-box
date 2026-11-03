@@ -20,6 +20,18 @@
   [v0.4.0](https://github.com/qa-p1/Arcade-box/releases/tag/v0.4.0), from successful
   [Release run 40789177850](https://github.com/qa-p1/Arcade-box/actions/runs/40789177850).
 
+## 0.4.1 runtime follow-up (2026-11-03)
+
+The released 0.4.0 sent an invalid Lua string to Hyprland (reproduced on
+0.56.2), disabling the surface rules and shortcut. Its dashboard also lacked
+Tauri event permissions, so page and tool handoffs could not initialize.
+The floating Island, separate dashboard, toolkit and existing tools are retained.
+
+The rule now uses a Lua literal regex; Linux CI parses that exact source.
+The AppImage gate now requires actual native catalog, Settings handoff and a
+Calculator result of 42 through the dashboard/Island UI, rather than process
+survival alone. Local and CI results must pass before release.
+
 ## 0.4.0 (2026-10-28)
 
 - Source version 0.4.0 on Arcade Link `v0.4.0`. The overhaul (BOX.md) adopts

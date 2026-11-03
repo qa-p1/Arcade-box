@@ -10,6 +10,7 @@ cd "$(dirname "$0")/.."
 step() { printf '\n== %s\n' "$*"; "$@"; }
 python=$(command -v python || command -v python3)
 frontend=apps/desktop/frontend
+if [ "$(uname -s)" = Linux ]; then step luac -p apps/desktop/src-tauri/src/island-rule.lua; fi
 
 step npm --prefix "$frontend" run check
 step npm --prefix "$frontend" test
