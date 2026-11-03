@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.2
+
+- Release closed Linux WebViews by disconnecting their retiring IPC callback, breaking Wry’s reference cycle without restarting the app. Native package checks require zero renderer processes after each close/reopen cycle.
+
+- Remove the hidden 20-second memory-cleanup process restart after closing the Island. Release its WebView and reclaim heap pages in place, keeping background jobs, results, shortcuts and Link presence in the same resident process.
+- Gate the actual AppImage on three close/reopen cycles without a PID change; explicit Restart and Quit remain tested.
+
 ## 0.4.1 runtime fixes
 
 - Restore the floating Hyprland Island and global shortcut registration by fixing Lua regex quoting.

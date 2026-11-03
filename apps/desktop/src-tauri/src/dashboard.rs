@@ -76,6 +76,10 @@ fn window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
             return None;
         }
     };
+    #[cfg(target_os = "linux")]
+    if let Err(error) = crate::release_webview_ipc_on_destroy(&window) {
+        eprintln!("Could not attach dashboard WebView cleanup: {error}");
+    }
     let closing = window.clone();
     window.on_window_event(move |event| match event {
         tauri::WindowEvent::CloseRequested { api, .. } => {

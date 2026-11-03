@@ -130,7 +130,7 @@ pub fn pin_screen_capture(
     let width = f64::from(preview.width.clamp(180, 560)) + 28.0;
     let height = f64::from(preview.height.clamp(120, 340)) + 46.0;
     let script = format!("window.__ARCADE_PIN_IMAGE = {preview_js};");
-    crate::in_box_folder(WebviewWindowBuilder::new(
+    let _window = crate::in_box_folder(WebviewWindowBuilder::new(
         &app,
         &label,
         WebviewUrl::App(PathBuf::from("pin.html")),
@@ -145,6 +145,10 @@ pub fn pin_screen_capture(
     .initialization_script(&script)
     .build()
     .map_err(|error| format!("Could not open the pinned image window: {error}"))?;
+    #[cfg(target_os = "linux")]
+    if let Err(error) = crate::release_webview_ipc_on_destroy(&_window) {
+        eprintln!("Could not attach pinned image WebView cleanup: {error}");
+    }
 
     let message = if cfg!(target_os = "linux") && std::env::var_os("WAYLAND_DISPLAY").is_some() {
         "Pinned reference opened. The Wayland compositor may limit always-on-top behavior."

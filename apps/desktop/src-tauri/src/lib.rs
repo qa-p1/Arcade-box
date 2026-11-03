@@ -1372,6 +1372,50 @@ pub(crate) fn in_box_folder<'a, R: tauri::Runtime, M: tauri::Manager<R>>(
     }
 }
 
+#[cfg(target_os = "linux")]
+pub(crate) fn release_webview_ipc_on_destroy(window: &tauri::WebviewWindow) -> tauri::Result<()> {
+    use gtk::glib::{gobject_ffi, subclass::SignalId, translate::IntoGlib};
+    use gtk::prelude::{ObjectExt, ObjectType, WidgetExt};
+    use webkit2gtk::WebViewExt;
+
+    window.with_webview(|native| {
+        native.inner().connect_destroy(|webview| {
+            let Some(manager) = webview.user_content_manager() else {
+                return;
+            };
+            let Some(signal) = SignalId::lookup("script-message-received", manager.type_()) else {
+                return;
+            };
+            // Wry's IPC signal closure owns a strong WebView reference, while
+            // that view owns this manager. Break the cycle only on destruction.
+            // Each Wry view has its own manager, even when contexts are shared.
+            // SAFETY: manager stays strongly owned here on the GTK thread. The
+            // signal id belongs to its type; only handlers of that signal on
+            // this retiring manager are disconnected. Individual lookup works
+            // on older GLib versions where disconnect_matched lacks ID support.
+            unsafe {
+                let instance = manager.as_ptr().cast();
+                loop {
+                    let handler = gobject_ffi::g_signal_handler_find(
+                        instance,
+                        gobject_ffi::G_SIGNAL_MATCH_ID,
+                        signal.into_glib(),
+                        0,
+                        std::ptr::null_mut(),
+                        std::ptr::null_mut(),
+                        std::ptr::null_mut(),
+                    );
+                    if handler == 0 {
+                        break;
+                    }
+                    gobject_ffi::g_signal_handler_disconnect(instance, handler);
+                }
+            }
+        });
+    })?;
+    Ok(())
+}
+
 /// The existing Island, or a new one built from its `tauri.conf.json` entry
 /// (`"create": false`). Must run on the main thread.
 fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
@@ -1392,8 +1436,6 @@ fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
         state.ready = false;
         state.hiding = false;
     }
-    // A pending lean restart gives way to the new WebView.
-    ISLAND_RELEASES.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
     let window = match tauri::WebviewWindowBuilder::from_config(app, &config)
         .map(in_box_folder)
         .and_then(tauri::WebviewWindowBuilder::build)
@@ -1404,6 +1446,10 @@ fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
             return None;
         }
     };
+    #[cfg(target_os = "linux")]
+    if let Err(error) = release_webview_ipc_on_destroy(&window) {
+        eprintln!("Could not attach Island WebView cleanup: {error}");
+    }
     let close_window = window.clone();
     let destroyed_app = app.clone();
     window.on_window_event(move |event| match event {
@@ -1421,7 +1467,6 @@ fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
                 state.hiding = false;
             }
             reclaim_island_memory(destroyed_app.clone());
-            schedule_lean_restart(destroyed_app.clone());
         }
         _ => {}
     });
@@ -1454,58 +1499,8 @@ fn schedule_island_release(window: &tauri::WebviewWindow, delay: std::time::Dura
     });
 }
 
-/// How long the Island's WebView stays released before Box sheds its WebKit
-/// state with a restart.
-const LEAN_RESTART_AFTER: std::time::Duration = std::time::Duration::from_secs(20);
-
-/// Finished jobs keep their results in memory only; a restart waits this long
-/// after the last one so reopening the Island still shows it.
-const RESULTS_KEPT_FOR: std::time::Duration = std::time::Duration::from_secs(300);
-
-static ISLAND_RELEASES: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
-static LAST_JOB_UPDATE: Mutex<Option<std::time::Instant>> = Mutex::new(None);
-
-/// Destroying the Island's WebView leaves WebKit's context, its network
-/// process and the grown heap loaded: about 60 MiB more than a Box that never
-/// opened the Island. Once nothing needs the process, restart quietly into
-/// the background; the next Island costs one fresh WebView (well under a
-/// second).
-fn schedule_lean_restart(app: tauri::AppHandle) {
-    if !cfg!(target_os = "linux") || std::env::var_os("ARCADE_BOX_NO_LEAN_RESTART").is_some() {
-        return;
-    }
-    use std::sync::atomic::Ordering;
-    let generation = ISLAND_RELEASES.fetch_add(1, Ordering::SeqCst) + 1;
-    std::thread::spawn(move || {
-        loop {
-            std::thread::sleep(LEAN_RESTART_AFTER);
-            if ISLAND_RELEASES.load(Ordering::SeqCst) != generation
-                || !app.webview_windows().is_empty()
-            {
-                return;
-            }
-            let recent_result = LAST_JOB_UPDATE
-                .lock()
-                .unwrap_or_else(std::sync::PoisonError::into_inner)
-                .is_some_and(|at| at.elapsed() < RESULTS_KEPT_FOR);
-            if recent_result || link::busy(&app) {
-                continue;
-            }
-            let restart_app = app.clone();
-            let _ = app.run_on_main_thread(move || {
-                // Checked again on the main thread, where the Island is built.
-                if ISLAND_RELEASES.load(Ordering::SeqCst) == generation
-                    && restart_app.webview_windows().is_empty()
-                    && !link::busy(&restart_app)
-                {
-                    restart(&restart_app);
-                }
-            });
-            return;
-        }
-    });
-}
-
+// Window closure releases WebKit resources in place; it never replaces the
+// resident process or discards the in-memory results of completed jobs.
 /// Lets GTK/WebKit finish deferred destruction, then returns freed heap pages
 /// to the system once. No periodic timer.
 fn reclaim_island_memory(app: tauri::AppHandle) {
@@ -2199,10 +2194,6 @@ pub fn run(args: Vec<String>) {
             let jobs = JobManager::new(
                 runtime.clone(),
                 Arc::new(move |snapshot| {
-                    *LAST_JOB_UPDATE
-                        .lock()
-                        .unwrap_or_else(std::sync::PoisonError::into_inner) =
-                        Some(std::time::Instant::now());
                     link::job_update(&event_app, &snapshot);
                     let _ = event_app.emit("arcade://job-update", snapshot);
                 }),

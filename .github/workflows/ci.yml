@@ -95,8 +95,11 @@ jobs:
         if: runner.os == 'Linux'
         shell: bash
         run: |
-          sudo apt-get install -y xvfb dbus-x11
+          sudo apt-get install -y xvfb dbus-x11 xdotool
           dbus-run-session -- xvfb-run -a python3 scripts/verify-appimage.py target/release/bundle/appimage/*.AppImage arcade.box Arcade-Box.AppImage arcade-desktop
+      - name: Verify Island close/reopen keeps the resident process
+        if: runner.os == 'Linux'
+        run: dbus-run-session -- xvfb-run -a python3 scripts/verify-resident.py target/release/bundle/appimage/*.AppImage arcade.box
       - name: Tray icon registration (real StatusNotifierWatcher, isolated)
         if: runner.os == 'Linux'
         shell: bash
