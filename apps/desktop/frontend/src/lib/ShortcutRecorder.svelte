@@ -96,7 +96,7 @@
     {:else if value}
       <span class="key-chip-list">{#each chordParts(value) as part, i (`${part}-${i}`)}<kbd class="key-chip">{part}</kbd>{/each}</span>
     {:else}
-      <span class="faint">No shortcut</span>
+      <span class="muted">No shortcut</span>
     {/if}
   </button>
   {#if defaultValue !== undefined && normalizeChord(value) !== normalizeChord(defaultValue)}

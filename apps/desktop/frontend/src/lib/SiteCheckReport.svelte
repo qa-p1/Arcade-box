@@ -51,6 +51,6 @@
   dd { margin: 0; min-width: 0; overflow-wrap: anywhere; color: var(--ink); }
   dd div + div { margin-top: 2px; }
   code { font-size: var(--fs-caption); color: var(--ink-2); }
-  .bad { color: var(--red); }
+  .bad { color: var(--danger-ink); }
   .note { margin: 0; font-size: var(--fs-small); color: var(--ink-3); }
 </style>

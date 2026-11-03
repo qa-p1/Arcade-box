@@ -101,7 +101,7 @@
   .island-mark { width: 24px; height: 24px; }
   .shortcut-hint { flex: none; }
   .search-panel, .context-panel { max-height: min(56dvh, 452px); padding: var(--sp-4) var(--sp-6) var(--sp-6); overscroll-behavior: contain; }
-  .group-label { padding: var(--sp-10) var(--sp-10) var(--sp-4); color: var(--faint); }
+  .group-label { padding: var(--sp-10) var(--sp-10) var(--sp-4); color: var(--muted); }
   .result-row { position: relative; min-width: 0; }
   .overlay-row { width: 100%; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; }
   .overlay-row .row-main { display: grid; min-width: 0; }
@@ -110,7 +110,7 @@
   .result-row .key-chip { position: absolute; right: 44px; top: 50%; transform: translateY(-50%); }
   .favorite { position: absolute; top: 50%; right: var(--sp-8); transform: translateY(-50%); opacity: 0; }
   .result-row:hover .favorite, .favorite:focus-visible, .favorite.on { opacity: 1; }
-  .favorite.on { color: var(--accent); }
+  .favorite.on { color: var(--accent-ink); }
   .suggestion-reason { flex: 0 1 45%; margin: 0; text-align: right; }
   .island-empty { display: grid; justify-items: center; gap: var(--sp-4); padding: var(--sp-24) var(--sp-16); color: var(--muted); text-align: center; }
   .island-empty strong { color: var(--text); font-weight: var(--fw-medium); }

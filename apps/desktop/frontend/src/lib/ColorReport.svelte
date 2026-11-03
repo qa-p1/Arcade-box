@@ -36,6 +36,6 @@
   .ratio { margin: 0; font-size: var(--fs-body); color: var(--ink-2); }
   .ratio strong { color: var(--ink); font-size: var(--fs-heading); }
   .grades { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
-  .grades li { padding: 4px 9px; border-radius: 999px; font-size: var(--fs-small); color: var(--red); background: var(--red-wash); }
-  .grades li.pass { color: var(--mint); background: var(--mint-wash); }
+  .grades li { padding: 4px 9px; border-radius: 999px; font-size: var(--fs-small); color: var(--danger-ink); background: var(--red-wash); }
+  .grades li.pass { color: var(--ok-ink); background: var(--mint-wash); }
 </style>

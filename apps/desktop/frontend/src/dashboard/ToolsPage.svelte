@@ -99,7 +99,7 @@
   .tool-badge { grid-column: 2; justify-self: start; margin-top: var(--sp-6); }
   .favorite { position: absolute; top: var(--sp-10); right: var(--sp-10); opacity: 0; }
   .tool-card-wrap:hover .favorite, .favorite:focus-visible, .favorite.on { opacity: 1; }
-  .favorite.on { color: var(--accent); }
+  .favorite.on { color: var(--accent-ink); }
   .skeleton-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: var(--sp-8) var(--sp-12); }
   .skeleton.tile { grid-row: 1 / 3; width: var(--tile); height: var(--tile); border-radius: var(--radius-tile); }
   .skeleton.short { width: 60%; }

@@ -380,8 +380,8 @@
   .video-assist { display: grid; gap: 10px; margin: 12px 14px 0; }
   .assist-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; color: var(--ink-3); font-size: var(--fs-caption); font-variant-numeric: tabular-nums; }
   .assist-note { margin: 0; color: var(--ink-3); font-size: var(--fs-caption); line-height: 1.45; }
-  .assist-note.warning { color: var(--amber); }
-  .assist-error { margin: 0; color: var(--red); font-size: var(--fs-small); line-height: 1.45; }
+  .assist-note.warning { color: var(--warn-ink); }
+  .assist-error { margin: 0; color: var(--danger-ink); font-size: var(--fs-small); line-height: 1.45; }
   .assist-loading { display: flex; align-items: center; gap: 8px; min-height: 56px; color: var(--ink-3); font-size: var(--fs-small); }
 
   .filmstrip { display: flex; width: 100%; height: 100%; }
@@ -406,5 +406,5 @@
   .track-copy { display: grid; min-width: 0; flex: 1; gap: 1px; }
   .track-copy strong { overflow: hidden; color: var(--ink); font-size: var(--fs-control); font-weight: 550; text-overflow: ellipsis; white-space: nowrap; text-transform: capitalize; }
   .track-copy small { color: var(--ink-3); font-size: var(--fs-caption); }
-  .track-chip { padding: 2px 6px; border-radius: 6px; color: var(--amber); background: var(--amber-wash); font-size: var(--fs-caption); font-weight: 600; }
+  .track-chip { padding: 2px 6px; border-radius: 6px; color: var(--warn-ink); background: var(--amber-wash); font-size: var(--fs-caption); font-weight: 600; }
 </style>

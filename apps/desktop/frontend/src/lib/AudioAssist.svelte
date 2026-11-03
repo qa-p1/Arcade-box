@@ -406,9 +406,9 @@
 <style>
   .audio-assist { display: grid; gap: 10px; margin: 12px 14px 0; }
   .assist-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; color: var(--ink-3); font-size: var(--fs-caption); font-variant-numeric: tabular-nums; }
-  .chip { padding: 1px 6px; border-radius: 6px; color: var(--mint); background: var(--mint-wash); font-size: var(--fs-caption); font-weight: 600; }
+  .chip { padding: 1px 6px; border-radius: 6px; color: var(--ok-ink); background: var(--mint-wash); font-size: var(--fs-caption); font-weight: 600; }
   .assist-note { margin: 0; color: var(--ink-3); font-size: var(--fs-caption); line-height: 1.45; }
-  .assist-error { margin: 0; color: var(--red); font-size: var(--fs-small); line-height: 1.45; }
+  .assist-error { margin: 0; color: var(--danger-ink); font-size: var(--fs-small); line-height: 1.45; }
   .assist-loading { display: flex; align-items: center; gap: 8px; min-height: 40px; color: var(--ink-3); font-size: var(--fs-small); }
 
   .waveform { width: 100%; height: 100%; }
