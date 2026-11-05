@@ -380,7 +380,7 @@ dependencies = [
 
 [[package]]
 name = "arcade-desktop"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [
  "arcade-contract",
  "arcade-core",
@@ -409,6 +409,7 @@ dependencies = [
  "tempfile",
  "tokio",
  "url",
+ "webkit2gtk",
  "windows-capture",
  "windows-sys 0.61.2",
 ]
@@ -447,7 +448,7 @@ dependencies = [
 
 [[package]]
 name = "arcadebox"
-version = "0.4.1"
+version = "0.4.2"
 dependencies = [
  "arcade-contract",
  "arcade-core",
