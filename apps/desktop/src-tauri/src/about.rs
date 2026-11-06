@@ -103,7 +103,7 @@ pub fn open_tools() -> Result<(), String> {
         .get(arcade_link::ids::TOOLS)
         .ok_or("Arcade Tools isn't installed.")?;
     let mut command = std::process::Command::new(&manifest.executable);
-    arcade_link::childenv::detach_from_image(&mut command)
+    arcade_link::childenv::sanitize(&mut command)
         .spawn()
         .map(|_| ())
         .map_err(|e| format!("Couldn't open Arcade Tools: {e}"))

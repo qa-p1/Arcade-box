@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.3
+
+- Clear inherited AppImage library/launcher paths when explicitly restarting Box or opening Arcade Tools from About.
+- Restore vertical scrolling in the dashboard content pane so the complete tool catalog and Settings remain reachable. Support keyboard scrolling and reset the pane to the top when changing pages or categories.
+- Make the catalog search shortcut open and focus Tools search from dashboard pages without a search field.
+- Check real mouse-wheel and keyboard scrolling, bottom reachability, sidebar focus, page changes and search shortcuts across dashboard sizes and themes, including larger text. The native package gate checks scrolling in the real tool catalog and Settings too.
+
 ## 0.4.2
 
 - Release closed Linux WebViews by disconnecting their retiring IPC callback, breaking Wry’s reference cycle without restarting the app. Native package checks require zero renderer processes after each close/reopen cycle.

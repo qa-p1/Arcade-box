@@ -14,13 +14,27 @@ addEventListener('DOMContentLoaded', async () => {
     input.value = value;
     input.dispatchEvent(new Event('input', { bubbles: true }));
   };
+  const scrollContent = async (description) => {
+    const pane = await wait(() => document.querySelector('.shell-main'), description);
+    if (!['auto', 'scroll'].includes(getComputedStyle(pane).overflowY)) throw new Error(`${description}: content has no vertical scroller`);
+    const rect = pane.getBoundingClientRect();
+    if (rect.bottom > innerHeight + 1 || rect.top < -1) throw new Error(`${description}: content extends outside window`);
+    // Catalog mounting and native window mapping are asynchronous. Wait for
+    // the full layout rather than inspecting the first inserted card.
+    await wait(() => pane.clientHeight > 0 && pane.scrollHeight > pane.clientHeight + 2, `${description} overflowing layout`);
+    pane.scrollTop = pane.scrollHeight;
+    await wait(() => pane.scrollTop > 0 && Math.abs(pane.scrollHeight - pane.clientHeight - pane.scrollTop) <= 2, `${description} bottom`);
+    pane.scrollTop = 0;
+  };
   try {
     if (document.documentElement.dataset.surface === 'dashboard') {
       await wait(() => document.querySelector('.tool-card'), 'native catalog');
+      await scrollContent('native tool catalog scroll');
       // Test the settings-page event handshake too: without dashboard event
       // permissions dashboard_ready never runs and page selection is lost.
       await invoke('open_dashboard', { page: 'settings' });
       await wait(() => document.querySelector('#settings-general'), 'dashboard Settings handoff');
+      await scrollContent('native Settings scroll');
       await invoke('set_preference', { key: 'onboarding_complete', value: 'true' });
       await invoke('open_dashboard', { page: 'all' });
       const card = await wait(() => [...document.querySelectorAll('.tool-card')]

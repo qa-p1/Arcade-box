@@ -756,8 +756,14 @@ export function createBox() {
       // A normal window: Esc doesn't close it; ⌘K and / go to the catalog search.
       if ((command && event.key.toLowerCase() === 'k') || (event.key === '/' && !isEditableTarget(event.target))) {
         event.preventDefault();
-        catalogSearchInput?.focus();
-        catalogSearchInput?.select();
+        if (!catalogSearchInput?.isConnected) {
+          catalogMode = 'all';
+          categoryFilter = 'All tools';
+        }
+        void tick().then(() => {
+          catalogSearchInput?.focus();
+          catalogSearchInput?.select();
+        });
       }
       return;
     }
