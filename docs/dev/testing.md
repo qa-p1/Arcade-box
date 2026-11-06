@@ -47,3 +47,10 @@ CI also bundles each installer and checks it in a disposable profile:
 `scripts/verify-appimage.py`, `scripts/verify-nsis.ps1` and
 `scripts/verify-dmg.sh` install, repair and uninstall the real package. See
 [packaging](packaging.md) and [release](release.md).
+
+The Linux tray gate uses the pinned Link runner's debug CLI, which the runner
+builds before starting its private desktop. Both workspaces participate in Rust
+caching; CI no longer builds a second release CLI solely for this test. Every
+ref restores caches, but only main pushes save them so the cache can be reused
+by future PRs and release tags. All installer and resident-process gates still
+run on every supported OS as applicable.
