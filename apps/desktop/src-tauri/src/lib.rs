@@ -1929,7 +1929,7 @@ const RESTART_ENV: &str = "ARCADE_BOX_RESTART_AFTER";
 fn restart(app: &tauri::AppHandle) {
     let mut command = std::process::Command::new(arcade_link::manifest::current_executable());
     // The successor runs from a new mount; it mustn't keep this one alive.
-    let started = arcade_link::childenv::detach_from_image(&mut command)
+    let started = arcade_link::childenv::sanitize(&mut command)
         .arg("--background")
         .env(RESTART_ENV, std::process::id().to_string())
         .spawn();
