@@ -34,6 +34,13 @@ dashboard page at 720×520, 1100×760 and 1600×1000, in light and dark.
 Scrolling containers and ellipsised text are allowed. Set
 `PLAYWRIGHT_CHROMIUM` to use a Chromium that is already installed.
 
+The same check scrolls dashboard pages with a real mouse wheel and keyboard,
+requires the bottom of long pages to be reachable, checks independent sidebar
+focus/scrolling, and verifies page changes and the search shortcut from Settings.
+Minimum-size Settings also runs with 125% text. The native package UI check
+requires both the real catalog and Settings to have bounded, working scroll
+containers before exercising the Calculator handoff.
+
 ## Packaged builds
 
 CI also bundles each installer and checks it in a disposable profile:

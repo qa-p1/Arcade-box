@@ -31,6 +31,47 @@ async function check(page, label, theme) {
   if (found.length) failures.push(`${label} (${theme}): ${found.join(', ')}`);
 }
 
+async function checkScroll(page, label, selector, required = false) {
+  const pane = page.locator(selector);
+  const metrics = await pane.evaluate((el) => {
+    el.scrollTop = 0;
+    const r = el.getBoundingClientRect();
+    return { range: el.scrollHeight - el.clientHeight, top: r.top, bottom: r.bottom, viewport: innerHeight };
+  });
+  if (metrics.top < -1 || metrics.bottom > metrics.viewport + 1) {
+    failures.push(`${label}: scroll pane extends outside the window`);
+    return;
+  }
+  if (metrics.range <= 2) {
+    if (required) failures.push(`${label}: expected a long, scrollable page`);
+    return;
+  }
+  await pane.hover({ position: { x: 15, y: 80 } });
+  await page.mouse.wheel(0, 480);
+  try {
+    await page.waitForFunction((selector) => document.querySelector(selector).scrollTop > 20, selector, { timeout: 1500 });
+  } catch {
+    failures.push(`${label}: mouse wheel cannot scroll the content`);
+  }
+  await pane.evaluate((el) => { el.scrollTop = el.scrollHeight; });
+  const atEnd = await pane.evaluate((el) => Math.abs(el.scrollHeight - el.clientHeight - el.scrollTop) <= 2);
+  if (!atEnd) failures.push(`${label}: bottom of content is unreachable`);
+  await pane.evaluate((el) => { el.scrollTop = 0; });
+  if (selector === '.shell-main') {
+    await pane.focus();
+    await page.keyboard.press('PageDown');
+    try {
+      await page.waitForFunction(() => document.querySelector('.shell-main').scrollTop > 20, null, { timeout: 1500 });
+    } catch {
+      failures.push(`${label}: PageDown cannot scroll the focused content`);
+    }
+    await page.keyboard.press('Control+End');
+    await page.waitForTimeout(200);
+    if (!await pane.evaluate((el) => Math.abs(el.scrollHeight - el.clientHeight - el.scrollTop) <= 2)) failures.push(`${label}: keyboard cannot reach the bottom`);
+    await pane.evaluate((el) => { el.scrollTop = 0; });
+  }
+}
+
 try {
   for (let i = 0; i < 80; i++) { try { await fetch(base); break; } catch { await new Promise((resolve) => setTimeout(resolve, 250)); } }
   const browser = await chromium.launch(process.env.PLAYWRIGHT_CHROMIUM ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM } : {});
@@ -64,6 +105,36 @@ try {
           await page.locator('.dashboard-sidebar .tab-list').first().getByRole('button', { name: new RegExp(`^${name}`) }).click();
           await page.waitForTimeout(150);
           await check(page, `Dashboard ${name} ${size}`, theme);
+          await checkScroll(page, `Dashboard ${name} ${size} ${theme}`, '.shell-main', ['Tools', 'Settings'].includes(name));
+        }
+        // Search shortcuts must work from pages with no mounted search field.
+        await page.keyboard.press('Control+k');
+        try {
+          await page.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'Search tools', null, { timeout: 1500 });
+        } catch { failures.push(`Dashboard ${size} ${theme}: search shortcut from Settings did not focus Tools search`); }
+        const content = page.locator('.shell-main');
+        await content.evaluate((el) => { el.scrollTop = el.scrollHeight; });
+        await page.getByRole('button', { name: /^Settings$/, exact: true }).click();
+        await page.waitForTimeout(100);
+        if (!await content.evaluate((el) => el.scrollTop === 0)) failures.push(`Dashboard ${size} ${theme}: new page retained the previous scroll position`);
+        await checkScroll(page, `Sidebar categories ${size} ${theme}`, '.category-list');
+        const lastCategory = page.locator('.category-list button').last();
+        await lastCategory.focus();
+        const categoryVisible = await lastCategory.evaluate((el) => {
+          const r = el.getBoundingClientRect(), parent = el.closest('.category-list').getBoundingClientRect();
+          return r.top >= parent.top - 1 && r.bottom <= parent.bottom + 1;
+        });
+        if (!categoryVisible) failures.push(`Sidebar ${size} ${theme}: keyboard focus leaves a category clipped`);
+        if (width === 720) {
+          await page.evaluate(() => {
+            const style = getComputedStyle(document.documentElement);
+            for (const name of Array.from(style).filter(name => name.startsWith('--fs-') || name.startsWith('--lh-'))) {
+              const value = style.getPropertyValue(name).trim();
+              if (value.endsWith('px')) document.documentElement.style.setProperty(name, `${parseFloat(value) * 1.25}px`);
+            }
+          });
+          await check(page, `Dashboard Settings ${size} 125% text`, theme);
+          await checkScroll(page, `Dashboard Settings ${size} 125% text ${theme}`, '.shell-main', true);
         }
         await page.close();
       }
@@ -78,4 +149,4 @@ if (failures.length) {
   console.error(`Layout check failed:\n  ${failures.join('\n  ')}`);
   process.exit(1);
 }
-console.log('Layout check: nothing overflows in the Island or the dashboard');
+console.log('Layout/UX check: Island and all dashboard pages fit; wheel/keyboard scrolling, page reset, sidebar focus and search shortcut pass in both themes, including 125% text');

@@ -1,5 +1,19 @@
 # Arcade Box: status
 
+## 0.4.3 dashboard usability follow-up (2026-11-06)
+
+The dashboard clips its outer frame, but the main content pane had no scroll
+container. Long catalogs and Settings were cut off. The pane now scrolls with
+the mouse wheel and keyboard, independently of the category sidebar. Changing
+pages/categories returns it to the heading. The search shortcut also opens the
+catalog from pages where no search field is mounted.
+
+The previous layout gate only checked horizontal overflow. Its expanded checks
+exercise wheel/PageDown/End, reaching the bottom, page changes, sidebar focus
+and search from Settings in both themes and three dashboard sizes, with larger
+text at minimum size. The actual WebView package gate also requires a bounded,
+scrollable native catalog and Settings pane before running Calculator.
+
 ## 0.4.1 candidate (2026-11-02)
 
 - Follow-up patch: pins Link and the design kit to `v0.4.15`; secondary text
