@@ -121,10 +121,16 @@ d.wait(lambda: SHORTCUT in d.bound_shortcuts(), 30, "the Island shortcut to be b
 
 try:
     # The shortcut opens the Island and, pressed again, closes it.
+    # The first press creates the Island's WebView, which shows only once its page reports ready (show_island's
+    # pending_show); with software rendering on a CI runner that first load takes seconds, so allow it 30.
+    started = time.monotonic()
     press()
-    shown = island_shown()
-    check("The shortcut opens the Island", bool(shown))
+    shown = island_shown(30)
+    check("The shortcut opens the Island", bool(shown), f"first show after {time.monotonic() - started:.1f} s")
     if not shown:
+        clients = subprocess.run(["hyprctl", "clients"], capture_output=True, text=True).stdout
+        webkit = subprocess.run(["pgrep", "-af", "WebKit|arcade|Arcade"], capture_output=True, text=True).stdout
+        print(f"--- hyprctl clients\n{clients}--- processes\n{webkit}", flush=True)
         fail("the Island never opened; nothing else can be checked")
     check("The Island is dev.arcade.Box, titled Arcade Box (ID-1)", shown.get("class") == CLASS, shown.get("class", ""))
     check("The Island floats", bool(shown.get("floating")))
