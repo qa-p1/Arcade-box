@@ -1,0 +1,9 @@
+Box --show motion probe (ARCADE_MOTION_PROBE=1; 700 ms of requestAnimationFrame intervals after each show), compositing on vs off. avgMs/p95Ms/maxMs per show.
+Xvfb (:98, llvmpipe), isolated HOME, AppImage Box 0.4.3
+comp   : 17.26/17/67/1 16.31/17/31/1 16.09/16/32/1 16.14/17/31/1 16.19/16/32/1   (avg/p95/max/over25 frames)
+nocomp : 15.93/17/19/0 15.93/16/17/0 15.93/16/17/0 15.95/16/17/0 15.95/16/17/0
+comp2  : 17.31/17/69/1 16.02/17/31/1 16.16/17/31/1 16.26/17/31/1 16.31/17/31/1
+nocomp2: 15.93/17/19/0 15.93/16/17/0 15.95/17/17/0 15.95/16/17/0 15.95/16/17/0
+Real Wayland session (owner's GPU), isolated instance (no Hyprland env), 4 shows each
+comp   : 16.2/17/113/1  14.72/16/45/1  14.54/15/46/1  14.63/16/45/1
+nocomp : 15.38/21/38/1  15.04/20/40/1  15.07/22/31/1  15.07/19/31/1
