@@ -110,17 +110,89 @@ fn status_prints_one_json_line_without_starting_box() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG CLI-2")]
-fn known_bug_an_unknown_argument_prints_usage_and_exits_2() {
+fn an_unknown_argument_prints_usage_and_exits_2() {
     let home = profile();
-    let out = run(home.path(), &["--no-such-option"]);
-    let ok = out.as_ref().is_some_and(|out| {
-        out.status.code() == Some(2)
-            && String::from_utf8_lossy(&out.stderr).contains("arcade-desktop --status")
-    });
-    assert!(
-        ok,
-        "KNOWN BUG CLI-2: {:?}",
-        out.map(|out| out.status.code())
+    for args in [
+        &["--no-such-option"][..],
+        &["--show", "extra"],
+        &["--install", "--channel"],
+    ] {
+        let out = run(home.path(), args).expect("arcade-desktop ran");
+        assert_eq!(out.status.code(), Some(2), "{args:?}");
+        assert!(
+            String::from_utf8_lossy(&out.stderr).contains("arcade-desktop --status"),
+            "{args:?}: no usage on stderr"
+        );
+    }
+    assert_eq!(
+        files(home.path()),
+        ["run"],
+        "a refused argument created files"
     );
+}
+
+/// RT-4: a fatal signal leaves one report in Box's crash folder, which nothing created before the crash.
+#[cfg(target_os = "linux")]
+#[test]
+fn a_fatal_signal_leaves_a_crash_report() {
+    use std::os::unix::process::ExitStatusExt;
+    let home = profile();
+    let crashes = home.path().join(".local/share/arcade/box/crashes");
+    let mut child = Command::new(env!("CARGO_BIN_EXE_arcade-desktop"))
+        .arg("--arcade-invoke")
+        .env_clear()
+        .env("PATH", std::env::var_os("PATH").unwrap_or_default())
+        .env("HOME", home.path())
+        .env("ARCADE_HOME", home.path().join(".local/share/arcade"))
+        .env("XDG_DATA_HOME", home.path().join(".local/share"))
+        .env("XDG_CONFIG_HOME", home.path().join(".config"))
+        .env("XDG_RUNTIME_DIR", home.path().join("run"))
+        .stdin(Stdio::piped())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .unwrap();
+    // The handler is installed first thing in main; once Box blocks reading its request from stdin it is in place.
+    let reading = |pid: u32| {
+        std::fs::read_to_string(format!("/proc/{pid}/syscall")).is_ok_and(|s| {
+            let mut fields = s.split_whitespace();
+            let (call, fd) = (fields.next(), fields.next());
+            // read(2) is 0 on x86_64 and 63 on aarch64; the first argument is fd 0.
+            matches!(call, Some("0" | "63")) && fd == Some("0x0")
+        })
+    };
+    let start = Instant::now();
+    while !reading(child.id()) {
+        assert!(
+            child.try_wait().unwrap().is_none(),
+            "--arcade-invoke exited early"
+        );
+        assert!(
+            start.elapsed() < Duration::from_secs(20),
+            "--arcade-invoke never read stdin"
+        );
+        std::thread::sleep(Duration::from_millis(20));
+    }
+    assert!(
+        !crashes.exists(),
+        "the crash folder exists before any crash"
+    );
+    unsafe { libc::kill(child.id() as i32, libc::SIGSEGV) };
+    let status = child.wait().unwrap();
+    assert_eq!(status.signal(), Some(libc::SIGSEGV), "{status:?}");
+    let reports: Vec<_> = std::fs::read_dir(&crashes)
+        .expect("no crash folder")
+        .flatten()
+        .map(|e| e.path())
+        .filter(|p| p.extension().is_some_and(|e| e == "crash"))
+        .collect();
+    assert_eq!(reports.len(), 1, "{reports:?}");
+    let text = std::fs::read_to_string(&reports[0]).unwrap();
+    for needle in [
+        "app: Arcade Box",
+        concat!("version: ", env!("CARGO_PKG_VERSION")),
+        "signal: 11",
+    ] {
+        assert!(text.contains(needle), "missing {needle:?} in\n{text}");
+    }
 }
