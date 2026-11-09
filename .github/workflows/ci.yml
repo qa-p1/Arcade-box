@@ -144,10 +144,10 @@ jobs:
   # Tier 1: the Island on headless Hyprland (Link's desktop harness), from the AppImage built above.
   desktop:
     needs: check
-    uses: qa-p1/Arcade-Link/.github/workflows/desktop-e2e.yml@f9a145293119c1990192a59b33499cb089271ff4
+    uses: qa-p1/Arcade-Link/.github/workflows/desktop-e2e.yml@79a852192237544c0bdb1b111e946206b2998c78
     with:
       name: box
       test: tests/desktop/island_desktop.py
       args: '"$APP"'
       artifact: arcade-box-appimage
-      link-ref: f9a145293119c1990192a59b33499cb089271ff4
+      link-ref: 79a852192237544c0bdb1b111e946206b2998c78
