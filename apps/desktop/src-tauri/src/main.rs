@@ -27,18 +27,10 @@ const HELP: &str = "Arcade Box
 Terminal tools: arcade-box (alias arcadebox) --help";
 
 fn main() {
-    // First, while Box has one thread: WebKit's processes inherit it (Link D13, Tools D18).
-    arcade_link::runtime::cap_malloc_arenas();
     arcade_link::childenv::on_startup();
     let args: Vec<String> = std::env::args().skip(1).collect();
     if let Some(code) = arcade_desktop::installer::run_terminal_alias(&args) {
         std::process::exit(code);
-    }
-    // ARCADE_APP.md CLI-2: anything else is a mistake, reported before Box starts or hands it to a running copy.
-    if let Err(arg) = check_args(&args) {
-        arcade_desktop::attach_console();
-        eprintln!("arcade-desktop: unknown argument {arg:?}\n\n{HELP}");
-        std::process::exit(2);
     }
     // The terminal tools above resolve relative paths against the user's
     // directory; the Island and Settings are webviews, and WebKit needs the
@@ -122,47 +114,6 @@ fn integration_command(args: &[String]) -> Result<(), String> {
     };
     if !output.is_empty() {
         println!("{output}");
-    }
-    Ok(())
-}
-
-/// Every argument `arcade-desktop` accepts; `--channel` takes a value.
-const FLAGS: &[&str] = &[
-    "--background",
-    "--show",
-    "--hide",
-    "--toggle",
-    "--dashboard",
-    "--settings",
-    "--pipelines",
-    "--restart",
-    "--quit",
-    "--install",
-    "--silent",
-    "--no-launch",
-    "--keep-download",
-    "--uninstall",
-    "--remove-data",
-    "--repair",
-    "--integration-status",
-    "--status",
-    "--version",
-    "-V",
-    "--help",
-    "-h",
-    "--arcade-manifest",
-    "--arcade-invoke",
-];
-
-fn check_args(args: &[String]) -> Result<(), String> {
-    let mut rest = args.iter();
-    while let Some(arg) = rest.next() {
-        if arg == "--channel" {
-            rest.next().ok_or_else(|| arg.clone())?;
-        } else if !FLAGS.contains(&arg.as_str()) && !arg.starts_with("-psn_") {
-            // -psn_* is added by macOS when Finder starts an app bundle.
-            return Err(arg.clone());
-        }
     }
     Ok(())
 }
