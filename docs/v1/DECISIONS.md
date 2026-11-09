@@ -38,3 +38,16 @@ the spec asks for, which comes with the packaging change (the current AppImage h
 BR-17 (no shortcut on xdg-desktop-portal < 1.19) and BR-18 (no CSP in the Island and dashboard) were found after the
 audit, while moving Box to Link 1.0.6 (`docs/v1/audit/box-real.md`). They are P1, fixed in step 3 with the other
 P0/P1 fixes, each with a test that fails first; SECURITY.md says the CSP is missing until then rather than claim it.
+
+## D5 — Dependencies: Wasmtime 36 LTS, cargo deny over the workspace
+
+`cargo deny --workspace` found 30 advisories in Wasmtime 38.0.4, among them WASI permission bypasses and sandbox
+escapes, plus zip 8 (two copies, one through rust_xlsxwriter), calamine 0.36, tokio and pulldown-cmark. Wasmtime 38 is
+out of support. Its current line (50.0.1) needs Rust 1.97, and Box builds on 1.88 like the rest of the fleet, while
+the 36 LTS line (36.0.20, Rust 1.86) has every fix and none of the later regressions (those advisories mark 36 as
+unaffected). Box therefore pins Wasmtime and wasmtime-wasi to `=36.0.20`. All ten plugin sandbox tests pass on it
+(`plugin_security.rs`). zip 9.5, calamine 0.38 and rust_xlsxwriter 0.102 clear the rest; `.cargo/config.toml` makes
+Cargo pick versions that support Rust 1.88. The accepted advisories in `deny.toml` each carry a reason: the
+crypto-bigint timing issue is in age's P-256 code, which Box never calls, and the rest are "unmaintained" notices
+with no replacement available. Box's own crates are `publish = false` and GPL-3.0-or-later; `licenses.private`
+keeps cargo deny from judging them.

@@ -1,0 +1,3 @@
+# Resolve to dependency versions that support the workspace rust-version (1.88), as Arcade Tools does.
+[resolver]
+incompatible-rust-versions = "fallback"

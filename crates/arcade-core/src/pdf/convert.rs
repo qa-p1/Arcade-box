@@ -408,7 +408,9 @@ fn pptx(bytes: &[u8]) -> Result<Vec<Block>, String> {
         .map_err(|error| format!("Not a readable presentation ({error})"))?;
     let mut slides: Vec<(u32, String)> = archive
         .file_names()
+        // zip 9: a name that is not valid UTF-8 is an error; no slide has one.
         .filter_map(|name| {
+            let name = name.ok()?;
             let number = name
                 .strip_prefix("ppt/slides/slide")?
                 .strip_suffix(".xml")?

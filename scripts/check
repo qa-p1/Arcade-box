@@ -26,3 +26,4 @@ step "$python" scripts/isolate.py cargo test --workspace --locked
 step cargo build -p arcade-desktop --locked
 step "$python" catalog/render_tool_matrix.py --check
 step "$python" scripts/license_inventory.py --check
+step "$python" scripts/notices.py --check

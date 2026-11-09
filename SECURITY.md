@@ -20,5 +20,8 @@ installed copies to roll back.
 ## Dependencies
 
 `cargo deny check` (advisories, licences, bans, sources) runs in CI; Dependabot watches Cargo, npm and GitHub
-Actions. Accepted advisories are listed with a reason in `deny.toml`. Third-party licences, including the native
+Actions. Accepted advisories are listed with a reason in `deny.toml`: a timing issue in crypto-bigint 0.5, which
+only age's P-256 recipients use (Box encrypts with X25519 and scrypt only), and "unmaintained" notices (no known
+vulnerability) for crates that come through Tauri, gtk-rs, zbus 5, rav1e and age with no maintained replacement yet.
+Plugins run on Wasmtime's 36 LTS line, which receives security fixes. Third-party licences, including the native
 libraries in the Linux AppImage, are in `THIRD_PARTY_NOTICES.md` (`scripts/notices.py`, `scripts/native-notices.py`).
