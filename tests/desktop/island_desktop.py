@@ -104,9 +104,12 @@ except AssertionError:
     fail(f"the shortcut was never bound: {d.bound_shortcuts()}")
 run("--quit")
 resident.wait(timeout=30)
-databases = [p for p in Path(home, ".local/share/arcade/box").rglob("*") if p.suffix in (".db", ".sqlite", ".sqlite3")]
+# ARCADE_HOME is the isolated profile root: Box's data folder is arcade/box under its .local/share (Link paths).
+data = Path(env["ARCADE_HOME"], ".local/share/arcade/box")
+databases = [p for p in data.rglob("*") if p.suffix in (".db", ".sqlite", ".sqlite3")]
 if not databases:
-    fail("no Box database after the first start")
+    found = sorted(str(p.relative_to(home)) for p in Path(home).rglob("*") if p.is_file() and "Downloads" not in p.parts)
+    fail(f"no Box database in {data} after the first start; files in the profile: {found[:40]}")
 with sqlite3.connect(databases[0]) as db:
     db.execute("INSERT OR REPLACE INTO settings (key, value) VALUES ('onboarding_complete', 'true')")
 
