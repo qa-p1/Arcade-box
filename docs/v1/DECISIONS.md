@@ -32,3 +32,9 @@ The desktop test runs in one harness job with several checks rather than one job
 BR-12 (a re-show keeps the old tool) is locked in the key tests only: the harness cannot read the page, and the
 re-show path is the same frontend code. BR-3/BR-10 (GStreamer) are packaging findings locked by the media smoke test
 the spec asks for, which comes with the packaging change (the current AppImage has no plugins to test against).
+
+## D4 — Two findings from the 1.0 work, fixed in step 3
+
+BR-17 (no shortcut on xdg-desktop-portal < 1.19) and BR-18 (no CSP in the Island and dashboard) were found after the
+audit, while moving Box to Link 1.0.6 (`docs/v1/audit/box-real.md`). They are P1, fixed in step 3 with the other
+P0/P1 fixes, each with a test that fails first; SECURITY.md says the CSP is missing until then rather than claim it.

@@ -4,6 +4,15 @@
       "binaries/arcade-box",
       "binaries/arcade-plugin-worker"
     ],
+    "linux": {
+      "appimage": {
+        "files": {
+          "/usr/share/applications/dev.arcade.Box.desktop": "../../../packaging/linux/dev.arcade.Box.desktop",
+          "/usr/share/icons/hicolor/scalable/apps/dev.arcade.Box.svg": "../../../packaging/linux/dev.arcade.Box.svg",
+          "/usr/share/icons/hicolor/symbolic/apps/dev.arcade.Box-symbolic.svg": "../../../packaging/linux/dev.arcade.Box-symbolic.svg"
+        }
+      }
+    },
     "windows": {
       "nsis": {
         "installMode": "currentUser"
