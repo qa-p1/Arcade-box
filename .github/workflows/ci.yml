@@ -132,3 +132,14 @@ jobs:
           name: arcade-box-${{ matrix.bundle }}
           if-no-files-found: error
           path: ${{ matrix.installer }}
+
+  # Tier 1: the Island on headless Hyprland (Link's desktop harness), from the AppImage built above.
+  desktop:
+    needs: check
+    uses: qa-p1/Arcade-Link/.github/workflows/desktop-e2e.yml@v1.0.5
+    with:
+      name: box
+      test: tests/desktop/island_desktop.py
+      args: '"$APP"'
+      artifact: arcade-box-appimage
+      link-ref: v1.0.5

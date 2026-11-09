@@ -16,3 +16,19 @@ stable".
 `FINDINGS.md`, `memory.md` (with Box's measurement files in `memory-box/`) and `conformance-baseline.md`, all from
 catalog commit `a33fc70`. Screenshots stay in the catalog (PLAN: text only). Line references in the spec are for Box
 0.4.3 (`497c160`).
+
+## D3 — Known-bug tests (behaviour lock)
+
+As in Tools (Tools D3): a Rust test for a finding that is not fixed yet is `known_bug_*` with
+`#[should_panic(expected = "KNOWN BUG <id>")]`, its assertion naming the finding and what it saw. The Island's key
+tests (`apps/desktop/frontend/tests/island-keys.mjs`, Playwright on the visual fixture) and the Tier 1 desktop test
+(`tests/desktop/island_desktop.py`, Link's headless Hyprland harness) name such checks "KNOWN BUG <id>: …" and report
+XFAIL; a fix makes them XPASS, which fails the run until the marker is removed with the fix. Each known-bug test was
+checked to fail for the audit's reason (its message quotes what it saw), not by accident.
+
+The desktop test runs in one harness job with several checks rather than one job per finding with Link's
+`expect-exit: 10`: one Hyprland session instead of five, and a fixed finding shows up by name.
+
+BR-12 (a re-show keeps the old tool) is locked in the key tests only: the harness cannot read the page, and the
+re-show path is the same frontend code. BR-3/BR-10 (GStreamer) are packaging findings locked by the media smoke test
+the spec asks for, which comes with the packaging change (the current AppImage has no plugins to test against).
