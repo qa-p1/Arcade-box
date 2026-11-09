@@ -102,7 +102,15 @@ jobs:
         run: npm install --prefix target/tauri-cli --cache target/npm-cache --no-audit --no-fund @tauri-apps/cli@2.12.1
       - name: Build the installer
         working-directory: Arcade-box/apps/desktop/src-tauri
-        run: node ../../../target/tauri-cli/node_modules/@tauri-apps/cli/tauri.js build --ci --config tauri.bundle.conf.json --bundles ${{ matrix.bundle }} ${{ matrix.args }} -- --locked
+        shell: bash
+        # Tauri downloads its bundler tools (AppRun, NSIS) from GitHub releases with one attempt, which answer 504 at
+        # times; a retry reuses the finished build and only repeats the bundling.
+        run: |
+          for i in 1 2 3; do
+            node ../../../target/tauri-cli/node_modules/@tauri-apps/cli/tauri.js build --ci --config tauri.bundle.conf.json --bundles ${{ matrix.bundle }} ${{ matrix.args }} -- --locked && exit 0
+            [ "$i" = 3 ] || sleep $((i * 30))
+          done
+          exit 1
       - name: Verify AppImage install, repair and uninstall in a temporary profile
         if: runner.os == 'Linux'
         shell: bash
