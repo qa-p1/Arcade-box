@@ -311,7 +311,7 @@
       "license": "MIT OR Apache-2.0",
       "licenseFile": null,
       "repository": "https://github.com/qa-p1/Arcade-link",
-      "source": "git+https://github.com/qa-p1/Arcade-Link?rev=ce140ae5ba09df5f9fc7ac054d0d11615fb13ecf#ce140ae5ba09df5f9fc7ac054d0d11615fb13ecf",
+      "source": "git+https://github.com/qa-p1/Arcade-Link?tag=v1.0.6#cd380d622d327af17e2a4baa8c52e781a1cc72a8",
       "checksum": null
     },
     {
