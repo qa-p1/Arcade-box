@@ -72,6 +72,7 @@ def check(name, ok, detail=""):
         d.screenshot(name.split(":")[0].replace(" ", "-").lower())
     results.append((status, name, detail))
     print(f"{status} {name}{': ' + detail if detail else ''}", flush=True)
+    return ok
 
 
 def island():
@@ -199,12 +200,22 @@ try:
         fail("the Island would not open for the Escape checks")
 
     # BR-0: Escape in a tool goes back to the search; it never closes the Island.
+    # Two passing locks first, so the known-bug check cannot pass for the wrong reason: typed text reaches the
+    # Island (Escape clears it and the Island stays open; an empty search would close), and Return keeps it open.
     address = reopened["address"]
     d.focus(address)
     type_text(address, "calculator")
     time.sleep(0.8)
+    d.escape(address)
+    time.sleep(0.8)
+    if not check("Escape clears the typed search and keeps the Island open", bool(island_shown(1))):
+        fail("typing does not reach the Island, so BR-0 cannot be checked")
+    type_text(address, "calculator")
+    time.sleep(0.8)
     d.send_shortcut(address, "", "Return")
     time.sleep(0.8)
+    if not check("Return opens the highlighted tool and keeps the Island open", bool(island_shown(1))):
+        fail("Return closed the Island, so BR-0 cannot be checked")
     d.escape(address)
     time.sleep(0.8)
     check("KNOWN BUG BR-0: Escape in a tool keeps the Island open", bool(island_shown(1)))
