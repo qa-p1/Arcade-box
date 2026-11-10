@@ -40,10 +40,26 @@ def run(*args, timeout=60):
     return subprocess.run([app, *args], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=timeout)
 
 
+def dump_logs():
+    """Box's own log (it reports each step from the portal's Activated to the Island's WebView) and the portal's."""
+    log.flush()
+    for name in ("box.log", "portal.log"):
+        path = d.artifact(name)
+        text = path.read_text(errors="replace") if path.exists() else "(missing)\n"
+        print(f"--- {name}\n{text}", flush=True)
+
+
 def fail(message):
     d.screenshot("failed")
+    dump_logs()
     print(f"FAILED: {message}")
     sys.exit(1)
+
+
+def registrations():
+    """How many times a Box wrote that its shortcut is registered. The portal stand-in's Bound() cannot tell this
+    Box from an earlier one: it keeps the session of a Box that has quit, and a press then reaches only that."""
+    return d.artifact("box.log").read_bytes().count(b"Arcade Box shortcut status: state=registered")
 
 
 def check(name, ok, detail=""):
@@ -116,8 +132,17 @@ with sqlite3.connect(databases[0]) as db:
 other = subprocess.Popen(["foot", "--app-id", "box-test-other", "--title", "Other window", "sh", "-c", "sleep 600"],
                          stdout=log, stderr=subprocess.STDOUT)
 d.wait_window("box-test-other", timeout=15)
+# Wait for this Box's own registration: the first Box's session is still in the stand-in, so "bound" is already
+# true, and a press sent before this Box listens goes only to the session of the Box that quit.
+registered_before = registrations()
 resident = subprocess.Popen([app, "--background"], env=env, stdout=log, stderr=subprocess.STDOUT)
-d.wait(lambda: SHORTCUT in d.bound_shortcuts(), 30, "the Island shortcut to be bound again")
+try:
+    d.wait(lambda: registrations() > registered_before and SHORTCUT in d.bound_shortcuts(), 30,
+           "the restarted Box to register the Island shortcut")
+except AssertionError:
+    other.kill()
+    resident.kill()
+    fail("the restarted Box never registered its shortcut")
 
 try:
     # The shortcut opens the Island and, pressed again, closes it.
@@ -130,7 +155,7 @@ try:
     if not shown:
         clients = subprocess.run(["hyprctl", "clients"], capture_output=True, text=True).stdout
         webkit = subprocess.run(["pgrep", "-af", "WebKit|arcade|Arcade"], capture_output=True, text=True).stdout
-        print(f"--- hyprctl clients\n{clients}--- processes\n{webkit}", flush=True)
+        print(f"--- hyprctl clients\n{clients}--- processes\n{webkit}", flush=True)  # fail() adds box.log, portal.log
         fail("the Island never opened; nothing else can be checked")
     check("The Island is dev.arcade.Box, titled Arcade Box (ID-1)", shown.get("class") == CLASS, shown.get("class", ""))
     check("The Island floats", bool(shown.get("floating")))
