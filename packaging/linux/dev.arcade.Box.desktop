@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Arcade Box
+Comment=Search, convert and run everyday tools from one shortcut
+Exec=arcade-desktop
+Icon=dev.arcade.Box
+Terminal=false
+Categories=Utility;
+StartupWMClass=dev.arcade.Box
+X-Arcade-Id=arcade.box

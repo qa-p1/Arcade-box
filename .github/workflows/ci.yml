@@ -111,6 +111,18 @@ jobs:
             [ "$i" = 3 ] || sleep $((i * 30))
           done
           exit 1
+      # THIRD_PARTY_NOTICES covers the Ubuntu packages linuxdeploy bundled (WebKitGTK, GTK, ...); a new one fails here
+      # and the regenerated record is uploaded to commit.
+      - name: Notices cover the bundled native libraries
+        id: native
+        if: matrix.bundle == 'appimage'
+        timeout-minutes: 5
+        run: python3 scripts/native-notices.py --check target/release/bundle/appimage/*.AppImage
+      - uses: actions/upload-artifact@v4
+        if: failure() && steps.native.outcome == 'failure'
+        with:
+          name: native-notices
+          path: packaging/linux/native
       - name: Verify AppImage install, repair and uninstall in a temporary profile
         if: runner.os == 'Linux'
         shell: bash
@@ -142,6 +154,18 @@ jobs:
           path: ${{ matrix.installer }}
 
   # Tier 1: the Island on headless Hyprland (Link's desktop harness), from the AppImage built above.
+  # --workspace: every crate's dependencies, not only the first member's.
+  deny:
+    name: cargo deny (advisories, licences, bans, sources)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: EmbarkStudios/cargo-deny-action@v2
+        with:
+          arguments: --workspace --all-features
+          command: check
+
   desktop:
     needs: check
     uses: qa-p1/Arcade-Link/.github/workflows/desktop-e2e.yml@cd380d622d327af17e2a4baa8c52e781a1cc72a8

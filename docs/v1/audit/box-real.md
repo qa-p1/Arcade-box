@@ -177,3 +177,19 @@ Steps: local harmless HTTP fixture implements GET 200, Content-Length 262144, st
 
 ### BR-16 — broken — A successful download with no Content-Type is rejected
 Follow-up to BR-15: same local 262144-byte stream, now HEAD 200 with correct length, GET 200 with correct length, neither response sends Content-Type. CLI `arcade-box run arcade.web.file-downloader http://127.0.0.1:18772/arcade-audit-good.bin --output-name arcade-audit-good.bin --json` completes the transfer but exits 1: `curl completed without download metadata`. Expected: accept the file as application/octet-stream. Evidence: private scratch `download-good-stderr.txt`, `slow-http-good-head.py`. Source: `crates/arcade-core/src/web.rs:518-522`: `metadata.trim()` removes the trailing tab for empty `%{content_type}`, so splitting yields 3 fields and the parser rejects it. Keep empty last field / trim only newlines. A third control with Content-Type supplied is tested separately.
+
+## Found during the Box 1.0 work (2026-11-09)
+
+### BR-17 — broken — No global shortcut on xdg-desktop-portal older than 1.19
+Box registers its desktop-file ID with `org.freedesktop.host.portal.Registry.Register` before binding the Island
+shortcut through the GlobalShortcuts portal, and gives up on the shortcut when that call fails. The Registry first
+shipped in xdg-desktop-portal 1.19; Ubuntu 24.04 has 1.18, where the call fails with UnknownMethod and the Island then
+has no shortcut at all, although GlobalShortcuts itself works there. Found when Link's portal stand-in lacked the
+Registry (Link D12): Box never bound its shortcut. Expected: an unknown Registry is not an error (the portal then
+derives the app ID itself). Source: `apps/desktop/src-tauri/src/wayland_shortcut.rs` `register_host_app`.
+
+### BR-18 — security — The Island and dashboard webviews have no Content-Security-Policy
+`tauri.conf.json` sets no `app.security.csp`, and `index.html` and `dashboard.html` carry no CSP meta tag; only
+`pin.html` has a strict one. Every other Arcade app's windows run under a strict CSP (no remote scripts or
+connections), so a script injected through rendered tool output would have the full IPC surface of the Island.
+Expected: the same strict policy as the pinned-image window, allowing only Box's own files and Tauri's IPC.

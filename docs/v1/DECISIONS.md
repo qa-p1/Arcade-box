@@ -32,3 +32,36 @@ The desktop test runs in one harness job with several checks rather than one job
 BR-12 (a re-show keeps the old tool) is locked in the key tests only: the harness cannot read the page, and the
 re-show path is the same frontend code. BR-3/BR-10 (GStreamer) are packaging findings locked by the media smoke test
 the spec asks for, which comes with the packaging change (the current AppImage has no plugins to test against).
+
+## D4 — Two findings from the 1.0 work, fixed in step 3
+
+BR-17 (no shortcut on xdg-desktop-portal < 1.19) and BR-18 (no CSP in the Island and dashboard) were found after the
+audit, while moving Box to Link 1.0.6 (`docs/v1/audit/box-real.md`). They are P1, fixed in step 3 with the other
+P0/P1 fixes, each with a test that fails first; SECURITY.md says the CSP is missing until then rather than claim it.
+
+## D5 — Dependencies: Wasmtime 36 LTS, cargo deny over the workspace
+
+`cargo deny --workspace` found 30 advisories in Wasmtime 38.0.4, among them WASI permission bypasses and sandbox
+escapes, plus zip 8 (two copies, one through rust_xlsxwriter), calamine 0.36, tokio and pulldown-cmark. Wasmtime 38 is
+out of support. Its current line (50.0.1) needs Rust 1.97, and Box builds on 1.88 like the rest of the fleet, while
+the 36 LTS line (36.0.20, Rust 1.86) has every fix and none of the later regressions (those advisories mark 36 as
+unaffected). Box therefore pins Wasmtime and wasmtime-wasi to `=36.0.20`. All ten plugin sandbox tests pass on it
+(`plugin_security.rs`). zip 9.5, calamine 0.38 and rust_xlsxwriter 0.102 clear the rest; `.cargo/config.toml` makes
+Cargo pick versions that support Rust 1.88. The accepted advisories in `deny.toml` each carry a reason: the
+crypto-bigint timing issue is in age's P-256 code, which Box never calls, and the rest are "unmaintained" notices
+with no replacement available. Box's own crates are `publish = false` and GPL-3.0-or-later; `licenses.private`
+keeps cargo deny from judging them.
+
+## D6 — RUSTSEC-2026-0459 (bundled SQLite) is accepted until the fleet's Rust 1.89
+
+Box PR #20's cargo deny found RUSTSEC-2026-0459, published after the D5 pass: SQLite before 3.54 can return
+uninitialized page-cache memory when it opens a database with a `-wal` file of a different page size, so a crafted
+pair can leak process memory to a query. `libsqlite3-sys` 0.38.2 (through rusqlite 0.40.2) bundles 3.53.2. The fix
+is `libsqlite3-sys` 0.39, which rusqlite 0.40 does not accept (it requires ^0.38.2), and rusqlite 0.41 needs Rust
+1.89, while Box builds on 1.88 like the rest of the fleet (D5). The advisory exposes only a process that opens a
+database a less trusted party could have written. Box opens exactly one database, `arcade.sqlite3` in its own data
+folder (`Arcade::open`, from the desktop app, the CLI and the Link handler), never a file it is given; whoever can
+write that folder can already change Box's data and plugins. So it is accepted in `deny.toml` with that reason and
+explained in SECURITY.md, and the upgrade to rusqlite 0.41 goes in with the fleet's move to Rust 1.89 (a fleet-wide
+decision, not Box's alone). Clipboard also bundles SQLite (libsqlite3-sys 0.35) and is checked against this
+advisory in its own step.
