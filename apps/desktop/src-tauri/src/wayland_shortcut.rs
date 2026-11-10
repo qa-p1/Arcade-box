@@ -294,6 +294,18 @@ async fn register_and_listen(
 
     // Session implements Serialize as its public D-Bus object path.
     let session_handle = serde_json::to_value(&session).ok();
+    let own_session = session_handle
+        .as_ref()
+        .and_then(serde_json::Value::as_str)
+        .map(str::to_owned);
+    // Every step from here to the Island is logged: a shortcut that does
+    // nothing must be traceable from Box's own log (stderr).
+    eprintln!(
+        "Arcade Box shortcut: portal session {}",
+        own_session
+            .as_deref()
+            .unwrap_or("<no readable handle: no event can match>")
+    );
     let mut shortcut_down = false;
 
     let mut shortcut = NewShortcut::new(SHORTCUT_ID, SHORTCUT_DESCRIPTION);
@@ -399,9 +411,13 @@ async fn register_and_listen(
         futures_util::pin_mut!(next_activation, next_release, next_update);
         futures_util::select! {
             event = next_activation => match event {
-                Some(event) if event.shortcut_id() == SHORTCUT_ID && Some(event.session_handle().as_str()) == session_handle.as_ref().and_then(serde_json::Value::as_str) => {
-                    if shortcut_down { continue; }
+                Some(event) if event.shortcut_id() == SHORTCUT_ID && Some(event.session_handle().as_str()) == own_session.as_deref() => {
+                    if shortcut_down {
+                        eprintln!("Arcade Box shortcut: Activated ignored, the previous press was never released");
+                        continue;
+                    }
                     shortcut_down = true;
+                    eprintln!("Arcade Box shortcut: Activated, toggling the Island");
                     let activation_token = event
                         .options()
                         .get("activation_token")
@@ -417,7 +433,14 @@ async fn register_and_listen(
                         let _ = window.emit(ACTIVATED_EVENT, payload);
                     });
                 }
-                Some(_) => {}
+                Some(event) => {
+                    eprintln!(
+                        "Arcade Box shortcut: Activated ignored, it is for shortcut `{}` in session {} (this session: {})",
+                        event.shortcut_id(),
+                        event.session_handle().as_str(),
+                        own_session.as_deref().unwrap_or("<none>")
+                    );
+                }
                 None => {
                     let _ = session.close().await;
                     crate::hyprland::remove_global_binding();
@@ -431,8 +454,9 @@ async fn register_and_listen(
             },
             event = next_release => match event {
                 Some(event) if event.shortcut_id() == SHORTCUT_ID
-                    && Some(event.session_handle().as_str()) == session_handle.as_ref().and_then(serde_json::Value::as_str) => {
+                    && Some(event.session_handle().as_str()) == own_session.as_deref() => {
                     shortcut_down = false;
+                    eprintln!("Arcade Box shortcut: Deactivated");
                 }
                 Some(_) => {}
                 None => {

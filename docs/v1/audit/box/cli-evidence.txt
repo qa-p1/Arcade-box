@@ -1,0 +1,37 @@
+# CLI evidence (installed 0.4.3 AppImage usr/bin/arcade-box, isolated HOME)
+
+$ arcade-box run arcade.convert.units 1,5 m to cm
+{"input":15.0,"from":"m","value":1500.0,"to":"cm","dimension":"length","formatted":"1500","headline":"15 m = 1500 cm"}
+
+$ arcade-box run arcade.convert.calculator 99999999999999999999*99999999999999999999
+{"expression":"99999999999999999999*99999999999999999999","value":1e+40,"formatted":"10000000000000000303786028427003666890752"}
+
+$ arcade-box run arcade.text.case 2nd place --set mode=title
+2Nd Place
+  --- Left
+  +++ Right
+  @@ -1 +1 @@
+  -a
+  \ No newline at end of file
+  +a
+  
+
+$ arcade-box run arcade.convert.date-duration 2026-12-25 --set action=difference --set end=2026-01-01
+{"headline":"11 months, 24 days earlier","from":"Friday, 25 December 2026","to":"Thursday, 1 January 2026","totalDays":-358,"weeks":"51 weeks and 1 day","weekdays":256,"totalHours":8592,"totalMinutes":515520,"totalSeconds":30931200}
+
+$ arcade-box run arcade.text.csv --file files/a.csv --set operation=rename-columns --set renames=name=Name,age=Age
+/tmp/claude-1000/-home-harneet-Work-Coding/c7347b9d-c34f-4fc8-b57d-de9a2d5591f6/scratchpad/audit-box/data/arcade/box/job-artifacts/table-12.csv
+
+$ process inspector: tool matches vs ps
+  "totalMatches": 57,
+      "name": "QDBusConnection",
+      "name": "QNetworkAccessM",
+      "name": "QQmlThread",
+      "name": "QQuickPixmapRea",
+ps -e: 418 processes, ps -eL: 1765 threads
+
+$ arcade-box run arcade.developer.regex a A a --set pattern=a --set flags=g
+{"engine":"Rust regex (Unicode-aware, linear-time matching)","limitations":"Look-around and backreferences are not supported by this regex engine.","pattern":"a","flags":"g","matched":true,"matchCount":2,"matches":[{"value":"a","startByte":0,"endByte":1,"groups":[]},{"value":"a","startByte":4,"endBy
+
+$ arcade-box run arcade.barcode.barcode-generate 12345678 --set symbology=EAN13
+/tmp/claude-1000/-home-harneet-Work-Coding/c7347b9d-c34f-4fc8-b57d-de9a2d5591f6/scratchpad/audit-box/data/arcade/box/job-artifacts/barcode-2.png

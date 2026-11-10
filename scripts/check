@@ -15,7 +15,7 @@ if [ "$(uname -s)" = Linux ]; then step luac -p apps/desktop/src-tauri/src/islan
 step npm --prefix "$frontend" run check
 step npm --prefix "$frontend" test
 step npm --prefix "$frontend" run build
-if [ "$(uname -s)" = Linux ]; then step npm --prefix "$frontend" run test:layout; fi
+if [ "$(uname -s)" = Linux ]; then step npm --prefix "$frontend" run test:layout; step npm --prefix "$frontend" run test:keys; fi
 step "$python" scripts/check-css-vars.py
 step "$python" scripts/check-version.py
 step "$python" scripts/check-docs.py

@@ -1,0 +1,4 @@
+{"label": "before", "app": "box", "rss": 209.2, "pss": 125.9, "anon": 75.3, "swap": 41.1, "thr": 61, "procs": 2, "stub_rss": 18.6, "stub_pss": 18.6}
+{"label": "open+4s", "app": "box", "rss": 466.8, "pss": 300.4, "anon": 173.7, "swap": 38.2, "thr": 124, "procs": 3, "stub_rss": 18.3, "stub_pss": 18.3}
+{"label": "hidden+3s", "app": "box", "rss": 196.1, "pss": 112.7, "anon": 62.2, "swap": 38.2, "thr": 66, "procs": 2, "stub_rss": 18.3, "stub_pss": 18.3}
+{"label": "hidden+45s", "app": "box", "rss": 191.4, "pss": 108.2, "anon": 57.5, "swap": 38.2, "thr": 62, "procs": 2, "stub_rss": 18.3, "stub_pss": 18.3}

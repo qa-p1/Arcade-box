@@ -14,6 +14,10 @@ const fixture = {
   imagePreview: null as unknown,
   files: [] as unknown[],
   providers: [] as unknown[],
+  // 'running' keeps a started job going, for the running-job checks.
+  jobStatus: 'succeeded' as 'succeeded' | 'running',
+  jobs: [] as unknown[],
+  emit,
 };
 
 // Painted stand-ins for FFmpeg stills so the video editors can be checked visually.
@@ -79,7 +83,9 @@ mockIPC((command, args) => {
   switch (command) {
     case 'start_job': {
       if (!fixture.result) throw new Error('Inject a test result before running a visual fixture.');
-      return { id: 'visual-job', toolId: (args?.request as { toolId: string }).toolId, status: 'succeeded', progress: 1, result: fixture.result };
+      const toolId = (args?.request as { toolId: string }).toolId;
+      if (fixture.jobStatus === 'running') return { id: 'visual-job', toolId, status: 'running', progress: 0.4, result: null };
+      return { id: 'visual-job', toolId, status: 'succeeded', progress: 1, result: fixture.result };
     }
     case 'copy_text': case 'copy_image_result': return;
     case 'image_result_preview': {
@@ -100,7 +106,8 @@ mockIPC((command, args) => {
     case 'get_preference': return args?.key === 'theme' ? 'dark' : String(new URLSearchParams(location.search).get('onboarding') !== '1');
     case 'shortcut_status': return { backend: 'visual-fixture', state: 'registered', triggerDescription: 'Ctrl+Alt+Space', message: 'Visual fixture only' };
     case 'list_providers': return fixture.providers;
-    case 'list_jobs': case 'get_history': case 'list_favorites':
+    case 'list_jobs': return fixture.jobs;
+    case 'get_history': case 'list_favorites':
     case 'detect_context': case 'list_pipelines': case 'list_plugins': return [];
     case 'screen_capture_status': return { captureAvailable: false, recordingAvailable: false, message: 'Use the native app for capture.' };
     case 'screen_recording_status': return { recording: false };

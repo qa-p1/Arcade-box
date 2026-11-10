@@ -1133,6 +1133,10 @@ fn island_ready(window: tauri::WebviewWindow) {
         state.ready = true;
         std::mem::take(&mut state.pending_show)
     };
+    eprintln!(
+        "Arcade Island: page ready, a show is {}",
+        if pending { "pending" } else { "not pending" }
+    );
     if pending {
         show_island(&window);
     } else {
@@ -1208,6 +1212,7 @@ pub(crate) fn show_island(window: &tauri::WebviewWindow) {
                 .unwrap_or_else(std::sync::PoisonError::into_inner);
             if !state.ready {
                 state.pending_show = true;
+                eprintln!("Arcade Island: show waits for its page to be ready");
                 return;
             }
             state.generation = state.generation.wrapping_add(1);
@@ -1268,6 +1273,7 @@ pub(crate) fn toggle_island(window: &tauri::WebviewWindow) {
             if !state.ready && state.pending_show {
                 // A second press while the WebView is still loading.
                 state.pending_show = false;
+                eprintln!("Arcade Island: toggled again before its page was ready, the pending show is cancelled");
                 return;
             }
             state.hiding
@@ -1298,11 +1304,12 @@ pub(crate) fn with_island(
     action: impl FnOnce(&tauri::WebviewWindow) + Send + 'static,
 ) {
     let handle = app.clone();
-    let _ = app.run_on_main_thread(move || {
-        if let Some(window) = island_window(&handle) {
-            action(&window);
-        }
-    });
+    if let Err(error) = app.run_on_main_thread(move || match island_window(&handle) {
+        Some(window) => action(&window),
+        None => eprintln!("Arcade Island: no window, the request is dropped"),
+    }) {
+        eprintln!("Arcade Island: could not reach the main thread: {error}");
+    }
 }
 
 /// Shows the Island, creating it if needed.
@@ -1422,13 +1429,18 @@ fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
     if let Some(window) = app.get_webview_window("island") {
         return Some(window);
     }
-    let config = app
+    let Some(config) = app
         .config()
         .app
         .windows
         .iter()
-        .find(|window| window.label == "island")?
-        .clone();
+        .find(|window| window.label == "island")
+        .cloned()
+    else {
+        eprintln!("Could not create Arcade Island: the configuration has no `island` window");
+        return None;
+    };
+    eprintln!("Arcade Island: creating its WebView");
     {
         let mut state = ISLAND_VISIBILITY
             .lock()
@@ -1471,6 +1483,7 @@ fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWindow> {
         _ => {}
     });
     let _ = apply_surface_mode("compact", &window, true);
+    eprintln!("Arcade Island: WebView created, it shows once its page is ready");
     Some(window)
 }
 
