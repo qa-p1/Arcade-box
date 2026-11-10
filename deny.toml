@@ -21,6 +21,7 @@ ignore = [
   { id = "RUSTSEC-2026-0371", reason = "zbus_names: merged into zbus 6; ashpd, ksni and the Tauri plugins are on zbus 5" },
   { id = "RUSTSEC-2026-0372", reason = "zvariant_derive: merged into zbus 6; ashpd, ksni and the Tauri plugins are on zbus 5" },
   { id = "RUSTSEC-2026-0374", reason = "basic-toml: build-time config reader of i18n-embed-fl, age's message macro" },
+  { id = "RUSTSEC-2026-0459", reason = "bundled SQLite < 3.54 with a crafted -wal: Box opens only its own arcade.sqlite3 in its data folder, which no less trusted party writes; the fix needs rusqlite 0.41 (Rust 1.89, D6)" },
 ]
 
 [licenses]

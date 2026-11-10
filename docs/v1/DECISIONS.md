@@ -51,3 +51,17 @@ Cargo pick versions that support Rust 1.88. The accepted advisories in `deny.tom
 crypto-bigint timing issue is in age's P-256 code, which Box never calls, and the rest are "unmaintained" notices
 with no replacement available. Box's own crates are `publish = false` and GPL-3.0-or-later; `licenses.private`
 keeps cargo deny from judging them.
+
+## D6 — RUSTSEC-2026-0459 (bundled SQLite) is accepted until the fleet's Rust 1.89
+
+Box PR #20's cargo deny found RUSTSEC-2026-0459, published after the D5 pass: SQLite before 3.54 can return
+uninitialized page-cache memory when it opens a database with a `-wal` file of a different page size, so a crafted
+pair can leak process memory to a query. `libsqlite3-sys` 0.38.2 (through rusqlite 0.40.2) bundles 3.53.2. The fix
+is `libsqlite3-sys` 0.39, which rusqlite 0.40 does not accept (it requires ^0.38.2), and rusqlite 0.41 needs Rust
+1.89, while Box builds on 1.88 like the rest of the fleet (D5). The advisory exposes only a process that opens a
+database a less trusted party could have written. Box opens exactly one database, `arcade.sqlite3` in its own data
+folder (`Arcade::open`, from the desktop app, the CLI and the Link handler), never a file it is given; whoever can
+write that folder can already change Box's data and plugins. So it is accepted in `deny.toml` with that reason and
+explained in SECURITY.md, and the upgrade to rusqlite 0.41 goes in with the fleet's move to Rust 1.89 (a fleet-wide
+decision, not Box's alone). Clipboard also bundles SQLite (libsqlite3-sys 0.35) and is checked against this
+advisory in its own step.
