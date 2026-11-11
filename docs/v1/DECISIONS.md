@@ -65,3 +65,25 @@ write that folder can already change Box's data and plugins. So it is accepted i
 explained in SECURITY.md, and the upgrade to rusqlite 0.41 goes in with the fleet's move to Rust 1.89 (a fleet-wide
 decision, not Box's alone). Clipboard also bundles SQLite (libsqlite3-sys 0.35) and is checked against this
 advisory in its own step.
+
+## D7 — How the converters read ambiguous input (B-7, B-8, B-9)
+
+The fixes for the converter findings had to choose a reading where an input has two:
+
+- **Calculator `%`.** `10 % 3` (an operand follows) is the remainder, like `10 mod 3`; `50%` with nothing after it
+  is a percentage, and `100 + 10%` adds ten percent *of the left side* (110), as on a desk calculator, which is what
+  people who type it mean. `!` is a factorial unless it starts `!=`. Angles are radians unless the new "Angles"
+  control says degrees (the spec asks for a degree mode; it is a select on the existing tool, not a new tool).
+  Results are rounded to 15 significant digits, so `sin(pi)` is 0 and `0.1 + 0.2` is 0.3.
+- **Thousands separators and decimal commas.** A comma followed by exactly three digits after a one-to-three digit
+  integer part is a thousands separator (`1,000`, `12,345,678`); any other single comma in a number with no point is a
+  decimal comma (`1,5 m` is 1.5 m). Inside a calculator function's arguments a comma always separates arguments.
+  `1,500` therefore reads as 1500, the English reading, because that is what Box's UI language shows.
+- **Time zone abbreviations (B-9).** `EST`, `PST`, `IST` and the other common abbreviations each stand for their
+  region's zone (America/New_York, America/Los_Angeles, Asia/Kolkata), so a date in July typed with `EST` gets New
+  York's summer offset: people type "EST" to mean Eastern time, and a fixed UTC-05:00 in summer would give a meeting
+  time an hour off. The label shows both (`America/New_York (EST)`), so the reading is visible. IST is India's, the
+  most common use; Israel and Ireland are reachable by their IANA names. IANA names are matched in any case.
+- **Times without a date (B-9)** (`9:00`, `5pm`) are today in the source zone; `tomorrow 5pm`, `today at 14:00` and a
+  date followed by a time work too. Plain digits are Unix time with the unit picked by the digit count, the same rule
+  the Date tool already used, now shared by every date input.
