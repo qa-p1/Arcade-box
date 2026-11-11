@@ -192,6 +192,82 @@ fn a_negative_span_is_negative_in_every_unit() {
 }
 
 #[test]
+#[should_panic(expected = "KNOWN BUG B-9")]
+fn known_bug_time_zones_read_common_inputs_and_abbreviations() {
+    let arcade = runtime();
+    let tomorrow = (chrono::Utc::now() + chrono::Duration::days(1)).format("%Y-%m-%d");
+    let mut failures = Vec::new();
+    for (input, source, targets, key, expected) in [
+        (
+            "2026-07-01 09:00",
+            "utc",
+            "asia/kolkata",
+            "iso",
+            "2026-07-01T14:30:00+05:30".to_string(),
+        ),
+        ("9:00", "UTC", "Asia/Kolkata", "time", "14:30".to_string()),
+        ("5pm", "UTC", "UTC", "time", "17:00".to_string()),
+        (
+            "tomorrow 5pm",
+            "UTC",
+            "UTC",
+            "iso",
+            format!("{tomorrow}T17:00:00Z"),
+        ),
+        (
+            "1735689600",
+            "UTC",
+            "UTC",
+            "iso",
+            "2025-01-01T00:00:00Z".to_string(),
+        ),
+        (
+            "2026-01-15 12:00",
+            "UTC",
+            "IST",
+            "offset",
+            "UTC+05:30".to_string(),
+        ),
+        (
+            "2026-01-15 12:00",
+            "UTC",
+            "PST",
+            "offset",
+            "UTC-08:00".to_string(),
+        ),
+        (
+            "2026-07-15 12:00",
+            "UTC",
+            "EST",
+            "offset",
+            "UTC-04:00".to_string(),
+        ),
+        (
+            "2026-01-15 12:00",
+            "IST",
+            "UTC",
+            "iso",
+            "2026-01-15T06:30:00Z".to_string(),
+        ),
+    ] {
+        let seen = run(
+            &arcade,
+            "arcade.convert.time-zone",
+            input,
+            json!({"sourceTimeZone": source, "timeZones": targets}),
+        )
+        .map(|result| json_output(&result)["conversions"][0][key].clone());
+        match seen {
+            Ok(Value::String(value)) if value.contains(&expected) => {}
+            other => failures.push(format!(
+                "`{input}` from {source} to {targets}: {key} {other:?}, expected {expected}"
+            )),
+        }
+    }
+    expect_all("B-9", failures);
+}
+
+#[test]
 fn diff_of_identical_texts_is_empty() {
     let arcade = runtime();
     let mut failures = Vec::new();
