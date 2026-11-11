@@ -112,7 +112,8 @@ The fixes for the converter findings had to choose a reading where an input has 
 - **Decision:** bundle them with Tauri's `bundleMediaFramework`, from Ubuntu 24.04's `gstreamer1.0-plugins-base`,
   `-good` and `gstreamer1.0-pipewire` (LGPL). That covers WebM/VP8/VP9, Ogg/Vorbis/Opus, MP3, WAV, FLAC, Matroska and
   the MP4 container, with PulseAudio/PipeWire output. `gstreamer1.0-libav` (H.264/AAC) is not bundled: Ubuntu builds
-  it against a GPL FFmpeg. MP4/H.264 previews need the host's plugins and say so. The screen recorder keeps using the
-  host's GStreamer (it already clears the image's plugin paths). Cost: the image grows by about 15–25 MB.
+  it against a GPL FFmpeg. H.264/AAC media does not preview from the image (open item: tell the user so in the
+  preview). The screen recorder runs the host's GStreamer, clearing the image's plugin paths (BR-10: still to verify
+  under the harness). Cost: the image grows by about 15–25 MB.
 - **Test:** `scripts/verify-appimage.py` (CI and Release) fails if the image lacks any of the 12 plugins playback
   needs.
