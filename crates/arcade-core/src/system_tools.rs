@@ -77,6 +77,10 @@ fn inspect_processes(query: Option<&str>) -> Result<Value, String> {
         .processes()
         .values()
         .filter_map(|process| {
+            // Linux lists every thread under /proc/<pid>/task as a process; a finder shows processes (B-25).
+            if process.thread_kind().is_some() {
+                return None;
+            }
             let pid = process.pid().as_u32();
             let name = process.name().to_string_lossy().into_owned();
             let executable = process

@@ -226,8 +226,7 @@ fn diff_shows_a_real_change() {
 
 #[cfg(target_os = "linux")]
 #[test]
-#[should_panic(expected = "KNOWN BUG B-25")]
-fn known_bug_process_finder_lists_processes_not_threads() {
+fn process_finder_lists_processes_not_threads() {
     // A second thread of this test process, named so it can be found.
     let (stop, stopped) = std::sync::mpsc::channel::<()>();
     let thread = std::thread::Builder::new()
