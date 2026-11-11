@@ -207,6 +207,8 @@ fn difference(start: &str, end: &str, zone: Zone) -> Result<Value, String> {
         .date_naive()
         .signed_duration_since(from.at.date_naive())
         .num_days();
+    // The span is computed from the earlier moment to the later; every total carries the direction.
+    let sign = if negative { -1 } else { 1 };
     let mut parts = Vec::new();
     for (count, unit) in [(years, "year"), (months, "month"), (days, "day")] {
         if count > 0 {
@@ -232,12 +234,12 @@ fn difference(start: &str, end: &str, zone: Zone) -> Result<Value, String> {
         "headline": format!("{span}{}", if negative { " earlier" } else { "" }),
         "from": readable(&start.at, start.date_only),
         "to": readable(&end.at, end.date_only),
-        "totalDays": if negative { -total_days } else { total_days },
+        "totalDays": sign * total_days,
         "weeks": format!("{} and {}", plural(total_days / 7, "week"), plural(total_days % 7, "day")),
         "weekdays": weekdays_between(from.at.date_naive(), to.at.date_naive()),
-        "totalHours": total.num_hours(),
-        "totalMinutes": total.num_minutes(),
-        "totalSeconds": total.num_seconds(),
+        "totalHours": sign * total.num_hours(),
+        "totalMinutes": sign * total.num_minutes(),
+        "totalSeconds": sign * total.num_seconds(),
     }))
 }
 

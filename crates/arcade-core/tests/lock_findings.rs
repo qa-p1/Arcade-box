@@ -174,8 +174,7 @@ fn units_convert_a_plain_quantity() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG B-9")]
-fn known_bug_a_negative_span_is_negative_in_every_unit() {
+fn a_negative_span_is_negative_in_every_unit() {
     let result = run(
         &runtime(),
         "arcade.convert.date-duration",
