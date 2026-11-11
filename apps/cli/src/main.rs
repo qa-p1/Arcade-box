@@ -73,7 +73,7 @@ enum Command {
         #[command(subcommand)]
         command: PluginCommand,
     },
-    /// Show discovered system engines.
+    /// Show every engine tools can use (available or missing), then the versions of the ones found.
     Providers,
 }
 
@@ -159,13 +159,21 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         return print_tools_json(all);
     }
     if matches!(cli.command, Command::Providers) {
+        // BR-8: every engine a tool can use, found or missing, so a missing one is known before a tool fails.
+        let mut out = io::stdout().lock();
+        for (id, state) in arcade_core::link::probe_providers() {
+            match state.reason.filter(|_| !state.available) {
+                None => writeln!(out, "{id}\tavailable")?,
+                Some(reason) => writeln!(out, "{id}\tmissing\t{reason}")?,
+            }
+        }
         for provider in discover_ffmpeg(None)
             .into_iter()
             .chain(discover_qpdf(None))
             .chain(discover_vips(None))
         {
             writeln!(
-                io::stdout().lock(),
+                out,
                 "{}\t{}\t{}\t{}\t{}",
                 provider.capability,
                 provider.source,
