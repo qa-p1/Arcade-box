@@ -9,7 +9,7 @@
   import SelectedFilesInput from './SelectedFilesInput.svelte';
   import type { Pipeline, PipelineNode, PipelineLinkNode, SelectedFile, ToolInput, ToolOutput, ToolSummary } from './contracts';
   import { deletePipeline, listPipelines, listTools, openArtifact, revealArtifact, runPipeline, saveArtifactAs, savePipeline, selectFiles } from './arcade';
-  import { fileInputMime, isRunnable } from './tool-utils';
+  import { fileInputMime, isRunnable, typeLabel } from './tool-utils';
 import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem, type UiValues } from './standard-ui';
 
   interface DraftStage {
@@ -541,7 +541,7 @@ import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem, 
       <div class="pipeline-start">
         <div class="pipeline-step-number">01</div><div class="pipeline-step-body">
           <div class="pipeline-step-heading"><strong>Starting input</strong><span>{inputType === 'none' ? 'No external input' : 'External input'}</span></div>
-          <label for="pipeline-input-type">Input type</label><select id="pipeline-input-type" value={inputType} onchange={(event) => updateInputType((event.currentTarget as HTMLSelectElement).value)}>{#each inputTypeChoices as choice}<option value={choice}>{choice}</option>{/each}</select>
+          <label for="pipeline-input-type">Input type</label><select id="pipeline-input-type" value={inputType} onchange={(event) => updateInputType((event.currentTarget as HTMLSelectElement).value)}>{#each inputTypeChoices as choice}<option value={choice}>{typeLabel(choice)}</option>{/each}</select>
           {#if inputType.startsWith('file/')}
             <SelectedFilesInput files={inputFiles} label="starting file" onAdd={() => void chooseStartingFile()} onRemove={removeStartingFile} onReorder={reorderStartingFiles} formatSize={formatBytes} />
           {:else if inputType !== 'none'}
@@ -553,7 +553,7 @@ import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem, 
       {#each stages as stage, index (stage.id)}
         {@const tool = allTools.find((item) => item.id === stage.toolId)}
         {@const previous = index ? allTools.find((item) => item.id === stages[index - 1].toolId) : undefined}
-        <div class="pipeline-connector" aria-label={index === 0 ? 'External input connection' : `Connection from ${previous?.name || 'previous stage'}`}><span></span><small>{index === 0 ? `${inputType} → ${tool?.inputs.join(', ')}` : `${previous?.outputs.join(', ')} → ${tool?.inputs.join(', ')}`}</small></div>
+        <div class="pipeline-connector" aria-label={index === 0 ? 'External input connection' : `Connection from ${previous?.name || 'previous stage'}`}><span></span><small>{index === 0 ? `${typeLabel(inputType)} → ${tool?.inputs.map(typeLabel).join(', ')}` : `${previous?.outputs.map(typeLabel).join(', ')} → ${tool?.inputs.map(typeLabel).join(', ')}`}</small></div>
         <article class="pipeline-stage-card">
           <div class="pipeline-stage-top"><span class="pipeline-step-number">{String(index + 2).padStart(2, '0')}</span><div class="pipeline-stage-title"><strong>{tool?.name || stage.toolId}</strong><span>{stage.id} · {tool?.outputs.join(', ') || 'No output'}</span></div><button class="icon-button remove-file-button" aria-label={`Remove stage ${index + 1}`} onclick={() => removeStage(index)}><Icon name="close" size={14} /></button></div>
           {#if stage.link}
@@ -565,7 +565,7 @@ import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem, 
         </article>
       {/each}
       <div class="pipeline-add-stage">
-        <label for="pipeline-add-stage">Add compatible stage</label><select id="pipeline-add-stage" value={stageChoice} disabled={stages.length === 0 ? firstStageChoices.length === 0 : nextStageChoices.length === 0} onchange={(event) => addStage((event.currentTarget as HTMLSelectElement).value)}><option value="">{stages.length ? (nextStageChoices.length ? 'Choose a tool for the next step' : 'No compatible next tools') : (firstStageChoices.length ? 'Choose the first tool' : 'No tool accepts this input')}</option>{#each (stages.length ? nextStageChoices : firstStageChoices) as tool (tool.id)}<option value={tool.id}>{tool.name} · {tool.inputs.join(', ')} → {tool.outputs.join(', ')}</option>{/each}</select>
+        <label for="pipeline-add-stage">Add compatible stage</label><select id="pipeline-add-stage" value={stageChoice} disabled={stages.length === 0 ? firstStageChoices.length === 0 : nextStageChoices.length === 0} onchange={(event) => addStage((event.currentTarget as HTMLSelectElement).value)}><option value="">{stages.length ? (nextStageChoices.length ? 'Choose a tool for the next step' : 'No compatible next tools') : (firstStageChoices.length ? 'Choose the first tool' : 'No tool accepts this input')}</option>{#each (stages.length ? nextStageChoices : firstStageChoices) as tool (tool.id)}<option value={tool.id}>{tool.name} · {tool.inputs.map(typeLabel).join(', ')} → {tool.outputs.map(typeLabel).join(', ')}</option>{/each}</select>
       </div>
       {#if formProblem}<p class="pipeline-validation" role="status"><Icon name="network" size={14} />{formProblem}</p>{:else if runProblem}<p class="pipeline-validation" role="status"><Icon name="file" size={14} />{runProblem}</p>{/if}
       {#if saveError}<div class="field-error" role="alert">{saveError}</div>{/if}
@@ -582,7 +582,7 @@ import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem, 
         {#if output.kind === 'text' || output.mime.startsWith('text/') || output.mime.includes('json') || output.mime.startsWith('structured/')}
           <pre class="output-text">{output.value}</pre><button class="copy-button" onclick={() => void copyOutput(output.value)}><Icon name="copy" size={13} /> Copy result</button>
         {:else}
-          <div class="artifact-result-card"><span class="artifact-file-icon"><Icon name="file" size={18} /></span><div class="artifact-result-copy"><strong>{outputLabel(output, index)}</strong><span>{output.mime}</span></div><div class="artifact-actions"><button class="quiet-button" disabled={artifactBusy} onclick={() => void showArtifact(output.value, false)}><Icon name="external" size={14} /><span>Open</span></button><button class="quiet-button" disabled={artifactBusy} onclick={() => void saveArtifact(output.value)}><Icon name="folder" size={14} /><span>Save as</span></button><button class="quiet-button" disabled={artifactBusy} onclick={() => void showArtifact(output.value, true)}><Icon name="folder" size={14} /><span>Reveal</span></button></div></div>
+          <div class="artifact-result-card"><span class="artifact-file-icon"><Icon name="file" size={18} /></span><div class="artifact-result-copy"><strong>{outputLabel(output, index)}</strong><span>{typeLabel(output.mime)}</span></div><div class="artifact-actions"><button class="quiet-button" disabled={artifactBusy} onclick={() => void showArtifact(output.value, false)}><Icon name="external" size={14} /><span>Open</span></button><button class="quiet-button" disabled={artifactBusy} onclick={() => void saveArtifact(output.value)}><Icon name="folder" size={14} /><span>Save as</span></button><button class="quiet-button" disabled={artifactBusy} onclick={() => void showArtifact(output.value, true)}><Icon name="folder" size={14} /><span>Reveal</span></button></div></div>
         {/if}
       {/each}
       {#if artifactError}<div class="field-error" role="alert">{artifactError}</div>{/if}

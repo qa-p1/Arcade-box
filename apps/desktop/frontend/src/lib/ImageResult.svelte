@@ -3,6 +3,7 @@
   import { copyImageResult, imageResultPreview, openArtifact, revealArtifact, saveArtifactAs } from './arcade';
   import type { ImageResultPreview, ToolOutput } from './contracts';
   import Icon from './Icon.svelte';
+  import { typeLabel } from './tool-utils';
 
   let {
     output,
@@ -113,7 +114,7 @@
   <div class="image-result-main">
     <div class="image-result-copy">
       <strong title={name}>{name}</strong>
-      <span>{#if size}{size} · {/if}{#if preview}{preview.width} × {preview.height} px · {/if}{output.mime}</span>
+      <span>{#if size}{size} · {/if}{#if preview}{preview.width} × {preview.height} px · {/if}{typeLabel(output.mime)}</span>
     </div>
     <div class="image-result-actions">
       <button type="button" class="quiet-button" data-copy-image disabled={busy || copying} onclick={() => void copyImage()}>

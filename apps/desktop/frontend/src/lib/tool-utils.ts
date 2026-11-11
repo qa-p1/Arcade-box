@@ -65,3 +65,26 @@ export function initials(value: string): string {
     .map((part) => part[0]?.toUpperCase() ?? '')
     .join('');
 }
+
+const TYPE_LABELS: Record<string, string> = {
+  none: 'No input', 'file/any': 'Any file', 'file/octet-stream': 'Other file', 'file/document': 'Document file',
+  'file/spreadsheet': 'Spreadsheet file', 'file/pdf': 'PDF file', 'file/image': 'Image file', 'file/video': 'Video file',
+  'file/audio': 'Audio file', 'file/archive': 'ZIP archive', 'file/csv': 'CSV file', 'rows/csv': 'CSV rows',
+  'text/csv': 'CSV text', 'file/tsv': 'TSV file', 'file/subtitle': 'Subtitle file', 'file/svg': 'SVG image',
+  'file/html': 'Web page file', 'file/mhtml': 'Saved web page', 'text/plain': 'Text', 'text/markdown': 'Markdown text',
+  'text/url': 'Web address', 'network/url': 'Web address', 'network/host': 'Host name', 'clipboard/text': 'Clipboard text',
+};
+
+/** A data type as people say it (B-14, BP-7); the core's `type_label` uses the same table. */
+export function typeLabel(mime: string): string {
+  const many = mime.endsWith('[]');
+  const base = many ? mime.slice(0, -2) : mime;
+  let label = TYPE_LABELS[base];
+  if (!label) {
+    const [kind, name = kind] = base.includes('/') ? base.split('/', 2) : ['', base];
+    const words = name.replace(/[-_]/g, ' ');
+    const cap = words.charAt(0).toUpperCase() + words.slice(1);
+    label = kind === 'file' ? `${cap} file` : kind === 'structured' ? `${cap} data` : cap;
+  }
+  return many ? `${label} (one or more)` : label;
+}

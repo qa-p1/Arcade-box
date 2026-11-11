@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { acceptsSelectedFile, acceptsTextInput, inputMime, usesFileInput } from '../src/lib/tool-utils.ts';
+import { acceptsSelectedFile, acceptsTextInput, inputMime, typeLabel, usesFileInput } from '../src/lib/tool-utils.ts';
 import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem } from '../src/lib/standard-ui.ts';
 
 const selectedFile = (mime) => ({ token: 'grant-1', name: 'input.bin', size: 1, mime });
@@ -75,4 +75,12 @@ test('standard UI defaults validate and serialize only visible controls', () => 
   values.format = 'yaml';
   values.yamlOption = 'shown';
   assert.deepEqual(serializeStandardUiOptions(ui, values), { format: 'yaml', enabled: false, indent: 2, yamlOption: 'shown' });
+});
+
+test('data types read as words, never raw MIME names (B-14, BP-7)', () => {
+  assert.equal(typeLabel('file/document'), 'Document file');
+  assert.equal(typeLabel('text/plain[]'), 'Text (one or more)');
+  assert.equal(typeLabel('structured/json'), 'Json data');
+  assert.equal(typeLabel('file/ebook'), 'Ebook file');
+  assert.equal(typeLabel('none'), 'No input');
 });

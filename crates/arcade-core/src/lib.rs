@@ -64,10 +64,71 @@ pub enum CoreError {
     UnknownTool(String),
     #[error("tool {0} is not implemented yet")]
     NotImplemented(String),
-    #[error("tool {tool} does not accept input type {mime}")]
+    #[error("This tool can't use {}", type_label(mime))]
     InputType { tool: String, mime: String },
     #[error("{0}")]
     Execution(String),
+}
+
+/// A data type as people say it (B-14, BP-7): `file/document` is "a document file", `text/url` "a web address".
+/// The frontend's `typeLabel` (`lib/tool-utils.ts`) uses the same table.
+pub fn type_label(mime: &str) -> String {
+    let (base, many) = match mime.strip_suffix("[]") {
+        Some(base) => (base, true),
+        None => (mime, false),
+    };
+    let known = match base {
+        "none" => Some("no input"),
+        "file/any" => Some("any file"),
+        "file/octet-stream" => Some("this kind of file"),
+        "file/document" => Some("a document file"),
+        "file/spreadsheet" => Some("a spreadsheet file"),
+        "file/pdf" => Some("a PDF file"),
+        "file/image" => Some("an image file"),
+        "file/video" => Some("a video file"),
+        "file/audio" => Some("an audio file"),
+        "file/archive" => Some("a ZIP archive"),
+        "file/csv" | "rows/csv" | "text/csv" => Some("CSV data"),
+        "file/tsv" => Some("TSV data"),
+        "file/subtitle" => Some("a subtitle file"),
+        "file/svg" => Some("an SVG image"),
+        "file/html" => Some("a web page file"),
+        "file/mhtml" => Some("a saved web page"),
+        "text/plain" => Some("text"),
+        "text/markdown" => Some("Markdown text"),
+        "text/url" | "network/url" => Some("a web address"),
+        "network/host" => Some("a host name"),
+        "clipboard/text" => Some("clipboard text"),
+        _ => None,
+    };
+    let label = known.map(str::to_string).unwrap_or_else(|| {
+        let (kind, name) = base.split_once('/').unwrap_or(("", base));
+        let name = name.replace(['-', '_'], " ");
+        match kind {
+            "file" if name.starts_with(['a', 'e', 'i', 'o', 'u']) => format!("an {name} file"),
+            "file" => format!("a {name} file"),
+            "structured" => format!("{name} data"),
+            _ => name,
+        }
+    });
+    if many {
+        format!("{label} (one or more)")
+    } else {
+        label
+    }
+}
+
+#[cfg(test)]
+mod type_label_tests {
+    #[test]
+    fn data_types_read_as_words() {
+        use super::type_label;
+        assert_eq!(type_label("file/document"), "a document file");
+        assert_eq!(type_label("text/plain[]"), "text (one or more)");
+        assert_eq!(type_label("structured/json"), "json data");
+        assert_eq!(type_label("file/ebook"), "an ebook file");
+        assert_eq!(type_label("file/font"), "a font file");
+    }
 }
 
 type PipelineConfirmation = Arc<dyn Fn(&pipeline::Pipeline, &[String]) -> bool + Send + Sync>;
