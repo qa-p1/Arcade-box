@@ -87,3 +87,18 @@ The fixes for the converter findings had to choose a reading where an input has 
 - **Times without a date (B-9)** (`9:00`, `5pm`) are today in the source zone; `tomorrow 5pm`, `today at 14:00` and a
   date followed by a time work too. Plain digits are Unix time with the unit picked by the digit count, the same rule
   the Date tool already used, now shared by every date input.
+
+## D8 — The Island comes back fresh; footer checks allow chip and label without a space
+
+- **BR-12 overrides the old design.** The Island kept its tool, input and result across a hide on purpose
+  ("Keep tool input/results intact when the user temporarily puts us away"). The spec says a re-show opens a fresh
+  search with focus ready, and the owner's spec wins. So the Island resets to the search when it is hidden
+  (`island-hidden`, not on show, so an "open this tool" request that comes with a show is kept). A job started from
+  the old tool keeps running and is reachable from the search's Jobs indicator (BR-0). The focus memory that
+  restored the last focused element is removed with it.
+- **The footer checks (`island-keys.mjs`) accept `EscClose` as well as `Esc Close`.** A key chip and its label are
+  separate flex items, so `innerText` has no space between them and the check as written could never pass. The BR-6
+  check beside it already allowed this (`(Ctrl|⌘) ?↵ Run`). Each check still requires the right label for its state
+  (Close, Clear, Back), and the BR-5 check failed on the old code for the finding's reason: a search with text said
+  Close.
+
