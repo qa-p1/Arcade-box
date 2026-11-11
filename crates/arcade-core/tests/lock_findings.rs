@@ -256,8 +256,7 @@ fn process_finder_lists_processes_not_threads() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG U-1")]
-fn known_bug_numeric_values_for_string_options_are_used() {
+fn numeric_values_for_string_options_are_used() {
     let arcade = runtime();
     let as_text = output(
         &run(
