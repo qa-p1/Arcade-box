@@ -56,6 +56,9 @@ pub(super) fn convert(
         "pptx" => (pptx(&bytes)?, true),
         "odp" => (odf(&bytes, true)?, true),
         "rtf" => (rtf(&String::from_utf8_lossy(&bytes)), false),
+        // BR-7: plain text and Markdown, the most common documents.
+        "txt" | "text" => (plain_text(&text_of(&bytes)?), false),
+        "md" | "markdown" => (markdown(&text_of(&bytes)?), false),
         "xlsx" | "xlsm" | "xlsb" | "xls" | "ods" => {
             (sheets(bytes, &mut warnings, cancelled)?, false)
         }
@@ -79,6 +82,159 @@ pub(super) fn convert(
 }
 
 // ---------------------------------------------------------------- reading
+
+fn text_of(bytes: &[u8]) -> Result<String, String> {
+    let text = std::str::from_utf8(bytes).map_err(|_| "The file is not UTF-8 text".to_string())?;
+    Ok(text.trim_start_matches('\u{feff}').replace("\r\n", "\n"))
+}
+
+/// One paragraph per line, so the file's own line structure survives; blank lines stay as spacing.
+fn plain_text(text: &str) -> Vec<Block> {
+    text.lines()
+        .map(|line| Block::Para {
+            runs: vec![Run {
+                text: line.replace('\t', "    "),
+                bold: false,
+            }],
+            bullet: false,
+            indent: 0,
+        })
+        .collect()
+}
+
+/// CommonMark plus tables: headings, paragraphs with bold, nested lists, tables, block quotes and code.
+fn markdown(text: &str) -> Vec<Block> {
+    use pulldown_cmark::{Event, HeadingLevel, Options, Parser, Tag, TagEnd};
+    let mut blocks = Vec::new();
+    let mut runs: Vec<Run> = Vec::new();
+    let mut bold = 0usize;
+    let mut lists = 0u8;
+    let mut quote = 0u8;
+    let mut item = false;
+    let mut heading: Option<u8> = None;
+    let mut code: Option<String> = None;
+    let mut table: Option<Vec<Vec<String>>> = None;
+    let mut cell = String::new();
+    let flush = |runs: &mut Vec<Run>, blocks: &mut Vec<Block>, bullet: bool, indent: u8| {
+        if runs.iter().any(|r| !r.text.trim().is_empty()) {
+            blocks.push(Block::Para {
+                runs: std::mem::take(runs),
+                bullet,
+                indent,
+            });
+        }
+        runs.clear();
+    };
+    for event in Parser::new_ext(text, Options::ENABLE_TABLES | Options::ENABLE_STRIKETHROUGH) {
+        match event {
+            Event::Start(Tag::Heading { level, .. }) => {
+                flush(&mut runs, &mut blocks, false, lists + quote);
+                heading = Some(match level {
+                    HeadingLevel::H1 => 1,
+                    HeadingLevel::H2 => 2,
+                    _ => 3,
+                });
+            }
+            Event::End(TagEnd::Heading(_)) => {
+                let text: String = runs.drain(..).map(|r| r.text).collect();
+                blocks.push(Block::Heading(
+                    heading.take().unwrap_or(1),
+                    text.trim().to_string(),
+                ));
+            }
+            Event::Start(Tag::List(_)) => {
+                // A tight item's own text comes before its nested list.
+                flush(
+                    &mut runs,
+                    &mut blocks,
+                    item,
+                    lists.saturating_sub(1) + quote,
+                );
+                item = false;
+                lists = lists.saturating_add(1);
+            }
+            Event::End(TagEnd::List(_)) => lists = lists.saturating_sub(1),
+            Event::Start(Tag::Item) => item = true,
+            Event::End(TagEnd::Item) => {
+                flush(
+                    &mut runs,
+                    &mut blocks,
+                    item,
+                    lists.saturating_sub(1) + quote,
+                );
+                item = false;
+            }
+            Event::Start(Tag::BlockQuote(_)) => quote = quote.saturating_add(1),
+            Event::End(TagEnd::BlockQuote(_)) => quote = quote.saturating_sub(1),
+            Event::End(TagEnd::Paragraph) => {
+                let indent = if item { lists.saturating_sub(1) } else { lists } + quote;
+                flush(&mut runs, &mut blocks, item, indent);
+                // Later paragraphs of the same list item carry no second bullet.
+                item = false;
+            }
+            Event::Start(Tag::Strong) => bold += 1,
+            Event::End(TagEnd::Strong) => bold = bold.saturating_sub(1),
+            Event::Start(Tag::CodeBlock(_)) => code = Some(String::new()),
+            Event::End(TagEnd::CodeBlock) => {
+                for line in code.take().unwrap_or_default().lines() {
+                    blocks.push(Block::Para {
+                        runs: vec![Run {
+                            text: format!("    {line}"),
+                            bold: false,
+                        }],
+                        bullet: false,
+                        indent: lists + quote,
+                    });
+                }
+            }
+            Event::Start(Tag::Table(_)) => table = Some(Vec::new()),
+            Event::End(TagEnd::Table) => {
+                if let Some(rows) = table.take().filter(|rows| !rows.is_empty()) {
+                    blocks.push(Block::Table(rows));
+                }
+            }
+            Event::Start(Tag::TableHead | Tag::TableRow) => {
+                if let Some(rows) = table.as_mut() {
+                    rows.push(Vec::new());
+                }
+            }
+            Event::End(TagEnd::TableCell) => {
+                if let Some(row) = table.as_mut().and_then(|rows| rows.last_mut()) {
+                    row.push(std::mem::take(&mut cell).trim().to_string());
+                }
+            }
+            Event::Text(text)
+            | Event::Code(text)
+            | Event::InlineMath(text)
+            | Event::DisplayMath(text) => {
+                if let Some(code) = code.as_mut() {
+                    code.push_str(&text);
+                } else if table.is_some() {
+                    cell.push_str(&text);
+                } else {
+                    runs.push(Run {
+                        text: text.into_string(),
+                        bold: bold > 0,
+                    });
+                }
+            }
+            Event::SoftBreak | Event::HardBreak => {
+                if table.is_some() {
+                    cell.push(' ');
+                } else {
+                    runs.push(Run {
+                        text: " ".into(),
+                        bold: false,
+                    });
+                }
+            }
+            Event::Rule => flush(&mut runs, &mut blocks, false, lists + quote),
+            _ => {}
+        }
+    }
+    flush(&mut runs, &mut blocks, false, 0);
+    blocks
+}
 
 fn zip_entry(bytes: &[u8], name: &str) -> Result<Option<String>, String> {
     let mut archive = zip::ZipArchive::new(Cursor::new(bytes))
@@ -1302,6 +1458,39 @@ mod tests {
                 ..
             }
         ));
+    }
+
+    #[test]
+    fn text_and_markdown_become_blocks() {
+        let text = plain_text("Plain notes\n\tindented\n");
+        assert_eq!(text.len(), 2);
+        let md = markdown(
+            "# Title\n\nSome **bold** text.\n\n- one\n- two\n  - nested\n\n| a | b |\n|---|---|\n| 1 | 2 |\n",
+        );
+        assert_eq!(md[0], Block::Heading(1, "Title".into()));
+        assert!(
+            matches!(&md[1], Block::Para { runs, bullet: false, .. } if runs.iter().any(|r| r.bold && r.text == "bold"))
+        );
+        let bullets: Vec<(String, u8)> = md
+            .iter()
+            .filter_map(|b| match b {
+                Block::Para {
+                    runs,
+                    bullet: true,
+                    indent,
+                } => Some((plain(runs), *indent)),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(
+            bullets,
+            vec![("one".into(), 0), ("two".into(), 0), ("nested".into(), 1)]
+        );
+        assert!(md.contains(&Block::Table(vec![
+            vec!["a".into(), "b".into()],
+            vec!["1".into(), "2".into()]
+        ])));
+        assert!(text_of(&[0xff, 0xfe, 0x00]).is_err());
     }
 
     #[test]

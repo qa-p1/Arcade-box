@@ -1273,12 +1273,14 @@
       "version": "0.1.0",
       "apiVersion": "1",
       "name": "Document to PDF",
-      "description": "Convert Word, OpenDocument, PowerPoint, RTF and spreadsheet files to PDF on this device: text, headings, lists and tables.",
+      "description": "Convert Word, OpenDocument, PowerPoint, RTF, spreadsheet, plain text and Markdown files to PDF on this device: text, headings, lists and tables.",
       "category": "PDF",
       "aliases": [
         "doc to pdf",
         "document converter",
-        "office to pdf"
+        "office to pdf",
+        "markdown to pdf",
+        "text to pdf"
       ],
       "privacyClass": "LOCAL",
       "inputs": [
