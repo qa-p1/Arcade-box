@@ -154,8 +154,7 @@ fn calculator_keeps_operator_precedence() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG B-8")]
-fn known_bug_units_read_decimal_commas_and_exponents() {
+fn units_read_decimal_commas_and_exponents() {
     let arcade = runtime();
     let mut failures = Vec::new();
     for (input, expected) in [("1,5 m to cm", 150.0), ("1.5e3 m to km", 1.5)] {
