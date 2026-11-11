@@ -81,6 +81,7 @@ jobs:
           libwebkit2gtk-4.1-dev build-essential file libxdo-dev libssl-dev
           libayatana-appindicator3-dev librsvg2-dev qpdf ffmpeg libvips-tools lua5.4
           xvfb dbus-x11 xdotool python3-dbus python3-gi
+          gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-pipewire
       - name: Install frontend dependencies
         working-directory: Arcade-box/apps/desktop/frontend
         run: npm ci

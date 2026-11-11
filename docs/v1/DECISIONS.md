@@ -102,3 +102,17 @@ The fixes for the converter findings had to choose a reading where an input has 
   (Close, Clear, Back), and the BR-5 check failed on the old code for the finding's reason: a search with text said
   Close.
 
+
+## D9 — The AppImage bundles GStreamer's playback plugins (BR-3)
+
+- **Problem:** WebKit plays audio and video through GStreamer. The AppImage points GStreamer at its own plugin folder,
+  which held no plugins, so no media played (`appsink not found`, B-27).
+- **Options:** stop overriding the plugin path and use the host's plugins (they link against the host's newer
+  libgstreamer, not the bundled one, and fail or skip at random by distro), or bundle the plugins.
+- **Decision:** bundle them with Tauri's `bundleMediaFramework`, from Ubuntu 24.04's `gstreamer1.0-plugins-base`,
+  `-good` and `gstreamer1.0-pipewire` (LGPL). That covers WebM/VP8/VP9, Ogg/Vorbis/Opus, MP3, WAV, FLAC, Matroska and
+  the MP4 container, with PulseAudio/PipeWire output. `gstreamer1.0-libav` (H.264/AAC) is not bundled: Ubuntu builds
+  it against a GPL FFmpeg. MP4/H.264 previews need the host's plugins and say so. The screen recorder keeps using the
+  host's GStreamer (it already clears the image's plugin paths). Cost: the image grows by about 15–25 MB.
+- **Test:** `scripts/verify-appimage.py` (CI and Release) fails if the image lacks any of the 12 plugins playback
+  needs.
