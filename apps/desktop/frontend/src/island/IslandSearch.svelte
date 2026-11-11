@@ -15,6 +15,12 @@
     <button type="button" class="btn ghost icon-only sm" aria-label="Discard the input from the other app" onclick={() => (box.pendingLink = null)}><Icon name="close" size={14} /></button>
   </div>
 {/if}
+{#if box.activeJobCount > 0}
+  <div class="running-jobs" role="status" data-running-jobs>
+    <span>{box.activeJobCount === 1 ? '1 job running' : `${box.activeJobCount} jobs running`}</span>
+    <button type="button" class="btn ghost sm" onclick={() => box.openPage('jobs')}>Open Jobs</button>
+  </div>
+{/if}
 <div class="overlay-head island-search" class:has-query={box.query.trim().length > 0}>
   <span class="brand-mark island-mark" aria-hidden="true"><img src={boxGlyph} alt="" width="16" height="16" /></span>
   <input
@@ -63,7 +69,7 @@
             class="overlay-row two-line"
             aria-selected={index === box.selectedIndex}
             onclick={() => box.openTool(tool)}
-            onmouseenter={() => (box.selectedIndex = index)}
+            onpointermove={(event) => box.hoverRow(event, index)}
           >
             <span class="glyph-tile sm"><Icon name={box.iconForCategory(tool.category)} size={14} /></span>
             <span class="row-main"><span class="row-title"><span class="ellipsis">{tool.name}</span>{#if privacyLabel(tool.privacyClass) !== 'LOCAL'}<span class="badge warn">online</span>{/if}</span><span class="row-sub ellipsis">{tool.description}</span></span>
@@ -80,7 +86,7 @@
     {#each box.runnableContextSuggestions as suggestion, index}
       {@const suggestedTool = box.toolById.get(suggestion.toolId)}
       {#if suggestedTool}
-        <button type="button" id={`context-${suggestion.toolId}`} role="option" class="overlay-row" aria-selected={index === box.selectedIndex} onclick={() => box.selectContextSuggestion(suggestion)} onmouseenter={() => (box.selectedIndex = index)}>
+        <button type="button" id={`context-${suggestion.toolId}`} role="option" class="overlay-row" aria-selected={index === box.selectedIndex} onclick={() => box.selectContextSuggestion(suggestion)} onpointermove={(event) => box.hoverRow(event, index)}>
           <span class="glyph-tile sm"><Icon name={box.iconForCategory(suggestedTool.category)} size={14} /></span>
           <span class="row-main"><span class="row-title ellipsis">{suggestedTool.name}</span></span>
           <span class="row-sub ellipsis suggestion-reason">{suggestion.reason}</span>
@@ -115,6 +121,7 @@
   .island-empty { display: grid; justify-items: center; gap: var(--sp-4); padding: var(--sp-24) var(--sp-16); color: var(--muted); text-align: center; }
   .island-empty strong { color: var(--text); font-weight: var(--fw-medium); }
   .island-notice { margin: var(--sp-8) var(--sp-10) var(--sp-10); }
+  .running-jobs { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-8); margin: var(--sp-10) var(--sp-12) 0; padding: var(--sp-4) var(--sp-4) var(--sp-4) var(--sp-12); border-radius: var(--radius-sm); background: var(--accent-soft); color: var(--text); font-size: var(--fs-small); }
   .link-pending { display: flex; align-items: center; gap: var(--sp-8); margin: var(--sp-10) var(--sp-12) 0; padding: var(--sp-4) var(--sp-4) var(--sp-4) var(--sp-12); border-radius: var(--radius-sm); background: var(--accent-soft); color: var(--text); font-size: var(--fs-small); }
   .link-pending span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>

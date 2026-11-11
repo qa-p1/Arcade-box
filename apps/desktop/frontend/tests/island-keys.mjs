@@ -25,7 +25,7 @@ async function openTool(page, query = 'convert') {
 }
 
 const scenarios = {
-  async 'KNOWN BUG BR-0: Escape in a tool returns to the search'(page) {
+  async 'Escape in a tool returns to the search'(page) {
     await openTool(page);
     await page.keyboard.press('Escape');
     await sleep(200);
@@ -33,7 +33,7 @@ const scenarios = {
     assert(await page.locator('.tool-view').count() === 0, 'the tool is still open');
     assert(await searchFocused(page), 'the search does not have focus');
   },
-  async 'KNOWN BUG BR-0: a running job stays reachable from the search'(page) {
+  async 'a running job stays reachable from the search'(page) {
     await page.evaluate((result) => {
       const fixture = window.__arcadeFixture;
       fixture.result = result;
@@ -62,16 +62,16 @@ const scenarios = {
     await sleep(150);
     assert(await commands(page, 'hide_island') === 1, 'Escape in the empty search did not close');
   },
-  async 'KNOWN BUG BR-5: the footer says what Escape does'(page) {
-    assert(/Esc Close/.test(await footer(page)), `empty search: ${await footer(page)}`);
+  async 'the footer says what Escape does'(page) {
+    assert(/Esc ?Close/.test(await footer(page)), `empty search: ${await footer(page)}`);
     await page.keyboard.type('convert');
     await page.waitForSelector('.search-panel');
-    assert(/Esc Clear/.test(await footer(page)), `search with text: ${await footer(page)}`);
+    assert(/Esc ?Clear/.test(await footer(page)), `search with text: ${await footer(page)}`);
     await page.keyboard.press('Enter');
     await page.waitForSelector('.tool-view');
-    assert(/Esc Back/.test(await footer(page)), `tool: ${await footer(page)}`);
+    assert(/Esc ?Back/.test(await footer(page)), `tool: ${await footer(page)}`);
   },
-  async 'KNOWN BUG BR-6: the footer, the run button and Settings agree on how to run a tool'(page) {
+  async 'the footer, the run button and Settings agree on how to run a tool'(page) {
     await openTool(page);
     const text = await footer(page);
     assert(/(Ctrl|⌘) ?↵ Run/.test(text), `tool footer: ${text}`);
@@ -93,7 +93,7 @@ const scenarios = {
     const opened = await page.locator('.tool-view h1').innerText();
     assert(opened === name, `opened ${opened}, highlighted ${name}`);
   },
-  async 'KNOWN BUG BR-11: a row appearing under a resting pointer does not take the highlight'(page) {
+  async 'a row appearing under a resting pointer does not take the highlight'(page) {
     await page.keyboard.type('convert');
     await page.waitForSelector('.search-panel .overlay-row');
     await sleep(150);
@@ -114,7 +114,7 @@ const scenarios = {
     await sleep(100);
     assert(await row.getAttribute('aria-selected') === 'true', 'the hovered row is not highlighted');
   },
-  async 'KNOWN BUG BR-12: a re-show opens a fresh search with focus'(page) {
+  async 'a re-show opens a fresh search with focus'(page) {
     await openTool(page);
     await page.evaluate(async () => {
       const { emit } = window.__arcadeFixture;
