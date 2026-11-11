@@ -71,6 +71,29 @@ pub(super) fn convert(request: &ToolRequest, text: &str) -> Result<Value, String
     }))
 }
 
+/// Whether search should read `text` as a unit conversion: `kg to lb`, `14 gb to mb`, `72 f to c`. The amount may
+/// be left out; the conversion still has to make sense (same dimension, known units).
+pub(super) fn is_conversion(text: &str) -> bool {
+    let tokens = tokenize(text);
+    if !tokens.iter().any(|token| is_connector(token)) {
+        return false;
+    }
+    let request = ToolRequest {
+        tool_id: String::new(),
+        inputs: Vec::new(),
+        options: Value::Object(Default::default()),
+    };
+    let starts_with_amount = tokens
+        .first()
+        .is_some_and(|token| parse_amount(token).is_some());
+    let text = if starts_with_amount {
+        text.to_owned()
+    } else {
+        format!("1 {text}")
+    };
+    convert(&request, &text).is_ok()
+}
+
 fn is_connector(token: &str) -> bool {
     matches!(
         token.to_ascii_lowercase().as_str(),

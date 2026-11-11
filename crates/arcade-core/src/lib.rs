@@ -189,6 +189,13 @@ impl Arcade {
                 ranked.insert(0, matched.clone());
             }
         }
+        // A typed expression goes straight to its converter, ahead of any name match (BR-4).
+        if let Some(id) = converter_tools::typed_expression_tool(query) {
+            ranked.retain(|tool| tool.id != id);
+            if let Some(matched) = catalog.tools.iter().find(|tool| tool.id == id) {
+                ranked.insert(0, matched.clone());
+            }
+        }
         ranked
     }
 

@@ -6,6 +6,14 @@ use serde_json::{Value, json};
 
 const MAX_EXPRESSION_DEPTH: usize = 128;
 
+/// Whether search should read `text` as arithmetic: digits, at least one operator or function, and a value.
+pub(super) fn is_expression(text: &str) -> bool {
+    text.bytes().any(|byte| byte.is_ascii_digit())
+        && (text.contains(['+', '-', '*', '/', '^', '%', '!', '(', '×', '÷'])
+            || text.contains(" mod "))
+        && evaluate(text, false).is_ok()
+}
+
 /// Evaluates `expression`; trigonometric functions take and give degrees when `degrees` is set.
 pub(super) fn evaluate(expression: &str, degrees: bool) -> Result<Value, String> {
     let mut parser = ExpressionParser::new(expression);

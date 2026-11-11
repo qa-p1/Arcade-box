@@ -49,17 +49,31 @@ fn relevance(tool: &ToolManifest, query: &str) -> i64 {
     if aliases.iter().any(|s| s == query) {
         return 95;
     }
+    // Whole words before parts of words (BR-4): `ip` is the IP tool's word, not the start of `iphone`, and the
+    // tool's own name beats an alias that merely mentions the word.
+    if starts_with_words(&name, query) {
+        return 90;
+    }
+    if contains_words(&name, query) {
+        return 87;
+    }
+    if aliases.iter().any(|s| starts_with_words(s, query)) {
+        return 85;
+    }
+    if aliases.iter().any(|s| contains_words(s, query)) {
+        return 82;
+    }
     if name.starts_with(query) {
-        return 88;
+        return 80;
     }
     if aliases.iter().any(|s| s.starts_with(query)) {
-        return 84;
+        return 76;
     }
     if name.contains(query) {
-        return 78;
+        return 72;
     }
     if aliases.iter().any(|s| s.contains(query)) {
-        return 75;
+        return 70;
     }
 
     let words: Vec<_> = query.split_whitespace().collect();
@@ -93,6 +107,16 @@ fn relevance(tool: &ToolManifest, query: &str) -> i64 {
         return (best * 50.0) as i64;
     }
     0
+}
+
+/// `text` starts with `query` and the match ends at a word boundary (both are normalized: words split by one space).
+fn starts_with_words(text: &str, query: &str) -> bool {
+    text.strip_prefix(query)
+        .is_some_and(|rest| rest.is_empty() || rest.starts_with(' '))
+}
+
+fn contains_words(text: &str, query: &str) -> bool {
+    format!(" {text} ").contains(&format!(" {query} "))
 }
 
 fn normalize(input: &str) -> String {

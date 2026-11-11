@@ -19,6 +19,29 @@ use std::sync::atomic::AtomicBool;
 
 const INPUT_LIMIT: usize = 128 * 1024;
 
+/// The converter a typed expression is for, read by that converter's own parser (BR-4): `2026-01-01` is Date & Time,
+/// `#ff8800` and `rgb(…)` Colour, `kg to lb` and `72 f to c` Units, `100 usd to inr` Currency and `6*7` the
+/// Calculator. `None` for anything else, which search ranks by name as usual.
+pub(crate) fn typed_expression_tool(query: &str) -> Option<&'static str> {
+    let query = query.trim();
+    if query.is_empty() || query.len() > 200 {
+        return None;
+    }
+    if datetime::is_date(query) {
+        Some("arcade.convert.date-duration")
+    } else if color::is_color_literal(query) {
+        Some("arcade.convert.color")
+    } else if units::is_conversion(query) {
+        Some("arcade.convert.units")
+    } else if currency::is_conversion(query) {
+        Some("arcade.convert.currency")
+    } else if calculator::is_expression(query) {
+        Some("arcade.convert.calculator")
+    } else {
+        None
+    }
+}
+
 pub fn execute(
     manifest: &ToolManifest,
     request: &ToolRequest,

@@ -212,6 +212,23 @@ fn parse_moment(text: &str, zone: Zone) -> Result<Moment, String> {
     ))
 }
 
+/// Whether search should read `text` as a date (a calendar date, or one with a time), not as a number or a word.
+pub(super) fn is_date(text: &str) -> bool {
+    let zone = Zone::Local;
+    text.bytes().any(|byte| byte.is_ascii_digit())
+        && unix_time(text).is_none()
+        && (DateTime::parse_from_rfc3339(text).is_ok()
+            || [
+                "%Y-%m-%dT%H:%M:%S",
+                "%Y-%m-%d %H:%M:%S",
+                "%Y-%m-%dT%H:%M",
+                "%Y-%m-%d %H:%M",
+            ]
+            .into_iter()
+            .any(|format| NaiveDateTime::parse_from_str(text, format).is_ok())
+            || parse_date(text, zone).is_some())
+}
+
 /// A calendar date: ISO, `2 Oct 2026` and the like, or `today`, `tomorrow`, `yesterday` in `zone`.
 fn parse_date(text: &str, zone: Zone) -> Option<NaiveDate> {
     let today = || zone.now().date_naive();

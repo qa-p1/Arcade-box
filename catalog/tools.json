@@ -2046,6 +2046,7 @@
       "description": "Remove an image background using a cached local U²-Net model.",
       "category": "Images",
       "aliases": [
+        "remove background",
         "remove image background",
         "transparent background",
         "cut out subject"

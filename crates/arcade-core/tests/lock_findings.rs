@@ -77,8 +77,7 @@ fn a_tool_name_ranks_first() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG BR-4")]
-fn known_bug_search_finds_what_people_type() {
+fn search_finds_what_people_type() {
     let arcade = runtime();
     let failures = [
         ("kg to lb", "arcade.convert.units"),
