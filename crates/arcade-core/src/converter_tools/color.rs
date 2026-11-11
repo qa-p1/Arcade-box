@@ -88,6 +88,17 @@ fn parse(text: &str) -> Result<Rgb, String> {
     parse_alpha(text).map(|(color, _)| color)
 }
 
+/// Whether search should read `text` as a colour: `#…` or a CSS colour function. A bare name such as `tan` or
+/// `orange` stays a search word.
+pub(super) fn is_color_literal(text: &str) -> bool {
+    let value = text.trim().to_ascii_lowercase();
+    (value.starts_with('#')
+        || ["rgb(", "rgba(", "hsl(", "hsla("]
+            .iter()
+            .any(|start| value.starts_with(start)))
+        && parse_alpha(&value).is_ok()
+}
+
 /// A colour and its alpha (1.0 when opaque).
 fn parse_alpha(text: &str) -> Result<(Rgb, f64), String> {
     let value = text.trim().to_ascii_lowercase();

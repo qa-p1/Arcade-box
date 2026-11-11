@@ -274,7 +274,6 @@ export function createBox() {
 
   // The dashboard is a normal window, shown by the OS; the Island fades in.
   let surfaceVisible = $state(!hasDesktopBridge() || surface === 'dashboard');
-  let lastFocusedElement: HTMLElement | null = null;
   let stopWatchingHiding = () => {};
   let stopWatchingHidden = () => {};
   let stopWatchingLinkOpen = () => {};
@@ -322,8 +321,23 @@ export function createBox() {
     ], { duration: 210, easing: 'cubic-bezier(.16,1,.3,1)' });
   }
 
+  /** A hidden Island comes back as a fresh search (BR-12); a job started from the old tool keeps running and stays
+   *  reachable from the search (BR-0). */
+  function resetToSearch(): void {
+    if (selectedTool) releaseCurrentDirectoryGrant();
+    selectedTool = null;
+    activeJobId = '';
+    activeResult = null;
+    runError = '';
+    returnToDashboard = false;
+    query = '';
+    selectedIndex = 0;
+  }
+
   async function revealIsland(): Promise<void> {
     dismissing = false;
+    // Focus before the first frame, so the first keystrokes land in the search.
+    if (!onboardingVisible && !selectedTool) searchInput?.focus({ preventScroll: true });
     // Settings › General › "Show again" clears the flag while the Island lives.
     if (!onboardingVisible && hasDesktopBridge() && (await getPreference('onboarding_complete').catch(() => 'true')) !== 'true') {
       onboardingVisible = true;
@@ -332,7 +346,6 @@ export function createBox() {
     await tick();
     animateInvocation();
     if (onboardingVisible) focusOnboarding();
-    else if (lastFocusedElement?.isConnected) lastFocusedElement.focus({ preventScroll: true });
     else if (!selectedTool) searchInput?.focus();
     else islandShell?.querySelector<HTMLElement>('textarea, input, select, button')?.focus();
   }
@@ -362,11 +375,10 @@ export function createBox() {
       void Promise.all([
         watchIslandShown(() => { void revealIsland(); }),
         watchIslandHiding(() => {
-          lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
           islandShell?.getAnimations().forEach((animation) => animation.cancel());
           dismissing = true;
         }),
-        watchIslandHidden(() => { surfaceVisible = false; dismissing = false; }),
+        watchIslandHidden(() => { surfaceVisible = false; dismissing = false; resetToSearch(); }),
         watchOpenTool((request) => void openFromDashboard(request)),
         watchLinkOpen((request) => openFromLink(request)),
       ]).then(async ([shown, hiding, hidden, openTool, linkOpen]) => {
@@ -709,6 +721,15 @@ export function createBox() {
     if (tool && suggestion) searchAnnouncement = `${tool.name}. ${suggestion.reason}. Press Enter to run this action.`;
   }
 
+  // The pointer takes the highlight only when it really moves (BR-11): WebKitGTK sends enter and move events when a
+  // row is laid out under a resting pointer, and Enter would then open that row instead of the one the keys chose.
+  let lastPointer: { x: number; y: number } | null = null;
+  function hoverRow(event: PointerEvent, index: number): void {
+    const moved = lastPointer !== null && (lastPointer.x !== event.screenX || lastPointer.y !== event.screenY);
+    lastPointer = { x: event.screenX, y: event.screenY };
+    if (moved && selectedIndex !== index) selectedIndex = index;
+  }
+
   function handleSearchKeydown(event: KeyboardEvent): void {
     if (event.key === 'Enter' && loadingSearch) {
       event.preventDefault();
@@ -801,8 +822,14 @@ export function createBox() {
     }
     if (event.key === 'Escape' && event.target instanceof HTMLSelectElement) return;
     if (event.key === 'Escape') {
+      // One step back (BR-0): a tool returns to the search and its job keeps running; a search with text is
+      // cleared; only the empty search closes the Island.
       event.preventDefault();
-      void dismissIsland();
+      if (selectedTool) backFromTool();
+      else if (query.trim()) {
+        query = '';
+        void tick().then(() => searchInput?.focus());
+      } else void dismissIsland();
     } else if (command && event.key.toLowerCase() === 'k') {
       event.preventDefault();
       if (selectedTool) { returnToDashboard = false; backFromTool(); }
@@ -1985,8 +2012,6 @@ export function createBox() {
     get dashboardSearchAnnouncement() { return dashboardSearchAnnouncement; },
     get surfaceVisible() { return surfaceVisible; },
     set surfaceVisible(value) { surfaceVisible = value; },
-    get lastFocusedElement() { return lastFocusedElement; },
-    set lastFocusedElement(value) { lastFocusedElement = value; },
     get stopWatchingHiding() { return stopWatchingHiding; },
     set stopWatchingHiding(value) { stopWatchingHiding = value; },
     get stopWatchingHidden() { return stopWatchingHidden; },
@@ -2021,6 +2046,8 @@ export function createBox() {
     defaultOptionsFor,
     openRunnableResult,
     backFromTool,
+    openPage,
+    hoverRow,
     focusDashboardEntry,
     acceptToolCatalog,
     announceSearchSelection,

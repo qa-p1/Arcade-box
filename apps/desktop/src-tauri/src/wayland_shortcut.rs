@@ -11,7 +11,7 @@ use futures_util::{FutureExt, StreamExt};
 use serde::Serialize;
 use std::{
     sync::{Arc, RwLock},
-    time::Duration,
+    time::{Duration, Instant},
 };
 use tauri::{AppHandle, Emitter};
 
@@ -19,6 +19,31 @@ const SHORTCUT_ID: &str = "arcade-box-toggle";
 const SHORTCUT_DESCRIPTION: &str = "Show or hide Arcade Box";
 pub const STATUS_EVENT: &str = "arcade://shortcut-status";
 pub const ACTIVATED_EVENT: &str = "arcade://shortcut-activated";
+
+/// A held key repeats Activated without a Deactivated in between; those repeats must not toggle the Island again.
+/// A release can also be lost (BR-1: synthetic dispatch sends only Activated), so a press that comes a second after
+/// the last Activated counts as new even with no release seen.
+const LOST_RELEASE: Duration = Duration::from_secs(1);
+
+#[derive(Default)]
+struct PressGate {
+    last_activation: Option<Instant>,
+}
+
+impl PressGate {
+    /// Whether this Activated is a new press.
+    fn activated(&mut self, now: Instant) -> bool {
+        let new = self
+            .last_activation
+            .is_none_or(|last| now.saturating_duration_since(last) >= LOST_RELEASE);
+        self.last_activation = Some(now);
+        new
+    }
+
+    fn deactivated(&mut self) {
+        self.last_activation = None;
+    }
+}
 
 /// Wayland can be reported by either variable, depending on how the app was
 /// launched. Prefer the display socket but retain the session type fallback.
@@ -306,7 +331,7 @@ async fn register_and_listen(
             .as_deref()
             .unwrap_or("<no readable handle: no event can match>")
     );
-    let mut shortcut_down = false;
+    let mut press = PressGate::default();
 
     let mut shortcut = NewShortcut::new(SHORTCUT_ID, SHORTCUT_DESCRIPTION);
     if !preferred_trigger.trim().is_empty() {
@@ -412,11 +437,10 @@ async fn register_and_listen(
         futures_util::select! {
             event = next_activation => match event {
                 Some(event) if event.shortcut_id() == SHORTCUT_ID && Some(event.session_handle().as_str()) == own_session.as_deref() => {
-                    if shortcut_down {
-                        eprintln!("Arcade Box shortcut: Activated ignored, the previous press was never released");
+                    if !press.activated(Instant::now()) {
+                        eprintln!("Arcade Box shortcut: Activated ignored, the key is still held");
                         continue;
                     }
-                    shortcut_down = true;
                     eprintln!("Arcade Box shortcut: Activated, toggling the Island");
                     let activation_token = event
                         .options()
@@ -455,7 +479,7 @@ async fn register_and_listen(
             event = next_release => match event {
                 Some(event) if event.shortcut_id() == SHORTCUT_ID
                     && Some(event.session_handle().as_str()) == own_session.as_deref() => {
-                    shortcut_down = false;
+                    press.deactivated();
                     eprintln!("Arcade Box shortcut: Deactivated");
                 }
                 Some(_) => {}
@@ -482,5 +506,32 @@ async fn register_and_listen(
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn a_held_key_toggles_once() {
+        let start = Instant::now();
+        let mut gate = PressGate::default();
+        assert!(gate.activated(start));
+        // Key repeat for three seconds: every 30 ms, never more than a second apart.
+        for step in 1..100 {
+            assert!(!gate.activated(start + Duration::from_millis(30 * step)));
+        }
+        gate.deactivated();
+        assert!(gate.activated(start + Duration::from_secs(4)));
+    }
+
+    #[test]
+    fn a_lost_release_does_not_wedge_the_shortcut() {
+        let start = Instant::now();
+        let mut gate = PressGate::default();
+        assert!(gate.activated(start));
+        // No Deactivated arrives (BR-1); the next press a second and a half later still toggles.
+        assert!(gate.activated(start + Duration::from_millis(1500)));
     }
 }

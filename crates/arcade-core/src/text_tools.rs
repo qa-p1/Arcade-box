@@ -135,6 +135,9 @@ fn text_diff(
     if left.len().saturating_add(right.len()) > MAX_TEXT_INPUT {
         return Err("Text diff is limited to 16 MB combined input".into());
     }
+    // Line endings and a missing final newline are not differences people mean to see.
+    let (left, right) = (normalize_diff_side(left), normalize_diff_side(right));
+    let (left, right) = (left.as_str(), right.as_str());
     let rendered = match option_str(request, "view", "unified") {
         "unified" => TextDiff::from_lines(left, right)
             .unified_diff()
@@ -449,9 +452,19 @@ fn split_diff_input(input: &str) -> Result<(&str, &str), String> {
     let Some((left, right)) = input.split_once(marker) else {
         return Err("Paste two texts with a line containing `--- RIGHT ---` between them.".into());
     };
-    let left = left.strip_suffix('\n').unwrap_or(left);
-    let right = right.strip_prefix('\n').unwrap_or(right);
+    let right = right
+        .strip_prefix("\r\n")
+        .or_else(|| right.strip_prefix('\n'))
+        .unwrap_or(right);
     Ok((left, right))
+}
+
+fn normalize_diff_side(text: &str) -> String {
+    let mut text = text.replace("\r\n", "\n");
+    if !text.is_empty() && !text.ends_with('\n') {
+        text.push('\n');
+    }
+    text
 }
 
 fn structured_data(

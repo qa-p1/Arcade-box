@@ -71,6 +71,29 @@ pub(super) fn convert(request: &ToolRequest, text: &str) -> Result<Value, String
     }))
 }
 
+/// Whether search should read `text` as a unit conversion: `kg to lb`, `14 gb to mb`, `72 f to c`. The amount may
+/// be left out; the conversion still has to make sense (same dimension, known units).
+pub(super) fn is_conversion(text: &str) -> bool {
+    let tokens = tokenize(text);
+    if !tokens.iter().any(|token| is_connector(token)) {
+        return false;
+    }
+    let request = ToolRequest {
+        tool_id: String::new(),
+        inputs: Vec::new(),
+        options: Value::Object(Default::default()),
+    };
+    let starts_with_amount = tokens
+        .first()
+        .is_some_and(|token| parse_amount(token).is_some());
+    let text = if starts_with_amount {
+        text.to_owned()
+    } else {
+        format!("1 {text}")
+    };
+    convert(&request, &text).is_ok()
+}
+
 fn is_connector(token: &str) -> bool {
     matches!(
         token.to_ascii_lowercase().as_str(),
@@ -87,17 +110,7 @@ fn tokenize(text: &str) -> Vec<String> {
         let word = word.trim_end_matches([',', '?', '.']).to_owned();
         let mut rest = word.as_str();
         while !rest.is_empty() {
-            let number_end = rest
-                .char_indices()
-                .take_while(|(index, character)| {
-                    character.is_ascii_digit()
-                        || matches!(character, '.' | ',')
-                        || (*index > 0 && *character == '/')
-                        || (*index == 0 && matches!(character, '-' | '+'))
-                })
-                .map(|(index, character)| index + character.len_utf8())
-                .last()
-                .unwrap_or(0);
+            let number_end = number_prefix_len(rest);
             if number_end > 0
                 && number_end < rest.len()
                 && rest[..number_end].chars().any(|c| c.is_ascii_digit())
@@ -124,9 +137,52 @@ fn tokenize(text: &str) -> Vec<String> {
     tokens
 }
 
-/// `1.5`, `1,024` or a fraction such as `1/3`.
+/// Length of the number at the start of `text`: digits, `.`, `,`, a fraction slash, a leading sign and an exponent
+/// (`1.5e3`, `2E-4`) when digits follow the `e`.
+fn number_prefix_len(text: &str) -> usize {
+    let bytes = text.as_bytes();
+    let mut end = 0;
+    let mut index = 0;
+    while index < bytes.len() {
+        let byte = bytes[index];
+        let part_of_number = byte.is_ascii_digit()
+            || matches!(byte, b'.' | b',')
+            || (index > 0 && byte == b'/')
+            || (index == 0 && matches!(byte, b'-' | b'+'));
+        if part_of_number {
+            index += 1;
+            end = index;
+        } else if matches!(byte, b'e' | b'E') && index > 0 && bytes[index - 1].is_ascii_digit() {
+            let digits_from =
+                index + 1 + usize::from(matches!(bytes.get(index + 1), Some(b'+' | b'-')));
+            let digits = bytes[digits_from.min(bytes.len())..]
+                .iter()
+                .take_while(|digit| digit.is_ascii_digit())
+                .count();
+            if digits == 0 {
+                break;
+            }
+            index = digits_from + digits;
+            end = index;
+        } else {
+            break;
+        }
+    }
+    end
+}
+
+/// `1.5`, `1,5` (a decimal comma), `1,024` (a thousands comma), `1.5e3` or a fraction such as `1/3`.
 fn parse_amount(token: &str) -> Option<f64> {
-    let token = token.replace(',', "");
+    let token = if token.matches(',').count() == 1
+        && !token.contains('.')
+        && !token
+            .split_once(',')
+            .is_some_and(|(whole, after)| after.len() == 3 && !whole.is_empty() && whole.len() <= 3)
+    {
+        token.replace(',', ".")
+    } else {
+        token.replace(',', "")
+    };
     let value = match token.split_once('/') {
         Some((numerator, denominator)) => {
             let denominator: f64 = denominator.parse().ok().filter(|d: &f64| *d != 0.0)?;

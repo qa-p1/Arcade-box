@@ -2046,6 +2046,7 @@
       "description": "Remove an image background using a cached local U²-Net model.",
       "category": "Images",
       "aliases": [
+        "remove background",
         "remove image background",
         "transparent background",
         "cut out subject"
@@ -9551,7 +9552,24 @@
           "kind": "text",
           "label": "Expression"
         },
-        "controls": []
+        "controls": [
+          {
+            "key": "angle",
+            "label": "Angles",
+            "type": "select",
+            "default": "radians",
+            "choices": [
+              {
+                "value": "radians",
+                "label": "Radians"
+              },
+              {
+                "value": "degrees",
+                "label": "Degrees"
+              }
+            ]
+          }
+        ]
       }
     },
     {

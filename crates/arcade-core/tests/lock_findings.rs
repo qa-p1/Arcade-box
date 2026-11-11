@@ -77,8 +77,7 @@ fn a_tool_name_ranks_first() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG BR-4")]
-fn known_bug_search_finds_what_people_type() {
+fn search_finds_what_people_type() {
     let arcade = runtime();
     let failures = [
         ("kg to lb", "arcade.convert.units"),
@@ -102,8 +101,7 @@ fn known_bug_search_finds_what_people_type() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG B-7")]
-fn known_bug_calculator_handles_common_syntax() {
+fn calculator_handles_common_syntax() {
     let arcade = runtime();
     let mut failures = Vec::new();
     for (expression, expected) in [
@@ -155,8 +153,7 @@ fn calculator_keeps_operator_precedence() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG B-8")]
-fn known_bug_units_read_decimal_commas_and_exponents() {
+fn units_read_decimal_commas_and_exponents() {
     let arcade = runtime();
     let mut failures = Vec::new();
     for (input, expected) in [("1,5 m to cm", 150.0), ("1.5e3 m to km", 1.5)] {
@@ -176,8 +173,7 @@ fn units_convert_a_plain_quantity() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG B-9")]
-fn known_bug_a_negative_span_is_negative_in_every_unit() {
+fn a_negative_span_is_negative_in_every_unit() {
     let result = run(
         &runtime(),
         "arcade.convert.date-duration",
@@ -195,8 +191,82 @@ fn known_bug_a_negative_span_is_negative_in_every_unit() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG B-10")]
-fn known_bug_diff_of_identical_texts_is_empty() {
+fn time_zones_read_common_inputs_and_abbreviations() {
+    let arcade = runtime();
+    let tomorrow = (chrono::Utc::now() + chrono::Duration::days(1)).format("%Y-%m-%d");
+    let mut failures = Vec::new();
+    for (input, source, targets, key, expected) in [
+        (
+            "2026-07-01 09:00",
+            "utc",
+            "asia/kolkata",
+            "iso",
+            "2026-07-01T14:30:00+05:30".to_string(),
+        ),
+        ("9:00", "UTC", "Asia/Kolkata", "time", "14:30".to_string()),
+        ("5pm", "UTC", "UTC", "time", "17:00".to_string()),
+        (
+            "tomorrow 5pm",
+            "UTC",
+            "UTC",
+            "iso",
+            format!("{tomorrow}T17:00:00Z"),
+        ),
+        (
+            "1735689600",
+            "UTC",
+            "UTC",
+            "iso",
+            "2025-01-01T00:00:00Z".to_string(),
+        ),
+        (
+            "2026-01-15 12:00",
+            "UTC",
+            "IST",
+            "offset",
+            "UTC+05:30".to_string(),
+        ),
+        (
+            "2026-01-15 12:00",
+            "UTC",
+            "PST",
+            "offset",
+            "UTC-08:00".to_string(),
+        ),
+        (
+            "2026-07-15 12:00",
+            "UTC",
+            "EST",
+            "offset",
+            "UTC-04:00".to_string(),
+        ),
+        (
+            "2026-01-15 12:00",
+            "IST",
+            "UTC",
+            "iso",
+            "2026-01-15T06:30:00Z".to_string(),
+        ),
+    ] {
+        let seen = run(
+            &arcade,
+            "arcade.convert.time-zone",
+            input,
+            json!({"sourceTimeZone": source, "timeZones": targets}),
+        )
+        .map(|result| json_output(&result)["conversions"][0][key].clone());
+        match seen {
+            Ok(Value::String(value)) if value.contains(&expected) => {}
+            other => failures.push(format!(
+                "`{input}` from {source} to {targets}: {key} {other:?}, expected {expected}"
+            )),
+        }
+    }
+    expect_all("B-9", failures);
+}
+
+#[test]
+fn diff_of_identical_texts_is_empty() {
     let arcade = runtime();
     let mut failures = Vec::new();
     for input in [
@@ -230,8 +300,7 @@ fn diff_shows_a_real_change() {
 
 #[cfg(target_os = "linux")]
 #[test]
-#[should_panic(expected = "KNOWN BUG B-25")]
-fn known_bug_process_finder_lists_processes_not_threads() {
+fn process_finder_lists_processes_not_threads() {
     // A second thread of this test process, named so it can be found.
     let (stop, stopped) = std::sync::mpsc::channel::<()>();
     let thread = std::thread::Builder::new()
@@ -261,8 +330,7 @@ fn known_bug_process_finder_lists_processes_not_threads() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG U-1")]
-fn known_bug_numeric_values_for_string_options_are_used() {
+fn numeric_values_for_string_options_are_used() {
     let arcade = runtime();
     let as_text = output(
         &run(
@@ -387,8 +455,7 @@ fn a_complete_download_with_a_content_type_is_kept() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG BR-15")]
-fn known_bug_a_failed_head_does_not_decide_the_length() {
+fn a_failed_head_does_not_decide_the_length() {
     let url = serve(
         vec![7; BODY],
         "HTTP/1.1 501 Not Implemented\r\nContent-Length: 482\r\nConnection: close\r\n\r\n",
@@ -406,8 +473,7 @@ fn known_bug_a_failed_head_does_not_decide_the_length() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG BR-16")]
-fn known_bug_a_download_without_a_content_type_is_kept() {
+fn a_download_without_a_content_type_is_kept() {
     let url = serve(
         vec![7; BODY],
         "HTTP/1.1 200 OK\r\nContent-Length: 65536\r\nConnection: close\r\n\r\n",

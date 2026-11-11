@@ -21,9 +21,9 @@
   const TOOLS_RELEASES = 'https://github.com/qa-p1/Arcade-tools/releases/latest';
   const themes = [{ id: 'system', label: 'System' }, { id: 'light', label: 'Light' }, { id: 'dark', label: 'Dark' }] as const;
   const islandKeys = [
-    { action: 'Run the tool', keys: ['Enter'] },
+    { action: 'Run the tool', keys: [`${box.commandKey}+Enter`] },
     { action: 'Next field', keys: ['Tab'] },
-    { action: 'Back, or close the Island', keys: ['Esc'] },
+    { action: 'Back one step: leave the tool, clear the search, then close the Island', keys: ['Esc'] },
     { action: 'Move through results', keys: ['↑', '↓'] },
     { action: 'Search tools in the dashboard', keys: [`${box.commandKey}+K`, '/'] },
   ];

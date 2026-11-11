@@ -189,6 +189,13 @@ impl Arcade {
                 ranked.insert(0, matched.clone());
             }
         }
+        // A typed expression goes straight to its converter, ahead of any name match (BR-4).
+        if let Some(id) = converter_tools::typed_expression_tool(query) {
+            ranked.retain(|tool| tool.id != id);
+            if let Some(matched) = catalog.tools.iter().find(|tool| tool.id == id) {
+                ranked.insert(0, matched.clone());
+            }
+        }
         ranked
     }
 
@@ -206,7 +213,7 @@ impl Arcade {
 
     pub fn run_tool_with_progress(
         &self,
-        request: ToolRequest,
+        mut request: ToolRequest,
         cancelled: &AtomicBool,
         progress: Arc<dyn Fn(f64) + Send + Sync>,
     ) -> Result<ToolResult, CoreError> {
@@ -222,6 +229,7 @@ impl Arcade {
         if manifest.status == ImplementationStatus::Planned {
             return Err(CoreError::NotImplemented(request.tool_id));
         }
+        text_options_from_numbers(&manifest, &mut request.options);
         for input in &request.inputs {
             if input.kind == ValueKind::Artifact {
                 self.grants.verify_type(&input.value, &input.mime)?;
@@ -771,6 +779,25 @@ fn input_compatible(actual: &str, declared: &str) -> bool {
     actual == declared
         || declared == "file/any" && actual.starts_with("file/")
         || declared == "file/media" && matches!(actual, "file/video" | "file/audio")
+}
+
+/// A text, select or password option sent as a JSON number or boolean (`--option tabs=4` over Link, a script) is
+/// the same value as its text; executors read these options as strings and would otherwise ignore it (U-1).
+fn text_options_from_numbers(manifest: &ToolManifest, options: &mut serde_json::Value) {
+    use arcade_contract::UiControlKind;
+    let (Some(ui), Some(map)) = (manifest.ui.as_ref(), options.as_object_mut()) else {
+        return;
+    };
+    for control in &ui.controls {
+        if matches!(
+            control.kind,
+            UiControlKind::Text | UiControlKind::Select | UiControlKind::Password
+        ) && let Some(value) = map.get_mut(&control.key)
+            && (value.is_number() || value.is_boolean())
+        {
+            *value = serde_json::Value::String(value.to_string());
+        }
+    }
 }
 
 #[cfg(test)]

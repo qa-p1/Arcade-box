@@ -434,6 +434,8 @@ fn probe_content_length(provider: &ProviderInfo, url: &str, cancelled: &AtomicBo
     let mut args = network::curl_common_args();
     args.extend([
         "--head".into(),
+        // A failed HEAD (a 501, a 404 page) says nothing about the file: its Content-Length is the error page's.
+        "--fail".into(),
         "--location".into(),
         "--max-redirs".into(),
         "10".into(),
@@ -517,7 +519,11 @@ struct CurlMeta {
 
 fn parse_curl_meta(stdout: &str, marker: &str) -> Option<CurlMeta> {
     let (_, metadata) = stdout.rsplit_once(&format!("\n{marker}:"))?;
-    let fields = metadata.trim().split('\t').collect::<Vec<_>>();
+    // Trim only line ends: a missing Content-Type is an empty last field, and trimming tabs would drop it.
+    let fields = metadata
+        .trim_matches(['\r', '\n'])
+        .split('\t')
+        .collect::<Vec<_>>();
     if fields.len() != 4 {
         return None;
     }

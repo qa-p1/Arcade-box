@@ -11,7 +11,7 @@
 <main class:surface-hidden={!box.surfaceVisible} class:dismissing={box.dismissing} class:dashboard-mode={box.surface === 'dashboard'} class:theme-light={box.themeMode === 'light'} class:theme-dark={box.themeMode === 'dark'} class:theme-system={box.themeMode === 'system'} class="app-frame">
   <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">{box.searchAnnouncement}</div>
   <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">{box.resultAnnouncement}</div>
-  <span class="sr-only" id="search-keyboard-help">Use the up and down arrow keys to move through available actions, Enter to open or run one, and Escape to clear the search or close Arcade Box.</span>
+  <span class="sr-only" id="search-keyboard-help">Use the up and down arrow keys to move through available actions, Enter to open or run one, and Escape to go back from a tool, clear the search, or close Arcade Box when the search is empty.</span>
   {#if box.surface === 'island'}
     <Island />
   {:else}

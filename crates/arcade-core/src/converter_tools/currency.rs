@@ -75,6 +75,32 @@ struct RateSnapshot {
 }
 static RATE_CACHE: OnceLock<Mutex<HashMap<String, RateSnapshot>>> = OnceLock::new();
 
+/// Active ISO 4217 codes, so that search reads `100 usd to inr` as money and `png to jpg` as anything else.
+const ISO_4217: &str = "AED AFN ALL AMD ANG AOA ARS AUD AWG AZN BAM BBD BDT BGN BHD BIF BMD BND BOB BRL BSD BTN BWP \
+    BYN BZD CAD CDF CHF CLP CNY COP CRC CUP CVE CZK DJF DKK DOP DZD EGP ERN ETB EUR FJD FKP GBP GEL GHS GIP GMD GNF \
+    GTQ GYD HKD HNL HTG HUF IDR ILS INR IQD IRR ISK JMD JOD JPY KES KGS KHR KMF KPW KRW KWD KYD KZT LAK LBP LKR LRD \
+    LSL LYD MAD MDL MGA MKD MMK MNT MOP MRU MUR MVR MWK MXN MYR MZN NAD NGN NIO NOK NPR NZD OMR PAB PEN PGK PHP PKR \
+    PLN PYG QAR RON RSD RUB RWF SAR SBD SCR SDG SEK SGD SHP SLE SOS SRD SSP STN SVC SYP SZL THB TJS TMT TND TOP TRY \
+    TTD TWD TZS UAH UGX USD UYU UZS VES VND VUV WST XAF XCD XOF XPF YER ZAR ZMW ZWL";
+
+/// Whether search should read `text` as a currency conversion: an optional amount, then two ISO codes joined by `to`
+/// or `in` (`100 usd to inr`, `eur in gbp`).
+pub(super) fn is_conversion(text: &str) -> bool {
+    let words = text.split_whitespace().collect::<Vec<_>>();
+    let words = match words.first() {
+        Some(first) if first.replace(',', "").parse::<f64>().is_ok() => &words[1..],
+        _ => &words[..],
+    };
+    let known = |code: &str| {
+        code.len() == 3
+            && ISO_4217
+                .split_whitespace()
+                .any(|iso| iso.eq_ignore_ascii_case(code))
+    };
+    matches!(words, [from, connector, to]
+        if known(from) && known(to) && (connector.eq_ignore_ascii_case("to") || connector.eq_ignore_ascii_case("in")))
+}
+
 fn currency_code(value: &str) -> Result<String, String> {
     let value = value.trim().to_ascii_uppercase();
     if value.len() != 3 || !value.bytes().all(|byte| byte.is_ascii_uppercase()) {

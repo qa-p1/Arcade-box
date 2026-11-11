@@ -5,8 +5,8 @@
 
 In a private profile: the Island's identity (ARCADE_APP.md ID-1), the shortcut opening and closing it with a press and
 release, the Island staying open when the pointer moves into another window (fleet popup rule), and the audit's
-compositor findings (docs/v1/audit/box-real.md): BR-1 a lost release wedging the shortcut, BR-2 the invisible part of
-the Island taking clicks, BR-0 Escape in a tool closing the Island. A check named "KNOWN BUG <id>" must find the bug
+compositor findings (docs/v1/audit/box-real.md): BR-1 a lost release wedging the shortcut (fixed), BR-2 the invisible part of
+the Island taking clicks. A check named "KNOWN BUG <id>" must find the bug
 (XFAIL) until the fix lands, then it reports XPASS and fails the run until the marker is removed (docs/v1/DECISIONS.md
 D3). Exit 0 when every check is as expected, 1 otherwise.
 """
@@ -191,7 +191,7 @@ try:
     time.sleep(1.5)
     press()
     reopened = island_shown(3)
-    check("KNOWN BUG BR-1: the shortcut still works after a lost release", bool(reopened))
+    check("The shortcut still works after a lost release", bool(reopened))
     portal.Release(SHORTCUT)
     if not reopened:
         press()
@@ -218,7 +218,7 @@ try:
         fail("Return closed the Island, so BR-0 cannot be checked")
     d.escape(address)
     time.sleep(0.8)
-    check("KNOWN BUG BR-0: Escape in a tool keeps the Island open", bool(island_shown(1)))
+    check("Escape in a tool keeps the Island open", bool(island_shown(1)))
     if island_shown(1):
         d.escape(address)  # clears the search
         time.sleep(0.4)

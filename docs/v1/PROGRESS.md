@@ -2,6 +2,47 @@
 
 Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
 
+## 2026-11-11 (session 4)
+
+- **Step 3, P1 fixes in the core.** Each commit removes its finding's `known_bug_` marker in
+  `crates/arcade-core/tests/lock_findings.rs`; every one of those tests failed for the finding's reason before
+  (session 2). Choices for ambiguous input are in D7.
+  - `7c1a8a3` B-7 calculator: degree mode (new "Angles" control), `%` as percentage or remainder, `mod`, `!`, `**`,
+    thousands separators, no float noise.
+  - `949007d` B-8 units: decimal comma and exponents (`1,5 m`, `1.5e3 m`).
+  - `2e580c4` B-9 date span: a negative span is negative in hours, minutes and seconds too.
+  - `287b415` + `956d6b8` B-9 time zones: lower-case IANA names, common abbreviations (IST, PST, EST, …), `9:00`, `5pm`,
+    `tomorrow 5pm` and Unix timestamps. Its lock test was committed first as a known bug and failed with every
+    input rejected (or EST read as a fixed UTC-05:00 in July).
+  - `ce44a75` B-10 diff: line endings and the final newline no longer make identical texts differ.
+  - `febd7fe` B-25 process finder: threads are no longer listed as processes.
+  - `a6c8fe1` U-1: a number or boolean given for a text or select option (CLI, Link) is used.
+  - `bc8c093` BR-15 / BR-16 downloads: a failed HEAD no longer decides the length; a missing Content-Type is kept.
+  - **Tested locally:** `cargo +1.88.0 test -p arcade-core` (all pass; BR-4 and BR-7 stay known bugs),
+    `cargo clippy -p arcade-core --all-targets -D warnings`, `cargo fmt --check`,
+    `python3 catalog/render_tool_matrix.py --check`, `node --test apps/desktop/frontend/tests/component-render.test.mjs`.
+    CI not run yet.
+- **Island and shortcut (P0/P1):**
+  - `5668b87` BR-0 (P0): Escape in a tool returns to the search and a running job stays reachable (an indicator
+    with Open Jobs). Escape clears a search with text and closes only the empty search. BR-5: the footer names what
+    Escape does. BR-6: the footer and Settings say Ctrl+Enter runs a tool. BR-11: the highlight follows the
+    pointer only when it really moves. BR-12: a hidden Island comes back as a fresh search with focus (D8).
+  - `a869c08` BR-1: an Activated a second after the last one is a new press even with no release seen; key
+    repeat still toggles once (unit tests `a_held_key_toggles_once`, `a_lost_release_does_not_wedge_the_shortcut`).
+  - `a5e4c42` BR-4 (P0) search: typed expressions go to their converter, read by that converter's own parser
+    (date, `#rrggbb`/`rgb()`, units with or without an amount, ISO 4217 currency pairs, arithmetic). Whole words
+    rank before parts of words, and a tool's name before an alias that mentions the word. Background Remover
+    gains the alias "remove background".
+  - **Tested locally:** `node tests/island-keys.mjs` (all PASS, markers removed), `node tests/layout.mjs`,
+    `npm test`, `svelte-check` (0 errors), `cargo test -p arcade-desktop --lib wayland_shortcut`,
+    `cargo clippy -p arcade-desktop --all-targets -D warnings`, `cargo test -p arcade-core` (BR-4 lock flipped).
+    **Not run locally:** the Tier 1 Hyprland test (`tests/desktop/island_desktop.py`, BR-0 and BR-1 checks
+    flipped there too); CI runs it.
+- **Open in step 3:** BR-2 (the Island's transparent area takes input; Box already sets a GTK input shape, so the
+  cause must be found under the Hyprland harness), BR-3 (GStreamer plugins, packaging), BR-7 (text/Markdown to PDF),
+  BR-8 (engines list), BR-9 (Window Pin), CLI-2, and the rest of B-8 the audit lists but the spec does not (time
+  units, knot factor).
+
 ## 2026-11-10 (session 3)
 
 - **Tier 1 "The shortcut opens the Island" (run 42578967289):** not a Box bug but a race in the test. After the
