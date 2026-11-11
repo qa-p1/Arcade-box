@@ -11,7 +11,7 @@ mod units;
 
 use crate::{
     Arcade,
-    tool_kit::{check_cancelled, json_result, single_value},
+    tool_kit::{check_cancelled, json_result, option_str, single_value},
 };
 use arcade_contract::{ToolManifest, ToolRequest, ToolResult};
 use serde_json::Value;
@@ -31,7 +31,10 @@ pub fn execute(
     }
     let text = single_value(request, INPUT_LIMIT)?;
     let (value, mime): (Value, _) = match manifest.id.as_str() {
-        "arcade.convert.calculator" => (calculator::evaluate(text)?, "structured/calculation"),
+        "arcade.convert.calculator" => (
+            calculator::evaluate(text, option_str(request, "angle", "radians") == "degrees")?,
+            "structured/calculation",
+        ),
         "arcade.convert.percentage" => (finance::percentage(request)?, "structured/calculation"),
         "arcade.convert.loan" => (finance::loan(request)?, "structured/calculation"),
         "arcade.convert.units" => (units::convert(request, text)?, "structured/quantity"),

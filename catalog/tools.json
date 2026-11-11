@@ -9551,7 +9551,24 @@
           "kind": "text",
           "label": "Expression"
         },
-        "controls": []
+        "controls": [
+          {
+            "key": "angle",
+            "label": "Angles",
+            "type": "select",
+            "default": "radians",
+            "choices": [
+              {
+                "value": "radians",
+                "label": "Radians"
+              },
+              {
+                "value": "degrees",
+                "label": "Degrees"
+              }
+            ]
+          }
+        ]
       }
     },
     {

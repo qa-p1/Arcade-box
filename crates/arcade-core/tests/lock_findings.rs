@@ -102,8 +102,7 @@ fn known_bug_search_finds_what_people_type() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG B-7")]
-fn known_bug_calculator_handles_common_syntax() {
+fn calculator_handles_common_syntax() {
     let arcade = runtime();
     let mut failures = Vec::new();
     for (expression, expected) in [
