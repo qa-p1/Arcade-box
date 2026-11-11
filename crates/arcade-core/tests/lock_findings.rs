@@ -192,8 +192,7 @@ fn a_negative_span_is_negative_in_every_unit() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG B-9")]
-fn known_bug_time_zones_read_common_inputs_and_abbreviations() {
+fn time_zones_read_common_inputs_and_abbreviations() {
     let arcade = runtime();
     let tomorrow = (chrono::Utc::now() + chrono::Duration::days(1)).format("%Y-%m-%d");
     let mut failures = Vec::new();

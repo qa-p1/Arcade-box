@@ -1,12 +1,12 @@
 //! Date and time tools: time-zone conversion, date differences, adding or
 //! subtracting time, and Unix timestamp conversion. Inputs accept ISO dates,
-//! date-times, `now`, `today`, and (for timestamps) plain numbers.
+//! date-times, times of day, `now`, `today`, `tomorrow 5pm` and Unix timestamps.
 
 use crate::tool_kit::{option_f64, option_str};
 use arcade_contract::ToolRequest;
 use chrono::{
     DateTime, Datelike, Duration, FixedOffset, Local, LocalResult, Months, NaiveDate,
-    NaiveDateTime, SecondsFormat, TimeZone, Utc, Weekday,
+    NaiveDateTime, NaiveTime, SecondsFormat, TimeZone, Utc, Weekday,
 };
 use chrono_tz::Tz;
 use serde_json::{Value, json};
@@ -17,12 +17,58 @@ struct Moment {
     date_only: bool,
 }
 
-/// The time zone named by a control: `local` (the default) or an IANA name.
+/// The time zone named by a control: `local` (the default), an IANA name in any case, or a common abbreviation
+/// (then the abbreviation is kept for the label).
 #[derive(Clone, Copy)]
 enum Zone {
     Local,
-    Named(Tz),
+    Named(Tz, Option<&'static str>),
 }
+
+/// Abbreviations people type for a zone. Each one stands for its region's zone, so the result follows that region's
+/// daylight-saving rules: `EST` in July is New York's UTC-04:00, as people mean "Eastern time" (DECISIONS D7). IST is
+/// India's. Abbreviations that tzdata itself names (UTC, GMT) are read by chrono-tz.
+const ABBREVIATIONS: &[(&str, &str)] = &[
+    ("IST", "Asia/Kolkata"),
+    ("PST", "America/Los_Angeles"),
+    ("PDT", "America/Los_Angeles"),
+    ("PT", "America/Los_Angeles"),
+    ("MST", "America/Denver"),
+    ("MDT", "America/Denver"),
+    ("MT", "America/Denver"),
+    ("CST", "America/Chicago"),
+    ("CDT", "America/Chicago"),
+    ("CT", "America/Chicago"),
+    ("EST", "America/New_York"),
+    ("EDT", "America/New_York"),
+    ("ET", "America/New_York"),
+    ("AKST", "America/Anchorage"),
+    ("AKDT", "America/Anchorage"),
+    ("HST", "Pacific/Honolulu"),
+    ("BRT", "America/Sao_Paulo"),
+    ("BST", "Europe/London"),
+    ("WET", "Europe/Lisbon"),
+    ("WEST", "Europe/Lisbon"),
+    ("CET", "Europe/Paris"),
+    ("CEST", "Europe/Paris"),
+    ("EET", "Europe/Athens"),
+    ("EEST", "Europe/Athens"),
+    ("MSK", "Europe/Moscow"),
+    ("SAST", "Africa/Johannesburg"),
+    ("PKT", "Asia/Karachi"),
+    ("WIB", "Asia/Jakarta"),
+    ("SGT", "Asia/Singapore"),
+    ("HKT", "Asia/Hong_Kong"),
+    ("KST", "Asia/Seoul"),
+    ("JST", "Asia/Tokyo"),
+    ("AWST", "Australia/Perth"),
+    ("ACST", "Australia/Adelaide"),
+    ("ACDT", "Australia/Adelaide"),
+    ("AEST", "Australia/Sydney"),
+    ("AEDT", "Australia/Sydney"),
+    ("NZST", "Pacific/Auckland"),
+    ("NZDT", "Pacific/Auckland"),
+];
 
 impl Zone {
     fn parse(name: &str) -> Result<Self, String> {
@@ -30,9 +76,29 @@ impl Zone {
         if name.is_empty() || name.eq_ignore_ascii_case("local") {
             return Ok(Self::Local);
         }
-        name.parse::<Tz>().map(Self::Named).map_err(|_| {
-            format!("Unknown time zone `{name}`. Use an IANA name such as Asia/Kolkata, or `local`")
-        })
+        if let Some((abbreviation, zone)) = ABBREVIATIONS
+            .iter()
+            .find(|(abbreviation, _)| abbreviation.eq_ignore_ascii_case(name))
+        {
+            let zone = zone
+                .parse::<Tz>()
+                .expect("the abbreviation table names real zones");
+            return Ok(Self::Named(zone, Some(abbreviation)));
+        }
+        name.parse::<Tz>()
+            .ok()
+            .or_else(|| {
+                chrono_tz::TZ_VARIANTS
+                    .iter()
+                    .copied()
+                    .find(|zone| zone.name().eq_ignore_ascii_case(name))
+            })
+            .map(|zone| Self::Named(zone, None))
+            .ok_or_else(|| {
+                format!(
+                    "Unknown time zone `{name}`. Use an IANA name such as Asia/Kolkata, an abbreviation such as IST or PST, or `local`"
+                )
+            })
     }
 
     fn now(self) -> DateTime<FixedOffset> {
@@ -42,7 +108,7 @@ impl Zone {
     fn at(self, instant: DateTime<Utc>) -> DateTime<FixedOffset> {
         match self {
             Self::Local => instant.with_timezone(&Local).fixed_offset(),
-            Self::Named(zone) => instant.with_timezone(&zone).fixed_offset(),
+            Self::Named(zone, _) => instant.with_timezone(&zone).fixed_offset(),
         }
     }
 
@@ -51,7 +117,7 @@ impl Zone {
             Self::Local => {
                 single(Local.from_local_datetime(&naive)).map(|value| value.fixed_offset())
             }
-            Self::Named(zone) => {
+            Self::Named(zone, _) => {
                 single(zone.from_local_datetime(&naive)).map(|value| value.fixed_offset())
             }
         }
@@ -60,7 +126,8 @@ impl Zone {
     fn label(self) -> String {
         match self {
             Self::Local => "local time".into(),
-            Self::Named(zone) => zone.name().into(),
+            Self::Named(zone, None) => zone.name().into(),
+            Self::Named(zone, Some(abbreviation)) => format!("{} ({abbreviation})", zone.name()),
         }
     }
 }
@@ -97,6 +164,12 @@ fn parse_moment(text: &str, zone: Zone) -> Result<Moment, String> {
             date_only: false,
         });
     }
+    if let Some(instant) = unix_time(text) {
+        return Ok(Moment {
+            at: zone.at(instant?.0),
+            date_only: false,
+        });
+    }
     for format in [
         "%Y-%m-%dT%H:%M:%S",
         "%Y-%m-%d %H:%M:%S",
@@ -110,7 +183,45 @@ fn parse_moment(text: &str, zone: Zone) -> Result<Moment, String> {
             });
         }
     }
-    for format in [
+    if let Some(date) = parse_date(text, zone) {
+        return Ok(Moment {
+            at: zone.localize(midnight(date))?,
+            date_only: true,
+        });
+    }
+    if let Some(time) = parse_time(text) {
+        return Ok(Moment {
+            at: zone.localize(zone.now().date_naive().and_time(time))?,
+            date_only: false,
+        });
+    }
+    // A date, then a time: `tomorrow 5pm`, `2 Oct 2026 9:30 am`, `today at 14:00`.
+    let words = text.split_whitespace().collect::<Vec<_>>();
+    for split in (1..words.len()).rev() {
+        let (date, time) = (words[..split].join(" "), words[split..].join(" "));
+        let date = date.strip_suffix(" at").unwrap_or(&date);
+        if let (Some(date), Some(time)) = (parse_date(date, zone), parse_time(&time)) {
+            return Ok(Moment {
+                at: zone.localize(date.and_time(time))?,
+                date_only: false,
+            });
+        }
+    }
+    Err(format!(
+        "Could not read `{text}` as a date. Use a form like 2026-10-02, 2026-10-02 14:30, 2 Oct 2026, 9:00, tomorrow 5pm, a Unix timestamp, now, or today"
+    ))
+}
+
+/// A calendar date: ISO, `2 Oct 2026` and the like, or `today`, `tomorrow`, `yesterday` in `zone`.
+fn parse_date(text: &str, zone: Zone) -> Option<NaiveDate> {
+    let today = || zone.now().date_naive();
+    match text.to_ascii_lowercase().as_str() {
+        "today" => return Some(today()),
+        "tomorrow" => return today().succ_opt(),
+        "yesterday" => return today().pred_opt(),
+        _ => {}
+    }
+    [
         "%Y-%m-%d",
         "%d %b %Y",
         "%d %B %Y",
@@ -118,17 +229,58 @@ fn parse_moment(text: &str, zone: Zone) -> Result<Moment, String> {
         "%B %d %Y",
         "%b %d, %Y",
         "%B %d, %Y",
-    ] {
-        if let Ok(date) = NaiveDate::parse_from_str(text, format) {
-            return Ok(Moment {
-                at: zone.localize(midnight(date))?,
-                date_only: true,
-            });
-        }
+    ]
+    .into_iter()
+    .find_map(|format| NaiveDate::parse_from_str(text, format).ok())
+}
+
+/// A time of day: `9:00`, `14:30:15`, `5pm`, `9:30 am`.
+fn parse_time(text: &str) -> Option<NaiveTime> {
+    let compact = text.replace(' ', "").to_ascii_lowercase();
+    if let Some(clock) = compact
+        .strip_suffix("am")
+        .or_else(|| compact.strip_suffix("pm"))
+    {
+        let clock = if clock.contains(':') {
+            clock.to_string()
+        } else {
+            format!("{clock}:00")
+        };
+        let meridiem = &compact[compact.len() - 2..];
+        return ["%I:%M%P", "%I:%M:%S%P"].into_iter().find_map(|format| {
+            NaiveTime::parse_from_str(&format!("{clock}{meridiem}"), format).ok()
+        });
     }
-    Err(format!(
-        "Could not read `{text}` as a date. Use a form like 2026-10-02, 2026-10-02 14:30, 2 Oct 2026, now, or today"
-    ))
+    ["%H:%M", "%H:%M:%S"]
+        .into_iter()
+        .find_map(|format| NaiveTime::parse_from_str(&compact, format).ok())
+}
+
+/// Plain digits are Unix time, the unit chosen by the digit count: 10 digits are seconds, 13 milliseconds, and so on.
+/// `None` when `text` is not a number.
+fn unix_time(text: &str) -> Option<Result<(DateTime<Utc>, &'static str), String>> {
+    let digits = text.strip_prefix('-').unwrap_or(text);
+    if digits.is_empty() || !digits.bytes().all(|byte| byte.is_ascii_digit()) {
+        return None;
+    }
+    let Ok(number) = text.parse::<i64>() else {
+        return Some(Err("That timestamp is too large".into()));
+    };
+    let (unit, nanos) = match digits.len() {
+        0..=11 => ("seconds", i128::from(number) * 1_000_000_000),
+        12..=14 => ("milliseconds", i128::from(number) * 1_000_000),
+        15..=17 => ("microseconds", i128::from(number) * 1_000),
+        _ => ("nanoseconds", i128::from(number)),
+    };
+    Some(
+        i64::try_from(nanos.div_euclid(1_000_000_000))
+            .ok()
+            .and_then(|seconds| {
+                DateTime::<Utc>::from_timestamp(seconds, nanos.rem_euclid(1_000_000_000) as u32)
+            })
+            .map(|instant| (instant, unit))
+            .ok_or_else(|| "Timestamp is outside the supported date range".to_string()),
+    )
 }
 
 fn midnight(date: NaiveDate) -> NaiveDateTime {
@@ -320,21 +472,8 @@ fn shift(request: &ToolRequest, text: &str, action: &str, zone: Zone) -> Result<
 
 fn timestamp(text: &str, zone: Zone) -> Result<Value, String> {
     let text = text.trim();
-    let digits = text.trim_start_matches('-');
-    if !digits.is_empty() && digits.bytes().all(|byte| byte.is_ascii_digit()) {
-        let number: i64 = text.parse().map_err(|_| "That timestamp is too large")?;
-        // Pick the unit from the digit count: 10 digits are seconds, 13 milliseconds, and so on.
-        let (unit, nanos) = match digits.len() {
-            0..=11 => ("seconds", i128::from(number) * 1_000_000_000),
-            12..=14 => ("milliseconds", i128::from(number) * 1_000_000),
-            15..=17 => ("microseconds", i128::from(number) * 1_000),
-            _ => ("nanoseconds", i128::from(number)),
-        };
-        let seconds =
-            i64::try_from(nanos.div_euclid(1_000_000_000)).map_err(|_| "Timestamp out of range")?;
-        let instant =
-            DateTime::<Utc>::from_timestamp(seconds, nanos.rem_euclid(1_000_000_000) as u32)
-                .ok_or("Timestamp is outside the supported date range")?;
+    if let Some(instant) = unix_time(text) {
+        let (instant, unit) = instant?;
         let local = zone.at(instant);
         return Ok(json!({
             "headline": readable(&local, false),
