@@ -80,7 +80,7 @@ test('standard UI defaults validate and serialize only visible controls', () => 
 test('data types read as words, never raw MIME names (B-14, BP-7)', () => {
   assert.equal(typeLabel('file/document'), 'Document file');
   assert.equal(typeLabel('text/plain[]'), 'Text (one or more)');
-  assert.equal(typeLabel('structured/json'), 'Json data');
+  assert.equal(typeLabel('structured/json'), 'JSON data');
   assert.equal(typeLabel('file/ebook'), 'Ebook file');
   assert.equal(typeLabel('none'), 'No input');
 });

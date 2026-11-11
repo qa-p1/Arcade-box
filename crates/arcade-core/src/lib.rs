@@ -99,6 +99,10 @@ pub fn type_label(mime: &str) -> String {
         "text/url" | "network/url" => Some("a web address"),
         "network/host" => Some("a host name"),
         "clipboard/text" => Some("clipboard text"),
+        "structured/json" => Some("JSON data"),
+        "structured/yaml" => Some("YAML data"),
+        "structured/toml" => Some("TOML data"),
+        "structured/xml" => Some("XML data"),
         _ => None,
     };
     let label = known.map(str::to_string).unwrap_or_else(|| {
@@ -125,7 +129,7 @@ mod type_label_tests {
         use super::type_label;
         assert_eq!(type_label("file/document"), "a document file");
         assert_eq!(type_label("text/plain[]"), "text (one or more)");
-        assert_eq!(type_label("structured/json"), "json data");
+        assert_eq!(type_label("structured/json"), "JSON data");
         assert_eq!(type_label("file/ebook"), "an ebook file");
         assert_eq!(type_label("file/font"), "a font file");
     }

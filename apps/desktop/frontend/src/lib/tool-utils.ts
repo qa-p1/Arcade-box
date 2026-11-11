@@ -73,6 +73,7 @@ const TYPE_LABELS: Record<string, string> = {
   'text/csv': 'CSV text', 'file/tsv': 'TSV file', 'file/subtitle': 'Subtitle file', 'file/svg': 'SVG image',
   'file/html': 'Web page file', 'file/mhtml': 'Saved web page', 'text/plain': 'Text', 'text/markdown': 'Markdown text',
   'text/url': 'Web address', 'network/url': 'Web address', 'network/host': 'Host name', 'clipboard/text': 'Clipboard text',
+  'structured/json': 'JSON data', 'structured/yaml': 'YAML data', 'structured/toml': 'TOML data', 'structured/xml': 'XML data',
 };
 
 /** A data type as people say it (B-14, BP-7); the core's `type_label` uses the same table. */
