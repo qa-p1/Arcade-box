@@ -94,6 +94,10 @@ def main():
         shutil.rmtree(extracted)
 
         version = run(download, "--version").strip().split()[-1]
+        # ARCADE_APP.md CLI-2: an unknown argument prints usage and exits 2, before anything starts.
+        wrong = subprocess.run([str(download), "--no-such-flag"], env=env, text=True, capture_output=True, timeout=60)
+        assert wrong.returncode == 2 and "--no-such-flag" in wrong.stderr and "--background" in wrong.stderr, (
+            f"unknown argument: exit {wrong.returncode}\n{wrong.stdout}\n{wrong.stderr}")
         run(download, "--install", "--silent", "--no-launch")
         receipt_path = root / "arcade/installs" / (app_id + ".json")
         receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
