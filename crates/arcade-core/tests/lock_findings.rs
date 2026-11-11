@@ -381,8 +381,7 @@ fn a_complete_download_with_a_content_type_is_kept() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG BR-15")]
-fn known_bug_a_failed_head_does_not_decide_the_length() {
+fn a_failed_head_does_not_decide_the_length() {
     let url = serve(
         vec![7; BODY],
         "HTTP/1.1 501 Not Implemented\r\nContent-Length: 482\r\nConnection: close\r\n\r\n",
@@ -400,8 +399,7 @@ fn known_bug_a_failed_head_does_not_decide_the_length() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG BR-16")]
-fn known_bug_a_download_without_a_content_type_is_kept() {
+fn a_download_without_a_content_type_is_kept() {
     let url = serve(
         vec![7; BODY],
         "HTTP/1.1 200 OK\r\nContent-Length: 65536\r\nConnection: close\r\n\r\n",
