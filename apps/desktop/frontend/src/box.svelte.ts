@@ -306,6 +306,21 @@ export function createBox() {
     queueInputRegion();
   });
 
+  // BR-2: on Hyprland the native window shrinks to the card, so the card's room comes from the full canvas the
+  // window had when it was shown, never from the (smaller) current viewport.
+  let canvasHeight = 0;
+  function islandCanvas(shown = false): void {
+    if (surface === 'dashboard') return;
+    canvasHeight = shown ? window.innerHeight : Math.max(canvasHeight, window.innerHeight);
+    document.documentElement.style.setProperty('--island-canvas', `${canvasHeight}px`);
+  }
+
+  $effect(() => {
+    const onResize = () => islandCanvas();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  });
+
   $effect(() => {
     window.addEventListener('resize', queueInputRegion);
     return () => window.removeEventListener('resize', queueInputRegion);
@@ -373,7 +388,7 @@ export function createBox() {
       }).catch((error) => (catalogError = messageOf(error)));
     } else {
       void Promise.all([
-        watchIslandShown(() => { void revealIsland(); }),
+        watchIslandShown(() => { islandCanvas(true); void revealIsland(); }),
         watchIslandHiding(() => {
           islandShell?.getAnimations().forEach((animation) => animation.cancel());
           dismissing = true;

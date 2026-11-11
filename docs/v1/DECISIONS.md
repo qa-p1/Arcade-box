@@ -117,3 +117,17 @@ The fixes for the converter findings had to choose a reading where an input has 
   under the harness). Cost: the image grows by about 15–25 MB.
 - **Test:** `scripts/verify-appimage.py` (CI and Release) fails if the image lacks any of the 12 plugins playback
   needs.
+
+## D10 — On Hyprland the Island's window follows its card (BR-2)
+
+- **Cause:** Box already limits the Island's input region to the card (`input_shape_combine_region`), and GTK
+  3.24.41 applies it. But Hyprland 0.56 hit-tests a floating window by its window box and never consults the
+  surface's input region (`src/desktop/state/ViewHitTester.cpp`, `CViewHitTester::windowAt`). So a click anywhere in
+  the 740×740 canvas went to the Island.
+- **Decision:** on Hyprland only, the native window follows the card: it grows at once and shrinks 360 ms after
+  the card's target height drops, so a shrinking card is never clipped mid-animation. Each show restores the full
+  canvas and fits again. The card's maximum height comes from the canvas the window had when shown
+  (`--island-canvas`), not from the current viewport, so a shrunken window can't cap the card's growth. Other
+  desktops honour the input region and keep the full canvas.
+- **Test:** Tier 1 Hyprland checks the window is shorter than 400 px over the search card, and that a click where
+  the old canvas was reaches the window underneath. Both were the BR-2 known-bug check.

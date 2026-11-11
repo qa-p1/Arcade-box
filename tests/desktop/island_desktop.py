@@ -5,8 +5,8 @@
 
 In a private profile: the Island's identity (ARCADE_APP.md ID-1), the shortcut opening and closing it with a press and
 release, the Island staying open when the pointer moves into another window (fleet popup rule), and the audit's
-compositor findings (docs/v1/audit/box-real.md): BR-1 a lost release wedging the shortcut (fixed), BR-2 the invisible part of
-the Island taking clicks. A check named "KNOWN BUG <id>" must find the bug
+compositor findings (docs/v1/audit/box-real.md): BR-1 a lost release wedging the shortcut and BR-2 the invisible part of
+the Island taking clicks (both fixed). A check named "KNOWN BUG <id>" must find the bug
 (XFAIL) until the fix lands, then it reports XPASS and fails the run until the marker is removed (docs/v1/DECISIONS.md
 D3). Exit 0 when every check is as expected, 1 otherwise.
 """
@@ -167,15 +167,18 @@ try:
     time.sleep(1.5)
     check("The Island stays open when the pointer moves into another window", bool(island_shown(1)))
 
-    # BR-2: the part of the 740×740 window below the search card is invisible and must let clicks through.
+    # BR-2: the 740×740 canvas below the search card is invisible and must let clicks through. Hyprland hit-tests
+    # floating windows by their box, so the window must shrink to the card (after its 360 ms shrink delay).
+    time.sleep(0.8)
     shown = island()
     x, y = shown["at"]
     width, height = shown["size"]
-    d.pointer_move(x + width // 2, y + height - 60)
+    check("The Island's window fits its search card (BR-2)", height < 400, f"window is {width}×{height}")
+    d.pointer_move(x + width // 2, y + 680)
     d.click()
     time.sleep(0.5)
     active = d.hyprctl("-j", "activewindow")
-    check("KNOWN BUG BR-2: a click below the search card reaches the window underneath", "box-test-other" in active,
+    check("A click below the search card reaches the window underneath (BR-2)", "box-test-other" in active,
           "the Island took it" if "box-test-other" not in active else "")
 
     press()
