@@ -163,13 +163,12 @@ pub fn place_island(width: f64, height: f64, centered: bool) -> bool {
         end"#)).is_ok()
 }
 
-/// The window Hyprland focused once the island hid, when it belongs to another
-/// process. Returns its `address:0x…` selector and its current state.
-fn foreign_active_window() -> Result<(String, Value), String> {
-    let output = hyprctl(&["-j", "activewindow"])?;
-    let window: Value = serde_json::from_slice(&output)
-        .map_err(|error| format!("Could not inspect the active Hyprland window: {error}"))?;
-    let address = window
+/// The other app's window that was active when the Island opened (BR-9). Window Pin and Paste plain act on it:
+/// while they run, the active window is the Island, or nothing until focus comes back.
+static WINDOW_BEFORE_ISLAND: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+
+fn valid_address(window: &Value) -> Option<&str> {
+    window
         .get("address")
         .and_then(Value::as_str)
         .filter(|address| {
@@ -177,11 +176,59 @@ fn foreign_active_window() -> Result<(String, Value), String> {
                 .strip_prefix("0x")
                 .is_some_and(|hex| !hex.is_empty() && hex.bytes().all(|b| b.is_ascii_hexdigit()))
         })
-        .ok_or("No other window is active")?;
-    if window.get("pid").and_then(Value::as_u64) == Some(u64::from(std::process::id())) {
-        return Err("No other window is active".into());
+}
+
+fn is_own(window: &Value) -> bool {
+    window.get("pid").and_then(Value::as_u64) == Some(u64::from(std::process::id()))
+}
+
+/// Call just before the Island takes focus: remembers the window the user was in.
+pub fn remember_active_window() {
+    if !is_hyprland() {
+        return;
     }
-    Ok((format!("address:{address}"), window))
+    let active = hyprctl(&["-j", "activewindow"])
+        .ok()
+        .and_then(|output| serde_json::from_slice::<Value>(&output).ok());
+    if let Some(window) = active.filter(|window| !is_own(window)) {
+        if let Some(address) = valid_address(&window) {
+            *WINDOW_BEFORE_ISLAND
+                .lock()
+                .unwrap_or_else(|e| e.into_inner()) = Some(address.to_string());
+        }
+    }
+}
+
+/// The other app's window to act on: the active one when it belongs to another process, else the one that was
+/// active when the Island opened, if it still exists. Returns its `address:0x…` selector and its current state.
+fn foreign_active_window() -> Result<(String, Value), String> {
+    let output = hyprctl(&["-j", "activewindow"])?;
+    let window: Value = serde_json::from_slice(&output)
+        .map_err(|error| format!("Could not inspect the active Hyprland window: {error}"))?;
+    if let Some(address) = valid_address(&window).filter(|_| !is_own(&window)) {
+        return Ok((format!("address:{address}"), window));
+    }
+    let remembered = WINDOW_BEFORE_ISLAND
+        .lock()
+        .unwrap_or_else(|e| e.into_inner())
+        .clone();
+    let clients: Value = serde_json::from_slice(&hyprctl(&["-j", "clients"])?)
+        .map_err(|error| format!("Could not list Hyprland windows: {error}"))?;
+    remembered
+        .and_then(|address| {
+            clients
+                .as_array()?
+                .iter()
+                .find(|c| valid_address(c) == Some(address.as_str()) && !is_own(c))
+                .cloned()
+        })
+        .map(|window| {
+            (
+                format!("address:{}", valid_address(&window).unwrap_or_default()),
+                window,
+            )
+        })
+        .ok_or_else(|| "No other window is active".into())
 }
 
 /// Windows Arcade Box floated in order to pin them; unpinning tiles them again.

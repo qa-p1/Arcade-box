@@ -1230,6 +1230,8 @@ pub(crate) fn show_island(window: &tauri::WebviewWindow) {
         place_surface(&island);
         #[cfg(target_os = "linux")]
         let requested = stamp_user_time(&island);
+        #[cfg(target_os = "linux")]
+        crate::hyprland::remember_active_window();
         if let Err(error) = island.show() {
             eprintln!("Could not show Arcade Island: {error}");
             return;
