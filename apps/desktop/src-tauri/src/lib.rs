@@ -479,6 +479,10 @@ fn list_providers(
     providers.extend(discover_qpdf(None));
     providers.extend(discover_vips(None));
     providers.extend(arcade_core::provider::discover_tesseract());
+    // BR-8: every system engine an implemented tool calls, so a missing one shows before a tool fails.
+    providers.extend(arcade_core::provider::discover_poppler());
+    providers.extend(arcade_core::provider::discover_ytdlp());
+    providers.extend(arcade_core::provider::discover_curl());
     providers.extend(arcade_core::provider::discover_arcade(&runtime));
     // Only when the user opens Engines: re-checking every provider runs each
     // tool's `--version`, which startup must not pay for.
