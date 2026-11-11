@@ -2,6 +2,21 @@
 
 Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
 
+## 2026-11-11 (local session, owner's PC)
+
+- **Step 3 completed in code** (PR #35; each item with its lock test flipped or a new check):
+  - `64d5bc6` BR-3 (P0): the AppImage bundles GStreamer's playback plugins (D9); `verify-appimage.py` fails if one
+    of 12 is missing. The native notices check will name the new Ubuntu packages on the first CI run.
+  - `fae361d` BR-7: Document to PDF converts UTF-8 `.txt` and `.md` (headings, bold, nested lists, tables, quotes,
+    code).
+  - `4451856` + `9324a6a` BR-8: `providers` and the Engines page list every engine, found or missing (zbarimg is
+    no Box engine: barcodes use the built-in zxing).
+  - `67db520` BR-9: Window Pin and Paste plain act on the window the Island opened over.
+  - `8ee70e3` CLI-2: the packaged-AppImage check covers an unknown argument (exit 2 with usage).
+  - `65eee2e` BR-2 (P0): on Hyprland the Island's window follows its card, because Hyprland 0.56 hit-tests floating
+    windows by their box and ignores the input region (D10). Tier 1 check flipped from known bug.
+  - Open: H.264/AAC previews and BR-10 (recorder) under the harness (D9).
+
 ## 2026-11-11 (session 4)
 
 - **Step 3, P1 fixes in the core.** Each commit removes its finding's `known_bug_` marker in
