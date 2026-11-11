@@ -192,8 +192,7 @@ fn a_negative_span_is_negative_in_every_unit() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG B-10")]
-fn known_bug_diff_of_identical_texts_is_empty() {
+fn diff_of_identical_texts_is_empty() {
     let arcade = runtime();
     let mut failures = Vec::new();
     for input in [
