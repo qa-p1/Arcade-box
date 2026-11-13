@@ -123,7 +123,8 @@ jobs:
         if: failure() && steps.native.outcome == 'failure'
         with:
           name: native-notices
-          path: packaging/linux/native
+          # `uses` steps run from the workspace root, not the job's working directory.
+          path: Arcade-box/packaging/linux/native
       - name: Verify AppImage install, repair and uninstall in a temporary profile
         if: runner.os == 'Linux'
         shell: bash
