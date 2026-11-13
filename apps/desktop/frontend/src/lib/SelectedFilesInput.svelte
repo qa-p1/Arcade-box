@@ -77,7 +77,7 @@
       >
         {#if sortable}<span class="granted-file-handle" aria-hidden="true">⋮⋮</span><span class="granted-file-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>{/if}
         <span class="selected-file-icon"><Icon name={iconFor(file.mime)} size={17} /></span>
-        <span class="selected-file-copy"><strong title={file.name}>{file.name}</strong><small title={file.mime}>{formatSize(file.size)} · {fileType(file.mime)}</small></span>
+        <span class="selected-file-copy"><strong title={file.name}>{file.name}</strong><small>{formatSize(file.size)} · {fileType(file.mime)}</small></span>
         <div class="granted-file-actions">
           {#if sortable}
             <button type="button" class="icon-button order-file-button" aria-label={`Move ${file.name} up`} title="Move up" disabled={disabled || index === 0} onclick={() => move(file.token, -1)}><Icon name="arrow" size={14} /></button>
