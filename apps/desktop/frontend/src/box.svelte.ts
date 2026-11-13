@@ -2152,7 +2152,7 @@ export function createBox() {
   };
 }
 
-export type Box = ReturnType<typeof createBox>;
+type Box = ReturnType<typeof createBox>;
 
 const KEY = Symbol('arcade-box');
 export function provideBox(box: Box): Box {

@@ -57,15 +57,6 @@ export function privacyLabel(value: string): string {
   }
 }
 
-export function initials(value: string): string {
-  return value
-    .split(/[\s/&-]+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? '')
-    .join('');
-}
-
 const TYPE_LABELS: Record<string, string> = {
   none: 'No input', 'file/any': 'Any file', 'file/octet-stream': 'Other file', 'file/document': 'Document file',
   'file/spreadsheet': 'Spreadsheet file', 'file/pdf': 'PDF file', 'file/image': 'Image file', 'file/video': 'Video file',

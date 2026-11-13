@@ -131,3 +131,12 @@ The fixes for the converter findings had to choose a reading where an input has 
   desktops honour the input region and keep the full canvas.
 - **Test:** Tier 1 Hyprland checks the window is shorter than 400 px over the search card, and that a click where
   the old canvas was reaches the window underneath. Both were the BR-2 known-bug check.
+
+## D11 — Dead code (step 4): how it is found and what stays
+
+Rust: `cargo machete` (clean; `md-5` and `zxing-cpp` are imported as `md5`/`zxingcpp`, listed as ignored in
+`crates/arcade-core/Cargo.toml`) plus `clippy -D warnings` for dead items. Frontend: `npx knip@5` with
+`apps/desktop/frontend/knip.json`, whose entries are the HTML pages' scripts (`src/main.ts`, `src/pin.ts`) and the
+test fixture `tests/visual.ts` that `tests/*.mjs` load; `src/design/` is vendored from Link and ignored. Removed:
+`ShortcutClash.svelte` (no importer), `runTool`/`initials`, the `run_tool` Tauri command (the frontend runs every
+tool as a job), and the `ToolStatus` type; types used only in their own file are no longer exported.

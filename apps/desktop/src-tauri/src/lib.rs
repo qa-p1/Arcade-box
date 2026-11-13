@@ -596,15 +596,6 @@ fn set_preference(
         .map_err(|error| error.to_string())
 }
 
-#[tauri::command(async)]
-fn run_tool(
-    request: ToolRequest,
-    runtime: tauri::State<'_, Arc<Arcade>>,
-) -> Result<ToolResult, String> {
-    validate_frontend_request(&request, &runtime)?;
-    runtime.run_tool(request).map_err(|error| error.to_string())
-}
-
 fn validate_frontend_request(request: &ToolRequest, runtime: &Arcade) -> Result<(), String> {
     if request
         .inputs
@@ -2414,7 +2405,6 @@ pub fn run(args: Vec<String>) {
             paste_plain::paste_plain_text,
             shortcut_status,
             set_shortcut,
-            run_tool,
             list_jobs,
             start_job,
             cancel_job,

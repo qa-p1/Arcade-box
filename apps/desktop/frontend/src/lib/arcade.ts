@@ -146,11 +146,6 @@ export async function searchTools(query: string): Promise<ToolSummary[]> {
   return invoke<ToolSummary[]>('search_tools', { query });
 }
 
-export async function runTool(request: ToolRequest): Promise<ToolResult> {
-  requireDesktopRuntime();
-  return invoke<ToolResult>('run_tool', { request });
-}
-
 export async function runContextAction(toolId: string): Promise<ToolResult> {
   requireDesktopRuntime();
   return invoke<ToolResult>('run_context_action', { toolId });
@@ -381,7 +376,7 @@ export async function hideIsland(): Promise<void> {
   await invoke<void>('hide_island');
 }
 
-export type SurfaceMode = 'compact' | 'search' | 'tool';
+type SurfaceMode = 'compact' | 'search' | 'tool';
 
 export async function setSurfaceMode(mode: SurfaceMode): Promise<void> {
   if (!isDesktopRuntime()) return;

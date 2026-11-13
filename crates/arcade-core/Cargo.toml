@@ -67,3 +67,7 @@ windows-sys = { version = "0.61", features = [
     "Win32_System_JobObjects",
     "Win32_System_Threading",
 ] }
+
+[package.metadata.cargo-machete]
+# Imported as `md5` and `zxingcpp`, which cargo-machete does not map back.
+ignored = ["md-5", "zxing-cpp"]
