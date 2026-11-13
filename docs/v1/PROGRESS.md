@@ -30,7 +30,7 @@ Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
     window alive), out of scope for v1's risk budget.
   - Watermarks with non-ASCII text (B-23): qpdf's stamp needs a bundled font with wide coverage; adds size and a
     licence entry.
-  - BP-6 (zombie children) is Lens's LN-3, open there with its lock test.
+  - BP-6 (zombie children) is Lens's LN-3, fixed there (Lens 34e97e3).
 
 ## 2026-11-11 (local session, owner's PC)
 
