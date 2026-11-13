@@ -157,6 +157,10 @@ export function createBox() {
   let inputText = $state('');
   let diffRight = $state('');
   let diffBase = $state('');
+  // B-4: the input a result was made from, so an edited input marks it stale.
+  let resultInputKey = $state('');
+  const currentInputKey = $derived(JSON.stringify([inputText, diffRight, diffBase, toolOptions, selectedFiles.map((file) => file.token)]));
+  const resultStale = $derived(Boolean(activeResult) && resultInputKey !== '' && resultInputKey !== currentInputKey);
   let loadingCatalog = $state(true);
   let loadingSearch = $state(false);
   let running = $state(false);
@@ -606,6 +610,7 @@ export function createBox() {
     selectedTool = tool;
     activeJobId = '';
     activeResult = null;
+    resultInputKey = '';
     inputText = '';
     diffRight = '';
     diffBase = '';
@@ -882,6 +887,7 @@ export function createBox() {
     running = true;
     runError = '';
     activeResult = null;
+    resultInputKey = currentInputKey;
     if (tool.id === 'arcade.system.process') processTerminationRequests = {};
     const directoryToken = typeof toolOptions.destinationGrant === 'string' && toolOptions.destinationGrant
       ? toolOptions.destinationGrant
@@ -1946,6 +1952,7 @@ export function createBox() {
     get artifactActionBusy() { return artifactActionBusy; },
     set artifactActionBusy(value) { artifactActionBusy = value; },
     get inputText() { return inputText; },
+    get resultStale() { return resultStale; },
     set inputText(value) { inputText = value; },
     get diffRight() { return diffRight; },
     set diffRight(value) { diffRight = value; },

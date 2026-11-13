@@ -210,7 +210,8 @@
     {/if}
 
     {#if box.activeResult && (box.activeResult.outputs.length > 0 || box.activeResult.message)}
-      <section class="result-panel" class:result-failed={box.activeResult.status !== 'success'} aria-labelledby="result-heading" aria-live="off">
+      <section class="result-panel" class:result-failed={box.activeResult.status !== 'success'} class:result-stale={box.resultStale} aria-labelledby="result-heading" aria-live="off">
+        {#if box.resultStale}<p class="result-stale-note" role="status">The input changed — run again for a new result.</p>{/if}
         <div class="result-heading" id="result-heading">
           <div class="result-label"><span class="result-check"><Icon name={box.activeResult.status === 'success' ? 'check' : 'close'} size={14} /></span><div><strong>{box.activeResult.status === 'success' ? 'Done' : 'Couldn’t finish'}</strong><span>{box.activeResult.outputs.length} {box.activeResult.outputs.length === 1 ? 'result' : 'results'}</span></div></div>
           <span class="result-mime" title="Copy result" role="status">{box.copyState === 'copied' ? 'Copied' : box.copyState === 'error' ? 'Copy failed — try again' : `${box.commandKey} Shift C`}</span>

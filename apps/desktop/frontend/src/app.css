@@ -131,7 +131,8 @@ button { color: inherit; }
 .search-result:active, .context-suggestion:active { background: var(--surface-2); }
 .context-suggestion > :last-child { margin-left: auto; color: var(--ink-3); }
 
-.island-footer { justify-content: space-between; height: 36px; padding: 0 16px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: var(--fs-caption); }
+/* B-3: the key hints stay in view while a long result scrolls. */
+.island-footer { position: sticky; bottom: 0; z-index: 1; justify-content: space-between; height: 36px; padding: 0 16px; border-top: 1px solid var(--line); color: var(--ink-3); background: var(--panel); font-size: var(--fs-caption); }
 .island-shell.compact .island-footer { display: none; }
 
 /* Tool view */
@@ -196,6 +197,9 @@ button { color: inherit; }
 .error-notice { border-color: color-mix(in srgb, var(--red) 22%, transparent); }
 .error-notice .notice-icon { color: var(--danger-ink); background: var(--red-wash); }
 
+/* B-4: a result from an older input is dimmed until the next run. */
+.result-panel.result-stale > :not(.result-stale-note) { opacity: .45; }
+.result-stale-note { margin: 0 0 8px; color: var(--ink-3); font-size: var(--fs-small); }
 .result-panel { margin: 12px 0 0; padding: 12px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); animation: result-in 200ms var(--ease-out) both; }
 @keyframes result-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 .result-failed { border-color: color-mix(in srgb, var(--red) 22%, transparent); }
