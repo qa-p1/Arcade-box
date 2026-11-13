@@ -2,6 +2,36 @@
 
 Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
 
+## 2026-11-13 (local session)
+
+- **Step 3, the P2 fixes** (PR #35), each with a regression test that failed before:
+  - `eb587db` B-11 text tools keep words and numbers whole; `76c0dec` + `a691b9a` B-14/BP-7 data types read as
+    words; `d098b30` BP-8 Clear history asks first; `f27b67b` BR-14 a failed job always shows its reason.
+  - `544da8a` B-24 image combine (same size) uses the median size and only shrinks the larger images.
+  - `14b127d` B-20 passphrases from the bundled EFF list (7772 words); generated secrets rated by entropy.
+  - `6a4fa6f` B-21 EAN/UPC: no zero padding, check digit checked, plain encoder errors.
+  - `0bf9925` B-22 developer tools accept what people paste (Base64 variants, `0x` hex, `Bearer` JWTs, bare
+    domains, cron names); MD5/SHA-1 as legacy checksums.
+  - `8055050` B-23 unlock refuses an unencrypted PDF; no temp paths in errors; CLI, Link and pipelines get the
+    form's visible defaults (`fill_ui_defaults`).
+  - `604f766` B-17/18/19 colour, count and price input; `07f7ad4` B-13/14/15 toolbar, tooltip, validation text,
+    portal error; `e094e7d` B-16 readability only for Latin text; `5afc750` B-3/B-4 sticky Island footer and a
+    dimmed result once the input changes.
+  - `553aeb9` B-26 X11 area capture uses the pre-overlay snapshot; `ef5a2c3` BR-13 colour picking uses Lens only
+    to capture; `0eebcca` BP-2 DRM note only for access restrictions, BP-3 small images OCR'd at 2x.
+  - `a14ca4d` one clipboard history: with Arcade Clipboard installed Box records nothing (Settings says so).
+  - BP-4 (legacy `dev.arcadebox.app` icons) is fixed in Link 1.0.7 (the installer retires icons under an old
+    desktop id); Box gets it when it vendors 1.0.7.
+- **CI:** `3b63846` + `61d67df` apt installs with a deadline and retries (`scripts/apt-install.sh`).
+- **Backlog (not v1, reasons):**
+  - BP-1, PDF tools write beside the input rather than to a chosen folder: 14 publish points and settled
+    behaviour; needs its own design (save dialog vs. output folder setting).
+  - BP-5, the Island window is rebuilt on every show: fixing it is a window-architecture change (keep one hidden
+    window alive), out of scope for v1's risk budget.
+  - Watermarks with non-ASCII text (B-23): qpdf's stamp needs a bundled font with wide coverage; adds size and a
+    licence entry.
+  - BP-6 (zombie children) is Lens's LN-3, open there with its lock test.
+
 ## 2026-11-11 (local session, owner's PC)
 
 - **Step 3 completed in code** (PR #35; each item with its lock test flipped or a new check):
