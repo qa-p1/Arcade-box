@@ -1009,10 +1009,34 @@ fn text_statistics(
         .sum::<usize>();
     let sentences_f = sentences.max(1) as f64;
     let words_f = words.max(1) as f64;
-    let readability = if words == 0 {
+    // B-16: Flesch and the syllable guess only mean something for Latin-script
+    // (English-like) text, and Chinese/Japanese don't separate words with spaces.
+    let letters = input.chars().filter(|c| c.is_alphabetic()).count();
+    let latin = input
+        .chars()
+        .filter(|c| c.is_alphabetic() && (c.is_ascii() || ('\u{00C0}'..='\u{024F}').contains(c)))
+        .count();
+    let cjk = input
+        .chars()
+        .filter(|c| {
+            matches!(u32::from(*c),
+                0x3040..=0x30FF | 0x3400..=0x4DBF | 0x4E00..=0x9FFF | 0xF900..=0xFAFF | 0xAC00..=0xD7AF)
+        })
+        .count();
+    let latin_text = letters > 0 && latin * 10 >= letters * 8;
+    let readability = if words == 0 || !latin_text {
         None
     } else {
-        Some(206.835 - 1.015 * (words_f / sentences_f) - 84.6 * (syllables as f64 / words_f))
+        Some(
+            (206.835 - 1.015 * (words_f / sentences_f) - 84.6 * (syllables as f64 / words_f))
+                .clamp(0.0, 100.0),
+        )
+    };
+    let reading_minutes = if cjk * 2 > letters {
+        // About 400 characters a minute for Chinese and Japanese.
+        input.chars().filter(|c| !c.is_whitespace()).count() as f64 / 400.0
+    } else {
+        words as f64 / 220.0
     };
     let value = json!({
         "bytesUtf8": input.len(),
@@ -1021,16 +1045,46 @@ fn text_statistics(
         "words": words,
         "lines": if input.is_empty() { 0 } else { input.lines().count() },
         "sentences": sentences,
-        "estimatedReadingSeconds": ((words as f64 / 220.0) * 60.0).round() as u64,
+        "estimatedReadingSeconds": (reading_minutes * 60.0).round() as u64,
         "estimatedSyllables": syllables,
         "fleschReadingEaseApprox": readability,
-        "readabilityNote": "Syllables are estimated with an English-oriented heuristic; treat readability as approximate for other languages.",
+        "readabilityNote": if latin_text {
+            "Flesch reading ease (0–100, higher is easier) with estimated syllables; approximate for languages other than English."
+        } else {
+            "Readability is only scored for Latin-script text; the word count is approximate for languages written without spaces."
+        },
     });
     Ok(text_result(
         manifest,
         serde_json::to_string_pretty(&value).map_err(|error| error.to_string())?,
         "structured/text-statistics",
     ))
+}
+
+#[cfg(test)]
+#[test]
+fn readability_is_not_scored_for_non_latin_text() {
+    let runtime = Arcade::in_memory().unwrap();
+    let stats = |text: &str| {
+        let manifest = runtime
+            .list_tools()
+            .into_iter()
+            .find(|tool| tool.id == "arcade.text.statistics")
+            .unwrap();
+        let request = ToolRequest {
+            tool_id: manifest.id.clone(),
+            inputs: vec![arcade_contract::ToolValue::text(text, "text/plain")],
+            options: json!({}),
+        };
+        let result =
+            text_statistics(&manifest, &request, &runtime, &AtomicBool::new(false)).unwrap();
+        serde_json::from_str::<Value>(&result.outputs[0].value).unwrap()
+    };
+    let japanese = stats("今日はとても良い天気ですね。散歩に行きましょう。");
+    assert!(japanese["fleschReadingEaseApprox"].is_null());
+    let english = stats("The cat sat on the mat. It was happy.");
+    let score = english["fleschReadingEaseApprox"].as_f64().unwrap();
+    assert!((0.0..=100.0).contains(&score));
 }
 
 fn approximate_syllables(word: &str) -> usize {
