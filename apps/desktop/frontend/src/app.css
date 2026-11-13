@@ -603,3 +603,5 @@ button { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+/* Settings rows that do not apply right now (Box clipboard history while Arcade Clipboard keeps it). */
+.list > .row.hidden { display: none; }

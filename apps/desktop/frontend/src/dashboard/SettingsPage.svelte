@@ -135,23 +135,26 @@
 <section class="section" aria-labelledby="settings-clipboard">
   <div class="section-head"><h2 id="settings-clipboard">Clipboard history</h2></div>
   <div class="list">
-    <label class="row switch-row">
+    {#if box.overlaps.clipboardPick}
+      <div class="row"><span class="row-main"><span class="row-title">Arcade Clipboard keeps your history</span><span class="row-sub">Box's Clipboard History opens Arcade Clipboard's, and Box saves nothing of its own while Clipboard is installed.</span></span></div>
+    {/if}
+    <label class="row switch-row" class:hidden={box.overlaps.clipboardPick}>
       <span class="row-main"><span class="row-title">Keep clipboard history</span><span class="row-sub">{clipboard?.enabled ? `${clipboard.itemCount} ${clipboard.itemCount === 1 ? 'item' : 'items'} saved on this device. Password-like text is skipped.` : 'Off: Box reads the clipboard only when you open it.'}</span></span>
       <input class="switch" type="checkbox" checked={clipboard?.enabled ?? false} disabled={!clipboard || busy === 'clipboard'} onchange={(event) => { const enabled = event.currentTarget.checked; void act('clipboard', async () => { clipboard = await setClipboardHistoryEnabled(enabled); }, "Couldn't change clipboard history."); }} />
     </label>
-    <div class="row">
+    <div class="row" class:hidden={box.overlaps.clipboardPick}>
       <span class="row-main"><span class="row-title">Keep items for</span></span>
       <select class="input select sm" aria-label="Keep items for" value={String(clipboard?.retentionDays ?? 7)} disabled={!clipboard} onchange={(event) => { const days = Number(event.currentTarget.value); void act('clipboard', async () => { clipboard = await setClipboardHistoryRetention(days); }, "Couldn't change how long items are kept."); }}>
         <option value="1">1 day</option><option value="7">7 days</option><option value="30">30 days</option><option value="90">90 days</option>
       </select>
     </div>
-    <div class="row stacked">
+    <div class="row stacked" class:hidden={box.overlaps.clipboardPick}>
       <span class="row-main"><span class="row-title">Skip these apps</span><span class="row-sub">{clipboard?.sourceApplicationAvailable ? 'One app name per line. Nothing copied in them is saved.' : "This desktop doesn't say which app copied something, so this list can't apply here."}</span></span>
       <textarea class="input" rows="3" bind:value={exclusions} spellcheck="false" aria-label="Apps to skip" disabled={!clipboard}></textarea>
       <div class="btn-group"><button type="button" class="btn sm" disabled={!clipboard || busy === 'exclusions'} onclick={() => void act('exclusions', async () => { clipboard = await setClipboardHistoryExclusions(exclusions.split(/[\n,]/).map((name) => name.trim()).filter(Boolean)); }, "Couldn't save the list.")}>Save list</button></div>
     </div>
-    <div class="row">
-      <span class="row-main"><span class="row-title">Clear history</span><span class="row-sub">Pinned items go too.</span></span>
+    <div class="row" class:hidden={box.overlaps.clipboardPick && !clipboard?.itemCount}>
+      <span class="row-main"><span class="row-title">{box.overlaps.clipboardPick ? "Clear Box's old history" : 'Clear history'}</span><span class="row-sub">Pinned items go too.</span></span>
       <button type="button" class="btn sm danger" disabled={!clipboard?.itemCount} onclick={() => { confirmingClear = true; }}>Clear…</button>
     </div>
   </div>

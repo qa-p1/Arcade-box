@@ -97,6 +97,18 @@ impl ClipboardHistory {
     }
 
     pub fn start_monitor(&self, app: tauri::AppHandle) {
+        use tauri::Manager as _;
+        fn clipboard_app_present(app: &tauri::AppHandle) -> bool {
+            app.try_state::<std::sync::Arc<arcade_core::Arcade>>()
+                .is_some_and(|runtime| {
+                    arcade_core::link::consumer::peer_action(
+                        &runtime,
+                        arcade_link::ids::CLIPBOARD,
+                        "clipboard.pick",
+                    )
+                    .is_some()
+                })
+        }
         if self.monitor_started.swap(true, Ordering::AcqRel) {
             return;
         }
@@ -107,9 +119,21 @@ impl ClipboardHistory {
                 // Fingerprint of the last clipboard content seen. An unchanged
                 // clipboard skips the foreground lookup, copy, and store work.
                 let mut last_seen: Option<u64> = None;
+                // One clipboard history per desktop: while Arcade Clipboard is
+                // installed it keeps the history and Box only reads from it.
+                let mut peer_checked: Option<std::time::Instant> = None;
+                let mut peer_present = false;
                 loop {
                     std::thread::sleep(Duration::from_millis(1200));
                     if !service.is_enabled() {
+                        last_seen = None;
+                        continue;
+                    }
+                    if peer_checked.is_none_or(|at| at.elapsed() > Duration::from_secs(30)) {
+                        peer_checked = Some(std::time::Instant::now());
+                        peer_present = clipboard_app_present(&app);
+                    }
+                    if peer_present {
                         last_seen = None;
                         continue;
                     }
