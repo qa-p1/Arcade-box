@@ -1,7 +1,7 @@
 //! Everyday money maths: percentages, discounts, VAT/GST, tips, and loan EMIs.
 
 use super::format_number;
-use crate::tool_kit::{number_in, option_str};
+use crate::tool_kit::{number_in, option_str, whole_number_in};
 use arcade_contract::ToolRequest;
 use serde_json::{Value, json};
 
@@ -55,14 +55,14 @@ pub(super) fn percentage(request: &ToolRequest) -> Result<Value, String> {
                 "decrease"
             };
             Ok(json!({
-                "headline": format!("{}{}%", if change >= 0.0 { "+" } else { "−" }, format_number(round(change.abs()))),
+                "headline": format!("{}{}%", if change >= 0.0 { "+" } else { "-" }, format_number(round(change.abs()))),
                 "summary": format!("From {} to {} is a {}% {direction}", format_number(from), format_number(to), format_number(round(change.abs()))),
                 "difference": to - from,
                 "result": change,
             }))
         }
         "discount" => {
-            let price = amount(request, "price", "the price")?;
+            let price = number_in(request, "price", "the price", None, 0.0..=MAX_AMOUNT)?;
             let off = number_in(request, "discount", "the discount", None, 0.0..=100.0)?;
             let saved = price * off / 100.0;
             Ok(json!({
@@ -73,7 +73,7 @@ pub(super) fn percentage(request: &ToolRequest) -> Result<Value, String> {
             }))
         }
         "tax" => {
-            let price = amount(request, "price", "the price")?;
+            let price = number_in(request, "price", "the price", None, 0.0..=MAX_AMOUNT)?;
             let rate = number_in(request, "rate", "the tax rate", None, 0.0..=1000.0)?;
             if option_str(request, "taxMode", "add") == "remove" {
                 let net = price / (1.0 + rate / 100.0);
@@ -98,14 +98,13 @@ pub(super) fn percentage(request: &ToolRequest) -> Result<Value, String> {
         "tip" => {
             let bill = number_in(request, "bill", "the bill", None, 0.0..=MAX_AMOUNT)?;
             let tip_rate = number_in(request, "tip", "the tip", Some(0.0), 0.0..=100.0)?;
-            let people = number_in(
+            let people = whole_number_in(
                 request,
                 "people",
-                "the number of people",
+                "The number of people",
                 Some(1.0),
                 1.0..=1000.0,
-            )?
-            .round();
+            )?;
             let tip = bill * tip_rate / 100.0;
             let total = bill + tip;
             Ok(json!({

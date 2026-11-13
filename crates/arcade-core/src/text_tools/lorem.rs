@@ -1,6 +1,6 @@
 //! Classic "Lorem ipsum" placeholder text.
 
-use crate::tool_kit::{number_in, option_bool, option_str};
+use crate::tool_kit::{option_bool, option_str, whole_number_in};
 use arcade_contract::ToolRequest;
 use rand::{Rng, seq::IndexedRandom};
 
@@ -92,7 +92,7 @@ const WORDS: &[&str] = &[
 ];
 
 pub(super) fn generate(request: &ToolRequest) -> Result<String, String> {
-    let count = number_in(request, "count", "Amount", Some(3.0), 1.0..=500.0)? as usize;
+    let count = whole_number_in(request, "count", "Amount", Some(3.0), 1.0..=500.0)? as usize;
     let classic = option_bool(request, "classic", true);
     let mut rng = rand::rng();
     let mut sentence = |first: bool| {
