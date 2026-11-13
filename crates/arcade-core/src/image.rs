@@ -1764,8 +1764,14 @@ fn image_ocr(
         .prefix(".arcade-image-ocr-")
         .tempdir_in(parent)
         .map_err(|error| error.to_string())?;
-    let local = temp.path().join(format!("input.{}", format.extension()));
-    link_or_copy(source, &local, cancelled)?;
+    let local = match upscaled_for_ocr(source, temp.path()) {
+        Some(path) => path,
+        None => {
+            let local = temp.path().join(format!("input.{}", format.extension()));
+            link_or_copy(source, &local, cancelled)?;
+            local
+        }
+    };
     let output = process::run(
         &ProcessSpec {
             executable: provider.executable_path.clone(),
@@ -1806,6 +1812,25 @@ fn image_ocr(
         .into_iter()
         .collect(),
     })
+}
+
+/// BP-3: Tesseract misreads small UI text ("i the background", "shortut") at
+/// screen resolution. A small image (both sides at most 2000 px, the usual
+/// screen area capture) is read at twice its size. `None` keeps the original.
+fn upscaled_for_ocr(source: &Path, dir: &Path) -> Option<std::path::PathBuf> {
+    let (width, height) = ::image::image_dimensions(source).ok()?;
+    if width.max(height) > 2000 || width == 0 || height == 0 {
+        return None;
+    }
+    let image = ::image::open(source).ok()?;
+    let larger = image.resize_exact(
+        width * 2,
+        height * 2,
+        ::image::imageops::FilterType::CatmullRom,
+    );
+    let path = dir.join("input-2x.png");
+    larger.save(&path).ok()?;
+    Some(path)
 }
 
 fn link_or_copy(source: &Path, destination: &Path, cancelled: &AtomicBool) -> Result<(), String> {

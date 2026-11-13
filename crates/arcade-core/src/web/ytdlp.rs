@@ -99,12 +99,42 @@ impl YtDlp {
 }
 
 /// A readable yt-dlp error with the URL's query redacted.
+/// The DRM/paywall note only follows an access restriction (BP-2), not a 404.
 pub(super) fn failure(stderr: &[u8], url: &str) -> String {
-    let detail = network::process_error(stderr, "yt-dlp could not read this URL");
-    format!(
-        "{}\n\nArcade Box does not bypass DRM, paywalls, or private-content restrictions.",
-        detail.replace(url, &network::redact_url(url))
-    )
+    let detail = network::process_error(stderr, "yt-dlp could not read this URL")
+        .replace(url, &network::redact_url(url));
+    if is_access_restriction(&String::from_utf8_lossy(stderr)) {
+        format!(
+            "{detail}\n\nArcade Box does not bypass DRM, paywalls, or private-content restrictions."
+        )
+    } else {
+        detail
+    }
+}
+
+fn is_access_restriction(stderr: &str) -> bool {
+    let text = stderr.to_ascii_lowercase();
+    [
+        "drm",
+        "http error 401",
+        "http error 403",
+        "forbidden",
+        "private video",
+        "this video is private",
+        "members-only",
+        "members only",
+        "sign in",
+        "log in",
+        "login required",
+        "requires authentication",
+        "paywall",
+        "premium",
+        "subscriber",
+        "age-restricted",
+        "confirm your age",
+    ]
+    .iter()
+    .any(|marker| text.contains(marker))
 }
 
 // ---------------------------------------------------------------------------
@@ -436,6 +466,20 @@ pub(super) fn thumbnail(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn drm_note_only_follows_access_restrictions() {
+        let not_found = failure(
+            b"ERROR: [generic] Unable to download webpage: HTTP Error 404: Not Found",
+            "https://example.com/x",
+        );
+        assert!(!not_found.contains("DRM"));
+        let private = failure(
+            b"ERROR: [youtube] abc: Private video. Sign in if you've been granted access",
+            "https://example.com/x",
+        );
+        assert!(private.contains("DRM"));
+    }
 
     #[test]
     fn rolling_auto_captions_are_deduplicated() {
