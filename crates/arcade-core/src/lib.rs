@@ -294,6 +294,7 @@ impl Arcade {
         if manifest.status == ImplementationStatus::Planned {
             return Err(CoreError::NotImplemented(request.tool_id));
         }
+        fill_ui_defaults(&manifest, &mut request.options);
         text_options_from_numbers(&manifest, &mut request.options);
         for input in &request.inputs {
             if input.kind == ValueKind::Artifact {
@@ -848,6 +849,63 @@ fn input_compatible(actual: &str, declared: &str) -> bool {
 
 /// A text, select or password option sent as a JSON number or boolean (`--option tabs=4` over Link, a script) is
 /// the same value as its text; executors read these options as strings and would otherwise ignore it (U-1).
+/// B-23: the CLI, Link and pipelines get the same defaults as the form. An
+/// option the caller leaves out takes its control's catalog default when that
+/// control would be shown, exactly as the UI serializes a fresh form
+/// (`serializeStandardUiOptions`), so "compress" means the same everywhere.
+fn fill_ui_defaults(manifest: &ToolManifest, options: &mut serde_json::Value) {
+    fn as_ui_string(value: &serde_json::Value) -> String {
+        match value {
+            serde_json::Value::String(text) => text.clone(),
+            serde_json::Value::Number(_) | serde_json::Value::Bool(_) => value.to_string(),
+            _ => String::new(),
+        }
+    }
+    let Some(ui) = manifest.ui.as_ref() else {
+        return;
+    };
+    if options.is_null() {
+        *options = serde_json::json!({});
+    }
+    let Some(map) = options.as_object_mut() else {
+        return;
+    };
+    let current = |map: &serde_json::Map<String, serde_json::Value>, key: &str| {
+        map.get(key).map(as_ui_string).or_else(|| {
+            ui.controls
+                .iter()
+                .find(|control| control.key == key)
+                .and_then(|control| control.default.as_ref().map(as_ui_string))
+        })
+    };
+    let mut fills = Vec::new();
+    for control in &ui.controls {
+        let Some(default) = control.default.as_ref() else {
+            continue;
+        };
+        if map.contains_key(&control.key) || as_ui_string(default).is_empty() {
+            continue;
+        }
+        let visible = match &control.show_when {
+            None => true,
+            Some(condition) => {
+                let value = current(map, &condition.key);
+                match &condition.equals {
+                    Some(expected) => value.as_deref() == Some(as_ui_string(expected).as_str()),
+                    None => condition
+                        .one_of
+                        .iter()
+                        .any(|expected| value.as_deref() == Some(as_ui_string(expected).as_str())),
+                }
+            }
+        };
+        if visible {
+            fills.push((control.key.clone(), default.clone()));
+        }
+    }
+    map.extend(fills);
+}
+
 fn text_options_from_numbers(manifest: &ToolManifest, options: &mut serde_json::Value) {
     use arcade_contract::UiControlKind;
     let (Some(ui), Some(map)) = (manifest.ui.as_ref(), options.as_object_mut()) else {
@@ -869,6 +927,32 @@ fn text_options_from_numbers(manifest: &ToolManifest, options: &mut serde_json::
 mod tests {
     use super::*;
     use arcade_contract::{ResultStatus, ToolValue};
+
+    #[test]
+    fn omitted_options_take_the_forms_visible_defaults() {
+        let runtime = Arcade::in_memory().unwrap();
+        let manifest = |id: &str| {
+            runtime
+                .list_tools()
+                .into_iter()
+                .find(|tool| tool.id == id)
+                .unwrap()
+        };
+        let mut options = serde_json::Value::Null;
+        fill_ui_defaults(&manifest("arcade.image.convert"), &mut options);
+        assert_eq!(options["format"], "webp");
+        let mut options = serde_json::json!({"mode": "lossless"});
+        fill_ui_defaults(&manifest("arcade.pdf.compress"), &mut options);
+        assert_eq!(options["mode"], "lossless");
+        assert!(
+            options.get("targetMb").is_none(),
+            "hidden controls stay unset"
+        );
+        let mut options = serde_json::json!({});
+        fill_ui_defaults(&manifest("arcade.pdf.compress"), &mut options);
+        assert_eq!(options["mode"], "targetSize");
+        assert_eq!(options["targetMb"], 2);
+    }
 
     #[test]
     fn catalog_loads_and_is_unique() {

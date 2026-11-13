@@ -889,7 +889,10 @@ mod tests {
     fn developer_inputs_people_paste_are_accepted() {
         // B-22: unpadded and URL-safe Base64, 0x hex, MD5 and SHA-1, cron names.
         assert_eq!(decode_bytes("QXJjYWRl", "base64").unwrap(), b"Arcade");
-        assert_eq!(decode_bytes("QXJjYWRlIEJveA", "base64").unwrap(), b"Arcade Box");
+        assert_eq!(
+            decode_bytes("QXJjYWRlIEJveA", "base64").unwrap(),
+            b"Arcade Box"
+        );
         assert_eq!(decode_bytes("-_8=", "base64").unwrap(), [0xfb, 0xff]);
         assert_eq!(decode_bytes("0x4142 0x43", "hex").unwrap(), b"ABC");
         assert_eq!(percent_decode("a+b%20c").unwrap(), "a+b c");
