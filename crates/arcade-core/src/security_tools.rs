@@ -90,30 +90,13 @@ fn password_tool(manifest: &ToolManifest, request: &ToolRequest) -> Result<ToolR
         "passphrase" => {
             let words =
                 number_in(request, "words", "Number of words", Some(5.0), 3.0..=12.0)? as usize;
-            // Pronounceable pseudo-words: 16 × 16 × 16 = 4096 choices (12 bits) each.
-            const ONSETS: [&str; 16] = [
-                "b", "br", "d", "dr", "f", "g", "gr", "k", "kr", "l", "m", "n", "p", "pr", "s",
-                "st",
-            ];
-            const VOWELS: [&str; 16] = [
-                "a", "e", "i", "o", "u", "ae", "ai", "au", "ea", "ee", "ie", "oa", "oo", "ou",
-                "ui", "y",
-            ];
-            const CODAS: [&str; 16] = [
-                "b", "d", "f", "g", "k", "l", "m", "n", "p", "r", "s", "t", "v", "x", "z", "th",
-            ];
+            // B-20: real words from the bundled EFF long list (licenses/third-party/eff-diceware).
+            let list = passphrase_words();
             let value = (0..words)
-                .map(|_| {
-                    format!(
-                        "{}{}{}",
-                        ONSETS[rng.random_range(0..16)],
-                        VOWELS[rng.random_range(0..16)],
-                        CODAS[rng.random_range(0..16)]
-                    )
-                })
+                .map(|_| list[rng.random_range(0..list.len())])
                 .collect::<Vec<_>>()
                 .join(option_str(request, "separator", "-"));
-            (value, words as f64 * 12.0)
+            (value, words as f64 * (list.len() as f64).log2())
         }
         "pin" => {
             let digits =
@@ -137,23 +120,80 @@ fn password_tool(manifest: &ToolManifest, request: &ToolRequest) -> Result<ToolR
     ))
 }
 
+/// The EFF long wordlist without its four hyphenated words, so a "-" separator
+/// always splits a passphrase back into its words.
+fn passphrase_words() -> &'static [&'static str] {
+    static WORDS: std::sync::OnceLock<Vec<&'static str>> = std::sync::OnceLock::new();
+    WORDS.get_or_init(|| {
+        include_str!("../data/eff_large_wordlist.txt")
+            .lines()
+            .filter_map(|line| line.split('\t').nth(1))
+            .filter(|word| word.chars().all(|character| character.is_ascii_lowercase()))
+            .collect()
+    })
+}
+
+/// zxcvbn's score, except "very strong" needs at least 10^12 guesses (years of
+/// offline cracking), so a rating never sits next to an "offline: 3 months" time.
+fn score_for(guesses_log10: f64) -> u8 {
+    match guesses_log10 {
+        g if g < 3.0 => 0,
+        g if g < 6.0 => 1,
+        g if g < 8.0 => 2,
+        g if g < 12.0 => 3,
+        _ => 4,
+    }
+}
+
+/// How strong a password is. A generated one (`entropy_bits` known) is rated by
+/// the randomness it was made with: zxcvbn's pattern advice ("short keyboard
+/// patterns") is about human choices and is wrong for random output.
 fn strength_report(password: &str, entropy_bits: Option<f64>) -> Value {
-    let estimate = zxcvbn::zxcvbn(password, &[]);
-    let score = u8::from(estimate.score());
-    let feedback = estimate.feedback();
-    let rating = ["very weak", "weak", "fair", "strong", "very strong"][usize::from(score.min(4))];
+    use zxcvbn::time_estimates::CrackTimeSeconds;
+    let (guesses_log10, warning, suggestions) = match entropy_bits {
+        Some(bits) => {
+            let warning = password
+                .chars()
+                .all(|character| character.is_ascii_digit())
+                .then(|| {
+                    "A PIN is only safe where the device locks after a few wrong tries.".to_string()
+                });
+            (bits * 2f64.log10(), warning, Vec::new())
+        }
+        None => {
+            let estimate = zxcvbn::zxcvbn(password, &[]);
+            let feedback = estimate.feedback();
+            (
+                estimate.guesses_log10(),
+                feedback
+                    .and_then(|feedback| feedback.warning())
+                    .map(|warning| warning.to_string()),
+                feedback
+                    .map(|feedback| {
+                        feedback
+                            .suggestions()
+                            .iter()
+                            .map(ToString::to_string)
+                            .collect::<Vec<_>>()
+                    })
+                    .unwrap_or_default(),
+            )
+        }
+    };
+    let score = score_for(guesses_log10);
+    let guesses = 10f64.powf(guesses_log10);
+    let rating = ["very weak", "weak", "fair", "strong", "very strong"][usize::from(score)];
     json!({
         "score": score,
         "rating": rating,
         "length": password.chars().count(),
         "estimatedEntropyBits": entropy_bits.map(f64::round),
-        "guessesLog10": (estimate.guesses_log10() * 10.0).round() / 10.0,
-        "crackTimeOnline": estimate.crack_times().online_throttling_100_per_hour().to_string(),
-        "crackTimeOffline": estimate.crack_times().offline_slow_hashing_1e4_per_second().to_string(),
-        "warning": feedback.and_then(|feedback| feedback.warning()).map(|warning| warning.to_string()),
-        "suggestions": feedback
-            .map(|feedback| feedback.suggestions().iter().map(ToString::to_string).collect::<Vec<_>>())
-            .unwrap_or_default(),
+        "guessesLog10": (guesses_log10 * 10.0).round() / 10.0,
+        // The same attacker models zxcvbn uses: 100 guesses an hour online, 10^4 a second offline.
+        "crackTimeOnline": CrackTimeSeconds::Float(guesses * 36.0).to_string(),
+        "crackTimeOffline": CrackTimeSeconds::Float(guesses / 10_000.0).to_string(),
+        "warning": warning,
+        "suggestions": suggestions,
     })
 }
 
@@ -429,7 +469,7 @@ mod tests {
     use arcade_contract::ResultStatus;
 
     #[test]
-    fn pseudo_word_password_has_configured_number_of_tokens() {
+    fn passphrase_uses_real_words() {
         let manifest = Arcade::in_memory()
             .unwrap()
             .list_tools()
@@ -444,9 +484,23 @@ mod tests {
         let result = password_tool(&manifest, &request).unwrap();
         let text = &result.outputs[0].value;
         assert_eq!(text.split('-').count(), 5);
-        assert!(
-            text.chars()
-                .all(|character| character.is_ascii_lowercase() || character == '-')
+        let words = passphrase_words();
+        assert_eq!(words.len(), 7772);
+        assert!(text.split('-').all(|word| words.contains(&word)));
+    }
+
+    #[test]
+    fn random_pins_get_no_pattern_advice_and_ratings_match_crack_times() {
+        let pin = strength_report("402917", Some(6.0 * 10f64.log2()));
+        assert_eq!(pin["rating"], "fair");
+        assert!(pin["suggestions"].as_array().unwrap().is_empty());
+        assert!(pin["warning"].as_str().unwrap().contains("locks after"));
+        // B-20: "very strong" with an offline crack time of months was a contradiction.
+        let checked = strength_report("Tr0ub4dor&3", None);
+        assert_ne!(checked["rating"], "very strong");
+        assert_eq!(
+            strength_report("correct-horse-battery-staple-orbit", Some(64.6))["rating"],
+            "very strong"
         );
     }
 

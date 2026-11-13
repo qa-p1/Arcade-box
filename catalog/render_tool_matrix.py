@@ -76,7 +76,7 @@ TEST_EVIDENCE = {
     "arcade.files.duplicates": "`arcade-core/src/file_tools.rs`: `duplicate_finder_stays_within_granted_root`",
     "arcade.files.compare": "`arcade-core/src/file_tools.rs`: `rename_compare_and_size_tools_return_reviewable_results`",
     "arcade.files.sizes": "`arcade-core/src/file_tools.rs`: `rename_compare_and_size_tools_return_reviewable_results`",
-    "arcade.security.password": "`arcade-core/src/security_tools.rs`: `pseudo_word_password_has_configured_number_of_tokens`",
+    "arcade.security.password": "`arcade-core/src/security_tools.rs`: `passphrase_uses_real_words`",
     "arcade.security.encrypt": "`arcade-core/src/security_tools.rs`: `age_file_encrypt_decrypt_round_trip_runs_through_registry`, `age_recipient_encrypt_decrypt_round_trip_runs_through_registry`",
 }
 
