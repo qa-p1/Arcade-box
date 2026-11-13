@@ -2121,6 +2121,15 @@ struct X11Selection {
 }
 
 #[cfg(target_os = "linux")]
+thread_local! {
+    /// The screen as it was before the selection overlay appeared (GTK main
+    /// thread only). B-26: the area is cut from this, so the overlay's tint is
+    /// never in the image.
+    static X11_SNAPSHOT: std::cell::RefCell<Option<gtk::gdk_pixbuf::Pixbuf>> =
+        const { std::cell::RefCell::new(None) };
+}
+
+#[cfg(target_os = "linux")]
 type X11PickerSender = tokio::sync::oneshot::Sender<Result<Option<X11Region>, String>>;
 
 #[cfg(target_os = "linux")]
@@ -2145,6 +2154,7 @@ async fn select_x11_region(app: &tauri::AppHandle) -> Result<Option<X11Region>, 
             let _ = send.send(Err("X11 could not preview the current screen".into()));
             return;
         };
+        X11_SNAPSHOT.with(|stored| stored.replace(Some(snapshot.clone())));
         show_x11_picker(send, snapshot);
     })
     .map_err(|error| format!("Could not open the X11 region selector: {error}"))?;
@@ -2339,6 +2349,9 @@ fn complete_x11_picker(
 ) {
     use gtk::prelude::*;
 
+    if !matches!(result, Ok(Some(_))) {
+        X11_SNAPSHOT.with(|stored| stored.take());
+    }
     if let Some(sender) = sender.borrow_mut().take() {
         let _ = sender.send(result);
     }
@@ -2349,15 +2362,26 @@ fn complete_x11_picker(
 fn capture_x11_region_png(region: X11Region, path: &std::path::Path) -> Result<(), String> {
     use gtk::{gdk, prelude::*};
 
-    let root = gdk::Window::default_root_window();
-    let image = root
-        .pixbuf(
-            region.x,
-            region.y,
-            i32::try_from(region.width).map_err(|_| "The selected area is too wide")?,
-            i32::try_from(region.height).map_err(|_| "The selected area is too tall")?,
-        )
-        .ok_or_else(|| "X11 could not read the selected screen pixels".to_owned())?;
+    let width = i32::try_from(region.width).map_err(|_| "The selected area is too wide")?;
+    let height = i32::try_from(region.height).map_err(|_| "The selected area is too tall")?;
+    let snapshot = X11_SNAPSHOT.with(|stored| stored.take());
+    let image = match snapshot {
+        Some(snapshot)
+            if region.x >= 0
+                && region.y >= 0
+                && region.x + width <= snapshot.width()
+                && region.y + height <= snapshot.height() =>
+        {
+            // A copy, so the full-screen snapshot is freed with this scope.
+            snapshot
+                .new_subpixbuf(region.x, region.y, width, height)
+                .copy()
+                .ok_or_else(|| "X11 could not copy the selected screen pixels".to_owned())?
+        }
+        _ => gdk::Window::default_root_window()
+            .pixbuf(region.x, region.y, width, height)
+            .ok_or_else(|| "X11 could not read the selected screen pixels".to_owned())?,
+    };
     image
         .savev(path, "png", &[])
         .map_err(|error| format!("Could not encode the selected X11 region: {error}"))
