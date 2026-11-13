@@ -1870,10 +1870,11 @@ pub async fn run_screen_tool(
     }
     use arcade_core::link::consumer;
     use arcade_link::{InvokeRequest, ids};
+    // Ruler and Pin live in Lens. Colour is picked like OCR and QR (BR-13): Lens
+    // only captures the area, and the Island's sampler shows and returns the colour.
     let mode = match tool_id {
         "arcade.screen.ruler" => Some("measure"),
         "arcade.screen.pin" => Some("pin"),
-        "arcade.screen.color" => Some("color"),
         _ => None,
     };
     if let Some(mode) = mode
