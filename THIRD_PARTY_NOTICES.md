@@ -907,12 +907,21 @@ none of these.
 - gir1.2-webkit2-4.1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/webkit2gtk
 - glib-networking (Ubuntu package) — https://launchpad.net/ubuntu/+source/glib-networking
 - gsettings-desktop-schemas (Ubuntu package) — https://launchpad.net/ubuntu/+source/gsettings-desktop-schemas
+- gstreamer1.0-gl (Ubuntu package) — https://launchpad.net/ubuntu/+source/gst-plugins-base1.0
+- gstreamer1.0-pipewire (Ubuntu package) — https://launchpad.net/ubuntu/+source/pipewire
+- gstreamer1.0-plugins-base (Ubuntu package) — https://launchpad.net/ubuntu/+source/gst-plugins-base1.0
+- gstreamer1.0-plugins-good (Ubuntu package) — https://launchpad.net/ubuntu/+source/gst-plugins-good1.0
+- gstreamer1.0-x (Ubuntu package) — https://launchpad.net/ubuntu/+source/gst-plugins-base1.0
+- libaa1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/aalib
+- libapparmor1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/apparmor
+- libasyncns0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libasyncns
 - libatk-bridge2.0-0t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/at-spi2-core
 - libatk1.0-0t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/at-spi2-core
 - libatomic1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/gcc-14
 - libatspi2.0-0t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/at-spi2-core
 - libavahi-client3 (Ubuntu package) — https://launchpad.net/ubuntu/+source/avahi
 - libavahi-common3 (Ubuntu package) — https://launchpad.net/ubuntu/+source/avahi
+- libavc1394-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libavc1394
 - libayatana-appindicator3-1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libayatana-appindicator
 - libayatana-ido3-0.4-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/ayatana-ido
 - libayatana-indicator3-7 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libayatana-indicator
@@ -920,9 +929,11 @@ none of these.
 - libbrotli1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/brotli
 - libbsd0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libbsd
 - libbz2-1.0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/bzip2
+- libcaca0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libcaca
 - libcairo-gobject2 (Ubuntu package) — https://launchpad.net/ubuntu/+source/cairo
 - libcairo2 (Ubuntu package) — https://launchpad.net/ubuntu/+source/cairo
 - libcap2 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libcap2
+- libcdparanoia0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/cdparanoia
 - libcolord2 (Ubuntu package) — https://launchpad.net/ubuntu/+source/colord
 - libcups2t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/cups
 - libcurl3t64-gnutls (Ubuntu package) — https://launchpad.net/ubuntu/+source/curl
@@ -932,22 +943,27 @@ none of these.
 - libdbusmenu-gtk3-4 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libdbusmenu
 - libdeflate0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libdeflate
 - libduktape207 (Ubuntu package) — https://launchpad.net/ubuntu/+source/duktape
+- libdv4t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libdv
 - libdw1t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/elfutils
 - libelf1t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/elfutils
 - libenchant-2-2 (Ubuntu package) — https://launchpad.net/ubuntu/+source/enchant-2
 - libepoxy0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libepoxy
 - libevdev2 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libevdev
 - libffi8 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libffi
+- libflac12t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/flac
 - libgcrypt20 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libgcrypt20
 - libgdk-pixbuf-2.0-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/gdk-pixbuf
 - libgdk-pixbuf-2.0-dev (Ubuntu package) — https://launchpad.net/ubuntu/+source/gdk-pixbuf
 - libglib2.0-0t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/glib2.0
 - libglib2.0-dev (Ubuntu package) — https://launchpad.net/ubuntu/+source/glib2.0
 - libgnutls30t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/gnutls28
+- libgpm2 (Ubuntu package) — https://launchpad.net/ubuntu/+source/gpm
+- libgraphene-1.0-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/graphene
 - libgraphite2-3 (Ubuntu package) — https://launchpad.net/ubuntu/+source/graphite2
 - libgssapi-krb5-2 (Ubuntu package) — https://launchpad.net/ubuntu/+source/krb5
 - libgstreamer-gl1.0-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/gst-plugins-base1.0
 - libgstreamer-plugins-base1.0-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/gst-plugins-base1.0
+- libgstreamer-plugins-good1.0-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/gst-plugins-good1.0
 - libgstreamer1.0-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/gstreamer1.0
 - libgtk-3-0t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/gtk+3.0
 - libgtk-3-common (Ubuntu package) — https://launchpad.net/ubuntu/+source/gtk+3.0
@@ -957,6 +973,7 @@ none of these.
 - libhyphen0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/hyphen
 - libicu74 (Ubuntu package) — https://launchpad.net/ubuntu/+source/icu
 - libidn2-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libidn2
+- libiec61883-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libiec61883
 - libjavascriptcoregtk-4.1-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/webkit2gtk
 - libjbig0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/jbigkit
 - libjpeg-turbo8 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libjpeg-turbo
@@ -972,8 +989,14 @@ none of these.
 - libmanette-0.2-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libmanette
 - libmd0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libmd
 - libmount1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/util-linux
+- libmp3lame0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/lame
+- libmpg123-0t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/mpg123
+- libncurses6 (Ubuntu package) — https://launchpad.net/ubuntu/+source/ncurses
+- libncursesw6 (Ubuntu package) — https://launchpad.net/ubuntu/+source/ncurses
 - libnettle8t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/nettle
 - libnghttp2-14 (Ubuntu package) — https://launchpad.net/ubuntu/+source/nghttp2
+- libogg0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libogg
+- libopus0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/opus
 - liborc-0.4-0t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/orc
 - libp11-kit0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/p11-kit
 - libpango-1.0-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/pango1.0
@@ -985,6 +1008,8 @@ none of these.
 - libpng16-16t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libpng1.6
 - libproxy1v5 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libproxy
 - libpsl5t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libpsl
+- libpulse0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/pulseaudio
+- libraw1394-11 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libraw1394
 - librsvg2-2 (Ubuntu package) — https://launchpad.net/ubuntu/+source/librsvg
 - librsvg2-common (Ubuntu package) — https://launchpad.net/ubuntu/+source/librsvg
 - librsvg2-dev (Ubuntu package) — https://launchpad.net/ubuntu/+source/librsvg
@@ -994,17 +1019,32 @@ none of these.
 - libsecret-1-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libsecret
 - libselinux1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libselinux
 - libsharpyuv0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libwebp
+- libshout3 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libshout
+- libslang2 (Ubuntu package) — https://launchpad.net/ubuntu/+source/slang2
+- libsndfile1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libsndfile
 - libsoup-3.0-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libsoup3
+- libspeex1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/speex
 - libsqlite3-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/sqlite3
 - libssh-4 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libssh
 - libssl3t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/openssl
 - libsystemd0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/systemd
+- libtag1v5-vanilla (Ubuntu package) — https://launchpad.net/ubuntu/+source/taglib
 - libtasn1-6 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libtasn1-6
 - libthai0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libthai
+- libtheora0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libtheora
 - libtiff6 (Ubuntu package) — https://launchpad.net/ubuntu/+source/tiff
+- libtinfo6 (Ubuntu package) — https://launchpad.net/ubuntu/+source/ncurses
+- libtwolame0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/twolame
 - libudev1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/systemd
 - libunistring5 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libunistring
 - libunwind8 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libunwind
+- libv4l-0t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/v4l-utils
+- libv4lconvert0t64 (Ubuntu package) — https://launchpad.net/ubuntu/+source/v4l-utils
+- libvisual-0.4-0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libvisual
+- libvorbis0a (Ubuntu package) — https://launchpad.net/ubuntu/+source/libvorbis
+- libvorbisenc2 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libvorbis
+- libvpx9 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libvpx
+- libwavpack1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/wavpack
 - libwayland-cursor0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/wayland
 - libwayland-egl1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/wayland
 - libwayland-server0 (Ubuntu package) — https://launchpad.net/ubuntu/+source/wayland
@@ -1028,6 +1068,8 @@ none of these.
 - libxrandr2 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libxrandr
 - libxrender1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libxrender
 - libxslt1.1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libxslt
+- libxtst6 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libxtst
+- libxv1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libxv
 - libzstd1 (Ubuntu package) — https://launchpad.net/ubuntu/+source/libzstd
 
 ## Licence texts
@@ -26208,7 +26250,3157 @@ License: LGPL-2.1+
  Public License can be found in `/usr/share/common-licenses/LGPL-2.1'.
 ```
 
-### 221. Used by half 2.7.1, ident_case 1.0.1, simdutf8 0.1.5, widestring 1.2.1
+### 221. Used by gstreamer1.0-gl (Ubuntu package), gstreamer1.0-plugins-base (Ubuntu package), gstreamer1.0-x (Ubuntu package), libgstreamer-gl1.0-0 (Ubuntu package), libgstreamer-plugins-base1.0-0 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Gstreamer Base Plugins 1.0
+Upstream-Contact: gstreamer-devel@lists.freedesktop.org
+Source: http://gstreamer.freedesktop.org
+Comment: This package was debianized by David I. Lehn <dlehn@debian.org> on
+ Mon, 15 Jan 2001 18:21:37 -0500.
+
+Files: ext/alsa/gstalsa.c
+ gst-libs/gst/audio/gstaudiocdsrc.c
+ gst-libs/gst/audio/gstaudiocdsrc.h
+ gst-libs/gst/audio/mixerutils.h
+ gst-libs/gst/pbutils/descriptions.c
+ gst-libs/gst/pbutils/descriptions.h
+ gst-libs/gst/pbutils/gstpluginsbaseversion.c
+ gst-libs/gst/pbutils/missing-plugins.c
+ gst-libs/gst/pbutils/missing-plugins.h
+ gst-libs/gst/pbutils/pbutils.c
+ gst-libs/gst/pbutils/pbutils.h
+ gst-libs/gst/tag/lang.c
+ gst-libs/gst/tag/licenses.c
+ gst-libs/gst/tag/mklangtables.c
+ gst-libs/gst/tag/mklicensestables.c
+ gst/subparse/gstssaparse.c
+ gst/subparse/gstssaparse.h
+ gst/subparse/tmplayerparse.c
+ gst/subparse/tmplayerparse.h
+ tests/check/elements/alsa.c
+ tests/check/elements/audiorate.c
+ tests/check/elements/playbin.c
+ tests/check/elements/subparse.c
+ tests/check/elements/textoverlay.c
+ tests/check/gst/typefindfunctions.c
+ tests/check/libs/gstlibscpp.cc
+ tests/check/libs/pbutils.c
+ tests/check/libs/rtp.c
+ tests/check/libs/tag.c
+ tests/icles/test-textoverlay.c
+Copyright: 2005, Tim-Philipp Müller <tim centricular net>
+  2005-2006, Tim-Philipp Müller <tim centricular net>
+  2006, Tim-Philipp Müller <tim centricular net>
+  2006-2008, Tim-Philipp Müller <tim centricular net>
+  2006-2011, Tim-Philipp Müller <tim centricular net>
+  2007, Tim-Philipp Müller <tim centricular net>
+  2009, Tim-Philipp Müller <tim centricular net>
+  2010, Tim-Philipp Müller <tim centricular net>
+  2011, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: ext/cdparanoia/gstcdparanoiasrc.c
+ ext/ogg/gstogg.c
+ ext/vorbis/gstivorbisdec.c
+ ext/vorbis/gstvorbis.c
+ ext/vorbis/gstvorbisdec.h
+ ext/vorbis/gstvorbisenc.c
+ ext/vorbis/gstvorbisenc.h
+ gst-libs/gst/audio/audio.c
+ gst-libs/gst/audio/audio.h
+ gst-libs/gst/audio/gstaudiofilter.h
+ gst-libs/gst/video/gstvideofilter.h
+ gst/audiorate/gstaudiorate.c
+ gst/audiorate/gstaudiorate.h
+ gst/tcp/gsttcpclientsink.h
+ gst/tcp/gsttcpplugin.c
+ gst/videorate/gstvideorate.c
+ gst/videorate/gstvideorate.h
+ gst/videoscale/gstvideoscale.h
+ gst/videotestsrc/videotestsrc.c
+ tests/icles/playback/decodetest.c
+ tests/icles/playback/test2.c
+ tests/icles/playback/test3.c
+ tests/icles/playback/test4.c
+ tests/icles/playback/test5.c
+ tests/icles/playback/test6.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst-libs/gst/audio/mixer.c
+ gst-libs/gst/audio/mixer.h
+ gst-libs/gst/audio/mixeroptions.c
+ gst-libs/gst/audio/mixeroptions.h
+ gst-libs/gst/audio/mixertrack.c
+ gst-libs/gst/audio/mixertrack.h
+ gst-libs/gst/interfaces/tuner.c
+ gst-libs/gst/interfaces/tuner.h
+ gst-libs/gst/interfaces/tunerchannel.c
+ gst-libs/gst/interfaces/tunerchannel.h
+ gst-libs/gst/interfaces/tunernorm.c
+ gst-libs/gst/interfaces/tunernorm.h
+ gst-libs/gst/riff/riff-ids.h
+ gst-libs/gst/riff/riff-media.c
+ gst-libs/gst/riff/riff-media.h
+ gst-libs/gst/riff/riff-read.c
+ gst-libs/gst/riff/riff-read.h
+ gst-libs/gst/riff/riff.c
+ gst-libs/gst/video/colorbalance.c
+ gst-libs/gst/video/colorbalance.h
+ gst-libs/gst/video/colorbalancechannel.c
+ gst-libs/gst/video/colorbalancechannel.h
+ gst/audioconvert/audioconvert.h
+ gst/audioconvert/gstchannelmix.h
+Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2004, Ronald Bultje <rbultje@ronald.bitfreak.net>
+License: LGPL-2+
+
+Files: ext/pango/gsttextoverlay.h
+ ext/vorbis/gstvorbiscommon.c
+ ext/vorbis/gstvorbiscommon.h
+ gst-libs/gst/audio/streamvolume.c
+ gst-libs/gst/audio/streamvolume.h
+ gst/audioconvert/gstfastrandom.h
+ gst/audioresample/speex_resampler_double.c
+ gst/audioresample/speex_resampler_float.c
+ gst/audioresample/speex_resampler_int.c
+ gst/audioresample/speex_resampler_wrapper.h
+ gst/playback/gststreamsynchronizer.c
+ gst/playback/gststreamsynchronizer.h
+ gst/playback/gstsubtitleoverlay.c
+ gst/playback/gstsubtitleoverlay.h
+ tests/examples/gio/giosrc-mounting.c
+Copyright: 2007-2008, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2008, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2011, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: ext/alsa/gstalsasink.h
+ ext/alsa/gstalsasrc.c
+ ext/alsa/gstalsasrc.h
+ ext/ogg/gstogg.h
+ ext/ogg/gstoggaviparse.c
+ ext/ogg/gstoggdemux.c
+ ext/ogg/gstoggdemux.h
+ ext/ogg/vorbis_parse.h
+ ext/theora/gsttheoraenc.c
+ ext/theora/gsttheoraenc.h
+ gst-libs/gst/audio/gstaudioringbuffer.c
+ gst-libs/gst/rtsp/gstrtspextension.h
+ tests/check/libs/libsabi.c
+ tests/examples/playback/playback-test.c
+ tests/examples/seek/jsseek.c
+Copyright: 2004, Wim Taymans <wim@fluendo.com>
+  2005, Wim Taymans <wim@fluendo.com>
+  2006, Wim Taymans <wim@fluendo.com>
+  2007, Wim Taymans <wim@fluendo.com>
+License: LGPL-2+
+
+Files: ext/cdparanoia/gstcdparanoiasrc.h
+ gst-libs/gst/audio/gstaudiobasesink.c
+ gst-libs/gst/audio/gstaudiobasesink.h
+ gst-libs/gst/audio/gstaudiobasesrc.c
+ gst-libs/gst/audio/gstaudiobasesrc.h
+ gst-libs/gst/audio/gstaudioclock.c
+ gst-libs/gst/audio/gstaudioclock.h
+ gst-libs/gst/audio/gstaudioringbuffer.h
+ gst-libs/gst/audio/gstaudiosink.c
+ gst-libs/gst/audio/gstaudiosink.h
+ gst-libs/gst/audio/gstaudiosrc.c
+ gst-libs/gst/audio/gstaudiosrc.h
+ gst/adder/gstadder.c
+ gst/adder/gstadder.h
+Copyright: 1999, Erik Walthinsen <omega@cse.ogi.edu>
+  1999-2000, Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst-libs/gst/fft/_kiss_fft_guts_f32.h
+ gst-libs/gst/fft/_kiss_fft_guts_f64.h
+ gst-libs/gst/fft/_kiss_fft_guts_s16.h
+ gst-libs/gst/fft/_kiss_fft_guts_s32.h
+ gst-libs/gst/fft/kiss_fft_f32.c
+ gst-libs/gst/fft/kiss_fft_f64.c
+ gst-libs/gst/fft/kiss_fft_s16.c
+ gst-libs/gst/fft/kiss_fft_s32.c
+ gst-libs/gst/fft/kiss_fftr_f32.c
+ gst-libs/gst/fft/kiss_fftr_f64.c
+ gst-libs/gst/fft/kiss_fftr_s16.c
+ gst-libs/gst/fft/kiss_fftr_s32.c
+Copyright: 2003-2004, Mark Borgerding
+License: BSD (2 clause)
+
+Files: gst/gdp/gstgdp.c
+ gst/gdp/gstgdpdepay.c
+ gst/gdp/gstgdpdepay.h
+ gst/gdp/gstgdppay.c
+ gst/gdp/gstgdppay.h
+ tests/check/elements/gdpdepay.c
+ tests/check/elements/gdppay.c
+ tests/check/elements/multifdsink.c
+ tests/check/elements/multisocketsink.c
+ tests/check/elements/videorate.c
+ tests/check/pipelines/streamheader.c
+ tests/check/pipelines/vorbisdec.c
+Copyright: 2006, Thomas Vander Stichele <thomas at apestaart dot org>
+  2007, Thomas Vander Stichele <thomas at apestaart dot org>
+License: LGPL-2+
+
+Files: gst-libs/gst/rtsp/gstrtspdefs.c
+ gst-libs/gst/rtsp/gstrtspdefs.h
+ gst-libs/gst/rtsp/gstrtspmessage.c
+ gst-libs/gst/rtsp/gstrtspmessage.h
+ gst-libs/gst/rtsp/gstrtsprange.c
+ gst-libs/gst/rtsp/gstrtsprange.h
+ gst-libs/gst/rtsp/gstrtsptransport.h
+ gst-libs/gst/rtsp/gstrtspurl.c
+ gst-libs/gst/rtsp/gstrtspurl.h
+ gst-libs/gst/sdp/gstsdp.h
+ gst-libs/gst/sdp/gstsdpmessage.c
+ gst-libs/gst/sdp/gstsdpmessage.h
+Copyright: <2005-2006> Wim Taymans <wim@fluendo.com>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: gst-libs/gst/rtsp/gstrtsp.h
+ gst-libs/gst/rtsp/gstrtspextension.c
+ tests/examples/app/appsrc-ra.c
+ tests/examples/app/appsrc-seekable.c
+ tests/examples/app/appsrc-stream.c
+ tests/examples/app/appsrc-stream2.c
+ tests/examples/seek/stepping.c
+ tests/examples/seek/stepping2.c
+ tests/icles/playbin-text.c
+ tests/icles/test-box.c
+ tests/icles/test-scale.c
+Copyright: 2007, Wim Taymans <wim.taymans@gmail.com>
+  2008, Wim Taymans <wim.taymans@gmail.com>
+  2009, Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: gst-libs/gst/fft/gstfft.c
+ gst-libs/gst/fft/gstfft.h
+ gst-libs/gst/fft/gstfftf32.c
+ gst-libs/gst/fft/gstfftf32.h
+ gst-libs/gst/fft/gstfftf64.c
+ gst-libs/gst/fft/gstfftf64.h
+ gst-libs/gst/fft/gstffts16.c
+ gst-libs/gst/fft/gstffts16.h
+ gst-libs/gst/fft/gstffts32.c
+ gst-libs/gst/fft/gstffts32.h
+Copyright: <2007> Sebastian Dröge <slomo@circular-chaos.org>
+License: LGPL-2+
+
+Files: gst-libs/gst/rtp/gstrtppayloads.c
+ gst-libs/gst/rtp/gstrtppayloads.h
+ gst/playback/gstplay-enum.c
+ gst/playback/gstplay-enum.h
+ gst/playback/gstplayback.c
+ gst/playback/gstplayback.h
+ gst/playback/gstplaysink.h
+ gst/playback/gsturidecodebin.c
+ tests/examples/snapshot/snapshot.c
+ tests/icles/playback/test7.c
+Copyright: <2007> Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: gst-libs/gst/pbutils/encoding-profile.c
+ gst-libs/gst/pbutils/encoding-profile.h
+ gst-libs/gst/pbutils/encoding-target.c
+ gst-libs/gst/pbutils/encoding-target.h
+ gst/encoding/gstencodebin.c
+ gst/encoding/gstencodebin.h
+ gst/encoding/gststreamcombiner.c
+ gst/encoding/gststreamcombiner.h
+ gst/encoding/gststreamsplitter.c
+ gst/encoding/gststreamsplitter.h
+Copyright: 2009, Edward Hervey <edward.hervey@collabora.co.uk>
+  2009, Nokia Corporation
+  2009-2010, Edward Hervey <edward.hervey@collabora.co.uk>
+  2009-2010, Nokia Corporation
+  2010, Edward Hervey <edward.hervey@collabora.co.uk>
+  2010, Nokia Corporation
+License: LGPL-2+
+
+Files: sys/ximage/ximagepool.c
+ sys/ximage/ximagepool.h
+ sys/ximage/ximagesink.c
+ sys/ximage/ximagesink.h
+ sys/xvimage/xvimagepool.c
+ sys/xvimage/xvimagepool.h
+ sys/xvimage/xvimagesink.c
+ sys/xvimage/xvimagesink.h
+ tests/icles/stress-videooverlay.c
+Copyright: <2005> Julien Moutte <julien@moutte.net>
+License: LGPL-2+
+
+Files: ext/alsa/gstalsamixer.c
+ ext/alsa/gstalsamixer.h
+ ext/alsa/gstalsamixerelement.c
+ ext/alsa/gstalsamixerelement.h
+ ext/alsa/gstalsamixeroptions.c
+ ext/alsa/gstalsamixeroptions.h
+ ext/alsa/gstalsamixertrack.c
+ ext/alsa/gstalsamixertrack.h
+Copyright: 2003, Leif Johnson <leif@ambient.2y.net>
+License: LGPL-2+
+
+Files: gst/gdp/dp-private.h
+ gst/tcp/gstmultifdsink.h
+ gst/tcp/gsttcp.h
+ gst/tcp/gsttcpclientsrc.h
+ gst/tcp/gsttcpserversink.c
+ gst/tcp/gsttcpserversink.h
+ gst/tcp/gsttcpserversrc.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2004> Thomas Vander Stichele <thomas at apestaart dot org>
+License: LGPL-2+
+
+Files: gst-libs/gst/audio/gstaudiometa.c
+ gst-libs/gst/audio/gstaudiometa.h
+ gst-libs/gst/video/gstvideometa.c
+ gst-libs/gst/video/gstvideometa.h
+ gst-libs/gst/video/gstvideopool.c
+ gst-libs/gst/video/gstvideopool.h
+ gst-libs/gst/video/video.h
+Copyright: <2011> Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: ext/theora/gsttheora.c
+ ext/theora/gsttheoradec.c
+ ext/theora/gsttheoradec.h
+ ext/vorbis/gstvorbisdec.c
+ gst-libs/gst/tag/gstid3tag.c
+ gst-libs/gst/tag/gsttageditingprivate.h
+ gst-libs/gst/tag/gstvorbistag.c
+Copyright: 2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
+  2004, Benjamin Otte <in7y118@public.uni-hamburg.de>
+License: LGPL-2+
+
+Files: gst/gio/gstgio.c
+ gst/gio/gstgiobasesink.c
+ gst/gio/gstgiobasesrc.c
+ gst/gio/gstgiosink.c
+ gst/gio/gstgiosrc.c
+ gst/gio/gstgiostreamsink.c
+ gst/gio/gstgiostreamsrc.c
+Copyright: 2007, Rene Stadler <mail@renestadler.de>
+  2007, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2007-2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/gio/gstgio.h
+ gst/gio/gstgiobasesink.h
+ gst/gio/gstgiobasesrc.h
+ gst/gio/gstgiosink.h
+ gst/gio/gstgiosrc.h
+ gst/gio/gstgiostreamsink.h
+ gst/gio/gstgiostreamsrc.h
+Copyright: 2007, Rene Stadler <mail@renestadler.de>
+  2007, Sebastian Dröge <slomo@circular-chaos.org>
+  2007-2009, Sebastian Dröge <slomo@circular-chaos.org>
+License: LGPL-2+
+
+Files: gst-libs/gst/tag/gstexiftag.c
+ gst-libs/gst/tag/gsttageditingprivate.c
+ gst-libs/gst/tag/xmpwriter.c
+ gst-libs/gst/tag/xmpwriter.h
+ tests/check/elements/appsrc.c
+ tests/check/libs/xmpwriter.c
+ tests/check/pipelines/capsfilter-renegotiation.c
+Copyright: 2010, Thiago Santos <thiago.sousa.santos@collabora.co.uk>
+  2011, Thiago Santos <thiago.sousa.santos@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/videoscale/vs_4tap.h
+ gst/videoscale/vs_image.c
+ gst/videoscale/vs_image.h
+ gst/videoscale/vs_lanczos.c
+ gst/videoscale/vs_scanline.c
+ gst/videoscale/vs_scanline.h
+Copyright: 2005, David A. Schleef <ds@schleef.org>
+  2005-2012, David A. Schleef <ds@schleef.org>
+  2011, David A. Schleef <ds@schleef.org>
+License: BSD (2 clause)
+
+Files: tests/check/elements/adder.c
+ tests/check/elements/audiotestsrc.c
+ tests/check/elements/volume.c
+ tests/check/elements/vorbisdec.c
+ tests/check/elements/vorbistag.c
+ tests/check/generic/states.c
+Copyright: <2005> Thomas Vander Stichele <thomas at apestaart dot org>
+License: LGPL-2+
+
+Files: ext/ogg/gstoggstream.h
+ gst-libs/gst/app/gstappsink.h
+ gst-libs/gst/app/gstappsrc.h
+ gst-libs/gst/glib-compat-private.h
+ gst/app/gstapp.c
+ gst/videoconvert/videoconvert.h
+Copyright: 2005, David Schleef <ds@schleef.org>
+  2007, David Schleef <ds@schleef.org>
+  2009, David Schleef <ds@schleef.org>
+  2010, David Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: gst/audioresample/arch.h
+ gst/audioresample/fixed_arm4.h
+ gst/audioresample/fixed_arm5e.h
+ gst/audioresample/fixed_debug.h
+ gst/audioresample/fixed_generic.h
+Copyright: 2003, Jean-Marc Valin */
+  2004, Jean-Marc Valin */
+License: BSD (3 clause)
+
+Files: gst/tcp/gstmultihandlesink.h
+ gst/tcp/gstmultisocketsink.h
+ gst/tcp/gsttcpclientsink.c
+ gst/tcp/gsttcpclientsrc.c
+ gst/tcp/gsttcpserversrc.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2004> Thomas Vander Stichele <thomas at apestaart dot org>
+  <2011> Collabora Ltd
+License: LGPL-2+
+
+Files: gst-libs/gst/pbutils/gstdiscoverer.c
+ gst-libs/gst/pbutils/gstdiscoverer.h
+ gst-libs/gst/pbutils/pbutils-private.h
+ tests/examples/encoding/encoding.c
+ tools/gst-discoverer.c
+Copyright: 2009, Edward Hervey <edward.hervey@collabora.co.uk>
+  2010, Edward Hervey <edward.hervey@collabora.co.uk>
+License: LGPL-2+
+
+Files: ext/pango/gstclockoverlay.c
+ ext/pango/gstclockoverlay.h
+ ext/pango/gsttimeoverlay.c
+ ext/pango/gsttimeoverlay.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2005> Tim-Philipp Müller <tim@centricular.net>
+License: LGPL-2+
+
+Files: gst/playback/gstplaysinkaudioconvert.c
+ gst/playback/gstplaysinkaudioconvert.h
+ gst/playback/gstplaysinkvideoconvert.c
+ gst/playback/gstplaysinkvideoconvert.h
+Copyright: <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/audioconvert/plugin.c
+ gst/audioconvert/plugin.h
+ tests/check/pipelines/theoraenc.c
+ tests/check/pipelines/vorbisenc.c
+Copyright: 2004, Andy Wingo <wingo at pobox.com>
+  2006, Andy Wingo <wingo at pobox.com>
+License: LGPL-2+
+
+Files: ext/vorbis/gstvorbisdeclib.c
+ ext/vorbis/gstvorbisdeclib.h
+ gst-libs/gst/audio/gstaudioencoder.c
+ gst-libs/gst/audio/gstaudioencoder.h
+Copyright: 2010, Mark Nauwelaerts <mark.nauwelaerts@collabora.co.uk>
+  2010, Nokia Corporation.
+  2011, Mark Nauwelaerts <mark.nauwelaerts@collabora.co.uk>
+  2011, Nokia Corporation.
+License: LGPL-2+
+
+Files: gst/audioconvert/gstaudioquantize.c
+ gst/audioconvert/gstaudioquantize.h
+ tests/check/libs/fft.c
+ tests/check/pipelines/gio.c
+Copyright: 2007, Sebastian Dröge <slomo@circular-chaos.org>
+License: LGPL-2+
+
+Files: gst/audiotestsrc/gstaudiotestsrc.c
+ gst/audiotestsrc/gstaudiotestsrc.h
+ tests/check/libs/discoverer.c
+ tests/examples/fft/fftrange.c
+Copyright: 2005, Stefan Kost <ensonic@users.sf.net>
+  2011, Stefan Kost <ensonic@users.sf.net>
+License: LGPL-2+
+
+Files: common/coverage/coverage-report-entry.pl
+ common/coverage/coverage-report.pl
+ common/coverage/coverage-report.xsl
+Copyright: 2006, Daniel Berrange
+License: GPL-2+
+
+Files: gst/subparse/gstsubparse.h
+ gst/videotestsrc/gstvideotestsrc.c
+ gst/videotestsrc/gstvideotestsrc.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2002> David A. Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: ext/theora/gsttheoraparse.c
+ ext/theora/gsttheoraparse.h
+ ext/vorbis/gstvorbisparse.c
+Copyright: 2006, Andy Wingo <wingo@pobox.com>
+  <2004> Thomas Vander Stichele <thomas at apestaart dot org>
+License: LGPL-2+
+
+Files: tests/examples/dynamic/sprinkle.c
+ tests/examples/dynamic/sprinkle2.c
+ tests/examples/dynamic/sprinkle3.c
+Copyright: <2009> Wim Taymans <wim dot taymans at gmail dot com>
+License: LGPL-2+
+
+Files: ext/alsa/gstalsa.h
+ ext/alsa/gstalsadeviceprobe.h
+ ext/alsa/gstalsaplugin.c
+Copyright: 2001, CodeFactory AB
+  2001, Thomas Nyberg <thomas@codefactory.se>
+  2001-2002, Andy Wingo <apwingo@eos.ncsu.edu>
+  2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
+License: LGPL-2+
+
+Files: gst/videoscale/vs_fill_borders.c
+ gst/videoscale/vs_fill_borders.h
+Copyright: 2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: BSD (2 clause)
+
+Files: gst/tcp/gstmultihandlesink.c
+ gst/tcp/gstmultisocketsink.c
+Copyright: 2006, Wim Taymans <wim at fluendo dot com>
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2004> Thomas Vander Stichele <thomas at apestaart dot org>
+  <2011> Collabora Ltd
+License: LGPL-2+
+
+Files: sys/ximage/ximage.c
+ sys/xvimage/xvimage.c
+Copyright: <2003> Julien Moutte <julien@moutte.net>
+License: LGPL-2+
+
+Files: gst-libs/gst/video/gstvideosink.c
+ gst-libs/gst/video/gstvideosink.h
+Copyright: <2003> Julien Moutte <julien@moutte.net>
+  <2009> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: ext/vorbis/gstvorbisparse.h
+ tests/examples/audio/volume.c
+Copyright: <2004> Thomas Vander Stichele <thomas at apestaart dot org>
+License: LGPL-2+
+
+Files: gst-libs/gst/rtp/gstrtpbasedepayload.h
+ gst-libs/gst/rtp/gstrtpbuffer.h
+Copyright: <2005> Philippe Khalaf <burger@speedy.org>
+License: LGPL-2+
+
+Files: gst-libs/gst/rtp/gstrtpbasepayload.c
+ gst-libs/gst/rtp/gstrtpbasepayload.h
+Copyright: <2005> Wim Taymans <wim@fluendo.com>
+License: LGPL-2+
+
+Files: gst-libs/gst/rtp/gstrtpbaseaudiopayload.c
+ gst-libs/gst/rtp/gstrtpbaseaudiopayload.h
+Copyright: <2006> Philippe Khalaf <philippe.kalaf@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst-libs/gst/rtp/gstrtcpbuffer.c
+ gst-libs/gst/rtp/gstrtcpbuffer.h
+Copyright: <2007> Wim Taymans <wim@fluendo.com>
+License: LGPL-2+
+
+Files: tests/icles/test-colorkey.c
+ tests/icles/test-videooverlay.c
+Copyright: <2008> Stefan Kost <ensonic@users.sf.net>
+License: LGPL-2+
+
+Files: tests/check/elements/encodebin.c
+ tests/check/libs/profile.c
+Copyright: <2009> Edward Hervey <edward.hervey@collabora.co.uk>
+License: LGPL-2+
+
+Files: tests/examples/overlay/qtgv-videooverlay.cpp
+ tests/examples/overlay/qtgv-videooverlay.h
+Copyright: <2010> Alexander Bokovoy <ab@samba.org>
+License: LGPL-2+
+
+Files: tests/examples/encoding/gstcapslist.c
+ tests/examples/encoding/gstcapslist.h
+Copyright: <2010> Edward Hervey <edward.hervey@collabora.co.uk>
+License: LGPL-2+
+
+Files: tests/examples/overlay/gtk-videooverlay.c
+ tests/examples/overlay/qt-videooverlay.cpp
+Copyright: <2010> Stefan Kost <ensonic@users.sf.net>
+License: LGPL-2+
+
+Files: gst-libs/gst/pbutils/codec-utils.c
+ gst-libs/gst/pbutils/codec-utils.h
+Copyright: 2010, Arun Raghavan <arun.raghavan@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst-libs/gst/app/gstappsink.c
+ gst-libs/gst/app/gstappsrc.c
+Copyright: 2007, David Schleef <ds@schleef.org>
+  2008, Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: gst-libs/gst/audio/gstaudiodecoder.c
+ gst-libs/gst/audio/gstaudiodecoder.h
+Copyright: 2009, Igalia S.L
+  2011, Mark Nauwelaerts <mark.nauwelaerts@collabora.co.uk>
+  2011, Nokia Corporation.
+License: LGPL-2+
+
+Files: gst-libs/gst/audio/gstaudioiec61937.c
+ gst-libs/gst/audio/gstaudioiec61937.h
+Copyright: 2011, Intel Corporation
+License: LGPL-2+
+
+Files: gst-libs/gst/tag/gsttagdemux.c
+ gst-libs/gst/tag/gsttagdemux.h
+Copyright: 2005, Jan Schmidt <thaytan@mad.scientist.com>
+  2006, Tim-Philipp Müller <tim centricular net>
+  2006-2007, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: tests/check/libs/mixer.c
+ tests/check/libs/navigation.c
+Copyright: 2007, Jan Schmidt <thaytan@noraisin.net>
+  2009, Jan Schmidt <thaytan@noraisin.net>
+License: LGPL-2+
+
+Files: gst/subparse/mpl2parse.c
+ gst/subparse/mpl2parse.h
+Copyright: 2006, Kamil Pawlowski <kamilpe gmail com>
+License: LGPL-2+
+
+Files: ext/ogg/gstogmparse.c
+ gst-libs/gst/audio/mixerutils.c
+Copyright: 2003-2004, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2004, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2005-2006, Tim-Philipp Müller <tim centricular net>
+  2006, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst-libs/gst/pbutils/install-plugins.c
+ gst-libs/gst/pbutils/install-plugins.h
+Copyright: 2006, Ryan Lortie <desrt desrt ca>
+  2007, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: tests/check/elements/playbin-compressed.c
+ tests/check/libs/audio.c
+Copyright: 2006, Tim-Philipp Müller <tim centricular net>
+  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2011, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: ext/ogg/gstoggmux.c
+ ext/ogg/gstoggmux.h
+Copyright: 2004, Wim Taymans <wim@fluendo.com>
+  2006, Thomas Vander Stichele <thomas at apestaart dot org>
+License: LGPL-2+
+
+Files: gst/audioconvert/audioconvert.c
+ gst/audioconvert/gstaudioconvert.h
+Copyright: 2005, Wim Taymans <wim at fluendo dot com>
+License: LGPL-2+
+
+Files: gst/videoscale/vs_4tap.c
+Copyright: 2005, David A. Schleef <ds@schleef.org>
+  2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: BSD (2 clause)
+
+Files: gst/audioresample/fixed_bfin.h
+Copyright: 2005, Analog Devices
+License: BSD (3 clause)
+
+Files: ext/ogg/vorbis_parse.c
+Copyright: 2003, Commonwealth Scientific and Industrial Research
+License: BSD (3 clause)
+
+Files: gst/audioresample/resample_sse.h
+Copyright: 2007-2008, Jean-Marc Valin
+  2008, Thorvald Natvig
+License: BSD (3 clause)
+
+Files: gst/audioresample/speex_resampler.h
+Copyright: 2007, Jean-Marc Valin
+License: BSD (3 clause)
+
+Files: gst/audioresample/resample.c
+Copyright: 2007-2008, Jean-Marc Valin
+  2008, Thorvald Natvig
+License: BSD (3 clause)
+
+Files: ltmain.sh
+Copyright: 1996-2001, 2003-2006
+License: GPL-2+
+
+Files: gst/playback/gstplaysink.c
+Copyright: ((GstPlayChain *))
+  <2007> Wim Taymans <wim.taymans@gmail.com>
+  <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst-libs/gst/video/gstvideofilter.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: ext/pango/gstbasetextoverlay.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+  <2006-2008> Tim-Philipp Müller <tim centricular net>
+  <2006> Julien Moutte <julien@moutte.net>
+  <2006> Zeeshan Ali <zeeshan.ali@nokia.com>
+  <2009> Young-Ho Cha <ganadist@gmail.com>
+License: LGPL-2+
+
+Files: ext/pango/gsttextoverlay.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+  <2006-2008> Tim-Philipp Müller <tim centricular net>
+  <2006> Julien Moutte <julien@moutte.net>
+  <2006> Zeeshan Ali <zeeshan.ali@nokia.com>
+  <2009> Young-Ho Cha <ganadist@gmail.com>
+  <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst-libs/gst/audio/gstaudiofilter.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+  <2007> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: ext/pango/gsttextrender.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+  <2009> Young-Ho Cha <ganadist@gmail.com>
+License: LGPL-2+
+
+Files: gst/tcp/gstmultifdsink.c
+Copyright: 2006, Wim Taymans <wim at fluendo dot com>
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2004> Thomas Vander Stichele <thomas at apestaart dot org>
+License: LGPL-2+
+
+Files: gst/audioresample/gstaudioresample.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2007-2008> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: tests/icles/playback/test.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2007> Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: gst-libs/gst/video/video.c
+Copyright: 2007, David A. Schleef <ds@schleef.org>
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst/videoscale/gstvideoscale.c
+Copyright: 2005-2012, David Schleef <ds@schleef.org>
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst/videoconvert/gstvideoconvert.c
+Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2010, David Schleef <ds@schleef.org>
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst/videoconvert/gstvideoconvert.h
+Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst/subparse/gstsubparse.c
+Copyright: 2004, Ronald S. Bultje <rbultje@ronald.bitfreak.net>
+  2006, Tim-Philipp Müller <tim centricular net>
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst/volume/gstvolume.h
+Copyright: 2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst/gdp/dataprotocol.c
+Copyright: 2004,2006, Thomas Vander Stichele <thomas at apestaart dot org>
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst/videotestsrc/videotestsrc.h
+Copyright: <2003> David A. Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: tests/check/libs/video.c
+Copyright: <2003> David A. Schleef <ds@schleef.org>
+  <2006> Jan Schmidt <thaytan@mad.scientist.com>
+  <2008,2011> Tim-Philipp Müller <tim centricular net>
+  <2012> Collabora Ltd. <tim.muller@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst-libs/gst/rtp/gstrtpbasedepayload.c
+Copyright: <2005> Nokia Corporation <kai.vehmanen@nokia.com>
+  <2005> Philippe Khalaf <burger@speedy.org>
+License: LGPL-2+
+
+Files: gst-libs/gst/rtp/gstrtpbuffer.c
+Copyright: <2005> Philippe Khalaf <burger@speedy.org>
+  <2006> Wim Taymans <wim@fluendo.com>
+License: LGPL-2+
+
+Files: tests/check/elements/audioresample.c
+Copyright: <2005> Thomas Vander Stichele <thomas at apestaart dot org>
+  <2006> Tim-Philipp Müller <tim at centricular net>
+License: LGPL-2+
+
+Files: tests/check/elements/videotestsrc.c
+Copyright: <2005> Thomas Vander Stichele <thomas at apestaart dot org>
+  <2006> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: tests/check/elements/audioconvert.c
+Copyright: <2005> Thomas Vander Stichele <thomas at apestaart dot org>
+  <2007> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: tests/check/libs/audiocdsrc.c
+Copyright: <2005> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: tests/check/generic/clock-selection.c
+Copyright: <2005> Wim Taymans <wim at fluendo dot com>
+License: LGPL-2+
+
+Files: gst/playback/gstdecodebin2.c
+Copyright: <2006> Edward Hervey <edward@fluendo.com>
+  <2009> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  <2011> Hewlett-Packard Development Company, L.P
+License: LGPL-2+
+
+Files: ext/vorbis/gstvorbistag.h
+Copyright: <2006> James Livingston <doclivingston@gmail.com>
+License: LGPL-2+
+
+Files: tests/examples/dynamic/addstream.c
+Copyright: <2007> Wim Taymans <wim dot taymans at gmail dot com>
+License: LGPL-2+
+
+Files: gst/playback/gstplaybin2.c
+Copyright: <2007> Wim Taymans <wim.taymans@gmail.com>
+  <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: tests/examples/dynamic/codec-select.c
+Copyright: <2008> Wim Taymans <wim dot taymans at gmail dot com>
+License: LGPL-2+
+
+Files: tests/check/elements/videoscale.c
+Copyright: <2009-2010> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/playback/gstrawcaps.h
+Copyright: <2009> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/encoding/gstsmartencoder.h
+Copyright: <2010> Edward Hervey <bilboed@bilboed.com>
+License: LGPL-2+
+
+Files: gst/encoding/gstsmartencoder.c
+Copyright: <2010> Edward Hervey <bilboed@gmail.com>
+License: LGPL-2+
+
+Files: gst/playback/gstplaysinkconvertbin.h
+Copyright: <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  <2011> Vincent Penquerc'h <vincent.penquerch@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/playback/gstplaysinkconvertbin.c
+Copyright: <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  <2011> Vincent Penquerch <vincent.penquerch@collabora.co.uk>
+License: LGPL-2+
+
+Files: ext/alsa/gstalsadeviceprobe.c
+Copyright: 2001, CodeFactory AB
+  2001, Thomas Nyberg <thomas@codefactory.se>
+  2001-2002, Andy Wingo <apwingo@eos.ncsu.edu>
+  2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
+  2005, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: tests/check/libs/rtsp.c
+Copyright: 2010, Andy Wingo <wingo@oblong.com>
+License: LGPL-2+
+
+Files: tests/check/pipelines/simple-launch-lines.c
+Copyright: 2005, Andy Wingo <wingo@pobox.com>
+License: LGPL-2+
+
+Files: gst/volume/gstvolume.c
+Copyright: 1999-2001, Erik Walthinsen <omega@cse.ogi.edu>
+  2005, Andy Wingo <wingo@pobox.com>
+  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: tests/check/elements/appsink.c
+Copyright: 2009, Axis Communications AB, LUND, SWEDEN
+License: LGPL-2+
+
+Files: gst/typefind/gsttypefindfunctions.c
+Copyright: 2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
+  2005-2009, Tim-Philipp Müller <tim centricular net>
+  2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/audioconvert/gstaudioconvert.c
+Copyright: 2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
+  2005, Thomas Vander Stichele <thomas at apestaart dot org>
+  2011, Wim Taymans <wim.taymans at gmail dot com>
+License: LGPL-2+
+
+Files: gst-libs/gst/tag/tag.h
+Copyright: 2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
+  2006-2011, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: ext/libvisual/visual.c
+Copyright: 2004, Benjamin Otte <otte@gnome.org>
+License: LGPL-2+
+
+Files: gst-libs/gst/video/convertframe.c
+Copyright: 2005, Tim-Philipp Müller <tim centricular net>
+  2010, Brandon Lewis <brandon.lewis@collabora.co.uk>
+  2010, Edward Hervey <edward.hervey@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst-libs/gst/tag/gsttagmux.c
+Copyright: 2006, Christophe Fergeau <teuf@gnome.org>
+  2006, Sebastian Dröge <slomo@circular-chaos.org>
+  2006, Tim-Philipp Müller <tim centricular net>
+  2009, Pioneers of the Inevitable <songbird@songbirdnest.com>
+License: LGPL-2+
+
+Files: gst-libs/gst/tag/gsttagmux.h
+Copyright: 2006, Christophe Fergeau <teuf@gnome.org>
+  2006,2011, Tim-Philipp Müller <tim centricular net>
+  2009, Pioneers of the Inevitable <songbird@songbirdnest.com>
+License: LGPL-2+
+
+Files: gst-libs/gst/pbutils/gstdiscoverer-types.c
+Copyright: 2010, Collabora Multimedia
+License: LGPL-2+
+
+Files: gst/audioresample/gstaudioresample.c
+Copyright: 1999, Erik Walthinsen <omega@cse.ogi.edu>
+  2003-2004, David A. Schleef <ds@schleef.org>
+  2007-2008, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst-libs/gst/interfaces/navigation.h
+Copyright: 2003, David A. Schleef <ds@schleef.org>
+  2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+License: LGPL-2+
+
+Files: gst/videoconvert/videoconvert.c
+Copyright: 2010, David Schleef <ds@schleef.org>
+  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: ext/ogg/gstoggstream.c
+Copyright: 2006, Tim-Philipp Müller <tim centricular net>
+  2009, David Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: gst/gdp/dataprotocol.h
+Copyright: 1999, Erik Walthinsen <omega@cse.ogi.edu>
+  2004,2006, Thomas Vander Stichele <thomas at apestaart dot org>
+License: LGPL-2+
+
+Files: gst-libs/gst/gettext.h
+Copyright: 1995-1998, 2000-2002, Free Software Foundation, Inc
+License: LGPL-2+
+
+Files: tests/check/elements/decodebin.c
+Copyright: 2006, Tim-Philipp Müller <tim centricular net>
+  2011, Hewlett-Packard Development Company, L.P
+License: LGPL-2+
+
+Files: tests/check/pipelines/oggmux.c
+Copyright: 2006, James Livingston <doclivingston at gmail.com>
+License: LGPL-2+
+
+Files: ext/vorbis/gstvorbistag.c
+Copyright: 2006, James Livingston <doclivingston@gmail.com>
+License: LGPL-2+
+
+Files: gst-libs/gst/tag/id3v2.h
+Copyright: 2005, Jan Schmidt <thaytan@mad.scientist.com>
+License: LGPL-2+
+
+Files: gst-libs/gst/tag/id3v2.c
+Copyright: 2002-2003, Scott Wheeler <wheeler@kde.org> (portions from taglib)
+  2005, Jan Schmidt <thaytan@mad.scientist.com>
+License: LGPL-2+
+
+Files: gst-libs/gst/tag/id3v2frames.c
+Copyright: 2002-2003, Scott Wheeler <wheeler@kde.org> (portions from taglib)
+  2005, Jan Schmidt <thaytan@mad.scientist.com>
+  2006-2008, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst-libs/gst/interfaces/navigation.c
+Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2007-2009, Jan Schmidt <thaytan@noraisin.net>
+License: LGPL-2+
+
+Files: tests/icles/input-selector-test.c
+Copyright: 2003, Julien Moutte <julien@moutte.net>
+License: LGPL-2+
+
+Files: gst-libs/gst/video/videooverlay.h
+Copyright: 2003, Julien Moutte <julien@moutte.net>
+  2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2011, Tim-Philipp Müller <tim@centricular.net>
+License: LGPL-2+
+
+Files: tests/check/pipelines/basetime.c
+Copyright: 2009, Maemo Multimedia <multimedia at maemo dot org>
+License: LGPL-2+
+
+Files: ext/ogg/gstoggparse.c
+Copyright: 2005, Michael Smith <msmith@fluendo.com>
+License: LGPL-2+
+
+Files: gst-libs/gst/video/videoorientation.h
+Copyright: 2006, Nokia <stefan.kost@nokia.com
+License: LGPL-2+
+
+Files: gst-libs/gst/video/videoorientation.c
+Copyright: 2006, Nokia <stefan.kost@nokia.com>
+License: LGPL-2+
+
+Files: gst/audioconvert/gstchannelmix.c
+Copyright: 2004, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2008, Sebastian Dröge <slomo@circular-chaos.org>
+License: LGPL-2+
+
+Files: gst-libs/gst/video/videooverlay.c
+Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2011, Tim-Philipp Müller <tim@centricular.net>
+License: LGPL-2+
+
+Files: gst-libs/gst/tag/tags.c
+Copyright: 2005, Ross Burton <ross@burtonini.com>
+  2006-2008, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst-libs/gst/tag/gstxmptag.c
+Copyright: 2010, Stefan Kost <stefan.kost@nokia.com>
+  2010, Thiago Santos <thiago.sousa.santos@collabora.co.uk>
+License: LGPL-2+
+
+Files: tests/examples/audio/audiomix.c
+Copyright: 2011, Stefan Sauer <ensonic@users.sf.net>
+License: LGPL-2+
+
+Files: gst/subparse/qttextparse.h
+Copyright: 2009, Thiago Santos <thiago.sousa.santos collabora co uk>
+License: LGPL-2+
+
+Files: gst/subparse/qttextparse.c
+Copyright: 2009, Thiago Santos <thiago.sousa.santos collabora co uk>>
+License: LGPL-2+
+
+Files: gst-libs/gst/gst-i18n-plugin.h
+Copyright: 2004, Thomas Vander Stichele <thomas@apestaart.org>
+License: LGPL-2+
+
+Files: tests/check/elements/libvisual.c
+Copyright: 2007, Tim-Philipp Müller <tim at centricular net>
+License: LGPL-2+
+
+Files: ext/alsa/gstalsasink.c
+Copyright: 2005, Wim Taymans <wim@fluendo.com>
+  2006, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: tests/examples/playrec/playrec.c
+Copyright: 2010, Wim Taymans <wim.taymans@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/subparse/samiparse.c
+Copyright: 2006, Young-Ho Cha <ganadist at chollian net>
+License: LGPL-2+
+
+Files: gst/subparse/samiparse.h
+Copyright: 2006, Young-Ho Cha <ganadist chollian net>
+License: LGPL-2+
+
+Files: gst-libs/gst/rtsp/gstrtspconnection.h
+Copyright: <2005,2009> Wim Taymans <wim.taymans@gmail.com>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: gst-libs/gst/rtsp/gstrtsptransport.c
+Copyright: <2005-2007> Wim Taymans <wim@fluendo.com>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: gst-libs/gst/rtsp/gstrtspconnection.c
+Copyright: <2005-2009> Wim Taymans <wim.taymans@gmail.com>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Copyright:
+
+    This package is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This package is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this package; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+On Debian GNU/Linux systems, the complete text of the GNU Lesser General
+Public License can be found in `/usr/share/common-licenses/LGPL'.
+```
+
+### 222. Used by gstreamer1.0-pipewire (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: pipewire
+Source: https://gitlab.freedesktop.org/pipewire/pipewire
+License: Expat and LGPL-2.1+
+
+Files: *
+Copyright: 2009 Lennart Poettering
+           2010 David Henningsson
+           2013 Inigo Quilez
+           2015-2022 Wim Taymans
+           2016-2021 Axis Communications
+           2018-2022 Collabora Ltd.
+           2020 Konsulko Group
+           2020 Sergey Bugaev
+           2020 Georges Basile Stavracas Neto
+           2021 jothepro
+           2019-2021 Red Hat, Inc.
+           2021 Arun Raghavan
+           2013 The Chromium OS Authors.
+           2010 Google Inc.
+           2017 HiFi-LoFi
+           2000-2002 Richard W.E. Furse, Paul Barton-Davis
+           2021 Sanchayan Maity
+           2021 Pauli Virtanen
+           2021 Florian Hülsmann
+License: Expat
+
+Files: include/*
+Copyright: 2000-2017 Julian Seward.
+License: BZIP2
+
+Files: pipewire-jack/jack/*
+Copyright: 2000-2013 Paul Davis
+           2003-2004 Jack OQuin
+           2002 Kai Vehmanen
+           2011-2014 David Robillard
+           2004 Ian Esten
+           2004-2012 Grame
+           2003 Rohan Drape
+           2010 Torben Hohn
+           2004 Rui Nuno Capela, Lee Revell
+License: LGPL-2.1+
+
+Files: pipewire-jack/jack/control.h
+Copyright: 2008 Nedko Arnaudov
+           2008 GRAME
+License: GPL-2
+
+Files: spa/plugins/alsa/90-pipewire-alsa.rules
+       spa/plugins/alsa/acp/*
+       spa/plugins/alsa/mixer/paths/*
+       spa/plugins/alsa/mixer/profile-sets/*
+       spa/plugins/alsa/mixer/samples/*
+Copyright: 1999 Tom Tromey
+           2000 Red Hat, Inc.
+           2004-2009 Lennart Poettering
+           2006 Pierre Ossman
+           2006 Pierre Ossman for Cendio AB
+           2011 Intel Corporation
+           2011 Collabora Multimedia
+           2011 Arun Raghavan
+           2011 Wolfson Microelectronics PLC
+           2012 Feng Wei, Freescale Ltd.
+           2015-2022 Wim Taymans
+License: LGPL-2+ and LGPL-2.1+ and Expat
+
+Files: spa/plugins/bluez5/*
+Copyright: 2004-2010 Marcel Holtmann
+           2006-2010 Nokia Corporation
+           2016-2017 Arkadiusz Bokowy
+           2018-2022 Wim Taymans
+           2018-2022 Collabora Ltd.
+           2018 Pali Rohár
+           2021-2022 Pauli Virtanen
+           2013 Julien Pommier
+License: Expat and LGPL-2.1+
+
+Files: src/modules/module-client-node/v0/*
+       src/modules/module-protocol-native/v0/*
+       src/modules/module-portal.c
+Copyright: 2015-2022 Wim Taymans
+           2019 Red Hat Inc.
+License: LGPL-2+
+
+Files: src/modules/module-filter-chain/ladspa.h
+Copyright: 2000-2002 Richard W.E. Furse, Paul Barton-Davis
+License: LGPL-2.1+
+
+Files: src/modules/module-filter-chain/pffft.*
+Copyright: 2013 Julien Pommier
+           2004 The University Corporation for Atmospheric Research
+License: FFTPACK
+
+License: Expat
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+
+License: LGPL-2+
+ This package is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License can be found in "/usr/share/common-licenses/LGPL-2".
+
+License: LGPL-2.1+
+ This package is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License can be found in "/usr/share/common-licenses/LGPL-2.1".
+
+License: FFTPACK
+ Redistribution and use of the Software in source and binary forms,
+ with or without modification, is permitted provided that the
+ following conditions are met:
+ .
+ - Neither the names of NCAR's Computational and Information Systems
+   Laboratory, the University Corporation for Atmospheric Research,
+   nor the names of its sponsors or contributors may be used to
+   endorse or promote products derived from this Software without
+   specific prior written permission.
+ .
+ - Redistributions of source code must retain the above copyright
+   notices, this list of conditions, and the disclaimer below.
+ .
+ - Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions, and the disclaimer below in the
+   documentation and/or other materials provided with the
+   distribution.
+ .
+ THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ NONINFRINGEMENT. IN NO EVENT SHALL THE CONTRIBUTORS OR COPYRIGHT
+ HOLDERS BE LIABLE FOR ANY CLAIM, INDIRECT, INCIDENTAL, SPECIAL,
+ EXEMPLARY, OR CONSEQUENTIAL DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+ ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS WITH THE
+ SOFTWARE.
+
+License: BZIP2
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ .
+ 2. The origin of this software must not be misrepresented; you must
+    not claim that you wrote the original software.  If you use this
+    software in a product, an acknowledgment in the product
+    documentation would be appreciated but is not required.
+ .
+ 3. Altered source versions must be plainly marked as such, and must
+    not be misrepresented as being the original software.
+ .
+ 4. The name of the author may not be used to endorse or promote
+    products derived from this software without specific prior written
+    permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS
+ OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+License: GPL-2
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; version 2 of the License.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ On Debian systems you can find the full text of the GNU General Public
+ License version 2 at /usr/share/common-licenses/GPL-2.
+```
+
+### 223. Used by gstreamer1.0-plugins-good (Ubuntu package), libgstreamer-plugins-good1.0-0 (Ubuntu package)
+
+```text
+This package was debianized by David I. Lehn <dlehn@debian.org> on
+Mon, 15 Jan 2001 18:21:37 -0500.
+
+It was downloaded from http://gstreamer.net/
+
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Gstreamer Good Plugins 1.0
+Upstream-Contact: gstreamer-devel@lists.freedesktop.org
+Source: http://gstreamer.freedesktop.org
+
+Files: ext/aalib/gstaasink.c
+ ext/aalib/gstaasink.h
+ ext/cairo/gsttimeoverlay.h
+ ext/dv/gstdv.c
+ ext/dv/gstdvdec.c
+ ext/dv/gstdvdec.h
+ ext/dv/gstdvdemux.c
+ ext/dv/gstdvdemux.h
+ ext/flac/gstflac.c
+ ext/flac/gstflacenc.c
+ ext/flac/gstflacenc.h
+ ext/jpeg/gstjpeg.c
+ ext/jpeg/gstjpeg.h
+ ext/jpeg/gstjpegdec.h
+ ext/jpeg/gstjpegenc.c
+ ext/jpeg/gstjpegenc.h
+ ext/libcaca/gstcacasink.c
+ ext/libcaca/gstcacasink.h
+ ext/libpng/gstpngdec.h
+ ext/libpng/gstpngenc.h
+ ext/raw1394/gst1394.c
+ ext/raw1394/gstdv1394src.c
+ ext/raw1394/gstdv1394src.h
+ ext/shout2/gstshout2.h
+ ext/speex/gstspeex.c
+ ext/speex/gstspeexdec.h
+ ext/speex/gstspeexenc.c
+ ext/speex/gstspeexenc.h
+ gst/alpha/gstalphacolor.c
+ gst/avi/avi-ids.h
+ gst/cutter/gstcutter.h
+ gst/debugutils/gstnavigationtest.h
+ gst/debugutils/gstnavseek.h
+ gst/flv/gstmemindex.c
+ gst/flx/flx_color.h
+ gst/flx/flx_fmt.h
+ gst/flx/gstflxdec.h
+ gst/isomp4/qtdemux.h
+ gst/isomp4/qtdemux_fourcc.h
+ gst/isomp4/qtdemux_types.c
+ gst/isomp4/qtpalette.h
+ gst/law/mulaw-decode.c
+ gst/law/mulaw-decode.h
+ gst/law/mulaw-encode.c
+ gst/law/mulaw-encode.h
+ gst/multipart/multipart.c
+ gst/rtp/gstrtp.c
+ gst/rtp/gstrtpgsmdepay.h
+ gst/rtp/gstrtpgsmpay.h
+ gst/smpte/barboxwipes.c
+ gst/smpte/gstmask.c
+ gst/smpte/gstmask.h
+ gst/smpte/gstsmpte.c
+ gst/smpte/gstsmpte.h
+ gst/smpte/gstsmptealpha.h
+ gst/smpte/paint.c
+ gst/smpte/paint.h
+ gst/spectrum/gstspectrum.c
+ gst/udp/gstudp.c
+ gst/udp/gstudp.h
+ gst/udp/gstudpsink.h
+ gst/udp/gstudpsrc.h
+ gst/videobox/gstvideobox.h
+ gst/videofilter/gstvideobalance.h
+ gst/videofilter/gstvideoflip.h
+ gst/y4m/gsty4mencode.h
+ sys/oss/gstossaudio.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: ext/gdk_pixbuf/gstgdkpixbufoverlay.c
+ ext/gdk_pixbuf/gstgdkpixbufoverlay.h
+ ext/gdk_pixbuf/gstgdkpixbufsink.c
+ ext/gdk_pixbuf/gstgdkpixbufsink.h
+ gst/audioparsers/gstdcaparse.c
+ gst/audioparsers/gstdcaparse.h
+ gst/audioparsers/plugin.c
+ gst/isomp4/qtdemux_lang.c
+ gst/isomp4/qtdemux_lang.h
+ gst/videocrop/gstvideocrop.c
+ gst/videocrop/gstvideocrop.h
+ sys/oss4/oss4-audio.c
+ sys/oss4/oss4-audio.h
+ sys/oss4/oss4-mixer-enum.c
+ sys/oss4/oss4-mixer-enum.h
+ sys/oss4/oss4-mixer-slider.c
+ sys/oss4/oss4-mixer-slider.h
+ sys/oss4/oss4-mixer-switch.c
+ sys/oss4/oss4-mixer-switch.h
+ sys/oss4/oss4-mixer.c
+ sys/oss4/oss4-mixer.h
+ sys/oss4/oss4-property-probe.c
+ sys/oss4/oss4-property-probe.h
+ sys/oss4/oss4-sink.c
+ sys/oss4/oss4-sink.h
+ sys/oss4/oss4-source.c
+ sys/oss4/oss4-source.h
+ tests/check/elements/alphacolor.c
+ tests/check/elements/flvdemux.c
+ tests/check/elements/flvmux.c
+ tests/check/elements/gdkpixbufsink.c
+ tests/check/elements/id3demux.c
+ tests/check/elements/id3v2mux.c
+ tests/check/elements/matroskaparse.c
+ tests/check/elements/sunaudio.c
+ tests/check/elements/udpsrc.c
+ tests/check/elements/videocrop.c
+ tests/icles/equalizer-test.c
+ tests/icles/gdkpixbufsink-test.c
+ tests/icles/test-oss4.c
+ tests/icles/videocrop-test.c
+Copyright: 2006, Tim-Philipp Müller <tim centricular net>
+  2006-2008, Tim-Philipp Müller <tim centricular net>
+  2007, Tim-Philipp Müller <tim centricular net>
+  2007-2008, Tim-Philipp Müller <tim centricular net>
+  2008, Tim-Philipp Müller <tim centricular net>
+  2009, Tim-Philipp Müller <tim centricular net>
+  2010, Tim-Philipp Müller <tim centricular net>
+  2011, Tim-Philipp Müller <tim centricular net>
+  2012, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/rtp/gstasteriskh263.c
+ gst/rtp/gstasteriskh263.h
+ gst/rtp/gstrtpL16pay.h
+ gst/rtp/gstrtpac3depay.h
+ gst/rtp/gstrtpamrdepay.c
+ gst/rtp/gstrtpamrdepay.h
+ gst/rtp/gstrtpamrpay.c
+ gst/rtp/gstrtpamrpay.h
+ gst/rtp/gstrtph263depay.h
+ gst/rtp/gstrtph263pay.h
+ gst/rtp/gstrtph263pdepay.c
+ gst/rtp/gstrtph263pdepay.h
+ gst/rtp/gstrtph263ppay.c
+ gst/rtp/gstrtph263ppay.h
+ gst/rtp/gstrtpjpegdepay.h
+ gst/rtp/gstrtpmp2tdepay.c
+ gst/rtp/gstrtpmp4apay.h
+ gst/rtp/gstrtpmp4gdepay.c
+ gst/rtp/gstrtpmp4gdepay.h
+ gst/rtp/gstrtpmp4gpay.h
+ gst/rtp/gstrtpmp4vdepay.c
+ gst/rtp/gstrtpmp4vdepay.h
+ gst/rtp/gstrtpmp4vpay.c
+ gst/rtp/gstrtpmp4vpay.h
+ gst/rtp/gstrtpmpadepay.c
+ gst/rtp/gstrtpmpadepay.h
+ gst/rtp/gstrtpmpapay.c
+ gst/rtp/gstrtpmpapay.h
+ gst/rtp/gstrtpmpvdepay.h
+ gst/rtp/gstrtpsv3vdepay.c
+ gst/rtp/gstrtpsv3vdepay.h
+ gst/rtp/gstrtpvorbispay.h
+Copyright: <2005> Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: gst/goom/convolve_fx.c
+ gst/goom/drawmethods.c
+ gst/goom/drawmethods.h
+ gst/goom/filters.c
+ gst/goom/flying_stars_fx.c
+ gst/goom/goom.h
+ gst/goom/goom_config.h
+ gst/goom/goom_config_param.h
+ gst/goom/goom_filters.h
+ gst/goom/goom_fx.h
+ gst/goom/goom_graphic.h
+ gst/goom/goom_plugin_info.h
+ gst/goom/goom_tools.c
+ gst/goom/goom_tools.h
+ gst/goom/goom_typedefs.h
+ gst/goom/graphic.c
+ gst/goom/lines.c
+ gst/goom/lines.h
+ gst/goom/motif_goom1.h
+ gst/goom/motif_goom2.h
+ gst/goom/plugin_info.c
+ gst/goom/sound_tester.c
+ gst/goom/sound_tester.h
+ gst/goom/surf3d.c
+ gst/goom/surf3d.h
+ gst/goom/tentacle3d.c
+ gst/goom/tentacle3d.h
+ gst/goom/v3d.c
+ gst/goom/v3d.h
+Copyright: <2003> iOS-Software
+License: LGPL-2+
+
+Files: gst/audiofx/audiochebband.c
+ gst/audiofx/audiochebband.h
+ gst/audiofx/audiocheblimit.c
+ gst/audiofx/audiocheblimit.h
+ gst/audiofx/audioecho.c
+ gst/audiofx/audioecho.h
+ gst/audiofx/audiofirfilter.c
+ gst/audiofx/audiofirfilter.h
+ gst/audiofx/audiofxbaseiirfilter.c
+ gst/audiofx/audiofxbaseiirfilter.h
+ gst/audiofx/audioiirfilter.c
+ gst/audiofx/audioiirfilter.h
+ gst/deinterlace/tvtime/scalerbob.c
+ gst/flv/gstflvmux.c
+ gst/flv/gstflvmux.h
+ gst/imagefreeze/gstimagefreeze.h
+ gst/matroska/webm-mux.c
+ gst/matroska/webm-mux.h
+ gst/shapewipe/gstshapewipe.c
+ gst/shapewipe/gstshapewipe.h
+ gst/videofilter/plugin.c
+ gst/videomixer/blend.h
+ tests/check/elements/audioecho.c
+ tests/check/elements/imagefreeze.c
+ tests/check/elements/shapewipe.c
+ tests/examples/shapewipe/shapewipe-example.c
+Copyright: 2007-2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2008, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2008,2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2008-2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2009-2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/avi/gstavimux.h
+ gst/matroska/ebml-ids.h
+ gst/matroska/ebml-read.c
+ gst/matroska/ebml-read.h
+ gst/matroska/matroska-ids.h
+ gst/matroska/matroska.c
+ sys/oss/gstossmixer.c
+ sys/oss/gstossmixer.h
+ sys/oss/gstossmixertrack.c
+ sys/oss/gstossmixertrack.h
+ sys/v4l2/gstv4l2.c
+ sys/v4l2/gstv4l2bufferpool.c
+ sys/v4l2/gstv4l2bufferpool.h
+ sys/v4l2/gstv4l2colorbalance.c
+ sys/v4l2/gstv4l2colorbalance.h
+ sys/v4l2/gstv4l2object.c
+ sys/v4l2/gstv4l2object.h
+ sys/v4l2/gstv4l2src.c
+ sys/v4l2/gstv4l2src.h
+ sys/v4l2/gstv4l2tuner.c
+ sys/v4l2/gstv4l2tuner.h
+ sys/v4l2/gstv4l2videooverlay.c
+ sys/v4l2/gstv4l2videooverlay.h
+ sys/v4l2/v4l2_calls.c
+ sys/v4l2/v4l2_calls.h
+Copyright: 2001-2002, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2002, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpL16depay.c
+ gst/rtp/gstrtpL16depay.h
+ gst/rtp/gstrtpL16pay.c
+ gst/rtp/gstrtpac3depay.c
+ gst/rtp/gstrtpg722depay.c
+ gst/rtp/gstrtpmp2tpay.c
+ gst/rtp/gstrtpmp2tpay.h
+ gst/rtpmanager/gstrtpbin.c
+ gst/rtpmanager/gstrtpbin.h
+ gst/rtpmanager/gstrtpmanager.c
+ gst/rtpmanager/gstrtpptdemux.h
+ gst/rtpmanager/gstrtpsession.c
+ gst/rtpmanager/gstrtpsession.h
+ gst/rtpmanager/gstrtpssrcdemux.c
+ gst/rtpmanager/gstrtpssrcdemux.h
+ gst/rtpmanager/rtpjitterbuffer.c
+ gst/rtpmanager/rtpjitterbuffer.h
+ gst/rtpmanager/rtpsession.c
+ gst/rtpmanager/rtpsession.h
+ gst/rtpmanager/rtpsource.c
+ gst/rtpmanager/rtpsource.h
+ gst/rtpmanager/rtpstats.c
+ gst/rtpmanager/rtpstats.h
+Copyright: <2007> Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: gst/audiofx/audiofxbasefirfilter.c
+ gst/audiofx/audiofxbasefirfilter.h
+ gst/audiofx/audiowsincband.c
+ gst/audiofx/audiowsincband.h
+ gst/audiofx/audiowsinclimit.c
+ gst/audiofx/audiowsinclimit.h
+ gst/flv/gstindex.h
+ gst/interleave/deinterleave.c
+ gst/interleave/deinterleave.h
+ gst/interleave/interleave.c
+ gst/interleave/interleave.h
+ gst/multifile/gstmultifile.c
+ gst/multifile/gstmultifilesink.c
+ gst/multifile/gstmultifilesink.h
+ sys/oss/common.h
+ sys/oss/gstossdmabuffer.h
+ sys/oss/gstosshelper.c
+ sys/oss/gstosshelper.h
+ sys/oss/gstosssink.c
+ sys/oss/gstosssink.h
+ sys/oss/gstosssrc.c
+ sys/oss/gstosssrc.h
+Copyright: 1999-2000, Erik Walthinsen <omega@cse.ogi.edu>
+  1999-2001, Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtph264depay.c
+ gst/rtp/gstrtph264depay.h
+ gst/rtp/gstrtph264pay.h
+ gst/rtp/gstrtpmp1sdepay.h
+ gst/rtp/gstrtpmp2tdepay.h
+ gst/rtp/gstrtpmp4gpay.c
+ gst/rtp/gstrtpmpvdepay.c
+ gst/rtp/gstrtptheoradepay.c
+ gst/rtp/gstrtptheoradepay.h
+ gst/rtp/gstrtptheorapay.c
+ gst/rtp/gstrtptheorapay.h
+ gst/rtp/gstrtpvorbisdepay.c
+ gst/rtp/gstrtpvorbisdepay.h
+ gst/rtp/gstrtpvorbispay.c
+Copyright: <2006> Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: ext/annodex/gstannodex.c
+ ext/annodex/gstannodex.h
+ ext/annodex/gstcmmldec.c
+ ext/annodex/gstcmmldec.h
+ ext/annodex/gstcmmlenc.c
+ ext/annodex/gstcmmlenc.h
+ ext/annodex/gstcmmlparser.c
+ ext/annodex/gstcmmlparser.h
+ ext/annodex/gstcmmltag.c
+ ext/annodex/gstcmmltag.h
+ ext/annodex/gstcmmlutils.c
+ ext/annodex/gstcmmlutils.h
+ tests/check/elements/cmmldec.c
+ tests/check/elements/cmmlenc.c
+Copyright: 2005, Alessandro Decina
+License: LGPL-2+
+
+Files: ext/pulse/plugin.c
+ ext/pulse/pulsemixer.c
+ ext/pulse/pulsemixer.h
+ ext/pulse/pulsemixerctrl.c
+ ext/pulse/pulsemixerctrl.h
+ ext/pulse/pulsemixertrack.c
+ ext/pulse/pulsemixertrack.h
+ ext/pulse/pulseprobe.c
+ ext/pulse/pulseprobe.h
+ ext/pulse/pulsesink.h
+ ext/pulse/pulsesrc.c
+ ext/pulse/pulsesrc.h
+ ext/pulse/pulseutil.c
+ ext/pulse/pulseutil.h
+Copyright: 2004-2008, Lennart Poettering
+License: LGPL-2.1+
+
+Files: gst/rtp/gstrtpac3pay.c
+ gst/rtp/gstrtpac3pay.h
+ gst/rtp/gstrtpg722depay.h
+ gst/rtp/gstrtpg722pay.c
+ gst/rtp/gstrtpg722pay.h
+ gst/rtp/gstrtpg723depay.c
+ gst/rtp/gstrtpg723depay.h
+ gst/rtp/gstrtpgstdepay.c
+ gst/rtp/gstrtpgstdepay.h
+ gst/rtp/gstrtpgstpay.c
+ gst/rtp/gstrtpgstpay.h
+ gst/rtp/gstrtpqcelpdepay.c
+ gst/rtp/gstrtpqcelpdepay.h
+Copyright: <2010> Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: ext/wavpack/gstwavpackenc.c
+ ext/wavpack/gstwavpackenc.h
+ ext/wavpack/gstwavpackstreamreader.c
+ ext/wavpack/gstwavpackstreamreader.h
+ gst/audiofx/audiodynamic.c
+ gst/audiofx/audiodynamic.h
+ gst/audiofx/math_compat.h
+ tests/check/elements/deinterleave.c
+ tests/check/elements/wavpackdec.c
+ tests/check/elements/wavpackenc.c
+ tests/check/elements/wavpackparse.c
+ tests/check/pipelines/wavpack.c
+Copyright: 2006, Sebastian Dröge <slomo@circular-chaos.org>
+  2007, Sebastian Dröge <slomo@circular-chaos.org>
+  2008, Sebastian Dröge <slomo@circular-chaos.org>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpbvdepay.c
+ gst/rtp/gstrtpbvdepay.h
+ gst/rtp/gstrtpbvpay.c
+ gst/rtp/gstrtpbvpay.h
+ gst/rtp/gstrtpceltdepay.c
+ gst/rtp/gstrtpceltdepay.h
+ gst/rtp/gstrtpceltpay.c
+ gst/rtp/gstrtpceltpay.h
+ gst/rtp/gstrtpj2kdepay.c
+ gst/rtp/gstrtpj2kdepay.h
+ tests/check/elements/rtpbin.c
+Copyright: <2009> Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: sys/sunaudio/gstsunaudio.c
+ sys/sunaudio/gstsunaudiomixer.c
+ sys/sunaudio/gstsunaudiomixer.h
+ sys/sunaudio/gstsunaudiomixerctrl.c
+ sys/sunaudio/gstsunaudiomixerctrl.h
+ sys/sunaudio/gstsunaudiomixeroptions.c
+ sys/sunaudio/gstsunaudiomixeroptions.h
+ sys/sunaudio/gstsunaudiomixertrack.c
+ sys/sunaudio/gstsunaudiomixertrack.h
+ sys/sunaudio/gstsunaudiosrc.c
+ sys/sunaudio/gstsunaudiosrc.h
+Copyright: 2005,2008-2009, Sun Microsystems, Inc.
+  2005-2006, Sun Microsystems, Inc.
+  2005-2006,2008-2009, Sun Microsystems, Inc.
+  2005-2006,2009, Sun Microsystems, Inc.
+  2008, Sun Microsystems, Inc.
+  2009, Sun Microsystems, Inc.
+License: LGPL-2+
+
+Files: gst/replaygain/gstrganalysis.c
+ gst/replaygain/gstrganalysis.h
+ gst/replaygain/gstrglimiter.c
+ gst/replaygain/gstrglimiter.h
+ gst/replaygain/gstrgvolume.c
+ gst/replaygain/gstrgvolume.h
+ gst/replaygain/replaygain.c
+ gst/replaygain/replaygain.h
+ tests/check/elements/rganalysis.c
+ tests/check/elements/rglimiter.c
+ tests/check/elements/rgvolume.c
+Copyright: 2006, Rene Stadler <mail@renestadler.de>
+  2007, Rene Stadler <mail@renestadler.de>
+License: LGPL-2.1+
+
+Files: gst/rtp/gstrtpchannels.c
+ gst/rtp/gstrtpchannels.h
+ gst/rtp/gstrtpjpegdepay.c
+ gst/rtp/gstrtpmp1sdepay.c
+ gst/rtp/gstrtpmp4apay.c
+ gst/rtp/gstrtpvrawdepay.c
+ gst/rtp/gstrtpvrawdepay.h
+ gst/rtp/gstrtpvrawpay.c
+ gst/rtp/gstrtpvrawpay.h
+ gst/smpte/gstsmptealpha.c
+Copyright: <2008> Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: gst/audioparsers/gstaacparse.c
+ gst/audioparsers/gstaacparse.h
+ tests/check/elements/aacparse.c
+ tests/check/elements/ac3parse.c
+ tests/check/elements/amrparse.c
+ tests/check/elements/flacparse.c
+ tests/check/elements/mpegaudioparse.c
+ tests/check/elements/parser.c
+ tests/check/elements/parser.h
+Copyright: 2008, Nokia Corporation.
+  2010, Nokia Corporation.
+License: LGPL-2+
+
+Files: ext/jack/gstjack.c
+ ext/jack/gstjack.h
+ ext/jack/gstjackaudioclient.c
+ ext/jack/gstjackaudioclient.h
+ ext/jack/gstjackaudiosink.c
+ ext/jack/gstjackaudiosink.h
+ gst/alpha/gstalphacolor.h
+ gst/multipart/multipartmux.c
+ gst/multipart/multipartmux.h
+ gst/rtp/gstrtpg729depay.c
+ gst/rtp/gstrtpg729depay.h
+ gst/rtp/gstrtph264pay.c
+ gst/rtp/gstrtpsirendepay.c
+ gst/rtp/gstrtpsirendepay.h
+ gst/rtp/gstrtpsirenpay.c
+ gst/rtp/gstrtpsirenpay.h
+ sys/ximage/gstximagesrc.h
+Copyright: 2004, Wim Taymans <wim@fluendo.com>
+  2005, Wim Taymans <wim@fluendo.com>
+  2006, Wim Taymans <wim@fluendo.com>
+License: LGPL-2+
+
+Files: gst/effectv/gsteffectv.c
+ gst/effectv/gsteffectv.h
+ gst/effectv/gstrev.c
+ gst/effectv/gstrev.h
+ gst/effectv/gstshagadelic.c
+ gst/effectv/gstshagadelic.h
+ gst/effectv/gstvertigo.c
+ gst/effectv/gstvertigo.h
+Copyright: 2001, FUKUCHI Kentarou
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtppcmadepay.h
+ gst/rtp/gstrtppcmapay.h
+ gst/rtp/gstrtppcmudepay.h
+ gst/rtp/gstrtppcmupay.h
+ gst/rtp/gstrtpspeexdepay.c
+ gst/rtp/gstrtpspeexdepay.h
+ gst/rtp/gstrtpspeexpay.c
+ gst/rtp/gstrtpspeexpay.h
+Copyright: <2005> Edgard Lima <edgard.lima@indt.org.br>
+License: LGPL-2+
+
+Files: gst/audiofx/audioamplify.c
+ gst/audiofx/audioamplify.h
+ gst/audiofx/audioinvert.c
+ gst/audiofx/audioinvert.h
+ gst/audiofx/audiopanorama.c
+ tests/check/elements/audioamplify.c
+ tests/check/elements/audiodynamic.c
+ tests/check/elements/audioinvert.c
+Copyright: 2006, Sebastian Dröge <slomo@circular-chaos.org>
+  2006, Stefan Kost <ensonic@users.sf.net>
+  2007, Sebastian Dröge <slomo@circular-chaos.org>
+License: LGPL-2+
+
+Files: gst/audiofx/audiokaraoke.c
+ gst/audiofx/audiokaraoke.h
+ gst/rtp/gstrtpj2kpay.c
+ gst/rtp/gstrtpj2kpay.h
+ tests/examples/rtp/client-PCMA.c
+ tests/examples/rtp/server-alsasrc-PCMA.c
+ tests/icles/videobox-test.c
+ tests/icles/videocrop2-test.c
+Copyright: 2008, Wim Taymans <wim.taymans@gmail.com>
+  2009, Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: gst/audiofx/audiofx.c
+ gst/audiofx/audiopanorama.h
+ gst/debugutils/gsttaginject.c
+ gst/debugutils/gsttaginject.h
+ tests/check/elements/audiopanorama.c
+ tests/examples/spectrum/demo-audiotest.c
+ tests/examples/spectrum/demo-osssrc.c
+Copyright: 2006, Stefan Kost <ensonic@users.sf.net>
+  2008, Stefan Kost <ensonic@users.sf.net>
+License: LGPL-2+
+
+Files: gst/effectv/gstop.c
+ gst/effectv/gstop.h
+ gst/effectv/gstripple.c
+ gst/effectv/gstripple.h
+ gst/effectv/gststreak.c
+ gst/effectv/gststreak.h
+Copyright: 2001-2002, FUKUCHI Kentaro
+  2001-2006, FUKUCHI Kentaro
+  2004-2005, FUKUCHI Kentaro
+  <2009> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: sys/osxaudio/gstosxaudioelement.c
+ sys/osxaudio/gstosxaudioelement.h
+ sys/osxaudio/gstosxaudiosink.c
+ sys/osxaudio/gstosxaudiosink.h
+ sys/osxaudio/gstosxaudiosrc.c
+ sys/osxaudio/gstosxringbuffer.c
+Copyright: 2005-2006, Zaheer Abbas Merali <zaheerabbas at merali dot org>
+  2006, Zaheer Abbas Merali <zaheerabbas at merali dot org>
+  2007, Pioneers of the Inevitable <songbird@songbirdnest.com>
+  2007-2008, Pioneers of the Inevitable <songbird@songbirdnest.com>
+  2008, Pioneers of the Inevitable <songbird@songbirdnest.com>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: ext/cairo/gsttextoverlay.c
+ ext/cairo/gsttimeoverlay.c
+ gst/debugutils/gstnavigationtest.c
+ gst/debugutils/gstnavseek.c
+ gst/videofilter/gstvideotemplate.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: gst/goom/config_param.c
+ gst/goom/goom_core.c
+ gst/goom/goom_visual_fx.h
+ gst/goom/mathtools.c
+ gst/goom/mathtools.h
+Copyright: <2003> Jean-Christophe Hoelt <jeko@free.fr>
+License: LGPL-2+
+
+Files: gst/equalizer/gstiirequalizer10bands.c
+ gst/equalizer/gstiirequalizer10bands.h
+ gst/equalizer/gstiirequalizer3bands.c
+ gst/equalizer/gstiirequalizer3bands.h
+ tests/check/elements/spectrum.c
+Copyright: <2007> Stefan Kost <ensonic@users.sf.net>
+License: LGPL-2+
+
+Files: gst/deinterlace/tvtime/greedyh.c
+ gst/deinterlace/tvtime/linear.c
+ gst/deinterlace/tvtime/linearblend.c
+ gst/deinterlace/tvtime/plugins.h
+ gst/deinterlace/tvtime/tomsmocomp.c
+Copyright: 2002, Billy Biggs <vektor@dumbterm.net>
+  2004, Billy Biggs <vektor@dumbterm.net>
+  2008, Sebastian Dröge <slomo@collabora.co.uk>
+  2008,2010, Sebastian Dröge <slomo@collabora.co.uk>
+License: LGPL-2+
+
+Files: ext/dv/gstsmptetimecode.c
+ ext/dv/gstsmptetimecode.h
+ gst/multifile/gstmultifilesrc.c
+ gst/multifile/gstmultifilesrc.h
+ tests/check/elements/multifile.c
+Copyright: 2006, David A. Schleef <ds@schleef.org>
+  2007, David A. Schleef <ds@schleef.org>
+  2009, David A. Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: tests/check/elements/audiochebband.c
+ tests/check/elements/audiocheblimit.c
+ tests/check/elements/audiowsincband.c
+ tests/check/elements/audiowsinclimit.c
+ tests/check/elements/equalizer.c
+Copyright: 2007, Sebastian Dröge <slomo@circular-chaos.org>
+  2008, Sebastian Dröge <slomo@circular-chaos.org>
+License: LGPL-2.1+
+
+Files: gst/effectv/gstedge.c
+ gst/effectv/gstedge.h
+ gst/effectv/gstquark.c
+ gst/effectv/gstquark.h
+Copyright: 2001-2002, FUKUCHI Kentarou
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2009> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/equalizer/gstiirequalizer.c
+ gst/equalizer/gstiirequalizer.h
+ gst/equalizer/gstiirequalizernbands.c
+ gst/equalizer/gstiirequalizernbands.h
+Copyright: <2004> Benjamin Otte <otte@gnome.org>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpilbcdepay.c
+ gst/rtp/gstrtpilbcdepay.h
+ gst/rtp/gstrtpilbcpay.c
+ gst/rtp/gstrtpilbcpay.h
+Copyright: <2006> Philippe Khalaf <burger@speedy.org>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpg723pay.c
+ gst/rtp/gstrtpg723pay.h
+ gst/rtp/gstrtpg729pay.c
+ gst/rtp/gstrtpg729pay.h
+Copyright: <2007> Collabora Ltd
+  <2007> Nokia Corporation
+License: LGPL-2+
+
+Files: gst/debugutils/breakmydata.c
+ gst/debugutils/gstdebug.c
+ gst/debugutils/testplugin.c
+ gst/debugutils/tests.h
+Copyright: 2004, Benjamin Otte <otte@gnome.org>
+License: LGPL-2+
+
+Files: gst/icydemux/gsticydemux.c
+ gst/icydemux/gsticydemux.h
+ gst/id3demux/gstid3demux.c
+ gst/id3demux/gstid3demux.h
+Copyright: 2003-2004, Benjamin Otte <otte@gnome.org>
+  2005, Jan Schmidt <thaytan@mad.scientist.com>
+License: LGPL-2+
+
+Files: gst/autodetect/gstautoaudiosink.h
+ gst/autodetect/gstautodetect.c
+ gst/autodetect/gstautodetect.h
+ gst/autodetect/gstautovideosink.h
+Copyright: 2005, Ronald S. Bultje <rbultje@ronald.bitfreak.net>
+License: LGPL-2+
+
+Files: gst/isomp4/fourcc.h
+ gst/rtsp/gstrtsp.c
+ gst/rtsp/gstrtsp.h
+ gst/rtsp/gstrtspsrc.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: gst/isomp4/atomsrecovery.c
+ gst/isomp4/atomsrecovery.h
+ gst/isomp4/gstqtmoovrecover.c
+ gst/isomp4/gstqtmoovrecover.h
+Copyright: 2010, Thiago Santos <thiago.sousa.santos@collabora.co.uk>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: gst/isomp4/descriptors.c
+ gst/isomp4/descriptors.h
+ gst/isomp4/properties.c
+ gst/isomp4/properties.h
+Copyright: 2008, Thiago Sousa Santos <thiagoss@embedded.ufcg.edu.br>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: common/coverage/coverage-report-entry.pl
+ common/coverage/coverage-report.pl
+ common/coverage/coverage-report.xsl
+Copyright: 2006, Daniel Berrange
+License: GPL-2+
+
+Files: gst/avi/gstavi.c
+ gst/flx/flx_color.c
+ gst/flx/gstflxdec.c
+Copyright: <1999> Erik Walthinsen <omega@temple-baptist.com>
+License: LGPL-2+
+
+Files: tests/check/elements/avimux.c
+ tests/check/elements/videofilter.c
+ tests/check/elements/y4menc.c
+Copyright: <2006> Mark Nauwelaerts <manauw@skynet.be>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpmpvpay.c
+ gst/rtp/gstrtpmpvpay.h
+ tests/check/elements/avisubtitle.c
+Copyright: <2007> Thijs Vermeir <thijsvermeir@gmail.com>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpjpegpay.c
+ gst/rtp/gstrtpjpegpay.h
+ tests/check/elements/udpsink.c
+Copyright: 2008, Axis Communications <dev-gstreamer@axis.com>
+  2009, Axis Communications <dev-gstreamer@axis.com>
+License: LGPL-2+
+
+Files: gst/deinterlace/tvtime/weave.c
+ gst/deinterlace/tvtime/weavebff.c
+ gst/deinterlace/tvtime/weavetff.c
+Copyright: 2002, Billy Biggs <vektor@dumbterm.net>
+  2003, Billy Biggs <vektor@dumbterm.net>
+  2008,2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: ext/taglib/gstapev2mux.cc
+ ext/taglib/gstapev2mux.h
+ ext/taglib/gsttaglibplugin.c
+Copyright: 2006, Christophe Fergeau <teuf@gnome.org>
+  2006, Sebastian Dröge <slomo@circular-chaos.org>
+  2006, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/matroska/matroska-demux.h
+ gst/matroska/matroska-parse.h
+ gst/matroska/matroska-read-common.h
+Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2011, Debarshi Ray <rishi@gnu.org>
+License: LGPL-2+
+
+Files: gst/matroska/matroska-demux.c
+ gst/matroska/matroska-parse.c
+ gst/matroska/matroska-read-common.c
+Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2006, Tim-Philipp Müller <tim centricular net>
+  2008, Sebastian Dröge <slomo@circular-chaos.org>
+  2011, Debarshi Ray <rishi@gnu.org>
+License: LGPL-2+
+
+Files: gst/matroska/ebml-write.c
+ gst/matroska/ebml-write.h
+ gst/matroska/matroska-mux.h
+Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2005, Michal Benes <michal.benes@xeris.cz>
+License: LGPL-2+
+
+Files: gst/apetag/gstapedemux.c
+ gst/apetag/gstapedemux.h
+ gst/matroska/matroska-ids.c
+Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2004, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2006, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/videomixer/videomixer2.c
+ gst/videomixer/videomixer2.h
+ gst/videomixer/videomixer2pad.h
+Copyright: 2004, 2008 Wim Taymans <wim@fluendo.com>
+  2008, Wim Taymans <wim@fluendo.com>
+  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: sys/waveform/gstwaveformplugin.c
+ sys/waveform/gstwaveformsink.c
+ sys/waveform/gstwaveformsink.h
+Copyright: 2005, Sebastien Moutte <sebastien@moutte.net>
+License: LGPL-2+
+
+Files: gst/videocrop/gstaspectratiocrop.c
+ gst/videocrop/gstaspectratiocrop.h
+ tests/check/elements/aspectratiocrop.c
+Copyright: 2009, Thijs Vermeir <thijsvermeir@gmail.com>
+License: LGPL-2+
+
+Files: gst/rtp/fnv1hash.c
+ gst/rtp/fnv1hash.h
+ tests/check/pipelines/flacdec.c
+Copyright: 2007, Thomas Vander Stichele <thomas at apestaart dot org>
+  2009, Thomas Vander Stichele <thomas at apestaart dot org>
+License: LGPL-2+
+
+Files: ext/soup/gstsoup.c
+ ext/soup/gstsouphttpsrc.c
+ ext/soup/gstsouphttpsrc.h
+Copyright: 2007-2008, Wouter Cloetens <wouter@mind.be>
+License: LGPL-2+
+
+Files: gst/isomp4/gstqtmux-doc.c
+ gst/isomp4/gstqtmux-doc.h
+ gst/isomp4/gstqtmux.c
+Copyright: 2008, Mark Nauwelaerts <mnauw@users.sf.net>
+  2008-2010, Thiago Santos <thiagoss@embedded.ufcg.edu.br>
+  2010, Nokia Corporation.
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: gst/effectv/gstradioac.c
+ gst/effectv/gstradioac.h
+Copyright: 2001-2002, FUKUCHI Kentaro
+  2001-2006, FUKUCHI Kentaro
+  <2009> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL
+
+Files: gst/rtp/gstrtpmp4adepay.c
+ gst/rtp/gstrtpmp4adepay.h
+Copyright: <2007> Nokia Corporation (contact <stefan.kost@nokia.com>)
+License: LGPL-2
+
+Files: gst/cutter/gstcutter.c
+ gst/level/gstlevel.c
+Copyright: 2000-2003,2005,
+  2002-2003,2005,
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst/debugutils/progressreport.c
+ gst/debugutils/progressreport.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+  <2004> Jan Schmidt <thaytan@mad.scientist.com>
+  <2006> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/effectv/gstaging.c
+ gst/effectv/gstaging.h
+Copyright: 2001-2002, FUKUCHI Kentarou
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+  <2009> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/effectv/gstwarp.c
+ gst/effectv/gstwarp.h
+Copyright: 2001, FUKUCHI Kentarou
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: ext/gdk_pixbuf/pixbufscale.c
+ ext/gdk_pixbuf/pixbufscale.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2004> Jan Schmidt <thaytan@mad.scientist.com>
+  <2004> Tim-Philipp Mueller <t.i.m@orange.net>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtppcmapay.c
+ gst/rtp/gstrtppcmupay.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2005> Edgard Lima <edgard.lima@indt.org.br>
+  <2005> Nokia Corporation <kai.vehmanen@nokia.com>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtppcmadepay.c
+ gst/rtp/gstrtppcmudepay.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2005> Edgard Lima <edgard.lima@indt.org.br>
+  <2005> Zeeshan Ali <zeenix@gmail.com>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpgsmdepay.c
+ gst/rtp/gstrtpgsmpay.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2005> Zeeshan Ali <zeenix@gmail.com>
+License: LGPL-2+
+
+Files: gst/wavparse/gstwavparse.c
+ gst/wavparse/gstwavparse.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2006> Nokia Corporation, Stefan Kost <stefan.kost@nokia.com>
+License: LGPL-2+
+
+Files: gst/auparse/gstauparse.c
+ gst/auparse/gstauparse.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2006> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/alpha/gstalpha.c
+ gst/alpha/gstalpha.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2007> Edward Hervey <edward.hervey@collabora.co.uk>
+  <2007> Jan Schmidt <thaytan@noraisin.net>
+  <2007> Wim Taymans <wim.taymans@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/isomp4/qtdemux_dump.h
+ gst/isomp4/qtdemux_types.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2009> STEricsson <benjamin.gaignard@stericsson.com>
+License: LGPL-2+
+
+Files: gst/effectv/gstdice.c
+ gst/effectv/gstdice.h
+Copyright: 2001, Sam Mertens. This code is subject to the provisions of
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2009> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/goom/gstgoom.h
+ gst/goom2k1/gstgoom.h
+Copyright: <2001> Richard Boulton <richard@tartarus.org>
+License: LGPL-2+
+
+Files: gst/monoscope/gstmonoscope.c
+ gst/monoscope/gstmonoscope.h
+Copyright: <2002> Richard Boulton <richard@tartarus.org>
+  <2006> Tim-Philipp Müller <tim centricular net>
+  <2006> Wim Taymans <wim at fluendo dot com>
+License: LGPL-2+
+
+Files: gst/goom/ppc_drawings.h
+ gst/goom/ppc_zoom_ultimate.h
+Copyright: <2003> Guillaume Borios, iOS-Software
+License: LGPL-2+
+
+Files: sys/ximage/ximageutil.c
+ sys/ximage/ximageutil.h
+Copyright: <2005> Luca Ognibene <luogni@tin.it>
+License: LGPL-2+
+
+Files: tests/check/elements/level.c
+ tests/check/generic/states.c
+Copyright: <2005> Thomas Vander Stichele <thomas at apestaart dot org>
+License: LGPL-2+
+
+Files: gst/isomp4/gstrtpxqtdepay.h
+ gst/udp/gstmultiudpsink.h
+Copyright: <2005> Wim Taymans <wim@fluendo.com>
+License: LGPL-2+
+
+Files: gst/flv/gstflvdemux.c
+ gst/flv/gstflvdemux.h
+Copyright: <2007> Julien Moutte <julien@moutte.net>
+License: LGPL-2+
+
+Files: gst/debugutils/gstpushfilesrc.c
+ gst/debugutils/gstpushfilesrc.h
+Copyright: <2007> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: ext/raw1394/gsthdv1394src.c
+ ext/raw1394/gsthdv1394src.h
+Copyright: <2008> Edward Hervey <bilboed@bilboed.com>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpqdmdepay.c
+ gst/rtp/gstrtpqdmdepay.h
+Copyright: <2009> Edward Hervey <bilboed@bilboed.com>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpmparobustdepay.c
+ gst/rtp/gstrtpmparobustdepay.h
+Copyright: <2010> Mark Nauwelaerts <mark.nauwelaerts@collabora.co.uk>
+  <2010> Nokia Corporation
+License: LGPL-2+
+
+Files: gst/debugutils/cpureport.c
+ gst/debugutils/cpureport.h
+Copyright: <2010> Zaheer Abbas Merali <zaheerabbas merali org>
+License: LGPL-2+
+
+Files: ext/cairo/gstcairooverlay.c
+ ext/cairo/gstcairooverlay.h
+Copyright: <2011> Jon Nordby <jononor@gmail.com>
+License: LGPL-2+
+
+Files: gst/law/alaw-decode.h
+ gst/law/alaw-encode.h
+Copyright: 2000, Abramo Bagnara <abramo@alsa-project.org>
+License: LGPL-2+
+
+Files: sys/v4l2/gstv4l2radio.c
+ sys/v4l2/gstv4l2radio.h
+Copyright: 2010-2011, Alexey Chernov <4ernov@gmail.com>
+License: LGPL-2+
+
+Files: sys/oss/gstossmixerelement.c
+ sys/oss/gstossmixerelement.h
+Copyright: 2005, Andrew Vander Wingo <wingo@pobox.com>
+License: LGPL-2+
+
+Files: gst/interleave/plugin.c
+ gst/interleave/plugin.h
+Copyright: 2004,2007, Andy Wingo <wingo at pobox.com>
+License: LGPL-2+
+
+Files: ext/wavpack/gstwavpackcommon.h
+ ext/wavpack/gstwavpackdec.h
+Copyright: 2004, Arwed v. Merkatz <v.merkatz@gmx.net>
+  2005, Arwed v. Merkatz <v.merkatz@gmx.net>
+  2006, Sebastian Dröge <slomo@circular-chaos.org>
+License: LGPL-2+
+
+Files: ext/flac/gstflactag.c
+ ext/flac/gstflactag.h
+Copyright: 2003, Christophe Fergeau <teuf@gnome.org>
+  2008, Jonathan Matthew <jonathan@d14n.org>
+  2008, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: ext/taglib/gstid3v2mux.cc
+ ext/taglib/gstid3v2mux.h
+Copyright: 2006, Christophe Fergeau <teuf@gnome.org>
+  2006, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/rtpmanager/gstrtpjitterbuffer.c
+ gst/rtpmanager/gstrtpjitterbuffer.h
+Copyright: 2007, Collabora Ltd
+  2007, Nokia Corporation
+  2007, Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: gst/multifile/gstsplitfilesrc.c
+ gst/multifile/gstsplitfilesrc.h
+Copyright: 2011, Collabora Ltd. <tim.muller@collabora.co.uk>
+License: LGPL-2+
+
+Files: ext/gdk_pixbuf/gstgdkpixbuf.c
+ ext/gdk_pixbuf/gstgdkpixbuf.h
+Copyright: 1999-2001, Erik Walthinsen <omega@cse.ogi.edu>
+  2003, David A. Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: sys/sunaudio/gstsunaudiosink.c
+ sys/sunaudio/gstsunaudiosink.h
+Copyright: 2004, David A. Schleef <ds@schleef.org>
+  2005-2006, Sun Microsystems, Inc.
+  2006, Jan Schmidt <thaytan@mad.scientist.com>
+License: LGPL-2+
+
+Files: ext/soup/gstsouphttpclientsink.c
+ ext/soup/gstsouphttpclientsink.h
+Copyright: 2011, David Schleef <ds@entropywave.com>
+License: LGPL-2+
+
+Files: ext/raw1394/gst1394clock.c
+ ext/raw1394/gst1394clock.h
+Copyright: 1999-2000, Erik Walthinsen <omega@cse.ogi.edu>
+  2009, David Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: sys/v4l2/gstv4l2vidorient.c
+ sys/v4l2/gstv4l2vidorient.h
+Copyright: 2006, Edgard Lima <edgard.lima@indt.org.br>
+License: LGPL-2+
+
+Files: sys/directsound/gstdirectsoundsink.c
+ sys/directsound/gstdirectsoundsink.h
+Copyright: 2005, Sebastien Moutte <sebastien@moutte.net>
+  2007, Pioneers of the Inevitable <songbird@songbirdnest.com>
+  2010, Fluendo S.A. <support@fluendo.com>
+License: LGPL-2+
+
+Files: gst/audioparsers/gstmpegaudioparse.c
+ gst/audioparsers/gstmpegaudioparse.h
+Copyright: 2006-2007, Jan Schmidt <thaytan@mad.scientist.com>
+  2010, Mark Nauwelaerts <mnauw users sf net>
+  2010, Nokia Corporation.
+License: LGPL-2+
+
+Files: gst/autodetect/gstautoaudiosink.c
+ gst/autodetect/gstautovideosink.c
+Copyright: 2005, Ronald S. Bultje <rbultje@ronald.bitfreak.net>
+  2006, Jan Schmidt <thaytan@noraisin.net>
+License: LGPL-2+
+
+Files: gst/autodetect/gstautoaudiosrc.c
+ gst/autodetect/gstautovideosrc.c
+Copyright: 2005, Ronald S. Bultje <rbultje@ronald.bitfreak.net>
+  2006, Jan Schmidt <thaytan@noraisin.net>
+  2008, Stefan Kost <ensonic@users.sf.net>
+License: LGPL-2+
+
+Files: ext/raw1394/gst1394probe.c
+ ext/raw1394/gst1394probe.h
+Copyright: 2007, Julien Puydt <jpuydt@free.fr>
+License: LGPL-2+
+
+Files: ext/cairo/gstcairorender.c
+ ext/cairo/gstcairorender.h
+Copyright: 2006-2009, Lutz Mueller <lutz@topfrose.de>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpdvdepay.h
+ gst/rtp/gstrtpdvpay.h
+Copyright: 2006, Marcel Moreaux <marcelm@spacelabs.nl>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpdvdepay.c
+ gst/rtp/gstrtpdvpay.c
+Copyright: 2006, Marcel Moreaux <marcelm@spacelabs.nl>
+  2008, Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: gst/audioparsers/gstwavpackparse.c
+ gst/audioparsers/gstwavpackparse.h
+Copyright: 2012, Mark Nauwelaerts <mark.nauwelaerts@collabora.co.uk>
+  2012, Nokia Corporation.
+License: LGPL-2+
+
+Files: gst/audioparsers/gstflacparse.c
+ gst/audioparsers/gstflacparse.h
+Copyright: 2008, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2009, Mark Nauwelaerts <mark.nauwelaerts@collabora.co.uk>
+  2009, Nokia Corporation.
+License: LGPL-2+
+
+Files: gst/audioparsers/gstac3parse.c
+ gst/audioparsers/gstac3parse.h
+Copyright: 2009, Mark Nauwelaerts <mnauw users sf net>
+  2009, Nokia Corporation.
+  2009, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/debugutils/gstcapssetter.c
+ gst/debugutils/gstcapssetter.h
+Copyright: 2006-2009, Mark Nauwelaerts <mnauw@users.sourceforge.net>
+License: LGPL-2+
+
+Files: tests/check/elements/rtp-payloading.c
+ tests/check/elements/rtpjitterbuffer.c
+Copyright: 2008, Nokia Corporation and its subsidary(-ies)
+  2009, Nokia Corporation and its subsidary(-ies)
+License: LGPL-2+
+
+Files: gst/multifile/patternspec.c
+ gst/multifile/patternspec.h
+Copyright: 1995-1997, 1999 Peter Mattis, Red Hat, Inc
+License: LGPL-2+
+
+Files: sys/osxvideo/cocoawindow.h
+ sys/osxvideo/osxvideosink.h
+Copyright: 2004, Zaheer Abbas Merali <zaheerabbas at merali dot org>
+  2004-6 Zaheer Abbas Merali <zaheerabbas at merali dot org>
+  2007, Pioneers of the Inevitable <songbird@songbirdnest.com>
+License: LGPL-2+
+
+Files: gst/monoscope/convolve.c
+ gst/monoscope/convolve.h
+Copyright: 1999, Ralph Loader <suckfish@ihug.co.nz>
+License: LGPL-2+
+
+Files: gst/autodetect/gstautoaudiosrc.h
+ gst/autodetect/gstautovideosrc.h
+Copyright: 2005, Ronald S. Bultje <rbultje@ronald.bitfreak.net>
+  2008, Stefan Kost <ensonic@users.sf.net>
+License: LGPL-2+
+
+Files: tests/examples/audiofx/firfilter-example.c
+ tests/examples/audiofx/iirfilter-example.c
+Copyright: 2009, Sebastian Droege <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: tests/check/elements/apev2mux.c
+ tests/check/elements/interleave.c
+Copyright: 2006, Sebastian Dröge <slomo@circular-chaos.org>
+  2006, Tim-Philipp Müller <tim centricular net>
+  2007, Tim-Philipp Müller <tim centricular net>
+  2008, Sebastian Dröge <slomo@circular-chaos.org>
+License: LGPL-2+
+
+Files: gst/deinterlace/gstdeinterlacemethod.c
+ gst/deinterlace/gstdeinterlacemethod.h
+Copyright: 2008-2010, Sebastian Dröge <slomo@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/multipart/multipartdemux.c
+ gst/multipart/multipartdemux.h
+Copyright: 2004, Wim Taymans <wim@fluendo.com>
+  2006, Sjoerd Simons <sjoerd@luon.net>
+License: LGPL-2+
+
+Files: sys/v4l2/gstv4l2sink.c
+ sys/v4l2/gstv4l2sink.h
+Copyright: 2009, Texas Instruments, Inc - http://www.ti.com/
+License: LGPL-2+
+
+Files: gst/deinterlace/tvtime/greedyhmacros.h
+ gst/deinterlace/tvtime/tomsmocomp/TomsMoCompAll.inc
+Copyright: 2001, Tom Barry
+  2002, Tom Barry
+License: LGPL-2+
+
+Files: ext/jack/gstjackutil.c
+ ext/jack/gstjackutil.h
+Copyright: 2010, Tristan Matthews <tristan@sat.qc.ca>
+License: LGPL-2+
+
+Files: gst/law/alaw.c
+ gst/law/mulaw.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2.1+
+
+Files: gst/law/alaw-decode.c
+ gst/law/alaw-encode.c
+Copyright: 2000, Abramo Bagnara <abramo@alsa-project.org>
+License: LGPL-2.1+
+
+Files: tests/check/elements/audiofirfilter.c
+ tests/check/elements/audioiirfilter.c
+Copyright: 2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2.1+
+
+Files: gst/rtsp/gstrtspext.c
+ gst/rtsp/gstrtspext.h
+Copyright: <2006> Wim Taymans <wim@fluendo.com>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: gst/isomp4/gstqtmuxmap.c
+ gst/isomp4/gstqtmuxmap.h
+Copyright: 2008, Mark Nauwelaerts <mnauw@users.sf.net>
+  2008, Thiago Sousa Santos <thiagoss@embedded.ufcg.edu.br>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: gst/isomp4/atoms.h
+ gst/isomp4/gstqtmux.h
+Copyright: 2008-2010, Thiago Santos <thiagoss@embedded.ufcg.edu.br>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: ext/jack/gstjackaudiosrc.c
+ ext/jack/gstjackaudiosrc.h
+Copyright: 2008, Tristan Matthews <tristan@sat.qc.ca>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: sys/osxaudio/gstosxaudiosrc.h
+ sys/osxaudio/gstosxringbuffer.h
+Copyright: 2005-2006, Zaheer Abbas Merali <zaheerabbas at merali dot org>
+  2006, Zaheer Abbas Merali <zaheerabbas at merali dot org>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: ext/libpng/gstpng.c
+ ext/libpng/gstpngenc.c
+Copyright: 2000, Donald A. Graft
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: gst/goom/ifs.c
+ gst/goom/ifs.h
+Copyright: 1997, Massimino Pascal <Pascal.Massimon@ens.fr>
+License: LGPL-2+
+
+Files: gst/monoscope/monoscope.c
+Copyright: 1998-2001, Andy Lo A Foe <andy@alsaplayer.org>
+  2002, Richard Boulton <richard@tartarus.org>
+License: BSD (3 clause)
+
+Files: ltmain.sh
+Copyright: 1996-2001, 2003-2006
+License: GPL-2+
+
+Files: tests/examples/level/level-example.c
+Copyright: 2000-2003,2005
+License: LGPL-2+
+
+Files: gst/level/gstlevel.h
+Copyright: 1999, Erik Walthinsen <omega@cse.ogi.edu>
+  2000-2003,2005,
+License: LGPL-2+
+
+Files: ext/cairo/gstcairo.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003-2004> David Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: gst/isomp4/isomp4-plugin.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David A. Schleef <ds@schleef.org>
+  <2006> Wim Taymans <wim@fluendo.com>
+License: LGPL-2+
+
+Files: gst/isomp4/qtdemux.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David A. Schleef <ds@schleef.org>
+  <2006> Wim Taymans <wim@fluendo.com>
+  <2007> Julien Moutte <julien@fluendo.com>
+  <2009> STEricsson <benjamin.gaignard@stericsson.com>
+  <2009> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/videofilter/gstvideobalance.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+  <2010> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/videofilter/gstvideoflip.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+  <2010> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  <2011> Youness Alaoui <youness.alaoui@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/videofilter/gstgamma.h
+Copyright: 2003, Arwed v. Merkatz <v.merkatz@gmx.net>
+  2006, Mark Nauwelaerts <manauw@skynet.be>
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: gst/videofilter/gstgamma.c
+Copyright: 2003, Arwed v. Merkatz <v.merkatz@gmx.net>
+  2006, Mark Nauwelaerts <manauw@skynet.be>
+  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2003> David Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: ext/flac/gstflacdec.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2006,2011> Tim-Philipp Müller <tim centricular net>
+  <2006> Jan Schmidt <thaytan at mad scientist com>
+License: LGPL-2+
+
+Files: gst/y4m/gsty4mencode.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2006> Mark Nauwelaerts <mnauw@users.sourceforge.net>
+License: LGPL-2+
+
+Files: gst/avi/gstavidemux.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2006> Nokia Corporation (contact <stefan.kost@nokia.com>)
+License: LGPL-2+
+
+Files: ext/shout2/gstshout2.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2006> Tim-Philipp Müller <tim centricular net>
+  <2012> Ralph Giles <giles@mozilla.com>
+License: LGPL-2+
+
+Files: gst/isomp4/qtdemux_dump.c
+Copyright: 2009, Tim-Philipp Müller <tim centricular net>
+  <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2009> STEricsson <benjamin.gaignard@stericsson.com>
+License: LGPL-2+
+
+Files: gst/spectrum/gstspectrum.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2009> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: ext/jpeg/gstjpegdec.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2009> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: ext/flac/gstflacdec.h
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+  <2011> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/avi/gstavidemux.c
+Copyright: <1999> Erik Walthinsen <omega@temple-baptist.com>
+  <2006> Nokia Corporation (contact <stefan.kost@nokia.com>)
+  <2009-2010> STEricsson <benjamin.gaignard@stericsson.com>
+License: LGPL-2+
+
+Files: gst/goom2k1/gstgoom.c
+Copyright: <2001> Richard Boulton <richard@tartarus.org>
+  <2006> Wim Taymans <wim at fluendo dot com>
+License: LGPL-2+
+
+Files: gst/goom/gstgoom.c
+Copyright: <2001> Richard Boulton <richard@tartarus.org>
+  <2006> Wim Taymans <wim at fluendo dot com>
+  <2011> Wim Taymans <wim.taymans at gmail dot com>
+License: LGPL-2+
+
+Files: gst/wavenc/gstwavenc.c
+Copyright: <2002> Iain Holmes <iain@prettypeople.org>
+  <2006> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/rtpmanager/gstrtpptdemux.c
+Copyright: 2005, Nokia Corporation
+  <2004> Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: tests/check/elements/matroskamux.c
+Copyright: <2005> Michal Benes <michal.benes@xeris.cz>
+License: LGPL-2+
+
+Files: gst/udp/gstdynudpsink.c
+Copyright: <2005> Nokia Corporation <kai.vehmanen@nokia.com>
+  <2005> Philippe Khalaf <burger@speedy.org>
+  <2006> Joni Valtanen <joni.valtanen@movial.fi>
+  <2012> Collabora Ltd
+License: LGPL-2+
+
+Files: gst/udp/gstudpsrc.c
+Copyright: <2005> Nokia Corporation <kai.vehmanen@nokia.com>
+  <2005> Wim Taymans <wim@fluendo.com>
+  <2012> Collabora Ltd
+License: LGPL-2+
+
+Files: gst/udp/gstdynudpsink.h
+Copyright: <2005> Philippe Khalaf <burger@speedy.org>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtph263pay.c
+Copyright: <2005> Wim Taymans <wim.taymans@gmail.com>
+  <2008> Dejan Sakelsak <dejan.sakelsak@marand.si>
+  <2009> Janin Kolenc <janin.kolenc@marand.si>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtph263depay.c
+Copyright: 2007, Collabora Ltd
+  2007, Nokia Corporation
+  <2005> Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2+
+
+Files: gst/udp/gstudpsink.c
+Copyright: <2005> Wim Taymans <wim@fluendo.com>
+  <2012> Collabora Ltd
+License: LGPL-2+
+
+Files: tests/check/elements/autodetect.c
+Copyright: <2006> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/isomp4/gstrtpxqtdepay.c
+Copyright: <2006> Wim Taymans <wim@fluendo.com>
+License: LGPL-2+
+
+Files: tests/icles/ximagesrc-test.c
+Copyright: <2006> Zaheer Abbas Merali <zaheerabbas at merali dot org>
+License: LGPL-2+
+
+Files: gst/avi/gstavisubtitle.c
+Copyright: <2007> Thijs Vermeir <thijsvermeir@gmail.com>
+  <2007> Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/udp/gstmultiudpsink.c
+Copyright: <2007> Wim Taymans <wim.taymans@gmail.com>
+  <2009> Jarkko Palviainen <jarkko.palviainen@sesca.com>
+  <2012> Collabora Ltd
+License: LGPL-2+
+
+Files: tests/check/elements/qtmux.c
+Copyright: <2008> Mark Nauwelaerts <mnauw@users.sf.net>
+License: LGPL-2+
+
+Files: gst/smpte/plugin.c
+Copyright: <2008> Wim Taymans <wim.taymans@google.com>
+License: LGPL-2+
+
+Files: tests/check/elements/capssetter.c
+Copyright: <2009> Mark Nauwelaerts <mnauw@users.sourceforge.net>
+License: LGPL-2+
+
+Files: gst/isomp4/qtatomparser.h
+Copyright: 2009, Tim-Philipp Müller <tim centricular net>
+  <2009> STEricsson <benjamin.gaignard@stericsson.com>
+License: LGPL-2+
+
+Files: tests/check/pipelines/effectv.c
+Copyright: <2009> Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: tests/check/pipelines/wavenc.c
+Copyright: <2010> Stefan Kost <ensonic@users.sf.net>
+License: LGPL-2+
+
+Files: tests/check/elements/jpegenc.c
+Copyright: <2010> Thiago Santos <thiago.sousa.santos@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/videomixer/blend.c
+Copyright: 2004, Wim Taymans <wim@fluendo.com>
+  2006, Mindfruit Bv
+  2009, Alex Ugarte <augarte@vicomtech.org>
+  2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: tests/check/pipelines/simple-launch-lines.c
+Copyright: 2005, Andy Wingo <wingo@pobox.com>
+License: LGPL-2+
+
+Files: ext/wavpack/gstwavpack.c
+Copyright: 2004, Arwed v. Merkatz <v.merkatz@gmx.net>
+License: LGPL-2+
+
+Files: ext/wavpack/gstwavpackcommon.c
+Copyright: 1998, - 2005, Conifer Software
+  2005, Arwed v. Merkatz <v.merkatz@gmx.net>
+  2006, Sebastian Dröge <slomo@circular-chaos.org>
+License: LGPL-2+
+
+Files: ext/wavpack/gstwavpackdec.c
+Copyright: 2005, Arwed v. Merkatz <v.merkatz@gmx.net>
+  2006, Edward Hervey <bilboed@gmail.com>
+  2006, Sebastian Dröge <slomo@circular-chaos.org>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpg726pay.h
+Copyright: 2005, Edgard Lima <edgard.lima@indt.org.br>
+  2007-2008, Axis Communications <dev-gstreamer@axis.com>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpg726pay.c
+Copyright: 1999, Erik Walthinsen <omega@cse.ogi.edu>
+  2005, Edgard Lima <edgard.lima@indt.org.br>
+  2005, Nokia Corporation <kai.vehmanen@nokia.com>
+  2007-2008, Axis Communications <dev-gstreamer@axis.com>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpg726depay.c
+Copyright: 1999, Erik Walthinsen <omega@cse.ogi.edu>
+  2005, Edgard Lima <edgard.lima@indt.org.br>
+  2005, Zeeshan Ali <zeenix@gmail.com>
+  2008, Axis Communications <dev-gstreamer@axis.com>
+License: LGPL-2+
+
+Files: gst/rtp/gstrtpg726depay.h
+Copyright: 2005, Edgard Lima <edgard.lima@indt.org.br>
+  2008, Axis Communications AB <dev-gstreamer@axis.com>
+License: LGPL-2+
+
+Files: ext/gdk_pixbuf/gstgdkanimation.h
+Copyright: 2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
+License: LGPL-2+
+
+Files: gst/debugutils/tests.c
+Copyright: 1995-1997, 1999-2000, Free Software Foundation, Inc
+  2004, Benjamin Otte <otte@gnome.org>
+License: LGPL-2+
+
+Files: gst/deinterlace/tvtime/vfir.c
+Copyright: 2001-2003, Fabrice Bellard
+  2004, Billy Biggs <vektor@dumbterm.net>
+  2008,2010, Sebastian Dröge <slomo@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/deinterlace/tvtime/greedy.c
+Copyright: 2000, Tom Barry
+  2002, Billy Biggs <vektor@dumbterm.net>
+  2008,2010, Sebastian Dröge <slomo@collabora.co.uk>
+License: LGPL-2+
+
+Files: tests/check/elements/rtpbin_buffer_list.c
+Copyright: 2009, Branko Subasic <branko dot subasic at axis dot com>
+License: LGPL-2+
+
+Files: gst-libs/gst/glib-compat-private.h
+Copyright: 2005, David Schleef <ds@schleef.org>
+License: LGPL-2+
+
+Files: gst/deinterlace/tvtime/x86-64_macros.inc
+Copyright: 2004, Dirk Ziegelmeier <dziegel@gmx.de>
+License: LGPL-2+
+
+Files: tests/icles/v4l2src-test.c
+Copyright: 2006, Edgard Lima <edgard dot lima at indt dot org dot br>
+License: LGPL-2+
+
+Files: gst/audioparsers/gstamrparse.c
+Copyright: 2006, Edgard Lima <edgard.lima@indt.org.br>
+  2008, Nokia Corporation.
+License: LGPL-2+
+
+Files: gst/imagefreeze/gstimagefreeze.c
+Copyright: 2005, Edward Hervey <bilboed@bilboed.com>
+  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: sys/osxaudio/gstosxaudio.c
+Copyright: 1999, Erik Walthinsen <omega@cse.ogi.edu>
+  2007-2008, Pioneers of the Inevitable <songbird@songbirdnest.com>
+License: LGPL-2+
+
+Files: gst/videobox/gstvideobox.c
+Copyright: 1999, Erik Walthinsen <omega@cse.ogi.edu>
+  2006, Tim-Philipp Müller <tim centricular net>
+  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/debugutils/gstcapsdebug.h
+
+Files: gst-libs/gst/gettext.h
+Copyright: 1995-1998, 2000-2002, Free Software Foundation, Inc
+License: LGPL-2+
+
+Files: gst/wavenc/gstwavenc.h
+Copyright: 2002, Iain Holmes <iain@prettypeople.org>
+License: LGPL-2+
+
+Files: tests/examples/spectrum/spectrum-example.c
+Copyright: 2006, Stefan Kost <ensonic@users.sf.net>
+  2008, Jan Schmidt <jan.schmidt@sun.com>
+License: LGPL-2+
+
+Files: gst/flv/amfdefs.h
+Copyright: 2011, Jan Schmidt <thaytan@noraisin.net>
+License: LGPL-2+
+
+Files: gst/udp/gstudpnetutils.c
+Copyright: 2006, Joni Valtanen <joni.valtanen@movial.fi>
+  2006, Tim-Philipp Müller <tim centricular net>
+  2009, Jarkko Palviainen <jarkko.palviainen@sesca.com>
+License: LGPL-2+
+
+Files: tests/examples/cairo/cairo_overlay.c
+Copyright: 2011, Jon Nordby <jononor@gmail.com>
+License: LGPL-2+
+
+Files: gst/udp/gstudpnetutils.h
+Copyright: 2006, Joni Valtanen <joni.valtanen@movial.fi>
+  2006, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: gst/avi/gstavimux.c
+Copyright: 2002, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2006, Mark Nauwelaerts <manauw@skynet.be>
+License: LGPL-2+
+
+Files: gst/matroska/matroska-mux.c
+Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2005, Michal Benes <michal.benes@xeris.cz>
+  2008, Sebastian Dröge <sebastian.droege@collabora.co.uk>
+  2011, Mark Nauwelaerts <mark.nauwelaerts@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/deinterlace/gstdeinterlace.c
+Copyright: 2005, Martin Eikermann <meiker@upb.de>
+  2008-2010, Sebastian Dröge <slomo@collabora.co.uk>
+  2011, Robert Swain <robert.swain@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst/deinterlace/gstdeinterlace.h
+Copyright: 2005, Martin Eikermann <meiker@upb.de>
+  2008-2010, Sebastian Dröge <slomo@collabora.co.uk>
+License: LGPL-2+
+
+Files: tests/check/elements/icydemux.c
+Copyright: 2006, Michael Smith <msmith@fluendo.com>
+License: LGPL-2+
+
+Files: gst/debugutils/rndbuffersize.c
+Copyright: 2007, Nokia Corporation (contact <stefan.kost@nokia.com>)
+License: LGPL-2+
+
+Files: gst/audioparsers/gstamrparse.h
+Copyright: 2004, Ronald Bultje <rbultje@ronald.bitfreak.net>
+  2008, Nokia Corporation.
+License: LGPL-2+
+
+Files: tests/check/pipelines/tagschecking.c
+Copyright: 2008, Nokia Corporation. (contact <stefan.kost@nokia.com>)
+  2010, Thiago Santos <thiago.sousa.santos@collabora.co.uk>
+License: LGPL-2+
+
+Files: sys/directsound/gstdirectsoundplugin.c
+Copyright: 2005, Sebastien Moutte <sebastien@moutte.net>
+  2007, Pioneers of the Inevitable <songbird@songbirdnest.com>
+License: LGPL-2+
+
+Files: gst/flv/gstindex.c
+Copyright: 2001, RidgeRun (http://www.ridgerun.com/)
+License: LGPL-2+
+
+Files: tests/examples/v4l2/camctrl.c
+Copyright: 2010, Stefan Kost <stefan.kost@nokia.com>
+License: LGPL-2+
+
+Files: tests/check/elements/deinterlace.c
+Copyright: 2010, Thiago Santos <thiago.sousa.santos@collabora.co.uk>
+License: LGPL-2+
+
+Files: gst-libs/gst/gst-i18n-plugin.h
+Copyright: 2004, Thomas Vander Stichele <thomas@apestaart.org>
+License: LGPL-2+
+
+Files: ext/speex/gstspeexdec.c
+Copyright: 2004, Wim Taymans <wim@fluendo.com>
+  2006, Tim-Philipp Müller <tim centricular net>
+License: LGPL-2+
+
+Files: tests/check/elements/souphttpsrc.c
+Copyright: 2001-2003, Ximian, Inc
+  2006-2007, Tim-Philipp Müller <tim centricular net>
+  2008, Wouter Cloetens <wouter@mind.be>
+License: LGPL-2+
+
+Files: tests/examples/pulse/pulse.c
+Copyright: 2010, Wim Taymans <wim.taymans at gmail.com>
+License: LGPL-2+
+
+Files: sys/ximage/gstximagesrc.c
+Copyright: 2006, Zaheer Merali <zaheerabbas at merali dot org>
+License: LGPL-2+
+
+Files: gst/matroska/lzo.c
+Copyright: 2006, Reimar Doeffinger
+License: LGPL-2.1+
+
+Files: gst/replaygain/rganalysis.c
+Copyright: 2001, David Robinson
+  2001, David Robinson <David@Robinson.org>
+  2006, Rene Stadler <mail@renestadler.de>
+License: LGPL-2.1+
+
+Files: gst/replaygain/rganalysis.h
+Copyright: 2001, David Robinson <David@Robinson.org>
+  2006, Rene Stadler <mail@renestadler.de>
+License: LGPL-2.1+
+
+Files: ext/pulse/pulsesink.c
+Copyright: 2004-2008, Lennart Poettering
+  2009, Wim Taymans
+License: LGPL-2.1+
+
+Files: gst/matroska/lzo.h
+Copyright: 2006, Reimar Doeffinger
+License: LGPL-2.1+
+
+Files: gst/rtsp/gstrtspsrc.c
+Copyright: <2005-2006> Wim Taymans <wim at fluendo dot com>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: gst/rtsp/gstrtpdec.c
+Copyright: <2005-2006> Wim Taymans <wim.taymans@gmail.com>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: gst/rtsp/gstrtpdec.h
+Copyright: <2005-2006> Wim Taymans <wim@fluendo.com>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: gst/isomp4/ftypcc.h
+Copyright: <2008> Thiago Sousa Santos <thiagoss@embedded.ufcg.edu.br>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: gst/isomp4/atoms.c
+Copyright: 2008, Mark Nauwelaerts <mnauw@users.sf.net>
+  2008-2010, Thiago Santos <thiagoss@embedded.ufcg.edu.br>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: ext/jack/gstjackringbuffer.h
+Copyright: 2006, Wim Taymans <wim@fluendo.com>
+  2008, Tristan Matthews <tristan@sat.qc.ca>
+License: MIT/X11 (BSD like) LGPL-2+
+
+Files: ext/libpng/gstpngdec.c
+Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
+License: LGPL-2+
+
+Files: sys/oss4/oss4-soundcard.h
+Copyright: 4Front Technologies 2000-2006. Released under the BSD license
+License: BSD
+
+Copyright:
+
+    This package is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
+
+    This package is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this package; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+On Debian GNU/Linux systems, the complete text of the GNU Lesser General
+Public License can be found in `/usr/share/common-licenses/LGPL'.
+```
+
+### 224. Used by half 2.7.1, ident_case 1.0.1, simdutf8 0.1.5, widestring 1.2.1
 
 ```text
 MIT License
@@ -26232,7 +29424,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 222. Used by hashbrown 0.12.3, hashbrown 0.15.5, hashbrown 0.16.1, hashbrown 0.17.1
+### 225. Used by hashbrown 0.12.3, hashbrown 0.15.5, hashbrown 0.16.1, hashbrown 0.17.1
 
 ```text
 Copyright (c) 2016 Amanieu d'Antras
@@ -26262,7 +29454,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 223. Used by hashlink 0.12.2
+### 226. Used by hashlink 0.12.2
 
 ```text
 This work is derived in part from the `linked-hash-map` crate, Copyright (c)
@@ -26293,7 +29485,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 224. Used by hex 0.4.3
+### 227. Used by hex 0.4.3
 
 ```text
 Copyright (c) 2013-2014 The Rust Project Developers.
@@ -26318,7 +29510,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 225. Used by hkdf 0.12.4
+### 228. Used by hkdf 0.12.4
 
 ```text
 Copyright (c) 2015-2018 Vlad Filippov
@@ -26349,7 +29541,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 226. Used by hpke 0.12.0
+### 229. Used by hpke 0.12.0
 
 ```text
 Copyright 2020 Michael Rosenberg
@@ -26365,7 +29557,7 @@ implied. See the License for the specific language governing permissions and lim
 License.
 ```
 
-### 227. Used by hpke 0.12.0
+### 230. Used by hpke 0.12.0
 
 ```text
 The MIT License (MIT)
@@ -26388,7 +29580,7 @@ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 228. Used by html5ever 0.38.0, markup5ever 0.38.0, web_atoms 0.2.6
+### 231. Used by html5ever 0.38.0, markup5ever 0.38.0, web_atoms 0.2.6
 
 ```text
 Copyright (c) 2014 The html5ever Project Developers
@@ -26418,7 +29610,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 229. Used by http 1.5.0
+### 232. Used by http 1.5.0
 
 ```text
                               Apache License
@@ -26624,7 +29816,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### 230. Used by http 1.5.0
+### 233. Used by http 1.5.0
 
 ```text
 Copyright (c) 2017 http-rs authors
@@ -26654,7 +29846,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 231. Used by http-body 1.1.0, http-body-util 0.1.5
+### 234. Used by http-body 1.1.0, http-body-util 0.1.5
 
 ```text
 Copyright (c) 2019-2026 Sean McArthur & Hyper Contributors
@@ -26684,7 +29876,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 232. Used by httparse 1.10.1
+### 235. Used by httparse 1.10.1
 
 ```text
 Copyright (c) 2015-2025 Sean McArthur
@@ -26708,7 +29900,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 233. Used by hybrid-array 0.2.3
+### 236. Used by hybrid-array 0.2.3
 
 ```text
 Copyright (c) 2022-2024 The RustCrypto Project Developers
@@ -26738,7 +29930,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 234. Used by hybrid-array 0.4.15
+### 237. Used by hybrid-array 0.4.15
 
 ```text
 Copyright (c) 2022-2026 The RustCrypto Project Developers
@@ -26768,7 +29960,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 235. Used by hyper 1.12.0, unicase 2.10.0
+### 238. Used by hyper 1.12.0, unicase 2.10.0
 
 ```text
 Copyright (c) 2014-2026 Sean McArthur
@@ -26792,7 +29984,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 236. Used by hyper-util 0.1.21
+### 239. Used by hyper-util 0.1.21
 
 ```text
 Copyright (c) 2023-2025 Sean McArthur
@@ -26816,7 +30008,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 237. Used by i18n-config 0.4.8, i18n-embed 0.16.0, i18n-embed-fl 0.10.1, i18n-embed-impl 0.8.4
+### 240. Used by i18n-config 0.4.8, i18n-embed 0.16.0, i18n-embed-fl 0.10.1, i18n-embed-impl 0.8.4
 
 ```text
 Copyright 2020 Luke Frisken
@@ -26829,7 +30021,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 © 2020 Luke Frisken
 ```
 
-### 238. Used by iana-time-zone 0.1.65, iana-time-zone-haiku 0.1.2
+### 241. Used by iana-time-zone 0.1.65, iana-time-zone-haiku 0.1.2
 
 ```text
                               Apache License
@@ -27035,7 +30227,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### 239. Used by iana-time-zone 0.1.65, iana-time-zone-haiku 0.1.2
+### 242. Used by iana-time-zone 0.1.65, iana-time-zone-haiku 0.1.2
 
 ```text
 Copyright (c) 2020 Andrew D. Straw
@@ -27065,7 +30257,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 240. Used by ico 0.5.0
+### 243. Used by ico 0.5.0
 
 ```text
 MIT License
@@ -27091,7 +30283,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 241. Used by icu_collections 2.4.0, icu_locale_core 2.4.0, icu_normalizer 2.4.0, icu_normalizer_data 2.4.0, icu_properties 2.4.0, icu_properties_data 2.4.0, icu_provider 2.4.0, litemap 0.8.3, potential_utf 0.1.6, tinystr 0.8.5, writeable 0.6.4, yoke 0.8.4, yoke-derive 0.8.4, zerofrom 0.1.8, zerofrom-derive 0.1.8, zerotrie 0.2.5, zerovec 0.11.9, zerovec-derive 0.11.7
+### 244. Used by icu_collections 2.4.0, icu_locale_core 2.4.0, icu_normalizer 2.4.0, icu_normalizer_data 2.4.0, icu_properties 2.4.0, icu_properties_data 2.4.0, icu_provider 2.4.0, litemap 0.8.3, potential_utf 0.1.6, tinystr 0.8.5, writeable 0.6.4, yoke 0.8.4, yoke-derive 0.8.4, zerofrom 0.1.8, zerofrom-derive 0.1.8, zerotrie 0.2.5, zerovec 0.11.9, zerovec-derive 0.11.7
 
 ```text
 UNICODE LICENSE V3
@@ -27142,7 +30334,7 @@ Portions of ICU4X may have been adapted from ICU4C and/or ICU4J.
 ICU 1.8.1 to ICU 57.1 © 1995-2016 International Business Machines Corporation and others.
 ```
 
-### 242. Used by idna_adapter 1.2.2
+### 245. Used by idna_adapter 1.2.2
 
 ```text
 Copyright (c) The rust-url developers
@@ -27172,7 +30364,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 243. Used by imagesize 0.13.0
+### 246. Used by imagesize 0.13.0
 
 ```text
 MIT License
@@ -27198,7 +30390,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 244. Used by indexmap 1.9.3, indexmap 2.14.2
+### 247. Used by indexmap 1.9.3, indexmap 2.14.2
 
 ```text
 Copyright (c) 2016--2017
@@ -27228,7 +30420,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 245. Used by infer 0.19.0, infer 0.22.0
+### 248. Used by infer 0.19.0, infer 0.22.0
 
 ```text
 MIT License
@@ -27254,7 +30446,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 246. Used by inotify 0.11.5, inotify-sys 0.1.8
+### 249. Used by inotify 0.11.5, inotify-sys 0.1.8
 
 ```text
 Copyright (c) Hanno Braun and contributors
@@ -27272,7 +30464,7 @@ TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
 ```
 
-### 247. Used by inout 0.1.4
+### 250. Used by inout 0.1.4
 
 ```text
 Copyright (c) 2022 The RustCrypto Project Developers
@@ -27303,7 +30495,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 248. Used by inout 0.2.6
+### 251. Used by inout 0.2.6
 
 ```text
 Copyright (c) 2022-2025 The RustCrypto Project Developers
@@ -27334,7 +30526,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 249. Used by Inter (typeface)
+### 252. Used by Inter (typeface)
 
 ```text
 Copyright (c) 2016 The Inter Project Authors (https://github.com/rsms/inter)
@@ -27431,7 +30623,7 @@ FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 ```
 
-### 250. Used by interprocess 2.4.8
+### 253. Used by interprocess 2.4.8
 
 ```text
 										Apache License
@@ -27612,7 +30804,7 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 END OF TERMS AND CONDITIONS
 ```
 
-### 251. Used by interprocess 2.4.8
+### 254. Used by interprocess 2.4.8
 
 ```text
 BSD Zero Clause License
@@ -27631,7 +30823,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### 252. Used by intl_pluralrules 7.0.2
+### 255. Used by intl_pluralrules 7.0.2
 
 ```text
 intl_pluralrules is offered under Apache-2.0/MIT; it publishes no licence file, so the standard MIT text follows.
@@ -27656,7 +30848,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 253. Used by io-extras 0.18.4, io-extras 0.19.0
+### 256. Used by io-extras 0.18.4, io-extras 0.19.0
 
 ```text
 Short version for non-lawyers:
@@ -27690,7 +30882,7 @@ is licensed under:
 at your option.
 ```
 
-### 254. Used by io-lifetimes 2.0.4, io-lifetimes 3.0.1
+### 257. Used by io-lifetimes 2.0.4, io-lifetimes 3.0.1
 
 ```text
 Short version for non-lawyers:
@@ -27724,7 +30916,7 @@ is licensed under:
 at your option.
 ```
 
-### 255. Used by io_tee 0.1.1
+### 258. Used by io_tee 0.1.1
 
 ```text
 io_tee is offered under MIT OR Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -27749,7 +30941,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 256. Used by ipnet 2.12.2
+### 259. Used by ipnet 2.12.2
 
 ```text
                                  Apache License
@@ -27955,7 +31147,7 @@ USE OR OTHER DEALINGS IN THE SOFTWARE.
    limitations under the License.
 ```
 
-### 257. Used by ipnet 2.12.2
+### 260. Used by ipnet 2.12.2
 
 ```text
 Copyright 2017 Juniper Networks, Inc.
@@ -27967,7 +31159,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 258. Used by is-docker 0.2.0, is-wsl 0.4.0
+### 261. Used by is-docker 0.2.0, is-wsl 0.4.0
 
 ```text
 MIT License
@@ -27993,7 +31185,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 259. Used by javascriptcore-rs 1.1.2
+### 262. Used by javascriptcore-rs 1.1.2
 
 ```text
 The MIT License (MIT)
@@ -28020,7 +31212,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 260. Used by javascriptcore-rs-sys 1.1.1, soup3 0.5.0, soup3-sys 0.5.0
+### 263. Used by javascriptcore-rs-sys 1.1.1, soup3 0.5.0, soup3-sys 0.5.0
 
 ```text
 The MIT License (MIT)
@@ -28046,7 +31238,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 261. Used by jni 0.21.1
+### 264. Used by jni 0.21.1
 
 ```text
 The MIT License (MIT)
@@ -28072,7 +31264,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 262. Used by jni-sys 0.3.1, jni-sys 0.4.1
+### 265. Used by jni-sys 0.3.1, jni-sys 0.4.1
 
 ```text
 Copyright (c) 2015 The rust-jni-sys Developers
@@ -28096,7 +31288,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 263. Used by jni-sys-macros 0.4.1
+### 266. Used by jni-sys-macros 0.4.1
 
 ```text
 jni-sys-macros is offered under MIT OR Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -28121,7 +31313,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 264. Used by json-patch 3.0.1
+### 267. Used by json-patch 3.0.1
 
 ```text
 MIT License
@@ -28147,7 +31339,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 265. Used by jsonptr 0.6.3
+### 268. Used by jsonptr 0.6.3
 
 ```text
                                  Apache License
@@ -28353,7 +31545,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### 266. Used by jsonptr 0.6.3
+### 269. Used by jsonptr 0.6.3
 
 ```text
 MIT License
@@ -28379,7 +31571,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 267. Used by keccak 0.1.6
+### 270. Used by keccak 0.1.6
 
 ```text
 Copyright (c) 2018-2022 RustCrypto Developers
@@ -28409,7 +31601,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 268. Used by kem 0.3.0-pre.0
+### 271. Used by kem 0.3.0-pre.0
 
 ```text
 Copyright (c) 2021-2022 RustCrypto Developers
@@ -28439,7 +31631,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 269. Used by kem 0.3.0-pre.0
+### 272. Used by kem 0.3.0-pre.0
 
 ```text
 Copyright 2021 RustCrypto Developers
@@ -28457,7 +31649,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### 270. Used by keyboard-types 0.7.0
+### 273. Used by keyboard-types 0.7.0
 
 ```text
 Copyright (c) 2017 Pyfisch
@@ -28481,7 +31673,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 271. Used by kqueue 1.2.1, kqueue-sys 1.1.2
+### 274. Used by kqueue 1.2.1, kqueue-sys 1.1.2
 
 ```text
 Copyright (c) 2016 William Orr <will@worrbase.com>
@@ -28505,7 +31697,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 272. Used by ksni 0.3.7
+### 275. Used by ksni 0.3.7
 
 ```text
 ksni is offered under Unlicense; it publishes no licence file, so the standard Unlicense text follows.
@@ -28522,7 +31714,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 For more information, please refer to <http://unlicense.org/>
 ```
 
-### 273. Used by kurbo 0.11.3
+### 276. Used by kurbo 0.11.3
 
 ```text
 Copyright (c) 2018 Raph Levien
@@ -28552,7 +31744,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 274. Used by lebe 0.5.3
+### 277. Used by lebe 0.5.3
 
 ```text
 Copyright (c) 2022 Contributors to the lebe Project. All rights reserved.
@@ -28583,7 +31775,230 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 275. Used by libappindicator 0.9.0
+### 278. Used by libaa1 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: aalib
+Source: http://aa-project.sourceforge.net/aalib
+
+Files: *
+Copyright: 1998-2001 Jan Hubicka <hubicka@freesoft.cz>
+           1998-2001 Kamil Toman <toman@artax.karlin.mff.cuni.cz>
+License: LGPL-2.0+
+
+Files: src/aalinuxkbd.c
+Copyright: 1994-1995 Russell Marks
+License: Custom
+ This library may be freely used/copied/modified provided this copyright
+ notice is left intact.
+
+Files: doc/aalib*
+Copyright: 1997 Jan Hubicka & Kamil Toman
+License: Abstyles
+ Permission is granted to make and distribute verbatim copies of this
+ manual provided the copyright notice and this permission notice are
+ preserved on all copies.
+
+Files: debian/*
+Copyright: 2019-2021 Jonathan Carter <jcc@debian.org>
+           2012-2015 Gergely Nagy <algernon@madhouse-project.org>
+           2008-2011 Bart Martens <bartm@debian.org>
+           1997-2008 Joey Hess <joeyh@debian.org>
+License: LGPL-2.0+
+
+License: LGPL-2.0+
+ This package is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License can be found in "/usr/share/common-licenses/LGPL-2".
+```
+
+### 279. Used by libapparmor1 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: AppArmor
+Upstream-Contact: apparmor@lists.ubuntu.com
+Source: https://launchpad.net/apparmor
+
+Files: *
+Copyright: 1998-2010 Novell/SuSE/Immunix
+           2008-2014 Canonical Ltd.
+License: GPL-2+
+
+Files: changehat/pam_apparmor/*
+Copyright: 2006 SUSE Linux Products GmbH, Nuernberg, Germany
+           2002, 2003, 2004 SuSE GmbH Nuernberg, Germany
+           2002-2006 Novell/SuSE
+           2010 Canonical Ltd.
+License: BSD-3-clause or GPL-2+
+
+Files: changehat/mod_apparmor/*
+Copyright: 2004-2006 Novell
+           2014 Canonical Ltd.
+License: LGPL-2.1+
+
+Files: libraries/libapparmor/* parser/libapparmor_re/*
+Copyright: 1999-2008 Novell
+           2009-2013 Canonical Ltd.
+License: LGPL-2.1+
+
+Files: profiles/apparmor.d/abstractions/mysql
+Copyright: 2002-2006 Novell/SUSE
+           2013 Christian Boltz
+License: GPL-2
+
+Files: profiles/apparmor.d/usr.sbin.dnsmasq
+Copyright: 2009 John Dong <jdong@ubuntu.com>
+           2010 Canonical Ltd.
+License: GPL-2
+
+Files: profiles/apparmor.d/sbin.syslog-ng
+Copyright: 2006-2009 Novell/SUSE
+           2006 Christian Boltz
+           2010 Canonical Ltd.
+License: GPL-2
+
+Files: profiles/apparmor.d/usr.lib.dovecot.*
+Copyright: 2013 Christian Boltz
+License: GPL-2
+
+Files: profiles/apparmor.d/usr.lib.dovecot.auth
+Copyright: 2013 Christian Boltz
+           2014 Christian Wittmer
+License: GPL-2
+
+Files: profiles/apparmor.d/usr.lib.dovecot.deliver
+Copyright: 2009 Dulmandakh Sukhbaatar <dulmandakh@gmail.com>
+           2009-2014 Canonical Ltd.
+           2011-2013 Christian Boltz
+License: GPL-2
+
+Files: profiles/apparmor.d/usr.lib.dovecot.dovecot-auth
+Copyright: 2009-2013 Canonical Ltd.
+           2013 Christian Boltz
+License: GPL-2
+
+Files: profiles/apparmor.d/usr.lib.dovecot.imap profiles/apparmor.d/usr.lib.dovecot.pop3
+Copyright: 2009-2010 Canonical Ltd.
+           2011-2013 Christian Boltz
+License: GPL-2
+
+Files: profiles/apparmor.d/usr.lib.dovecot.imap-login profiles/apparmor.d/usr.lib.dovecot.pop3-login
+Copyright: 2009-2011 Canonical Ltd.
+           2013 Christian Boltz
+License: GPL-2
+
+Files: profiles/apparmor.d/usr.lib.dovecot.managesieve
+Copyright: 2013 Christian Boltz
+           2014 Christian Wittmer
+License: GPL-2
+
+Files: profiles/apparmor.d/usr.lib.dovecot.managesieve-login
+Copyright: 2009 Dulmandakh Sukhbaatar <dulmandakh@gmail.com>
+           2009-2011 Canonical Ltd.
+           2013 Christian Boltz
+           2014 Christian Wittmer
+License: GPL-2
+
+Files: profiles/apparmor/profiles/extras/usr.bin.mlmmj-make-ml.sh
+Copyright: 2002-2005 Novell/SUSE
+License: GPL-2
+
+Files: profiles/apparmor/profiles/extras/usr.bin.passwd
+Copyright: 2006 Volker Kuhlmann
+License: GPL-2
+
+Files: debian/*
+Copyright: 2007-2011 Canonical Ltd.
+           2014-2022 intrigeri
+License: GPL-2
+
+License: BSD-3-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+ 1. Redistributions of source code must retain any existing copyright
+    notice, and this entire permission notice in its entirety,
+    including the disclaimer of warranties.
+ .
+ 2. Redistributions in binary form must reproduce all prior and current
+    copyright notices, this list of conditions, and the following
+    disclaimer in the documentation and/or other materials provided
+    with the distribution.
+ .
+ 3. The name of any author may not be used to endorse or promote
+    products derived from this software without their specific prior
+    written permission.
+
+License: GPL-2
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; version 2 of the License.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ .
+ On Debian systems, the complete text of the GNU General
+ Public License can be found in `/usr/share/common-licenses/GPL-2'.
+
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ .
+ On Debian systems, the complete text of the GNU General
+ Public License can be found in `/usr/share/common-licenses/GPL-2'.
+
+License: LGPL-2.1+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ .
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ .
+ On Debian systems, the complete text of the GNU General
+ Public License can be found in `/usr/share/common-licenses/LGPL-2.1'.
+```
+
+### 280. Used by libappindicator 0.9.0
 
 ```text
 MIT License
@@ -28610,7 +32025,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 276. Used by libappindicator-sys 0.9.0
+### 281. Used by libappindicator-sys 0.9.0
 
 ```text
 libappindicator-sys is offered under Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -28635,7 +32050,44 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 277. Used by libavahi-client3 (Ubuntu package), libavahi-common3 (Ubuntu package)
+### 282. Used by libasyncns0 (Ubuntu package)
+
+```text
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: libasyncns
+Upstream-Contact: Lennart Poettering <mznflapaf@0pointer.de>
+Source: http://0pointer.de/lennart/projects/libasyncns/
+
+Files: *
+Copyright: 2005-2009 Lennart Poettering
+License: LGPL-2.1+
+
+Files: debian/*
+Copyright: 2006 CJ van den Berg <cj@vdbonline.com>
+    2011 Tanguy Ortolo <tanguy+debian@ortolo.eu>
+License: LGPL-2.1+
+
+License: LGPL-2.1+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+    .
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+    .
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+    .
+    On Debian systems, the full text of the GNU Lesser General Public
+    License version 2.1 can be found in the file
+    `/usr/share/common-licenses/LGPL-2.1`.
+```
+
+### 283. Used by libavahi-client3 (Ubuntu package), libavahi-common3 (Ubuntu package)
 
 ```text
 This package was debianized by Ross Burton <ross@debian.org> on
@@ -28749,7 +32201,68 @@ The avahi-compat-libdns_sd public header (avahi-compat-libdns_sd/dns_sd.h) is:
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 278. Used by libayatana-indicator3-7 (Ubuntu package)
+### 284. Used by libavc1394-0 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: libavc1394
+Upstream-Contact:
+ Dan Dennedy <dan@dennedy.org>
+ Jason Howard <jason@spectsoft.com>
+Source: http://sf.net/projects/libavc1394/files/
+
+Files: *
+Copyright: 2003 Dan Dennedy <dan@dennedy.org>
+License: LGPL-2.1+
+
+Files: test/*
+Copyright:
+ 2004-2006 by Stacey D. Son <mythdev@son.org>
+ 2001-2003 Dan Dennedy <dan@dennedy.org>
+License: GPL-2+
+
+Files: debian/*
+Copyright:
+ 2012-2016 Alessio Treglia <alessio@debian.org>
+ 2001-2006 Daniel Kobras <kobras@debian.org>
+License: LGPL-2.1+
+
+License: LGPL-2.1+
+ This package is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+Comment:
+ On Debian GNU/Linux systems, the complete text of the GNU Lesser General
+ Public License can be found in `/usr/share/common-licenses/LGPL-2.1'.
+ .
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+Comment:
+ On Debian GNU/Linux systems, the complete text of the GNU General
+ Public License can be found in `/usr/share/common-licenses/GPL-2'.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+```
+
+### 285. Used by libayatana-indicator3-7 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -28870,7 +32383,7 @@ License: GPL-3
  version 3 can be found in `/usr/share/common-licenses/GPL-3'.
 ```
 
-### 279. Used by libblkid1 (Ubuntu package), libmount1 (Ubuntu package)
+### 286. Used by libblkid1 (Ubuntu package), libmount1 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -29413,7 +32926,7 @@ License: MIT
  SOFTWARE.
 ```
 
-### 280. Used by libbrotli1 (Ubuntu package)
+### 287. Used by libbrotli1 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -29448,7 +32961,7 @@ License: MIT
  THE SOFTWARE.
 ```
 
-### 281. Used by libbsd0 (Ubuntu package)
+### 288. Used by libbsd0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -30011,7 +33524,7 @@ License: BSD-2-clause
  SUCH DAMAGE.
 ```
 
-### 282. Used by libbz2-1.0 (Ubuntu package)
+### 289. Used by libbz2-1.0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -30064,7 +33577,7 @@ License: GPL-2
  can be found in /usr/share/common-licenses/GPL-2.
 ```
 
-### 283. Used by libc 0.2.191
+### 290. Used by libc 0.2.191
 
 ```text
 Copyright (c) The Rust Project Developers
@@ -30094,7 +33607,88 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 284. Used by libcairo-gobject2 (Ubuntu package), libcairo2 (Ubuntu package)
+### 291. Used by libcaca0 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: libcaca
+Upstream-Contact: Sam Hocevar <sam@hocevar.net>
+Source: https://github.com/cacalabs/libcaca
+
+Files: *
+Copyright: 2009-2012, <carmie@zoy.org>
+           2009, Adrien Grand <jpountz@dinauz.org>
+           2010, Alex Foulon <alxf@lavabit.com>
+           2012, Bastian Märkisch <bmaerkisch@web.de>
+           2007, Ben Wiley Sittler <bsittler@gmail.com>
+           2006, Colin Delacroix <colin@zoy.org>
+           2003-2012, Jean-Yves Lamoureux <jylam@lnxscene.org>
+           1998, Michele Bini <mibin@tin.it>
+           2007-2014, Pascal Terjan <pterjan@linuxfr.org>
+           2002-2014, Sam Hocevar <sam@hocevar.net>
+License: WTFPL-2
+
+Files: examples/conio-snake.cpp
+Copyright: 2009-2010, Sam Hocevar <sam@hocevar.net>
+           2003-2004, Simon Huggins <webmaster@simonhuggins.com>
+License: ISC
+
+Files: examples/demo0.c
+       src/aafire.c
+Copyright: 1998-2001, Jan Hubicka <hubicka@freesoft.cz>
+           2003-2010, Sam Hocevar <sam@hocevar.net>
+License: LGPL-2+
+
+Files: kernel/multiboot.h
+Copyright: 1989-1999, Free Software Foundation, Inc
+License: GPL-2+
+
+Files: libcaca.spec
+Copyright: Sam Hocevar
+License: GPL
+
+License: GPL
+  On Debian GNU/Linux systems, the complete text of the GNU General
+  Public License can be found in /usr/share/common-licenses/GPL-1
+
+License: GPL-2+
+  On Debian GNU/Linux systems, the complete text of the GNU General
+  Public License version 2 can be found in /usr/share/common-licenses/GPL-2
+
+License: ISC
+  Permission to use, copy, modify, and/or distribute this software for any
+  purpose with or without fee is hereby granted, provided that the above
+  copyright notice and this permission notice appear in all copies.
+  .
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+  ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+  OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+License: LGPL-2+
+  On Debian GNU/Linux systems, the complete text of the Lesser GNU General
+  Public License version 2 can be found in /usr/share/common-licenses/LGPL-2
+
+License: WTFPL-2
+  DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+  Version 2, December 2004
+  .
+  Copyright (C) 2004 Sam Hocevar
+  .
+  Everyone is permitted to copy and distribute verbatim or modified
+  copies of this license document, and changing it is allowed as long
+  as the name is changed.
+  .
+            DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+   TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+  .
+  0. You just DO WHAT THE FUCK YOU WANT TO.
+```
+
+### 292. Used by libcairo-gobject2 (Ubuntu package), libcairo2 (Ubuntu package)
 
 ```text
 This is the Debian package of the Cairo multi-platform 2D graphics library
@@ -30631,7 +34225,7 @@ EXHIBIT A -Mozilla Public License.
      Original Code Source Code for Your Modifications.]
 ```
 
-### 285. Used by libcap2 (Ubuntu package)
+### 293. Used by libcap2 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -30748,7 +34342,61 @@ License: GPL-2+
  can be found in /usr/share/common-licenses/GPL-2 file.
 ```
 
-### 286. Used by libcolord2 (Ubuntu package)
+### 294. Used by libcdparanoia0 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Author: Monty <paranoia@xiph.org>
+Download: http://www.xiph.org/paranoia/
+
+Files: *
+Copyright: (C) 1999-2008 Monty <paranoia@xiph.org>
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License along
+ with this program; if not, write to the Free Software Foundation, Inc.,
+ 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ can be found in /usr/share/common-licenses/GPL-2 file.
+
+Files: interface/* paranoia/*
+Copyright: (C) 1999-2008 Monty <paranoia@xiph.org>
+License: LGPL-2.1+
+
+Files: debian/*
+Copyright: (C) 2006-2009 Daniel Baumann <daniel@debian.org>
+License: LGPL-2.1+
+
+License: LGPL-2.1+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ .
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ .
+ On Debian systems, the complete text of the GNU Lesser General Public License
+ can be found in /usr/share/common-licenses/LGPL-2.1 file.
+```
+
+### 295. Used by libcolord2 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -31193,7 +34841,7 @@ License: CC0-1.0
  in the file `/usr/share/common-licenses/CC0-1.0'.
 ```
 
-### 287. Used by libcups2t64 (Ubuntu package)
+### 296. Used by libcups2t64 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -31359,7 +35007,7 @@ License: Zlib
       distribution.
 ```
 
-### 288. Used by libcurl3t64-gnutls (Ubuntu package)
+### 297. Used by libcurl3t64-gnutls (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -31898,7 +35546,7 @@ License: OLDAP-2.8
  Permission to copy and distribute verbatim copies of this document is granted.
 ```
 
-### 289. Used by libdatrie1 (Ubuntu package)
+### 298. Used by libdatrie1 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -31947,7 +35595,7 @@ License: GPL-2+
  version 2 can be found in `/usr/share/common-licenses/GPL-2'.
 ```
 
-### 290. Used by libdbus-1-3 (Ubuntu package)
+### 299. Used by libdbus-1-3 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -32411,7 +36059,7 @@ License: AFL-2.1
  the express written permission of its copyright owner.
 ```
 
-### 291. Used by libdeflate0 (Ubuntu package)
+### 300. Used by libdeflate0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -32454,7 +36102,7 @@ License: Expat
  SOFTWARE.
 ```
 
-### 292. Used by libduktape207 (Ubuntu package)
+### 301. Used by libduktape207 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -32534,7 +36182,84 @@ License: CC0
  /usr/share/common-licenses/CC0-1.0
 ```
 
-### 293. Used by libdw1t64 (Ubuntu package), libelf1t64 (Ubuntu package)
+### 302. Used by libdv4t64 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: libdv
+Upstream-Contact:
+ Dan Dennedy <ddennedy@users.sourceforge.net>
+ Charles 'Buck' Krasic <krasic@acm.org>
+ Erik Walthinsen <omega@cse.ogi.edu>
+Source: http://sourceforge.net/projects/libdv/files/
+
+Files: *
+Copyright:
+ 1999-2001 Erik Walthinsen <omega@cse.ogi.edu>
+ 1999-2001 Charles 'Buck' Krasic <krasic@acm.org>
+ 2000-2004 James Bowman
+ 2001-2004 Peter Schlaile, Dan Dennedy
+ 1999 Aaron Holtzman
+ 2001 Daniel Maas
+ 1999,2000 Sebastien Rougeaux
+ 2000 Oregon Graduate Institute of Science & Technology
+License: LGPL-2.1+
+
+Files: ltmain.sh
+ */*.1
+Copyright:
+ 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2004,
+ 2005 Free Software Foundation, Inc.
+ 2001-2004 Peter Schlaile, Dan Dennedy
+ 2001-2004 James Bowman, Peter Schlaile
+ 2001-2004 Daniel Kobras
+ 2001-2004 Charles 'Buck' Krasic, Erik Walthinsen
+License: GPL-2+
+
+Files: debian/*
+Copyright:
+ 2012 Alessio Treglia <alessio@debian.org>
+ 2001-2011    Daniel Kobras <kobras@debian.org>
+ 2016         Herbert Parentes Fortes Neto <hpfn@debian.org>
+ 2023 	      Daniel de Viveiros Inácio <tredeneo@gmail.com>
+License: GPL-2+
+
+License: LGPL-2.1+
+ This package is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+Comment:
+ On Debian GNU/Linux systems, the complete text of the GNU Lesser General
+ Public License can be found in `/usr/share/common-licenses/LGPL-2.1'.
+ .
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+Comment:
+ On Debian GNU/Linux systems, the complete text of the GNU General
+ Public License can be found in `/usr/share/common-licenses/GPL-2'.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+```
+
+### 303. Used by libdw1t64 (Ubuntu package), libelf1t64 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -32748,7 +36473,7 @@ Comment: GPL-3+
  `/usr/share/common-licenses/GPL-3'
 ```
 
-### 294. Used by libenchant-2-2 (Ubuntu package)
+### 304. Used by libenchant-2-2 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -32922,7 +36647,7 @@ License: FSFAP
  warranty.
 ```
 
-### 295. Used by libepoxy0 (Ubuntu package)
+### 305. Used by libepoxy0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -32958,7 +36683,7 @@ License: Expat
  MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 ```
 
-### 296. Used by libevdev2 (Ubuntu package)
+### 306. Used by libevdev2 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -33089,7 +36814,7 @@ License: Apache-2.0
  can be found in /usr/share/common-licenses/Apache-2.0
 ```
 
-### 297. Used by libffi8 (Ubuntu package)
+### 307. Used by libffi8 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -33319,7 +37044,226 @@ License: GPL-3+
  <http://www.gnu.org/licenses/>.
 ```
 
-### 298. Used by libfuzzer-sys 0.4.13, rayon 1.12.0, rayon-core 1.13.0
+### 308. Used by libflac12t64 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: FLAC
+Upstream-Contact: https://www.xiph.org/flac/
+Source: https://git.xiph.org/?p=flac.git
+Files-Excluded:
+ doc/api/*
+ doc/FLAC.tag
+ man/*.1
+
+Files: *
+Copyright: 2011-2022, Xiph.Org Foundation
+License: GPL-2+ or LGPL-2.1+
+
+Files: doc/*
+Copyright: 2000-2009, Josh Coalson
+  2011-2022, Xiph.Org Foundation
+License: GFDL-1.1+
+ <!-- Permission is granted to copy, distribute and/or modify this document -->
+ <!-- under the terms of the GNU Free Documentation License, Version 1.1 -->
+ <!-- or any later version published by the Free Software Foundation; -->
+ <!-- with no invariant sections. -->
+ .
+ On Debian systems, the complete text of the GNU Free Documentation
+ License version 1.2 can be found in "/usr/share/common-licenses/GFDL-1.2".
+
+Files: examples/*
+ include/share/grabbag/picture.h
+ include/test_libs_common/*
+ src/flac/*
+ src/metaflac/*
+ src/share/grabbag/picture.c
+ src/share/utf8/*
+ src/test_grabbag/*
+ src/test_libFLAC++/*
+ src/test_libFLAC/*
+ src/test_libs_common/*
+ src/test_seeking/*
+ src/test_streams/*
+ src/utils/flacdiff/*
+ src/utils/flactimer/*
+Copyright: 1994-2013, Free Software Foundation, Inc
+  1998-2000, Peter Alm, Mikael Alm, Olle Hallnas, Thomas Nilsson and 4Front Technologies
+  1999-2001, Håvard Kvålen <havardk@xmms.org>
+  2000-2001, Robert Leslie
+  2000-2002, Jerome Couderc <j.couderc@ifrance.com>
+  2000-2009, Josh Coalson
+  2001, Edmund Grimley Evans <edmundo@rano.org>
+  2001, Peter Harris <peter.harris@hummingbird.com>
+  2002-2009, Daisuke Shimamura
+  2003, Philip Jägenstedt
+  2011-2022, Xiph.Org Foundation
+License: GPL-2+
+
+Files: include/FLAC++/*
+ include/FLAC/*
+ include/share/alloc.h
+ include/share/compat.h
+ include/share/endswap.h
+ include/share/macros.h
+ include/share/private.h
+ include/share/safe_str.h
+ include/share/win_utf8_io.h
+ src/libFLAC++/*
+ src/libFLAC/*
+ src/share/grabbag/alloc.c
+ src/share/grabbag/snprintf.c
+ src/share/win_utf8_io/*
+Copyright: 1994-2013, Free Software Foundation, Inc
+  2000-2009, Josh Coalson
+  2011-2022, Xiph.Org Foundation
+License: BSD-3-clause
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * - Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the Xiph.org Foundation nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Files: include/share/grabbag.h
+ include/share/grabbag/cuesheet.h
+ include/share/grabbag/file.h
+ include/share/grabbag/replaygain.h
+ include/share/grabbag/seektable.h
+ include/share/replaygain_analysis.h
+ include/share/replaygain_synthesis.h
+ src/share/grabbag/cuesheet.c
+ src/share/grabbag/file.c
+ src/share/grabbag/replaygain.c
+ src/share/grabbag/seektable.c
+ src/share/replaygain_analysis/*
+ src/share/replaygain_synthesis/*
+Copyright: 1994-2013, Free Software Foundation, Inc
+  2001, David Robinson and Glen Sawyer
+  2002, John Edwards
+  2002-2009, Josh Coalson
+  2011-2022, Xiph.Org Foundation
+License: LGPL-2.1+
+
+Files: include/share/getopt.h
+ src/share/getopt/getopt.c
+ src/share/getopt/getopt1.c
+Copyright: 1987-1998 Free Software Foundation, Inc
+License: LGPL-2+
+   The GNU C Library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public License as
+   published by the Free Software Foundation; either version 2 of the
+   License, or (at your option) any later version.
+ .
+   The GNU C Library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License can be found in "/usr/share/common-licenses/LGPL-2".
+
+Files: src/libFLAC/include/private/md5.h
+ src/libFLAC/md5.c
+Copyright: *No copyright*
+License: Public-domain
+ * This is the header file for the MD5 message-digest algorithm.
+ * The algorithm is due to Ron Rivest.  This code was
+ * written by Colin Plumb in 1993, no copyright is claimed.
+ * This code is in the public domain; do with it what you wish.
+ *
+ * Equivalent code is available from RSA Data Security, Inc.
+ * This code has been tested against that, and is equivalent,
+ * except that you don't need to include two pages of legalese
+ * with every copy.
+ *
+ * To compute the message digest of a chunk of bytes, declare an
+ * MD5Context structure, pass it to MD5Init, call MD5Update as
+ * needed on buffers full of bytes, and then call MD5Final, which
+ * will fill a supplied 16-byte array with the digest.
+ *
+ * Changed so as no longer to depend on Colin Plumb's `usual.h'
+ * header definitions; now uses stuff from dpkg's config.h
+ *  - Ian Jackson <ijackson@nyx.cs.du.edu>.
+ * Still in the public domain.
+ *
+ * Josh Coalson: made some changes to integrate with libFLAC.
+ * Still in the public domain, with no warranty.
+
+Files: src/flac/local_string_utils.c
+Copyright: 1998, Todd C. Miller <Todd.Miller@courtesan.com>
+License: ISC
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+Files: debian/*
+Copyright: 2001-2005, Matt Zimmerman <mdz@debian.org>
+  2005-2007, Joshua Kwan <joshk@triplehelix.org>
+  2009-2018, Fabian Greffrath <fabian@debian.org>
+License: GPL-2+
+
+License: GPL-2+
+ This package is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>
+ .
+ The complete text of the GNU General Public License version 2
+ can be found in "/usr/share/common-licenses/GPL-2".
+
+License: LGPL-2.1+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ .
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ The complete text of the GNU Lesser General Public License
+ can be found in "/usr/share/common-licenses/LGPL-2.1".
+```
+
+### 309. Used by libfuzzer-sys 0.4.13, rayon 1.12.0, rayon-core 1.13.0
 
 ```text
 Copyright (c) 2010 The Rust Project Developers
@@ -33349,7 +37293,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 299. Used by libgcrypt20 (Ubuntu package)
+### 310. Used by libgcrypt20 (Ubuntu package)
 
 ```text
 This package was debianized by Ivo Timmermans <ivo@debian.org> on
@@ -33988,7 +37932,7 @@ On Debian GNU/Linux systems, the text of the GNU General Public License,
 version 2 can be found in `/usr/share/common-licenses/GPL-2'.
 ```
 
-### 300. Used by libgnutls30t64 (Ubuntu package)
+### 311. Used by libgnutls30t64 (Ubuntu package)
 
 ```text
 This package was debianized by Ivo Timmermans <ivo@debian.org> on
@@ -35241,7 +39185,116 @@ Comment: https://github.com/benhoyt/inih
 ~
 ```
 
-### 301. Used by libgraphite2-3 (Ubuntu package)
+### 312. Used by libgpm2 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: gpm - general purpose mouse
+Upstream-Contact: gpm@lists.linux.it
+Source: https://nico.schottelius.org/software/gpm/archives/
+
+Files: *
+Copyright: 1993       Andrew Haylett <ajh@gec-mrc.co.uk>
+           1994-2000  Alessandro Rubini <rubini@linux.it>
+           1998-1999  Ian Zimmerman <itz@rahul.net>
+           2001-2012  Nico Schottelius <nico@schottelius.org>
+License: GPL-2.0+
+
+Files: scripts/git-archiv-tarbz2.sh scripts/report_success.sh
+Copyright: 2008 Nico Schottelius <nico@schottelius.org>
+License: GPL-3.0+
+
+Files: debian/*
+Copyright: 1996-1997 Martin Schulze <joey@debian.org>
+           1997-1999 James Troup <james@nocrew.org>
+           1998      François Gouget <fgouget@mygale.org>
+           1999-2002 Zephaniah E. Hull <warp@debian.org>
+           2004-2008 Guillem Jover <guillem@debian.org>
+           2004-2012 Peter Samuelson <peter@p12n.org>
+           2008-2017 Samuel Thibault <sthibault@debian.org>
+           2017      Axel Beckert <abe@debian.org>
+License: GPL-2.0+
+Comment: It is assumed that the packaging is licensed under the same
+ terms as the upstream code unless stated otherwise.
+
+Files: debian/gpm-microtouch-setup.8
+Copyright: 2008 François Wendling <frwendling@free.fr>
+License: GPL-2.0+
+Comment: It is assumed that the packaging is licensed under the same
+ terms as the upstream code unless stated otherwise.
+
+License: GPL-2.0+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ On a Debian system, you can find the full text of the GNU General
+ Public License, version 2 in /usr/share/common-licenses/GPL-2.
+
+License: GPL-3.0+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ On a Debian system, you can find the full text of the GNU General
+ Public License, version 3 in /usr/share/common-licenses/GPL-3.
+```
+
+### 313. Used by libgraphene-1.0-0 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: graphene
+Source: https://github.com/ebassi/graphene/releases
+Files-Excluded:
+ subprojects/mutest/docs/markdeep.min.js
+ subprojects/mutest/docs/markdeep.js
+
+Files: *
+Copyright: 2014-2019 Emmanuele Bassi
+License: Expat
+
+Files: debian/*
+Copyright:
+ 2017-2019 Jeremy Bicha
+ 2017 Laurent Bigonville
+ 2019 Simon McVittie
+License: Expat
+
+License: Expat
+ Permission is hereby granted, free of charge, to any person obtaining
+ a copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+### 314. Used by libgraphite2-3 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -35452,7 +39505,7 @@ License: custom-sil-open-font-license
  OTHER DEALINGS IN THE FONT SOFTWARE.
 ```
 
-### 302. Used by libgssapi-krb5-2 (Ubuntu package), libk5crypto3 (Ubuntu package), libkrb5-3 (Ubuntu package), libkrb5support0 (Ubuntu package)
+### 315. Used by libgssapi-krb5-2 (Ubuntu package), libk5crypto3 (Ubuntu package), libkrb5-3 (Ubuntu package), libkrb5support0 (Ubuntu package)
 
 ```text
 This package was debianized by Sam Hartman <hartmans@permabit.com> on
@@ -36831,1128 +40884,7 @@ PERFORMANCE OF THIS SOFTWARE.
 The Debian Packaging is licensed under the same terms as MIT Kerberos.
 ```
 
-### 303. Used by libgstreamer-gl1.0-0 (Ubuntu package), libgstreamer-plugins-base1.0-0 (Ubuntu package)
-
-```text
-Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: Gstreamer Base Plugins 1.0
-Upstream-Contact: gstreamer-devel@lists.freedesktop.org
-Source: http://gstreamer.freedesktop.org
-Comment: This package was debianized by David I. Lehn <dlehn@debian.org> on
- Mon, 15 Jan 2001 18:21:37 -0500.
-
-Files: ext/alsa/gstalsa.c
- gst-libs/gst/audio/gstaudiocdsrc.c
- gst-libs/gst/audio/gstaudiocdsrc.h
- gst-libs/gst/audio/mixerutils.h
- gst-libs/gst/pbutils/descriptions.c
- gst-libs/gst/pbutils/descriptions.h
- gst-libs/gst/pbutils/gstpluginsbaseversion.c
- gst-libs/gst/pbutils/missing-plugins.c
- gst-libs/gst/pbutils/missing-plugins.h
- gst-libs/gst/pbutils/pbutils.c
- gst-libs/gst/pbutils/pbutils.h
- gst-libs/gst/tag/lang.c
- gst-libs/gst/tag/licenses.c
- gst-libs/gst/tag/mklangtables.c
- gst-libs/gst/tag/mklicensestables.c
- gst/subparse/gstssaparse.c
- gst/subparse/gstssaparse.h
- gst/subparse/tmplayerparse.c
- gst/subparse/tmplayerparse.h
- tests/check/elements/alsa.c
- tests/check/elements/audiorate.c
- tests/check/elements/playbin.c
- tests/check/elements/subparse.c
- tests/check/elements/textoverlay.c
- tests/check/gst/typefindfunctions.c
- tests/check/libs/gstlibscpp.cc
- tests/check/libs/pbutils.c
- tests/check/libs/rtp.c
- tests/check/libs/tag.c
- tests/icles/test-textoverlay.c
-Copyright: 2005, Tim-Philipp Müller <tim centricular net>
-  2005-2006, Tim-Philipp Müller <tim centricular net>
-  2006, Tim-Philipp Müller <tim centricular net>
-  2006-2008, Tim-Philipp Müller <tim centricular net>
-  2006-2011, Tim-Philipp Müller <tim centricular net>
-  2007, Tim-Philipp Müller <tim centricular net>
-  2009, Tim-Philipp Müller <tim centricular net>
-  2010, Tim-Philipp Müller <tim centricular net>
-  2011, Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: ext/cdparanoia/gstcdparanoiasrc.c
- ext/ogg/gstogg.c
- ext/vorbis/gstivorbisdec.c
- ext/vorbis/gstvorbis.c
- ext/vorbis/gstvorbisdec.h
- ext/vorbis/gstvorbisenc.c
- ext/vorbis/gstvorbisenc.h
- gst-libs/gst/audio/audio.c
- gst-libs/gst/audio/audio.h
- gst-libs/gst/audio/gstaudiofilter.h
- gst-libs/gst/video/gstvideofilter.h
- gst/audiorate/gstaudiorate.c
- gst/audiorate/gstaudiorate.h
- gst/tcp/gsttcpclientsink.h
- gst/tcp/gsttcpplugin.c
- gst/videorate/gstvideorate.c
- gst/videorate/gstvideorate.h
- gst/videoscale/gstvideoscale.h
- gst/videotestsrc/videotestsrc.c
- tests/icles/playback/decodetest.c
- tests/icles/playback/test2.c
- tests/icles/playback/test3.c
- tests/icles/playback/test4.c
- tests/icles/playback/test5.c
- tests/icles/playback/test6.c
-Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
-License: LGPL-2+
-
-Files: gst-libs/gst/audio/mixer.c
- gst-libs/gst/audio/mixer.h
- gst-libs/gst/audio/mixeroptions.c
- gst-libs/gst/audio/mixeroptions.h
- gst-libs/gst/audio/mixertrack.c
- gst-libs/gst/audio/mixertrack.h
- gst-libs/gst/interfaces/tuner.c
- gst-libs/gst/interfaces/tuner.h
- gst-libs/gst/interfaces/tunerchannel.c
- gst-libs/gst/interfaces/tunerchannel.h
- gst-libs/gst/interfaces/tunernorm.c
- gst-libs/gst/interfaces/tunernorm.h
- gst-libs/gst/riff/riff-ids.h
- gst-libs/gst/riff/riff-media.c
- gst-libs/gst/riff/riff-media.h
- gst-libs/gst/riff/riff-read.c
- gst-libs/gst/riff/riff-read.h
- gst-libs/gst/riff/riff.c
- gst-libs/gst/video/colorbalance.c
- gst-libs/gst/video/colorbalance.h
- gst-libs/gst/video/colorbalancechannel.c
- gst-libs/gst/video/colorbalancechannel.h
- gst/audioconvert/audioconvert.h
- gst/audioconvert/gstchannelmix.h
-Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
-  2004, Ronald Bultje <rbultje@ronald.bitfreak.net>
-License: LGPL-2+
-
-Files: ext/pango/gsttextoverlay.h
- ext/vorbis/gstvorbiscommon.c
- ext/vorbis/gstvorbiscommon.h
- gst-libs/gst/audio/streamvolume.c
- gst-libs/gst/audio/streamvolume.h
- gst/audioconvert/gstfastrandom.h
- gst/audioresample/speex_resampler_double.c
- gst/audioresample/speex_resampler_float.c
- gst/audioresample/speex_resampler_int.c
- gst/audioresample/speex_resampler_wrapper.h
- gst/playback/gststreamsynchronizer.c
- gst/playback/gststreamsynchronizer.h
- gst/playback/gstsubtitleoverlay.c
- gst/playback/gstsubtitleoverlay.h
- tests/examples/gio/giosrc-mounting.c
-Copyright: 2007-2008, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-  2008, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-  2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-  2011, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: ext/alsa/gstalsasink.h
- ext/alsa/gstalsasrc.c
- ext/alsa/gstalsasrc.h
- ext/ogg/gstogg.h
- ext/ogg/gstoggaviparse.c
- ext/ogg/gstoggdemux.c
- ext/ogg/gstoggdemux.h
- ext/ogg/vorbis_parse.h
- ext/theora/gsttheoraenc.c
- ext/theora/gsttheoraenc.h
- gst-libs/gst/audio/gstaudioringbuffer.c
- gst-libs/gst/rtsp/gstrtspextension.h
- tests/check/libs/libsabi.c
- tests/examples/playback/playback-test.c
- tests/examples/seek/jsseek.c
-Copyright: 2004, Wim Taymans <wim@fluendo.com>
-  2005, Wim Taymans <wim@fluendo.com>
-  2006, Wim Taymans <wim@fluendo.com>
-  2007, Wim Taymans <wim@fluendo.com>
-License: LGPL-2+
-
-Files: ext/cdparanoia/gstcdparanoiasrc.h
- gst-libs/gst/audio/gstaudiobasesink.c
- gst-libs/gst/audio/gstaudiobasesink.h
- gst-libs/gst/audio/gstaudiobasesrc.c
- gst-libs/gst/audio/gstaudiobasesrc.h
- gst-libs/gst/audio/gstaudioclock.c
- gst-libs/gst/audio/gstaudioclock.h
- gst-libs/gst/audio/gstaudioringbuffer.h
- gst-libs/gst/audio/gstaudiosink.c
- gst-libs/gst/audio/gstaudiosink.h
- gst-libs/gst/audio/gstaudiosrc.c
- gst-libs/gst/audio/gstaudiosrc.h
- gst/adder/gstadder.c
- gst/adder/gstadder.h
-Copyright: 1999, Erik Walthinsen <omega@cse.ogi.edu>
-  1999-2000, Erik Walthinsen <omega@cse.ogi.edu>
-License: LGPL-2+
-
-Files: gst-libs/gst/fft/_kiss_fft_guts_f32.h
- gst-libs/gst/fft/_kiss_fft_guts_f64.h
- gst-libs/gst/fft/_kiss_fft_guts_s16.h
- gst-libs/gst/fft/_kiss_fft_guts_s32.h
- gst-libs/gst/fft/kiss_fft_f32.c
- gst-libs/gst/fft/kiss_fft_f64.c
- gst-libs/gst/fft/kiss_fft_s16.c
- gst-libs/gst/fft/kiss_fft_s32.c
- gst-libs/gst/fft/kiss_fftr_f32.c
- gst-libs/gst/fft/kiss_fftr_f64.c
- gst-libs/gst/fft/kiss_fftr_s16.c
- gst-libs/gst/fft/kiss_fftr_s32.c
-Copyright: 2003-2004, Mark Borgerding
-License: BSD (2 clause)
-
-Files: gst/gdp/gstgdp.c
- gst/gdp/gstgdpdepay.c
- gst/gdp/gstgdpdepay.h
- gst/gdp/gstgdppay.c
- gst/gdp/gstgdppay.h
- tests/check/elements/gdpdepay.c
- tests/check/elements/gdppay.c
- tests/check/elements/multifdsink.c
- tests/check/elements/multisocketsink.c
- tests/check/elements/videorate.c
- tests/check/pipelines/streamheader.c
- tests/check/pipelines/vorbisdec.c
-Copyright: 2006, Thomas Vander Stichele <thomas at apestaart dot org>
-  2007, Thomas Vander Stichele <thomas at apestaart dot org>
-License: LGPL-2+
-
-Files: gst-libs/gst/rtsp/gstrtspdefs.c
- gst-libs/gst/rtsp/gstrtspdefs.h
- gst-libs/gst/rtsp/gstrtspmessage.c
- gst-libs/gst/rtsp/gstrtspmessage.h
- gst-libs/gst/rtsp/gstrtsprange.c
- gst-libs/gst/rtsp/gstrtsprange.h
- gst-libs/gst/rtsp/gstrtsptransport.h
- gst-libs/gst/rtsp/gstrtspurl.c
- gst-libs/gst/rtsp/gstrtspurl.h
- gst-libs/gst/sdp/gstsdp.h
- gst-libs/gst/sdp/gstsdpmessage.c
- gst-libs/gst/sdp/gstsdpmessage.h
-Copyright: <2005-2006> Wim Taymans <wim@fluendo.com>
-License: MIT/X11 (BSD like) LGPL-2+
-
-Files: gst-libs/gst/rtsp/gstrtsp.h
- gst-libs/gst/rtsp/gstrtspextension.c
- tests/examples/app/appsrc-ra.c
- tests/examples/app/appsrc-seekable.c
- tests/examples/app/appsrc-stream.c
- tests/examples/app/appsrc-stream2.c
- tests/examples/seek/stepping.c
- tests/examples/seek/stepping2.c
- tests/icles/playbin-text.c
- tests/icles/test-box.c
- tests/icles/test-scale.c
-Copyright: 2007, Wim Taymans <wim.taymans@gmail.com>
-  2008, Wim Taymans <wim.taymans@gmail.com>
-  2009, Wim Taymans <wim.taymans@gmail.com>
-License: LGPL-2+
-
-Files: gst-libs/gst/fft/gstfft.c
- gst-libs/gst/fft/gstfft.h
- gst-libs/gst/fft/gstfftf32.c
- gst-libs/gst/fft/gstfftf32.h
- gst-libs/gst/fft/gstfftf64.c
- gst-libs/gst/fft/gstfftf64.h
- gst-libs/gst/fft/gstffts16.c
- gst-libs/gst/fft/gstffts16.h
- gst-libs/gst/fft/gstffts32.c
- gst-libs/gst/fft/gstffts32.h
-Copyright: <2007> Sebastian Dröge <slomo@circular-chaos.org>
-License: LGPL-2+
-
-Files: gst-libs/gst/rtp/gstrtppayloads.c
- gst-libs/gst/rtp/gstrtppayloads.h
- gst/playback/gstplay-enum.c
- gst/playback/gstplay-enum.h
- gst/playback/gstplayback.c
- gst/playback/gstplayback.h
- gst/playback/gstplaysink.h
- gst/playback/gsturidecodebin.c
- tests/examples/snapshot/snapshot.c
- tests/icles/playback/test7.c
-Copyright: <2007> Wim Taymans <wim.taymans@gmail.com>
-License: LGPL-2+
-
-Files: gst-libs/gst/pbutils/encoding-profile.c
- gst-libs/gst/pbutils/encoding-profile.h
- gst-libs/gst/pbutils/encoding-target.c
- gst-libs/gst/pbutils/encoding-target.h
- gst/encoding/gstencodebin.c
- gst/encoding/gstencodebin.h
- gst/encoding/gststreamcombiner.c
- gst/encoding/gststreamcombiner.h
- gst/encoding/gststreamsplitter.c
- gst/encoding/gststreamsplitter.h
-Copyright: 2009, Edward Hervey <edward.hervey@collabora.co.uk>
-  2009, Nokia Corporation
-  2009-2010, Edward Hervey <edward.hervey@collabora.co.uk>
-  2009-2010, Nokia Corporation
-  2010, Edward Hervey <edward.hervey@collabora.co.uk>
-  2010, Nokia Corporation
-License: LGPL-2+
-
-Files: sys/ximage/ximagepool.c
- sys/ximage/ximagepool.h
- sys/ximage/ximagesink.c
- sys/ximage/ximagesink.h
- sys/xvimage/xvimagepool.c
- sys/xvimage/xvimagepool.h
- sys/xvimage/xvimagesink.c
- sys/xvimage/xvimagesink.h
- tests/icles/stress-videooverlay.c
-Copyright: <2005> Julien Moutte <julien@moutte.net>
-License: LGPL-2+
-
-Files: ext/alsa/gstalsamixer.c
- ext/alsa/gstalsamixer.h
- ext/alsa/gstalsamixerelement.c
- ext/alsa/gstalsamixerelement.h
- ext/alsa/gstalsamixeroptions.c
- ext/alsa/gstalsamixeroptions.h
- ext/alsa/gstalsamixertrack.c
- ext/alsa/gstalsamixertrack.h
-Copyright: 2003, Leif Johnson <leif@ambient.2y.net>
-License: LGPL-2+
-
-Files: gst/gdp/dp-private.h
- gst/tcp/gstmultifdsink.h
- gst/tcp/gsttcp.h
- gst/tcp/gsttcpclientsrc.h
- gst/tcp/gsttcpserversink.c
- gst/tcp/gsttcpserversink.h
- gst/tcp/gsttcpserversrc.h
-Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2004> Thomas Vander Stichele <thomas at apestaart dot org>
-License: LGPL-2+
-
-Files: gst-libs/gst/audio/gstaudiometa.c
- gst-libs/gst/audio/gstaudiometa.h
- gst-libs/gst/video/gstvideometa.c
- gst-libs/gst/video/gstvideometa.h
- gst-libs/gst/video/gstvideopool.c
- gst-libs/gst/video/gstvideopool.h
- gst-libs/gst/video/video.h
-Copyright: <2011> Wim Taymans <wim.taymans@gmail.com>
-License: LGPL-2+
-
-Files: ext/theora/gsttheora.c
- ext/theora/gsttheoradec.c
- ext/theora/gsttheoradec.h
- ext/vorbis/gstvorbisdec.c
- gst-libs/gst/tag/gstid3tag.c
- gst-libs/gst/tag/gsttageditingprivate.h
- gst-libs/gst/tag/gstvorbistag.c
-Copyright: 2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
-  2004, Benjamin Otte <in7y118@public.uni-hamburg.de>
-License: LGPL-2+
-
-Files: gst/gio/gstgio.c
- gst/gio/gstgiobasesink.c
- gst/gio/gstgiobasesrc.c
- gst/gio/gstgiosink.c
- gst/gio/gstgiosrc.c
- gst/gio/gstgiostreamsink.c
- gst/gio/gstgiostreamsrc.c
-Copyright: 2007, Rene Stadler <mail@renestadler.de>
-  2007, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-  2007-2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst/gio/gstgio.h
- gst/gio/gstgiobasesink.h
- gst/gio/gstgiobasesrc.h
- gst/gio/gstgiosink.h
- gst/gio/gstgiosrc.h
- gst/gio/gstgiostreamsink.h
- gst/gio/gstgiostreamsrc.h
-Copyright: 2007, Rene Stadler <mail@renestadler.de>
-  2007, Sebastian Dröge <slomo@circular-chaos.org>
-  2007-2009, Sebastian Dröge <slomo@circular-chaos.org>
-License: LGPL-2+
-
-Files: gst-libs/gst/tag/gstexiftag.c
- gst-libs/gst/tag/gsttageditingprivate.c
- gst-libs/gst/tag/xmpwriter.c
- gst-libs/gst/tag/xmpwriter.h
- tests/check/elements/appsrc.c
- tests/check/libs/xmpwriter.c
- tests/check/pipelines/capsfilter-renegotiation.c
-Copyright: 2010, Thiago Santos <thiago.sousa.santos@collabora.co.uk>
-  2011, Thiago Santos <thiago.sousa.santos@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst/videoscale/vs_4tap.h
- gst/videoscale/vs_image.c
- gst/videoscale/vs_image.h
- gst/videoscale/vs_lanczos.c
- gst/videoscale/vs_scanline.c
- gst/videoscale/vs_scanline.h
-Copyright: 2005, David A. Schleef <ds@schleef.org>
-  2005-2012, David A. Schleef <ds@schleef.org>
-  2011, David A. Schleef <ds@schleef.org>
-License: BSD (2 clause)
-
-Files: tests/check/elements/adder.c
- tests/check/elements/audiotestsrc.c
- tests/check/elements/volume.c
- tests/check/elements/vorbisdec.c
- tests/check/elements/vorbistag.c
- tests/check/generic/states.c
-Copyright: <2005> Thomas Vander Stichele <thomas at apestaart dot org>
-License: LGPL-2+
-
-Files: ext/ogg/gstoggstream.h
- gst-libs/gst/app/gstappsink.h
- gst-libs/gst/app/gstappsrc.h
- gst-libs/gst/glib-compat-private.h
- gst/app/gstapp.c
- gst/videoconvert/videoconvert.h
-Copyright: 2005, David Schleef <ds@schleef.org>
-  2007, David Schleef <ds@schleef.org>
-  2009, David Schleef <ds@schleef.org>
-  2010, David Schleef <ds@schleef.org>
-License: LGPL-2+
-
-Files: gst/audioresample/arch.h
- gst/audioresample/fixed_arm4.h
- gst/audioresample/fixed_arm5e.h
- gst/audioresample/fixed_debug.h
- gst/audioresample/fixed_generic.h
-Copyright: 2003, Jean-Marc Valin */
-  2004, Jean-Marc Valin */
-License: BSD (3 clause)
-
-Files: gst/tcp/gstmultihandlesink.h
- gst/tcp/gstmultisocketsink.h
- gst/tcp/gsttcpclientsink.c
- gst/tcp/gsttcpclientsrc.c
- gst/tcp/gsttcpserversrc.c
-Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2004> Thomas Vander Stichele <thomas at apestaart dot org>
-  <2011> Collabora Ltd
-License: LGPL-2+
-
-Files: gst-libs/gst/pbutils/gstdiscoverer.c
- gst-libs/gst/pbutils/gstdiscoverer.h
- gst-libs/gst/pbutils/pbutils-private.h
- tests/examples/encoding/encoding.c
- tools/gst-discoverer.c
-Copyright: 2009, Edward Hervey <edward.hervey@collabora.co.uk>
-  2010, Edward Hervey <edward.hervey@collabora.co.uk>
-License: LGPL-2+
-
-Files: ext/pango/gstclockoverlay.c
- ext/pango/gstclockoverlay.h
- ext/pango/gsttimeoverlay.c
- ext/pango/gsttimeoverlay.h
-Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2005> Tim-Philipp Müller <tim@centricular.net>
-License: LGPL-2+
-
-Files: gst/playback/gstplaysinkaudioconvert.c
- gst/playback/gstplaysinkaudioconvert.h
- gst/playback/gstplaysinkvideoconvert.c
- gst/playback/gstplaysinkvideoconvert.h
-Copyright: <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst/audioconvert/plugin.c
- gst/audioconvert/plugin.h
- tests/check/pipelines/theoraenc.c
- tests/check/pipelines/vorbisenc.c
-Copyright: 2004, Andy Wingo <wingo at pobox.com>
-  2006, Andy Wingo <wingo at pobox.com>
-License: LGPL-2+
-
-Files: ext/vorbis/gstvorbisdeclib.c
- ext/vorbis/gstvorbisdeclib.h
- gst-libs/gst/audio/gstaudioencoder.c
- gst-libs/gst/audio/gstaudioencoder.h
-Copyright: 2010, Mark Nauwelaerts <mark.nauwelaerts@collabora.co.uk>
-  2010, Nokia Corporation.
-  2011, Mark Nauwelaerts <mark.nauwelaerts@collabora.co.uk>
-  2011, Nokia Corporation.
-License: LGPL-2+
-
-Files: gst/audioconvert/gstaudioquantize.c
- gst/audioconvert/gstaudioquantize.h
- tests/check/libs/fft.c
- tests/check/pipelines/gio.c
-Copyright: 2007, Sebastian Dröge <slomo@circular-chaos.org>
-License: LGPL-2+
-
-Files: gst/audiotestsrc/gstaudiotestsrc.c
- gst/audiotestsrc/gstaudiotestsrc.h
- tests/check/libs/discoverer.c
- tests/examples/fft/fftrange.c
-Copyright: 2005, Stefan Kost <ensonic@users.sf.net>
-  2011, Stefan Kost <ensonic@users.sf.net>
-License: LGPL-2+
-
-Files: common/coverage/coverage-report-entry.pl
- common/coverage/coverage-report.pl
- common/coverage/coverage-report.xsl
-Copyright: 2006, Daniel Berrange
-License: GPL-2+
-
-Files: gst/subparse/gstsubparse.h
- gst/videotestsrc/gstvideotestsrc.c
- gst/videotestsrc/gstvideotestsrc.h
-Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2002> David A. Schleef <ds@schleef.org>
-License: LGPL-2+
-
-Files: ext/theora/gsttheoraparse.c
- ext/theora/gsttheoraparse.h
- ext/vorbis/gstvorbisparse.c
-Copyright: 2006, Andy Wingo <wingo@pobox.com>
-  <2004> Thomas Vander Stichele <thomas at apestaart dot org>
-License: LGPL-2+
-
-Files: tests/examples/dynamic/sprinkle.c
- tests/examples/dynamic/sprinkle2.c
- tests/examples/dynamic/sprinkle3.c
-Copyright: <2009> Wim Taymans <wim dot taymans at gmail dot com>
-License: LGPL-2+
-
-Files: ext/alsa/gstalsa.h
- ext/alsa/gstalsadeviceprobe.h
- ext/alsa/gstalsaplugin.c
-Copyright: 2001, CodeFactory AB
-  2001, Thomas Nyberg <thomas@codefactory.se>
-  2001-2002, Andy Wingo <apwingo@eos.ncsu.edu>
-  2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
-License: LGPL-2+
-
-Files: gst/videoscale/vs_fill_borders.c
- gst/videoscale/vs_fill_borders.h
-Copyright: 2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: BSD (2 clause)
-
-Files: gst/tcp/gstmultihandlesink.c
- gst/tcp/gstmultisocketsink.c
-Copyright: 2006, Wim Taymans <wim at fluendo dot com>
-  <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2004> Thomas Vander Stichele <thomas at apestaart dot org>
-  <2011> Collabora Ltd
-License: LGPL-2+
-
-Files: sys/ximage/ximage.c
- sys/xvimage/xvimage.c
-Copyright: <2003> Julien Moutte <julien@moutte.net>
-License: LGPL-2+
-
-Files: gst-libs/gst/video/gstvideosink.c
- gst-libs/gst/video/gstvideosink.h
-Copyright: <2003> Julien Moutte <julien@moutte.net>
-  <2009> Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: ext/vorbis/gstvorbisparse.h
- tests/examples/audio/volume.c
-Copyright: <2004> Thomas Vander Stichele <thomas at apestaart dot org>
-License: LGPL-2+
-
-Files: gst-libs/gst/rtp/gstrtpbasedepayload.h
- gst-libs/gst/rtp/gstrtpbuffer.h
-Copyright: <2005> Philippe Khalaf <burger@speedy.org>
-License: LGPL-2+
-
-Files: gst-libs/gst/rtp/gstrtpbasepayload.c
- gst-libs/gst/rtp/gstrtpbasepayload.h
-Copyright: <2005> Wim Taymans <wim@fluendo.com>
-License: LGPL-2+
-
-Files: gst-libs/gst/rtp/gstrtpbaseaudiopayload.c
- gst-libs/gst/rtp/gstrtpbaseaudiopayload.h
-Copyright: <2006> Philippe Khalaf <philippe.kalaf@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst-libs/gst/rtp/gstrtcpbuffer.c
- gst-libs/gst/rtp/gstrtcpbuffer.h
-Copyright: <2007> Wim Taymans <wim@fluendo.com>
-License: LGPL-2+
-
-Files: tests/icles/test-colorkey.c
- tests/icles/test-videooverlay.c
-Copyright: <2008> Stefan Kost <ensonic@users.sf.net>
-License: LGPL-2+
-
-Files: tests/check/elements/encodebin.c
- tests/check/libs/profile.c
-Copyright: <2009> Edward Hervey <edward.hervey@collabora.co.uk>
-License: LGPL-2+
-
-Files: tests/examples/overlay/qtgv-videooverlay.cpp
- tests/examples/overlay/qtgv-videooverlay.h
-Copyright: <2010> Alexander Bokovoy <ab@samba.org>
-License: LGPL-2+
-
-Files: tests/examples/encoding/gstcapslist.c
- tests/examples/encoding/gstcapslist.h
-Copyright: <2010> Edward Hervey <edward.hervey@collabora.co.uk>
-License: LGPL-2+
-
-Files: tests/examples/overlay/gtk-videooverlay.c
- tests/examples/overlay/qt-videooverlay.cpp
-Copyright: <2010> Stefan Kost <ensonic@users.sf.net>
-License: LGPL-2+
-
-Files: gst-libs/gst/pbutils/codec-utils.c
- gst-libs/gst/pbutils/codec-utils.h
-Copyright: 2010, Arun Raghavan <arun.raghavan@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst-libs/gst/app/gstappsink.c
- gst-libs/gst/app/gstappsrc.c
-Copyright: 2007, David Schleef <ds@schleef.org>
-  2008, Wim Taymans <wim.taymans@gmail.com>
-License: LGPL-2+
-
-Files: gst-libs/gst/audio/gstaudiodecoder.c
- gst-libs/gst/audio/gstaudiodecoder.h
-Copyright: 2009, Igalia S.L
-  2011, Mark Nauwelaerts <mark.nauwelaerts@collabora.co.uk>
-  2011, Nokia Corporation.
-License: LGPL-2+
-
-Files: gst-libs/gst/audio/gstaudioiec61937.c
- gst-libs/gst/audio/gstaudioiec61937.h
-Copyright: 2011, Intel Corporation
-License: LGPL-2+
-
-Files: gst-libs/gst/tag/gsttagdemux.c
- gst-libs/gst/tag/gsttagdemux.h
-Copyright: 2005, Jan Schmidt <thaytan@mad.scientist.com>
-  2006, Tim-Philipp Müller <tim centricular net>
-  2006-2007, Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: tests/check/libs/mixer.c
- tests/check/libs/navigation.c
-Copyright: 2007, Jan Schmidt <thaytan@noraisin.net>
-  2009, Jan Schmidt <thaytan@noraisin.net>
-License: LGPL-2+
-
-Files: gst/subparse/mpl2parse.c
- gst/subparse/mpl2parse.h
-Copyright: 2006, Kamil Pawlowski <kamilpe gmail com>
-License: LGPL-2+
-
-Files: ext/ogg/gstogmparse.c
- gst-libs/gst/audio/mixerutils.c
-Copyright: 2003-2004, Ronald Bultje <rbultje@ronald.bitfreak.net>
-  2004, Ronald Bultje <rbultje@ronald.bitfreak.net>
-  2005-2006, Tim-Philipp Müller <tim centricular net>
-  2006, Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: gst-libs/gst/pbutils/install-plugins.c
- gst-libs/gst/pbutils/install-plugins.h
-Copyright: 2006, Ryan Lortie <desrt desrt ca>
-  2007, Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: tests/check/elements/playbin-compressed.c
- tests/check/libs/audio.c
-Copyright: 2006, Tim-Philipp Müller <tim centricular net>
-  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-  2011, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: ext/ogg/gstoggmux.c
- ext/ogg/gstoggmux.h
-Copyright: 2004, Wim Taymans <wim@fluendo.com>
-  2006, Thomas Vander Stichele <thomas at apestaart dot org>
-License: LGPL-2+
-
-Files: gst/audioconvert/audioconvert.c
- gst/audioconvert/gstaudioconvert.h
-Copyright: 2005, Wim Taymans <wim at fluendo dot com>
-License: LGPL-2+
-
-Files: gst/videoscale/vs_4tap.c
-Copyright: 2005, David A. Schleef <ds@schleef.org>
-  2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: BSD (2 clause)
-
-Files: gst/audioresample/fixed_bfin.h
-Copyright: 2005, Analog Devices
-License: BSD (3 clause)
-
-Files: ext/ogg/vorbis_parse.c
-Copyright: 2003, Commonwealth Scientific and Industrial Research
-License: BSD (3 clause)
-
-Files: gst/audioresample/resample_sse.h
-Copyright: 2007-2008, Jean-Marc Valin
-  2008, Thorvald Natvig
-License: BSD (3 clause)
-
-Files: gst/audioresample/speex_resampler.h
-Copyright: 2007, Jean-Marc Valin
-License: BSD (3 clause)
-
-Files: gst/audioresample/resample.c
-Copyright: 2007-2008, Jean-Marc Valin
-  2008, Thorvald Natvig
-License: BSD (3 clause)
-
-Files: ltmain.sh
-Copyright: 1996-2001, 2003-2006
-License: GPL-2+
-
-Files: gst/playback/gstplaysink.c
-Copyright: ((GstPlayChain *))
-  <2007> Wim Taymans <wim.taymans@gmail.com>
-  <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst-libs/gst/video/gstvideofilter.c
-Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2003> David Schleef <ds@schleef.org>
-License: LGPL-2+
-
-Files: ext/pango/gstbasetextoverlay.c
-Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2003> David Schleef <ds@schleef.org>
-  <2006-2008> Tim-Philipp Müller <tim centricular net>
-  <2006> Julien Moutte <julien@moutte.net>
-  <2006> Zeeshan Ali <zeeshan.ali@nokia.com>
-  <2009> Young-Ho Cha <ganadist@gmail.com>
-License: LGPL-2+
-
-Files: ext/pango/gsttextoverlay.c
-Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2003> David Schleef <ds@schleef.org>
-  <2006-2008> Tim-Philipp Müller <tim centricular net>
-  <2006> Julien Moutte <julien@moutte.net>
-  <2006> Zeeshan Ali <zeeshan.ali@nokia.com>
-  <2009> Young-Ho Cha <ganadist@gmail.com>
-  <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst-libs/gst/audio/gstaudiofilter.c
-Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2003> David Schleef <ds@schleef.org>
-  <2007> Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: ext/pango/gsttextrender.c
-Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2003> David Schleef <ds@schleef.org>
-  <2009> Young-Ho Cha <ganadist@gmail.com>
-License: LGPL-2+
-
-Files: gst/tcp/gstmultifdsink.c
-Copyright: 2006, Wim Taymans <wim at fluendo dot com>
-  <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2004> Thomas Vander Stichele <thomas at apestaart dot org>
-License: LGPL-2+
-
-Files: gst/audioresample/gstaudioresample.h
-Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2007-2008> Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: tests/icles/playback/test.c
-Copyright: <1999> Erik Walthinsen <omega@cse.ogi.edu>
-  <2007> Wim Taymans <wim.taymans@gmail.com>
-License: LGPL-2+
-
-Files: gst-libs/gst/video/video.c
-Copyright: 2007, David A. Schleef <ds@schleef.org>
-  <1999> Erik Walthinsen <omega@cse.ogi.edu>
-License: LGPL-2+
-
-Files: gst/videoscale/gstvideoscale.c
-Copyright: 2005-2012, David Schleef <ds@schleef.org>
-  <1999> Erik Walthinsen <omega@cse.ogi.edu>
-License: LGPL-2+
-
-Files: gst/videoconvert/gstvideoconvert.c
-Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
-  2010, David Schleef <ds@schleef.org>
-  <1999> Erik Walthinsen <omega@cse.ogi.edu>
-License: LGPL-2+
-
-Files: gst/videoconvert/gstvideoconvert.h
-Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
-  <1999> Erik Walthinsen <omega@cse.ogi.edu>
-License: LGPL-2+
-
-Files: gst/subparse/gstsubparse.c
-Copyright: 2004, Ronald S. Bultje <rbultje@ronald.bitfreak.net>
-  2006, Tim-Philipp Müller <tim centricular net>
-  <1999> Erik Walthinsen <omega@cse.ogi.edu>
-License: LGPL-2+
-
-Files: gst/volume/gstvolume.h
-Copyright: 2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-  <1999> Erik Walthinsen <omega@cse.ogi.edu>
-License: LGPL-2+
-
-Files: gst/gdp/dataprotocol.c
-Copyright: 2004,2006, Thomas Vander Stichele <thomas at apestaart dot org>
-  <1999> Erik Walthinsen <omega@cse.ogi.edu>
-License: LGPL-2+
-
-Files: gst/videotestsrc/videotestsrc.h
-Copyright: <2003> David A. Schleef <ds@schleef.org>
-License: LGPL-2+
-
-Files: tests/check/libs/video.c
-Copyright: <2003> David A. Schleef <ds@schleef.org>
-  <2006> Jan Schmidt <thaytan@mad.scientist.com>
-  <2008,2011> Tim-Philipp Müller <tim centricular net>
-  <2012> Collabora Ltd. <tim.muller@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst-libs/gst/rtp/gstrtpbasedepayload.c
-Copyright: <2005> Nokia Corporation <kai.vehmanen@nokia.com>
-  <2005> Philippe Khalaf <burger@speedy.org>
-License: LGPL-2+
-
-Files: gst-libs/gst/rtp/gstrtpbuffer.c
-Copyright: <2005> Philippe Khalaf <burger@speedy.org>
-  <2006> Wim Taymans <wim@fluendo.com>
-License: LGPL-2+
-
-Files: tests/check/elements/audioresample.c
-Copyright: <2005> Thomas Vander Stichele <thomas at apestaart dot org>
-  <2006> Tim-Philipp Müller <tim at centricular net>
-License: LGPL-2+
-
-Files: tests/check/elements/videotestsrc.c
-Copyright: <2005> Thomas Vander Stichele <thomas at apestaart dot org>
-  <2006> Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: tests/check/elements/audioconvert.c
-Copyright: <2005> Thomas Vander Stichele <thomas at apestaart dot org>
-  <2007> Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: tests/check/libs/audiocdsrc.c
-Copyright: <2005> Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: tests/check/generic/clock-selection.c
-Copyright: <2005> Wim Taymans <wim at fluendo dot com>
-License: LGPL-2+
-
-Files: gst/playback/gstdecodebin2.c
-Copyright: <2006> Edward Hervey <edward@fluendo.com>
-  <2009> Sebastian Dröge <sebastian.droege@collabora.co.uk>
-  <2011> Hewlett-Packard Development Company, L.P
-License: LGPL-2+
-
-Files: ext/vorbis/gstvorbistag.h
-Copyright: <2006> James Livingston <doclivingston@gmail.com>
-License: LGPL-2+
-
-Files: tests/examples/dynamic/addstream.c
-Copyright: <2007> Wim Taymans <wim dot taymans at gmail dot com>
-License: LGPL-2+
-
-Files: gst/playback/gstplaybin2.c
-Copyright: <2007> Wim Taymans <wim.taymans@gmail.com>
-  <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: tests/examples/dynamic/codec-select.c
-Copyright: <2008> Wim Taymans <wim dot taymans at gmail dot com>
-License: LGPL-2+
-
-Files: tests/check/elements/videoscale.c
-Copyright: <2009-2010> Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst/playback/gstrawcaps.h
-Copyright: <2009> Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst/encoding/gstsmartencoder.h
-Copyright: <2010> Edward Hervey <bilboed@bilboed.com>
-License: LGPL-2+
-
-Files: gst/encoding/gstsmartencoder.c
-Copyright: <2010> Edward Hervey <bilboed@gmail.com>
-License: LGPL-2+
-
-Files: gst/playback/gstplaysinkconvertbin.h
-Copyright: <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
-  <2011> Vincent Penquerc'h <vincent.penquerch@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst/playback/gstplaysinkconvertbin.c
-Copyright: <2011> Sebastian Dröge <sebastian.droege@collabora.co.uk>
-  <2011> Vincent Penquerch <vincent.penquerch@collabora.co.uk>
-License: LGPL-2+
-
-Files: ext/alsa/gstalsadeviceprobe.c
-Copyright: 2001, CodeFactory AB
-  2001, Thomas Nyberg <thomas@codefactory.se>
-  2001-2002, Andy Wingo <apwingo@eos.ncsu.edu>
-  2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
-  2005, Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: tests/check/libs/rtsp.c
-Copyright: 2010, Andy Wingo <wingo@oblong.com>
-License: LGPL-2+
-
-Files: tests/check/pipelines/simple-launch-lines.c
-Copyright: 2005, Andy Wingo <wingo@pobox.com>
-License: LGPL-2+
-
-Files: gst/volume/gstvolume.c
-Copyright: 1999-2001, Erik Walthinsen <omega@cse.ogi.edu>
-  2005, Andy Wingo <wingo@pobox.com>
-  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: tests/check/elements/appsink.c
-Copyright: 2009, Axis Communications AB, LUND, SWEDEN
-License: LGPL-2+
-
-Files: gst/typefind/gsttypefindfunctions.c
-Copyright: 2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
-  2005-2009, Tim-Philipp Müller <tim centricular net>
-  2009, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst/audioconvert/gstaudioconvert.c
-Copyright: 2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
-  2005, Thomas Vander Stichele <thomas at apestaart dot org>
-  2011, Wim Taymans <wim.taymans at gmail dot com>
-License: LGPL-2+
-
-Files: gst-libs/gst/tag/tag.h
-Copyright: 2003, Benjamin Otte <in7y118@public.uni-hamburg.de>
-  2006-2011, Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: ext/libvisual/visual.c
-Copyright: 2004, Benjamin Otte <otte@gnome.org>
-License: LGPL-2+
-
-Files: gst-libs/gst/video/convertframe.c
-Copyright: 2005, Tim-Philipp Müller <tim centricular net>
-  2010, Brandon Lewis <brandon.lewis@collabora.co.uk>
-  2010, Edward Hervey <edward.hervey@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst-libs/gst/tag/gsttagmux.c
-Copyright: 2006, Christophe Fergeau <teuf@gnome.org>
-  2006, Sebastian Dröge <slomo@circular-chaos.org>
-  2006, Tim-Philipp Müller <tim centricular net>
-  2009, Pioneers of the Inevitable <songbird@songbirdnest.com>
-License: LGPL-2+
-
-Files: gst-libs/gst/tag/gsttagmux.h
-Copyright: 2006, Christophe Fergeau <teuf@gnome.org>
-  2006,2011, Tim-Philipp Müller <tim centricular net>
-  2009, Pioneers of the Inevitable <songbird@songbirdnest.com>
-License: LGPL-2+
-
-Files: gst-libs/gst/pbutils/gstdiscoverer-types.c
-Copyright: 2010, Collabora Multimedia
-License: LGPL-2+
-
-Files: gst/audioresample/gstaudioresample.c
-Copyright: 1999, Erik Walthinsen <omega@cse.ogi.edu>
-  2003-2004, David A. Schleef <ds@schleef.org>
-  2007-2008, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst-libs/gst/interfaces/navigation.h
-Copyright: 2003, David A. Schleef <ds@schleef.org>
-  2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
-License: LGPL-2+
-
-Files: gst/videoconvert/videoconvert.c
-Copyright: 2010, David Schleef <ds@schleef.org>
-  2010, Sebastian Dröge <sebastian.droege@collabora.co.uk>
-License: LGPL-2+
-
-Files: ext/ogg/gstoggstream.c
-Copyright: 2006, Tim-Philipp Müller <tim centricular net>
-  2009, David Schleef <ds@schleef.org>
-License: LGPL-2+
-
-Files: gst/gdp/dataprotocol.h
-Copyright: 1999, Erik Walthinsen <omega@cse.ogi.edu>
-  2004,2006, Thomas Vander Stichele <thomas at apestaart dot org>
-License: LGPL-2+
-
-Files: gst-libs/gst/gettext.h
-Copyright: 1995-1998, 2000-2002, Free Software Foundation, Inc
-License: LGPL-2+
-
-Files: tests/check/elements/decodebin.c
-Copyright: 2006, Tim-Philipp Müller <tim centricular net>
-  2011, Hewlett-Packard Development Company, L.P
-License: LGPL-2+
-
-Files: tests/check/pipelines/oggmux.c
-Copyright: 2006, James Livingston <doclivingston at gmail.com>
-License: LGPL-2+
-
-Files: ext/vorbis/gstvorbistag.c
-Copyright: 2006, James Livingston <doclivingston@gmail.com>
-License: LGPL-2+
-
-Files: gst-libs/gst/tag/id3v2.h
-Copyright: 2005, Jan Schmidt <thaytan@mad.scientist.com>
-License: LGPL-2+
-
-Files: gst-libs/gst/tag/id3v2.c
-Copyright: 2002-2003, Scott Wheeler <wheeler@kde.org> (portions from taglib)
-  2005, Jan Schmidt <thaytan@mad.scientist.com>
-License: LGPL-2+
-
-Files: gst-libs/gst/tag/id3v2frames.c
-Copyright: 2002-2003, Scott Wheeler <wheeler@kde.org> (portions from taglib)
-  2005, Jan Schmidt <thaytan@mad.scientist.com>
-  2006-2008, Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: gst-libs/gst/interfaces/navigation.c
-Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
-  2007-2009, Jan Schmidt <thaytan@noraisin.net>
-License: LGPL-2+
-
-Files: tests/icles/input-selector-test.c
-Copyright: 2003, Julien Moutte <julien@moutte.net>
-License: LGPL-2+
-
-Files: gst-libs/gst/video/videooverlay.h
-Copyright: 2003, Julien Moutte <julien@moutte.net>
-  2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
-  2011, Tim-Philipp Müller <tim@centricular.net>
-License: LGPL-2+
-
-Files: tests/check/pipelines/basetime.c
-Copyright: 2009, Maemo Multimedia <multimedia at maemo dot org>
-License: LGPL-2+
-
-Files: ext/ogg/gstoggparse.c
-Copyright: 2005, Michael Smith <msmith@fluendo.com>
-License: LGPL-2+
-
-Files: gst-libs/gst/video/videoorientation.h
-Copyright: 2006, Nokia <stefan.kost@nokia.com
-License: LGPL-2+
-
-Files: gst-libs/gst/video/videoorientation.c
-Copyright: 2006, Nokia <stefan.kost@nokia.com>
-License: LGPL-2+
-
-Files: gst/audioconvert/gstchannelmix.c
-Copyright: 2004, Ronald Bultje <rbultje@ronald.bitfreak.net>
-  2008, Sebastian Dröge <slomo@circular-chaos.org>
-License: LGPL-2+
-
-Files: gst-libs/gst/video/videooverlay.c
-Copyright: 2003, Ronald Bultje <rbultje@ronald.bitfreak.net>
-  2011, Tim-Philipp Müller <tim@centricular.net>
-License: LGPL-2+
-
-Files: gst-libs/gst/tag/tags.c
-Copyright: 2005, Ross Burton <ross@burtonini.com>
-  2006-2008, Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: gst-libs/gst/tag/gstxmptag.c
-Copyright: 2010, Stefan Kost <stefan.kost@nokia.com>
-  2010, Thiago Santos <thiago.sousa.santos@collabora.co.uk>
-License: LGPL-2+
-
-Files: tests/examples/audio/audiomix.c
-Copyright: 2011, Stefan Sauer <ensonic@users.sf.net>
-License: LGPL-2+
-
-Files: gst/subparse/qttextparse.h
-Copyright: 2009, Thiago Santos <thiago.sousa.santos collabora co uk>
-License: LGPL-2+
-
-Files: gst/subparse/qttextparse.c
-Copyright: 2009, Thiago Santos <thiago.sousa.santos collabora co uk>>
-License: LGPL-2+
-
-Files: gst-libs/gst/gst-i18n-plugin.h
-Copyright: 2004, Thomas Vander Stichele <thomas@apestaart.org>
-License: LGPL-2+
-
-Files: tests/check/elements/libvisual.c
-Copyright: 2007, Tim-Philipp Müller <tim at centricular net>
-License: LGPL-2+
-
-Files: ext/alsa/gstalsasink.c
-Copyright: 2005, Wim Taymans <wim@fluendo.com>
-  2006, Tim-Philipp Müller <tim centricular net>
-License: LGPL-2+
-
-Files: tests/examples/playrec/playrec.c
-Copyright: 2010, Wim Taymans <wim.taymans@collabora.co.uk>
-License: LGPL-2+
-
-Files: gst/subparse/samiparse.c
-Copyright: 2006, Young-Ho Cha <ganadist at chollian net>
-License: LGPL-2+
-
-Files: gst/subparse/samiparse.h
-Copyright: 2006, Young-Ho Cha <ganadist chollian net>
-License: LGPL-2+
-
-Files: gst-libs/gst/rtsp/gstrtspconnection.h
-Copyright: <2005,2009> Wim Taymans <wim.taymans@gmail.com>
-License: MIT/X11 (BSD like) LGPL-2+
-
-Files: gst-libs/gst/rtsp/gstrtsptransport.c
-Copyright: <2005-2007> Wim Taymans <wim@fluendo.com>
-License: MIT/X11 (BSD like) LGPL-2+
-
-Files: gst-libs/gst/rtsp/gstrtspconnection.c
-Copyright: <2005-2009> Wim Taymans <wim.taymans@gmail.com>
-License: MIT/X11 (BSD like) LGPL-2+
-
-Copyright:
-
-    This package is free software; you can redistribute it and/or
-    modify it under the terms of the GNU Lesser General Public
-    License as published by the Free Software Foundation; either
-    version 2 of the License, or (at your option) any later version.
-
-    This package is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-    Lesser General Public License for more details.
-
-    You should have received a copy of the GNU Lesser General Public
-    License along with this package; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
-
-On Debian GNU/Linux systems, the complete text of the GNU Lesser General
-Public License can be found in `/usr/share/common-licenses/LGPL'.
-```
-
-### 304. Used by libgstreamer1.0-0 (Ubuntu package)
+### 316. Used by libgstreamer1.0-0 (Ubuntu package)
 
 ```text
 This package was debianized by David I. Lehn <dlehn@debian.org> on
@@ -38701,7 +41633,7 @@ On Debian GNU/Linux systems, the complete text of the GNU Lesser General
 Public License can be found in `/usr/share/common-licenses/LGPL'.
 ```
 
-### 305. Used by libgudev-1.0-0 (Ubuntu package)
+### 317. Used by libgudev-1.0-0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -38729,7 +41661,7 @@ License: LGPL-2+
  Public License can be found in "/usr/share/common-licenses/LGPL-2".
 ```
 
-### 306. Used by libhogweed6t64 (Ubuntu package), libnettle8t64 (Ubuntu package)
+### 318. Used by libhogweed6t64 (Ubuntu package), libnettle8t64 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -39457,7 +42389,7 @@ License: Expat
  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 307. Used by libhyphen0 (Ubuntu package)
+### 319. Used by libhyphen0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -39920,7 +42852,7 @@ License: MPL-1.1+
  for Your Modifications.
 ```
 
-### 308. Used by libicu74 (Ubuntu package)
+### 320. Used by libicu74 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -39974,7 +42906,7 @@ License: GPL-3
  License version 3 can be found in `/usr/share/common-licenses/GPL-3'.
 ```
 
-### 309. Used by libidn2-0 (Ubuntu package)
+### 321. Used by libidn2-0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -40092,7 +43024,45 @@ License: Unicode
  written authorization of the copyright holder.
 ```
 
-### 310. Used by libjbig0 (Ubuntu package)
+### 322. Used by libiec61883-0 (Ubuntu package)
+
+```text
+This package was debianized by Marcio Roberto Teixeira <marciotex@gmail.com> on
+Mon, 12 Sep 2005 01:29:27 -0300.
+
+It was downloaded from
+http://www.linux1394.org/dl/
+
+Copyright 2002-2004
+	Kristian Høgsberg <krh@bitplanet.net> (cip and amdtp)
+	Dan Maas <dmaas@dcine.com> (dv, mpeg-2, tsbuffer)
+	Dan Dennedy <dan@dennedy.org> (dv, plug, cmp, mpeg-2)
+	Charles Yates <charles.yates@pandora.be> (deque)
+	Hugo Villeneuve <hugo@hugovil.com> (amdtp)
+	Jim Westfall <jwestfall@surrealistic.net> (mpeg-2)
+	Pieter Palmers <pieterp@joow.be> (amdtp)
+	Ushodaya Enterprises Limited
+License:
+
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
+
+On Debian systems, the complete text of the GNU Lesser General
+Public License can be found in `/usr/share/common-licenses/LGPL-2.1'.
+```
+
+### 323. Used by libjbig0 (Ubuntu package)
 
 ```text
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -40138,7 +43108,7 @@ License: GPL-2+
  Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
 ```
 
-### 311. Used by libjpeg-turbo8 (Ubuntu package)
+### 324. Used by libjpeg-turbo8 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -41383,7 +44353,7 @@ License: Zlib
  3. This notice may not be removed or altered from any source distribution.
 ```
 
-### 312. Used by libkeyutils1 (Ubuntu package)
+### 325. Used by libkeyutils1 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -41440,7 +44410,7 @@ License: LGPL-2+
  can be found in /usr/share/common-licenses/LGPL-2 file.
 ```
 
-### 313. Used by liblcms2-2 (Ubuntu package)
+### 326. Used by liblcms2-2 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -41556,7 +44526,7 @@ License: GPL-2+
  Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
 ```
 
-### 314. Used by libldap2 (Ubuntu package)
+### 327. Used by libldap2 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -43063,7 +46033,7 @@ License: BSD-3-clause
  SUCH DAMAGE.
 ```
 
-### 315. Used by liblerc4 (Ubuntu package)
+### 328. Used by liblerc4 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -43102,7 +46072,7 @@ License: Apache-2.0
  can be found in "/usr/share/common-licenses/Apache-2.0".
 ```
 
-### 316. Used by libloading 0.7.4, libloading 0.8.9
+### 329. Used by libloading 0.7.4, libloading 0.8.9
 
 ```text
 Copyright © 2015, Simonas Kazlauskas
@@ -43119,7 +46089,7 @@ NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE US
 THIS SOFTWARE.
 ```
 
-### 317. Used by liblz4-1 (Ubuntu package)
+### 330. Used by liblz4-1 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -43224,7 +46194,7 @@ License: BSD-2-clause
  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 318. Used by liblzma5 (Ubuntu package)
+### 331. Used by liblzma5 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -43617,7 +46587,7 @@ License: permissive-nowarranty
  without warranty of any kind.
 ```
 
-### 319. Used by libm 0.2.16
+### 332. Used by libm 0.2.16
 
 ```text
 rust-lang/libm as a whole is available for use under the MIT license:
@@ -43880,7 +46850,7 @@ have been licensed under extremely permissive terms.
 Copyright notices are retained in src/* files where relevant.
 ```
 
-### 320. Used by libmanette-0.2-0 (Ubuntu package)
+### 333. Used by libmanette-0.2-0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -43908,7 +46878,7 @@ License: LGPL-2.1+
  License version 2.1 can be found in "/usr/share/common-licenses/LGPL-2.1".
 ```
 
-### 321. Used by libmd0 (Ubuntu package)
+### 334. Used by libmd0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -44090,7 +47060,322 @@ License: public-domain-sha1
  100% Public Domain
 ```
 
-### 322. Used by libnghttp2-14 (Ubuntu package)
+### 335. Used by libmp3lame0 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: LAME
+Upstream-Contact: lame-dev@lists.sourceforge.net
+Source: https://lame.sourceforge.io/
+
+Files: *
+Copyright: © 1998, Michael Cheng
+           © 1999-2001, Mark Taylor
+           © 1999-2002, Albert L. Faber
+           © 1999-2005, Takehiro Tominaga
+           © 1999-2007, The LAME Project
+           © 2000-2005, Alexander Leidinger
+           © 2000-2005, Elecard Ltd.
+           © 2000-2005, Gabriel Bouvigne
+           © 2000-2005, Marie Orlova
+           © 2000-2005, Peter Gubanov
+           © 2000-2005, Vitaly Ivanov
+           © 2000-2008, Gabriel Bouvigne
+           © 2000-2008, Robert Hegemann
+           © 2000, Don Melton
+           © 2000, Frank Klemm
+           © 2001-2002, Naoki Shibata
+           © 2001, John Dahlstrom
+           © 2001, Jonathan Dee
+           © 2001, Ralf Kempkens
+           © 2002, Per Bolmstedt
+           © 2003, Olcios
+License: LGPL-2+
+
+Files: ACM/*
+       libmp3lame/gain_analysis.c
+       libmp3lame/gain_analysis.h
+Copyright: © 2001, David Robinson
+           © 2001, Glen Sawyer
+           © 2002, Steve Lhomme <steve.lhomme at free.fr>
+           © 2003, Gabriel Bouvigne
+           © 2003, Milan Cutka
+License: LGPL-2.1+
+
+Files: ACM/tinyxml/*
+Copyright: © 2000-2002, Lee Thomason (www.grinninglizard.com)
+License: zlib/libpng
+ This software is provided 'as-is', without any express or implied
+ warranty. In no event will the authors be held liable for any
+ damages arising from the use of this software.
+ .
+ Permission is granted to anyone to use this software for any
+ purpose, including commercial applications, and to alter it and
+ redistribute it freely, subject to the following restrictions:
+ .
+ 1. The origin of this software must not be misrepresented; you must
+ not claim that you wrote the original software. If you use this
+ software in a product, an acknowledgment in the product documentation
+ would be appreciated but is not required.
+ .
+ 2. Altered source versions must be plainly marked as such, and
+ must not be misrepresented as being the original software.
+ .
+ 3. This notice may not be removed or altered from any source
+ distribution.
+
+Files: ACM/ADbg/*
+Copyright: © 2001, Steve Lhomme
+License: BSD-3-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ .
+ - Redistributions of source code must retain the above copyright notice, this
+ list of conditions and the following disclaimer.
+ .
+ - Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
+ .
+ - The name of the author may not be used to endorse or promote products derived
+ from this software without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+ MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO
+ EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
+ OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
+ OF SUCH DAMAGE.
+
+Files: libmp3lame/i386/*
+Copyright: © 1999, Keiichi SAKAI
+           © 1999, shigeo
+           © 1999, URURI
+License: LGPL-2+
+Comment:
+ Though the license information is not explicitly given, these files are from
+ an open source MP3 encoder named gogo-no-coda, which is based off of LAME.
+ The gogo-no-coda developers (the developers mentioned above) have released
+ their work under LGPL-2. A copy of the source code to gogo-no-coda can be
+ downloaded from http://homepage2.nifty.com/kei-i/petit/petit313.tgz (as of
+ 07-26-2011).
+
+Files: libmp3lame/fft.c
+Copyright: © 1988-1993, Ron Mayer
+           © 1999-2000, Takehiro Tominaga
+License: GPL-1+
+Comment:
+ No version of the GPL is explicitly given.
+
+Files: debian/*
+Copyright: © 2005-2015, Fabian Greffrath <fabian@debian.org>
+           © 2009-2011, Andres Mejia <amejia@debian.org>
+License: LGPL-2+
+
+Files: misc/auenc
+Copyright: © 1999, Gerhard Wesp
+License: GPL-1+
+Comment:
+ No version of the GPL is explicitly given.
+
+License: GPL-1+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 1 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU General
+ Public License version 1 can be found in `/usr/share/common-licenses/GPL-1'.
+
+License: LGPL-2+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version.
+ .
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+ .
+ You should have received a copy of the GNU Library General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU Library General
+ Public License can be found in `/usr/share/common-licenses/LGPL-2'.
+
+License: LGPL-2.1+
+ This library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2.1 of the License, or (at your option) any later version.
+ .
+ This library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License can be found in `/usr/share/common-licenses/LGPL-2.1'.
+```
+
+### 336. Used by libmpg123-0t64 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: mpg123
+Upstream-Contact: maintainer@mpg123.org
+Source: http://sf.net/projects/mpg123/files/
+
+Files: *
+Copyright:
+  1995-2021 by the mpg123 project
+  2008 Christian Weisgerber <naddy@openbsd.org>
+  2006-2007 by Zuxy Meng
+  2000-2002 David Olofson
+  1998 Fabrice Bellard
+  1997 Mikko Tommila
+License: LGPL-2.1
+
+Files: debian/*
+Copyright:
+  2016-2021 Sebastian Ramacher <sramacher@debian.org>
+  2012 Miguel A. Colón Vélez <debian.micove@gmail.com>
+  2012-2014 Alessio Treglia <alessio@debian.org>
+  2002-2010 Daniel Kobras <kobras@debian.org>
+  2000-2001 Tommi Virtanen <tv@debian.org>
+  1997-1999 Paul Haggart <phaggart@debian.org>
+License: LGPL-2.1
+
+License: LGPL-2.1
+ This library is free software; you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License version 2.1 as published by
+ the Free Software Foundation.
+ .
+ This library is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE. See the GNU Lesser General Public License for more details.
+ .
+ On Debian systems, the complete text of the GNU Lesser General Public License
+ version 2.1 can be found in "/usr/share/common-licenses/LGPL-2.1".
+ .
+ You should have received a copy of the GNU Lesser General Public License along
+ with this library. If not, see <http://www.gnu.org/licenses/>.
+```
+
+### 337. Used by libncurses6 (Ubuntu package), libncursesw6 (Ubuntu package), libtinfo6 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: ncurses
+Upstream-Contact: bug-ncurses@gnu.org
+                  Thomas Dickey <dickey@his.com>
+Source: https://invisible-mirror.net/archives/ncurses/
+
+Files: *
+Copyright: 1998-2017,2018 Free Software Foundation, Inc.
+           1996-2023,2024 Thomas E. Dickey
+           2001 Pradeep Padala
+License: MIT/X11
+
+Files: install-sh
+Copyright: 1994 X Consortium
+License: X11
+
+Files: progs/tset.c ncurses/tinfo/read_termcap.c
+Copyright: 1980,1991,1992,1993 The Regents of the University of California
+License: BSD-3-clause
+
+License: MIT/X11
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, distribute with modifications, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+ THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ .
+ Except as contained in this notice, the name(s) of the above copyright
+ holders shall not be used in advertising or otherwise to promote the
+ sale, use or other dealings in this Software without prior written
+ authorization.
+
+License: X11
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to
+ deal in the Software without restriction, including without limitation the
+ rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ sell copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+ X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+ AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNEC-
+ TION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ .
+ Except as contained in this notice, the name of the X Consortium shall not
+ be used in advertising or otherwise to promote the sale, use or other deal-
+ ings in this Software without prior written authorization from the X Consor-
+ tium.
+
+License: BSD-3-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ 3. Neither the name of the University nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ SUCH DAMAGE.
+```
+
+### 338. Used by libnghttp2-14 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -44233,7 +47518,429 @@ License: BSD-2-clause
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 323. Used by liborc-0.4-0t64 (Ubuntu package)
+### 339. Used by libogg0 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: libogg
+Upstream-Contact: ogg-dev@xiph.org
+Source: https://xiph.org/downloads/
+License: BSD-3-clause
+
+Files: *
+Copyright: 1994-2020, the Xiph.Org Foundation http://www.xiph.org/
+License: BSD-3-clause
+
+Files: doc/rfc3533.txt
+Copyright: 2003, Silvia Pfeiffer <silviapfeiffer1@gmail.com>
+ 2003, The Internet Society
+License: rfc3533-license
+ Received: from mail-vw0-f52.google.com ([209.85.212.52])
+         by master.debian.org with esmtps (TLS1.0:RSA_ARCFOUR_SHA1:16)
+         (Exim 4.72)
+         (envelope-from <silviapfeiffer1@gmail.com>)
+         id 1QsTXr-0004MO-Ek
+         for ron@debian.org; Sun, 14 Aug 2011 05:47:35 +0000
+ In-Reply-To: <20110813065417.GV2324@audi.shelbyville.oz>
+ References: <20110813065417.GV2324@audi.shelbyville.oz>
+ From: Silvia Pfeiffer <silviapfeiffer1@gmail.com>
+ Date: Sun, 14 Aug 2011 15:47:09 +1000
+ Message-ID: <CAHp8n2nmGN+G09aA118KN86NeX9yw_VJAQNFZebm74k195zz+Q@mail.gmail.com>
+ Subject: Re: Distributing the libogg RFCs in the Debian package
+ To: Ron <ron@debian.org>
+ Cc: Christopher Montgomery <monty@xiph.org>,
+         Ivo Emanuel Goncalves <justivo@gmail.com>
+ .
+ Hi Ron,
+ .
+ I am happy to have the RFCs that I authored or co-authored to be
+ published with the additional license as stated below and permit those
+ RFCs to be distributed under the same terms as libogg itself.
+ .
+ Cheers,
+ Silvia.
+ .
+ > The author(s) agree to grant third parties the irrevocable
+ > right to copy, use and distribute the work, with or without
+ > modification, in any medium, without royalty, provided that,
+ > unless separate permission is granted, redistributed modified
+ > works do not contain misleading author, version, name of work,
+ > or endorsement information.
+
+
+Files: doc/rfc5334.txt
+Copyright: 2008, Ivo Emanuel Goncalves
+  2008, Silvia Pfeiffer <silviapfeiffer1@gmail.com>
+  2008, Christopher Montgomery <monty@xiph.org>,
+License: rfc5334-license
+
+Files: debian/*
+Copyright: 2012-2016, Ron Lee <ron@debian.org>
+ 2022, IOhannes m zmölnig <umlaeute@debian.org>
+License: BSD-3-clause
+
+Files: debian/tests/readogg.c
+Copyright: 2012, Nathan Rajlich <nathan@tootallnate.net>
+License: BSD-3-clause
+Comment:
+ File obtained from
+ https://github.com/gypified/libogg/blob/e4f952549fdcdf79c65beea93b3a9f8a2028cf4d/test.c
+
+
+License: BSD-3-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+ - Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ .
+ - Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ .
+ - Neither the name of the Xiph.Org Foundation nor the names of its
+ contributors may be used to endorse or promote products derived from
+ this software without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION
+ OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+License: rfc5334-license
+ 12.  Copying Conditions
+ .
+  The authors agree to grant third parties the irrevocable right to
+  copy, use and distribute the work, with or without modification, in
+  any medium, without royalty, provided that, unless separate
+  permission is granted, redistributed modified works do not contain
+  misleading author, version, name of work, or endorsement information.
+```
+
+### 340. Used by libopus0 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: opus
+Upstream-Contact: opus@xiph.org
+Source: https://www.opus-codec.org/
+License: BSD-3-clause
+
+Files: *
+Copyright: 2001-2023, Xiph.Org
+ 2001-2018, Skype Limited
+ 2001-2018, Octasic
+ 2001-2018, Jean-Marc Valin
+ 2001-2018, Timothy B. Terriberry
+ 2001-2018, CSIRO
+ 2001-2018, Gregory Maxwell
+ 2001-2018, Mark Borgerding
+ 2001-2018, Erik de Castro Lopo
+License: BSD-3-clause
+
+Files: celt/arm/celt_fft_ne10.c
+ celt/arm/celt_mdct_ne10.c
+ celt/arm/celt_neon_intr.c
+ celt/arm/fft_arm.h
+ celt/arm/mdct_arm.h
+ celt/celt_lpc.*
+ celt/tests/test_unit_dft.c
+ celt/tests/test_unit_mdct.c
+ celt/tests/test_unit_rotation.c
+ celt/tests/test_unit_types.c
+ include/opus_multistream.h
+ include/opus_types.h
+ src/analysis.*
+ src/opus_multistream*
+ src/opus_private.h
+ src/repacketizer*
+ tests/*
+Copyright: 1994-2015, Xiph.Org Foundation
+License: BSD-2-clause
+
+Files: celt/laplace.*
+ celt/mdct.*
+ celt/pitch.*
+ celt/quant_bands.*
+ celt/rate.*
+ celt/vq.*
+ celt/mips/mdct_mipsr1.h
+ celt/mips/pitch_mipsr1.h
+ celt/mips/vq_mipsr1.h
+ celt/opus_custom_demo.c
+ src/opus_demo.c
+Copyright: 2007-2008, CSIRO
+  2007-2009, Xiph.Org Foundation
+License: BSD-2-clause
+
+
+Files: celt/x86/celt_lpc_sse.h
+ celt/x86/celt_lpc_sse4_1.c
+ celt/x86/pitch_sse.c
+ celt/x86/pitch_sse2.c
+ celt/x86/pitch_sse4_1.c
+ celt/x86/x86_celt_map.c
+ celt/x86/x86cpu.c
+ celt/x86/x86cpu.h
+ silk/fixed/x86/burg_modified_FIX_sse4_1.c
+ silk/fixed/x86/vector_ops_FIX_sse4_1.c
+ silk/x86/NSQ_del_dec_sse4_1.c
+ silk/x86/NSQ_sse4_1.c
+ silk/x86/SigProc_FIX_sse.h
+ silk/x86/VAD_sse4_1.c
+ silk/x86/VQ_WMat_EC_sse4_1.c
+ silk/x86/main_sse.h
+ silk/x86/x86_silk_map.c
+Copyright: 2014-2020, Cisco Systems, INC
+License: BSD-2-clause
+
+Files: celt/bands.*
+ celt/celt.*
+ celt/celt_*coder.c
+ celt/mips/celt_mipsr1.h
+ celt/modes.*
+ include/opus_custom.h
+Copyright: 2007-2008, CSIRO
+  2007-2010, Xiph.Org Foundation
+  2008-2012, Gregory Maxwell
+License: BSD-2-clause
+
+Files: celt/arm/pitch_neon_intr.c
+ silk/arm/LPC_inv_pred_gain_arm.h
+ silk/arm/LPC_inv_pred_gain_neon_intr.c
+ silk/arm/NSQ_del_dec_arm.h
+ silk/arm/NSQ_del_dec_neon_intr.c
+ silk/arm/biquad_alt_arm.h
+ silk/arm/biquad_alt_neon_intr.c
+ silk/fixed/arm/warped_autocorrelation_FIX_arm.h
+Copyright: 2017, Google Inc.
+License: BSD-3-clause
+
+Files: celt/ecintrin.h
+ celt/ent*
+ celt/mfrngcod.h
+Copyright: 2001-2011, Timothy B. Terriberry
+  2008-2009, Xiph.Org Foundation
+License: BSD-2-clause
+
+Files: celt/arch.h
+ celt/fixed_generic.h
+ celt/mathops.*
+ celt/mips/fixed_generic_mipsr1.h
+ celt/x86/vq_sse2.c
+Copyright: 2002-2016, Jean-Marc Valin
+  2007-2008, CSIRO
+  2007-2009, Xiph.Org Foundation
+License: BSD-2-clause
+
+Files: celt/arm/arm_celt_map.c
+ celt/arm/armcpu.*
+ celt/arm/pitch_arm.h
+ celt/cpu_support.h
+Copyright: 2010, Xiph.Org Foundation
+  2013, Parrot
+License: BSD-2-clause
+
+Files: include/opus.h
+ include/opus_defines.h
+ src/opus.c
+ src/opus_*coder.c
+Copyright: 2010-2011, Xiph.Org Foundation, Skype Limited
+License: BSD-2-clause
+
+Files: include/opus_projection.h
+ src/mapping_matrix.*
+ src/opus_projection_*coder.c
+ tests/test_opus_projection.c
+Copyright: 2017, Google Inc.
+License: BSD-2-clause
+
+Files: celt/os_support.h
+ celt/x86/vq_sse.h
+ doc/trivial_example.c
+ src/mlp.h
+Copyright: 2007-2017, Jean-Marc Valin
+License: BSD-2-clause
+
+Files: silk/arm/NSQ_neon.*
+ silk/arm/arm_silk_map.c
+ silk/arm/macros_arm64.h
+ celt/arm/fixed_arm64.h
+Copyright: 2014-2015, Vidyo
+License: BSD-3-clause
+
+Files: celt/arm/kiss_fft_armv4.h
+ celt/arm/kiss_fft_armv5e.h
+ celt/mips/kiss_fft_mipsr1.h
+Copyright: 2013, Xiph.Org Foundation and contributors.
+License: BSD-2-clause
+
+Files: celt/tests/test_unit_cwrs32.c
+ celt/tests/test_unit_entropy.c
+ celt/tests/test_unit_mathops.c
+ celt/tests/test_unit_laplace.c
+ src/opus_compare.c
+Copyright: 2007-2012, Xiph.Org Foundation, Mozilla Corporation,
+License: BSD-2-clause
+
+Files: celt/cwrs.*
+Copyright: 2007-2008, CSIRO
+  2007-2009, Timothy B. Terriberry
+  2007-2009, Xiph.Org Foundation
+License: BSD-2-clause
+
+Files: celt/fixed_debug.h
+ celt/stack_alloc.h
+Copyright: 2002-2008, Jean-Marc Valin
+  2007-2012, Xiph.Org Foundation
+License: BSD-2-clause
+
+Files: celt/kiss_fft.c
+ celt/kiss_fft.h
+Copyright: 2003-2004, Mark Borgerding
+  2005-2007, Xiph.Org Foundation
+  2008, Xiph.Org Foundation, CSIRO
+License: BSD-2-clause
+
+Files: silk/fixed/arm/warped_autocorrelation_FIX_neon_intr.c
+ silk/tests/test_unit_LPC_inv_pred_gain.c
+Copyright: 2017, Google Inc., Jean-Marc Valin
+License: BSD-3-clause
+
+Files: silk/arm/SigProc_FIX_armv5e.h
+ silk/arm/macros_armv5e.h
+Copyright: 2006-2011, Skype Limited.
+  2013, Parrot
+License: BSD-3-clause
+
+Files: celt/arm/fixed_armv5e.h
+Copyright: 2003-2008, Jean-Marc Valin
+  2007-2008, CSIRO
+  2007-2009, Xiph.Org Foundation
+  2013, Parrot
+License: BSD-2-clause
+
+Files: celt/arm/celt_pitch_xcorr_arm-gnu.S
+Copyright: 2007-2008, CSIRO
+  2007-2009, Xiph.Org Foundation
+  2013, Parrot
+License: BSD-2-clause
+
+Files: celt/x86/pitch_sse.h
+Copyright: 2013, Jean-Marc Valin and John Ridges
+  2014, Cisco Systems, INC MingXiang WeiZhou MinPeng YanWang
+License: BSD-2-clause
+
+Files: celt/float_cast.h
+Copyright: 2001, Erik de Castro Lopo <erikd AT mega-nerd DOT com>
+License: BSD-2-clause
+
+Files: celt/_kiss_fft_guts.h
+Copyright: 2003-2004, Mark Borgerding
+License: BSD-2-clause
+
+Files: tests/opus_encode_regressions.c
+Copyright: 2016, Mark Harris, Jean-Marc Valin
+License: BSD-2-clause
+
+Files: src/mlp.c
+Copyright: 2008-2011, Octasic Inc.
+License: BSD-2-clause
+
+Files: celt/entcode.c
+Copyright: 2001-2011, Timothy B. Terriberry
+License: BSD-2-clause
+
+Files: celt/arm/fixed_armv4.h
+Copyright: 2013, Xiph.Org Foundation and contributors
+License: BSD-2-clause
+
+Files: celt/arm/arm2gnu.pl
+Copyright: 2002-2013, Xiph.org Foundation
+License: BSD-2-clause
+
+Files: silk/LPC_fit.c
+Copyright: 2013, Koen Vos.
+License: BSD-3-clause
+
+Files: silk/arm/SigProc_FIX_armv4.h
+Copyright: 2013, Parrot
+  2013, Xiph.Org Foundation and contributors
+License: BSD-3-clause
+
+Files: silk/NSQ.h
+Copyright: 2006-2011, Skype Limited.
+  2014, Vidyo.
+License: BSD-3-clause
+
+Files: debian/*
+Copyright: 2008-2018, Ron Lee <ron@debian.org>
+ 2022-2023, IOhannes m zmölnig <umlaeute@debian.org>
+License: BSD-3-clause
+
+
+License: BSD-3-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+ - Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ .
+ - Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ .
+ - Neither the name of Internet Society, IETF or IETF Trust, nor the
+ names of specific contributors, may be used to endorse or promote
+ products derived from this software without specific prior written
+ permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+
+License: BSD-2-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+ - Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ .
+ - Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER
+ OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+### 341. Used by liborc-0.4-0t64 (Ubuntu package)
 
 ```text
 This package was debianized by Sebastian Dröge <slomo@debian.org> on
@@ -44306,7 +48013,7 @@ examples/mt19937ar.c is subject to the following license:
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 324. Used by libp11-kit0 (Ubuntu package)
+### 342. Used by libp11-kit0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -44804,7 +48511,7 @@ License: customFSFULLRWD
  PURPOSE.
 ```
 
-### 325. Used by libpcre2-8-0 (Ubuntu package)
+### 343. Used by libpcre2-8-0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -44931,7 +48638,7 @@ License: public-domain
  The data in the testdata directory is not copyrighted and is in the public domain.
 ```
 
-### 326. Used by libpixman-1-0 (Ubuntu package)
+### 344. Used by libpixman-1-0 (Ubuntu package)
 
 ```text
 This package was downloaded from
@@ -44983,7 +48690,7 @@ possible. They may also add themselves to the list below.
  */
 ```
 
-### 327. Used by libpng16-16t64 (Ubuntu package)
+### 345. Used by libpng16-16t64 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -45301,7 +49008,7 @@ License: BSD-3-clause
  SUCH DAMAGE.
 ```
 
-### 328. Used by libproxy1v5 (Ubuntu package)
+### 346. Used by libproxy1v5 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -45534,7 +49241,7 @@ License: NPL-1.1
         License.
 ```
 
-### 329. Used by libpsl5t64 (Ubuntu package)
+### 347. Used by libpsl5t64 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -45609,7 +49316,803 @@ License: gnulib
  with or without modifications, as long as this notice is preserved.
 ```
 
-### 330. Used by libredox 0.1.25
+### 348. Used by libpulse0 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Pulseeaudio
+Upstream-Contact: General PulseAudio Discussion <pulseaudio-discuss@lists.freedesktop.org>
+Files-Excluded: src/modules/rtp/rfc*
+
+Files: *
+Copyright:
+  Copyright (C) 2004-2009 Lennart Poettering
+  Copyright (C) 2006-2007 Pierre Ossman <ossman@cendio.se> for Cendio AB
+License: LGPL-2.1+
+ The upstream license clarifies pretty well that the sources of pulseaudio are
+ LGPL (please see LGPL license grant below), but that some parts will be
+ effectively GPL since they rely on GPL libraries, quoting the upstream
+ LICENSE:
+ .
+    """All PulseAudio source files are licensed under the GNU Lesser General
+    Public License. (see file LGPL for details)
+ .
+    However, the server side links to the GPL-only library 'libsamplerate'
+    which practically downgrades the license of the server part to GPL (see
+    file GPL for details), exercising section 3 of the LGPL.
+ .
+    Hence you should treat the client library ('libpulse') of PulseAudio as
+    being LGPL licensed and the server part ('libpulsecore') as being GPL
+    licensed. Since the PulseAudio daemon and the modules link to
+    'libpulsecore' they are of course also GPL licensed.
+ .
+    -- Lennart Poettering, April 20th, 2006."""
+ .
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+  /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/pulsecore/g711.c
+Copyright:
+ Copyright (C) Sun Microsystems, Inc
+License: other
+ This source code is a product of Sun Microsystems, Inc. and is provided
+ for unrestricted use.  Users may copy or modify this source code without
+ charge.
+ .
+ SUN SOURCE CODE IS PROVIDED AS IS WITH NO WARRANTIES OF ANY KIND INCLUDING
+ THE WARRANTIES OF DESIGN, MERCHANTIBILITY AND FITNESS FOR A PARTICULAR
+ PURPOSE, OR ARISING FROM A COURSE OF DEALING, USAGE OR TRADE PRACTICE.
+ .
+ Sun source code is provided with no support and without any obligation on
+ the part of Sun Microsystems, Inc. to assist in its use, correction,
+ modification or enhancement.
+ .
+ SUN MICROSYSTEMS, INC. SHALL HAVE NO LIABILITY WITH RESPECT TO THE
+ INFRINGEMENT OF COPYRIGHTS, TRADE SECRETS OR ANY PATENTS BY THIS SOFTWARE
+ OR ANY PART THEREOF.
+ .
+ In no event will Sun Microsystems, Inc. be liable for any lost revenue
+ or profits or other special, indirect and consequential damages, even if
+ Sun has been advised of the possibility of such damages.
+
+Files: src/pulsecore/g711.h
+Copyright:
+ Copyright (C) 2001 Chris Bagwell
+License: other
+ Permission to use, copy, modify, and distribute this software and its
+ documentation for any purpose and without fee is hereby granted, provided
+ that the above copyright notice appear in all copies and that both that
+ copyright notice and this permission notice appear in supporting
+ documentation.  This software is provided "as is" without express or
+ implied warranty.
+
+Files: src/pulsecore/poll.*
+Copyright:
+ Copyright 2006 Pierre Ossman <ossman@cendio.se> for Cendio AB
+ Copyright (C)1994,96,97,98,99,2000,2001,2004 Free Software Foundation, Inc.
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/pulse/utf8.c
+Copyright:
+ Copyright (C) 1999 Tom Tromey
+ Copyright (C) 2000 Red Hat, Inc.
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/bluetooth/ipc.*  src/modules/bluetooth/rtp.*
+Copyright:
+ Copyright (C) 2004-2009  Marcel Holtmann <marcel@holtmann.org>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/bluetooth/module-bluetooth-device.c
+       src/modules/bluetooth/module-bluetooth-discover.c
+       src/modules/bluetooth/bluetooth-util.*
+Copyright:
+ Copyright (C) 2008-2009 Joao Paulo Rechi Vita
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.
+
+Files: src/modules/bluetooth/proximity-helper.c
+Copyright:
+ Copyright (C) 2000-2001  Qualcomm Incorporated
+ Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
+ Copyright (C) 2002-2007  Marcel Holtmann <marcel@holtmann.org>
+License: GPL-2+
+ On Debian systems, the complete text of the GPL-2 can be found in
+ /usr/share/common-licenses/GPL-2.
+
+Files: src/modules/bluetooth/sbc*
+Copyright:
+ Copyright (C) 2004-2009  Marcel Holtmann <marcel@holtmann.org>
+ Copyright (C) 2004-2005  Henryk Ploetz <henryk@ploetzli.ch>
+ Copyright (C) 2005-2006  Brad Midgley <bmidgley@xmission.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/dbus/iface-client.c
+       src/modules/dbus/iface-stream.c:
+Copyright:
+ Copyright 2009 Tanu Kaskinen
+ Copyright 2009 Vincent Filali-Ansary <filali.v@azurdigitalnetworks.net>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/dbus/module-dbus-protocol.c
+Copyright:
+ Copyright 2009 Tanu Kaskinen
+ Copyright 2006 Lennart Poettering
+ Copyright 2006 Shams E. King
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/dbus/*
+Copyright:
+ Copyright 2009 Tanu Kaskinen
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/echo-cancel/adrian*.*
+Copyright:
+ Copyright (C) DFS Deutsche Flugsicherung (2004). All Rights Reserved.
+License: other
+ You are allowed to use this source code in any open source or closed
+ source software you want. You are allowed to use the algorithms for a
+ hardware solution. You are allowed to modify the source code.
+ You are not allowed to remove the name of the author from this memo or
+ from the source code files. You are not allowed to monopolize the
+ source code or the algorithms behind the source code as your
+ intellectual property. This source code is free of royalty and comes
+ with no warranty.
+
+Files: src/modules/echo-cancel/echo-cancel.h
+Copyright:
+ Copyright 2010 Arun Raghavan <arun.raghavan@collabora.co.uk>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/echo-cancel/module-echo-cancel.c
+Copyright:
+ Copyright 2010 Wim Taymans <wim.taymans@gmail.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/echo-cancel/speex.c
+Copyright:
+ Copyright 2010 Wim Taymans <wim.taymans@gmail.com>
+ Contributor: Arun Raghavan <arun.raghavan@collabora.co.uk>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/jack/module-jackdbus-detect.c
+Copyright:
+ Written by David Henningsson <david.henningsson@canonical.com>
+ Copyright 2010 Canonical Ltd.
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/module-device-manager.*
+Copyright:
+ Copyright 2006-2008 Lennart Poettering
+ Copyright (C) 2009 Colin Guthrie
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/module-equalizer-sink.c
+Copyright:
+ Copyright 2004-2008 Lennart Poettering
+ Copyright 2009 Jason Newton <nevion@gmail.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/pulsecore/dbus-*.*  src/modules/module-hal-detect.c
+Copyright:
+ Copyright 2006 Lennart Poettering
+ Copyright 2006 Shams E. King
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/ladspa.h
+Copyright:
+ Copyright (C) 2000-2002 Richard W.E. Furse, Paul Barton-Davis, Stefan
+   Westerfeld.
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/module-always-sink.c src/modules/rtp/rtsp_client.*
+Copyright:
+ Copyright (C) 2008 Colin Guthrie
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/module-detect.c
+Copyright:
+ Copyright 2006 Lennart Poettering
+ Copyright 2006 Pierre Ossman <ossman@cendio.se> for Cendio AB
+ Copyright 2006 Diego Petteno
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/roap/*roap*  src/modules/rtp/headerlist.*
+Copyright:
+ Copyright 2005-2007 Lennart Poettering
+ Copyright (C) 2008 Colin Guthrie
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/roap/base64.*
+Copyright:
+ Copyright (C) 2008 Colin Guthrie
+ Copyright (C) Kungliga Tekniska Hogskolan
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/module-device-manager.c
+Copyright:
+ Copyright 2006-2008 Lennart Poettering
+ Copyright 2009 Colin Guthrie
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/module-filter-apply*.c
+       src/modules/module-filter-heuristics*.c
+Copyright:
+ Copyright 2011 Colin Guthrie
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/module-solaris.c
+Copyright:
+ Copyright 2006 Lennart Poettering
+ Copyright 2006-2007 Pierre Ossman <ossman@cendio.se> for Cendio AB
+ Copyright 2009 Finn Thain
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/module-switch-on-connect.c
+Copyright:
+ Copyright 2006 Lennart Poettering
+ Copyright 2009 Canonical Ltd
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/module-virtual-sink.c
+      src/modules/module-virtual-source.c
+Copyright:
+ Copyright 2010 Intel Corporation
+ Contributor: Pierre-Louis Bossart <pierre-louis.bossart@intel.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/modules/reserve.*
+Copyright:
+  Copyright 2009 (C) Lennart Poettering
+License: other
+  Permission is hereby granted, free of charge, to any person
+  obtaining a copy of this software and associated documentation files
+  (the "Software"), to deal in the Software without restriction,
+  including without limitation the rights to use, copy, modify, merge,
+  publish, distribute, sublicense, and/or sell copies of the Software,
+  and to permit persons to whom the Software is furnished to do so,
+  subject to the following conditions:
+ .
+  The above copyright notice and this permission notice shall be
+  included in all copies or substantial portions of the Software.
+ .
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+  EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+  NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
+  BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
+  ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+Files: src/pulsecore/atomic.h
+Copyright:
+ Copyright (C) 2006-2008 Lennart Poettering
+ Copyright (C) 2008 Nokia Corporation
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/pulsecore/core-util.c
+Copyright:
+ Copyright (C) 2004-2006 Lennart Poettering
+ Copyright (C) 2004 Joe Marcus Clarke
+ Copyright (C) 2006-2007 Pierre Ossman <ossman@cendio.se> for Cendio AB
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/pulse/ext-device-manager.*
+Copyright:
+ Copyright (C) 2008 Lennart Poettering
+ Copyright (C) 2009 Colin Guthrie
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/pulsecore/ffmpeg/avcodec.h
+Copyright:
+ Copyright (c) 2001 Fabrice Bellard
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/pulsecore/ffmpeg/resample2.c
+Copyright:
+ Copyright (c) 2004 Michael Niedermayer <michaelni@gmx.at>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/pulsecore/socket-util.c
+Copyright:
+ Copyright (C) 2004-2006 Lennart Poettering
+ Copyright (C) 2004 Joe Marcus Clarke
+ Copyright (C) 2006-2007 Pierre Ossman <ossman@cendio.se> for Cendio AB
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: man/xmltoman
+Copyright:
+  Copyright (C) 2000-2002 Oliver Kurth <oku@masqmail.cx>
+  Copyright (C) 2003 Lennart Poettering <mzkzygbzna@0pointer.de>
+License: LGPL-2+
+ On Debian systems, the complete text of the LGPL-2 can be found in
+ /usr/share/common-licenses/LGPL-2.
+
+Files: po/ca.po
+Copyright:
+  Copyright (C) 2008 Xavier Conde Rueda <xavi.conde@gmail.com>
+  Copyright (C) 2009 Agustí Grau <fletxa@gmail.com>, 2009.
+  Copyright (C) Judith Pintó Subirada <judithp@gmail.com>
+  Copyright (C) 2009 Josep Torné Llavall <josep.torne@gmail.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/cs.po
+Copyright:
+  Copyright (C) 2008,2009 Petr Kovar <pknbe@volny.cz>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/de.po
+Copyright:
+  Copyright (C) 2008,2009 Fabian Affolter <fab@fedoraproject.org>
+  Copyright (C) 2008,2009 Micha Pietsch <barney@fedoraproject.org>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/de_CH.po
+Copyright:
+  Copyright (C) 2008, 2009 Fabian Affolter <fab@fedoraproject.org>
+  Copyright (C) 2008, 2009 Micha Pietsch <barney@fedoraproject.org>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/el.po
+Copyright:
+  Copyright (C) 2008 Dimitris Glezos <dimitris@glezos.com>
+  Copyright (C) 2009 Thalia Papoutsaki <saliyath@gmail.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/es.po
+Copyright:
+  Copyright (C) 2009 Domingo Becker <domingobecker@gmail.com>
+  Copyright (C) 2008 Hector Daniel Cabrera <h.daniel.cabrera@gmail.com>
+  Copyright (C) 2009 Fernando Gonzalez Blanco <fgonz@fedoraproject.org>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/fi.po
+Copyright:
+  Copyright (C) 2009 Timo Jyrinki <timo.jyrinki@iki.fi>
+  Copyright (C) 2009 Ville-Pekka Vainio <vpivaini@cs.helsinki.fi>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/fr.po
+Copyright:
+  Copyright (C) 2008 Robert-Andre Mauchin <zebob.m@pengzone.org>
+  Copyright (C) 2008 Michael Ughetto <telimektar esraonline com>
+  Copyright (C) 2008 Pablo Martin-Gomez <pablo.martin-gomez@laposte.net>
+  Copyright (C) 2009 Corentin Perard <corentin.perard@gmail.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/gu.po
+Copyright:
+  Copyright (C) 2009 Sweta Kothari <swkothar@redhat.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/hi.po
+Copyright:
+  Copyright (C) 2009 Rajesh Ranjan <rajesh672@gmail.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/it.po
+Copyright:
+  Copyright (C) 2008,2009 Luca Ferretti <elle.uca@libero.it>
+  Copyright (C) 2009 Milo Casagrande <milo@ubuntu.com>
+  Copyright (C) 2009 ario_santagiuliana <mario at marionline.it>
+  Copyright (C) 2009 Milo Casagrande <milo@ubuntu.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/ja.po
+Copyright:
+  Copyright (C) 2009 Hyu_gabaru Ryu_ichi <hyu_gabaru@yahoo.co.jp>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/kn.po
+Copyright:
+  Copyright (C) 2009 Shankar Prasad <svenkate@redhat.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/mr.po
+Copyright:
+  Copyright (C) 2009 Sandeep Shedmake <sandeep.shedmake@gmail.com>
+  Copyright (C) 2009 Sandeep Shedmake <sshedmak@redhat.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/nl.po
+Copyright:
+  Copyright (C) 2009 Geert Warrink <geert.warrink@onsnet.nu>
+  Copyright (C) 2009 Reinout van Schouwen <reinout@gmail.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/or.po
+Copyright:
+  Copyright (C) 2009 Manoj Kumar Giri <mgiri@redhat.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/pa.po
+Copyright:
+  Copyright (C) 2009 Amanpreet Singh Alam <aalam@users.sf.net>
+  Copyright (C) 2009 Jaswinder Singh <jsingh@redhat.com>
+  Copyright (C) 2009 A S Alam <aalam@users.sf.net>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/pl.po
+Copyright:
+  Copyright (C) 2008 Piotr Drag <piotrdrag@gmail.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/pt_BR.po
+Copyright:
+  Copyright (C) 2008 Fabian Affolter <fab@fedoraproject.org>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/sr.po po/sr@latin.po
+Copyright:
+  Copyright (C) 2009 Igor Miletic (Игор Милетић) <grejigl-gnomeprevod@yahoo.ca>, 2009.
+  Copyright (C) 2009 Miloš Komarčević <kmilos@gmail.com>, 2009.
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/sv.po
+Copyright:
+  Copyright (C) 2008 Daniel Nylander <po@danielnylander.se>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/ta.po
+Copyright:
+  Copyright (C) 2009 I. Felix <ifelix@redhat.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/te.po
+Copyright:
+  Copyright (C) 2009 Krishna Babu K <kkrothap@redhat.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/uk.po
+Copyright:
+  Copyright (C) 2009 Yuri Chornoivan <yurchor@ukr.net>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: po/zh_CN.po
+Copyright:
+  Copyright (C) 2008 闫丰刚 (sainry)<sainry@gmail.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: debian/*
+Copyright:
+  Copyright 2006-2009 Sjoerd Simons <sjoerd@debian.org>
+  Copyright 2006-2008 CJ van den Berg <cj@vdbonline.com>
+License: GPL-2+
+ On Debian systems, the complete text of the GPL-2 can be found in
+  /usr/share/common-licenses/GPL-2.
+
+Files: src/pulsecore/cpu-*  src/pulsecore/remap*
+       src/pulsecore/svolume_mmx.c
+       src/pulsecore/svolume_arm.c
+       src/pulsecore/svolume_sse.c
+Copyright:
+  Copyright 2004-2006 Lennart Poettering
+  Copyright 2009 Wim Taymans <wim.taymans@collabora.co.uk>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/pulsecore/sconv_sse.c
+Copyright:
+  Copyright 2004-2006 Lennart Poettering
+  Copyright 2006 Pierre Ossman <ossman@cendio.se> for Cendio AB
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/pulsecore/usergroup.*
+Copyright:
+  Copyright 2009 Ted Percival
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+
+Files: src/utils/qpaeq
+Copyright: 2009  Jason Newton <nevion@gmail.com>
+License: LGPL-2.1+
+ On Debian systems, the complete text of the LGPL-2.1 can be found in
+ /usr/share/common-licenses/LGPL-2.1.
+```
+
+### 349. Used by libraw1394-11 (Ubuntu package)
+
+```text
+This package was debianized by Ludovic RESLINGER <lr@cuivres.net> on
+Sun, 10 Sep 2006 16:08:19 +0200.
+
+It was downloaded from: https://www.kernel.org/pub/linux/libs/ieee1394/
+
+Upstream Authors: Andreas BOMBE <andreas.bombe@munich.netsurf.de>
+		  Dan DENNEDY <dan@dennedy.org>
+
+Copyright Holders:
+  Upstream maintainer:
+  	Dan DENNEDY <dan@dennedy.org>
+  Original author:
+  	Andreas BOMBE 1999-2004 <andreas.bombe@munich.netsurf.de>
+  Contributors:
+	Manfred WEIHS 1999-2004 <weihs@ict.tuwien.ac.at>
+	Christian TOEGLE 1999-2004 <christian.toegel@gmx.at>
+	Dan MAAS 1999-2004 <dmaas@maasdigital.com>
+	Ben COLLINS 2003-2004 <bcollins@debian.org>
+        Kristian Hoegsberg 2007 <krh@bitplanet.net>
+
+License:
+
+    This package is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
+
+    This package is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+    Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public
+    License along with this package; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+On Debian systems, the complete text of the GNU Lesser General
+Public License can be found in `/usr/share/common-licenses/LGPL'.
+
+Others Licences:
+
+ - GPLv2 or higher
+    This package is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This package is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this package; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+
+On Debian systems, the complete text of the GNU General
+Public License can be found in `/usr/share/common-licenses/GPL'.
+
+ The following files are licensed under GPL Licence:
+	- Makefile.in
+	- aclocal.m4
+	- config.guess
+	- config.sub
+	- configure
+	- depcomp
+	- ltmain.sh
+	- missing
+	- doc/Makefile.in
+	- src/Makefile.in
+	- tools/Makefile.in
+
+ - MIT/X11
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to
+    deal in the Software without restriction, including without limitation the
+    rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+    sell copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+    X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
+    AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNEC-
+    TION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+ The following file is licensed under MIT Licence:
+	- install-sh
+
+The Debian packaging is (C) 2006, Ludovic RESLINGER <lr@cuivres.net> and
+is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
+
+All others files are licenced under LGPL Licence (v2.1 or higher).
+
+Copyright notices:
+ - Makefile.in
+    Copyright (C) 1994-2005  Free Software Foundation, Inc.
+ - aclocal.m4
+    Copyright (C) 1996-2005  Free Software Foundation, Inc.
+ - COPYING.LIB
+    Copyright (C) 1991, 1999 Free Software Foundation, Inc.
+ - config.guess
+    Copyright (C) 1992-2005 Free Software Foundation, Inc.
+ - config.sub
+    Copyright (C) 1992-2005 Free Software Foundation, Inc.
+ - configure
+    Copyright (C) 2003 Free Software Foundation, Inc.
+ - depcomp
+    Copyright (C) 1999, 2000, 2003, 2004, 2005 Free Software Foundation, Inc.
+ - INSTALL
+    Copyright (C) 1994-2005 Free Software Foundation, Inc.
+ - install-sh
+    Copyright (C) 1994 X Consortium
+ - ltmain.sh
+    Copyright (C) 1996 Gordon MATZIGKEIT <gord@gnu.ai.mit.edu>
+    Copyright (C) 1996, 1997, 1998, 1999, 2000, 2001, 2003, 2004, 2005 Free Software Foundation, Inc.
+ - missing
+    Copyright (C) 1996 Fran,cois PINARD <pinard@iro.umontreal.ca>
+    Copyright (C) 1996, 1997, 1999, 2000, 2002, 2003, 2004, 2005 Free Software Foundation, Inc
+ - doc/Makefile.in
+    Copyright (C) 1994-2005  Free Software Foundation, Inc.
+ - doc/dumpiso.1.in
+   doc/sendiso.1.in
+   doc/testlibraw.1.in
+   doc/isodump.5.in
+    Copyright (C) 1999-2000 Andreas BOMBE <andreas.bombe@munich.netsurf.de>
+ - doc/libraw1394.sgml
+    Copyright (C) 2001-2004 Andreas BOMBE <andreas.bombe@munich.netsurf.de>
+    Copyright (C) 2001-2004 Dan MAAS <dmaas@maasdigital.com>
+    Copyright (C) 2001-2004 Manfred WEIHS <weihs@ict.tuwien.ac.at>
+    Copyright (C) 2001-2004 Christian TOEGLE <christian.toegel@gmx.at>
+ - src/Makefile.in
+    Copyright (C) 1994-2005  Free Software Foundation, Inc.
+ - src/arm.c
+    Copyright (C) 2002 Christian TOEGLE <christian.toegel@gmx.at>
+    Copyright (C) 2002 Manfred WEIHS <weihs@ict.tuwien.ac.at>
+ - src/errors.c
+    Copyright (C) 1999-2002 Andreas BOMBE <andreas.bombe@munich.netsurf.de>
+ - src/eventloop.c
+    Copyright (C) 1999-2002 Andreas BOMBE <andreas.bombe@munich.netsurf.de>
+    Copyright (C) 2002 Manfred WEIHS <weihs@ict.tuwien.ac.at>
+    Copyright (C) 2002 Christian TOEGLE <christian.toegel@gmx.at>
+ - src/fcp.c
+    Copyright (C) 1999-2002 Andreas BOMBE <andreas.bombe@munich.netsurf.de>
+ - src/fw.c
+   src/fw.h
+   src/fw-iso.c
+    Copyright (C) 2007  Kristian Hoegsberg <krh@bitplanet.net>
+ - src/iso.c
+    Copyright (C) 1999-2002 Andreas BOMBE <andreas.bombe@munich.netsurf.de>
+    Copyright (C) 1999-2002 Dan MAAS <dmaas@maasdigital.com>
+ - src/main.c
+    Copyright (C) 1999-2002 Andreas BOMBE <andreas.bombe@munich.netsurf.de>
+    Copyright (C) 2002 Christian TOEGLE <christian.toegel@gmx.at>
+    Copyright (C) 2001- 2002 Manfred WEIHS <weihs@ict.tuwien.ac.at>
+ - src/raw1394.h
+   src/raw1394_private.h
+   src/kernel-raw1394.h
+   src/ieee1394.h
+   src/ieee1394-ioctl.h
+   src/csr.h
+    Copyright (C) 1999-2004 Andreas BOMBE <andreas.bombe@munich.netsurf.de>
+    Copyright (C) 1999-2004 Dan MAAS <dmaas@maasdigital.com>
+    Copyright (C) 1999-2004 Christian TOEGLE <christian.toegel@gmx.at>
+    Copyright (C) 1999-2004 Manfred WEIHS <weihs@ict.tuwien.ac.at>
+ - src/readwrite.c
+    Copyright (C) 1999-2002 Andreas BOMBE <andreas.bombe@munich.netsurf.de>
+    Copyright (C) 2002 Christian TOEGLE <christian.toegel@gmx.at>
+    Copyright (C) 2002 Manfred WEIHS <weihs@ict.tuwien.ac.at>
+ - src/version.c
+    Copyright (C) 1999-2002 Andreas BOMBE <andreas.bombe@munich.netsurf.de>
+ - tools/Makefile.in
+    Copyright (C) 1994-2005  Free Software Foundation, Inc.
+ - tools/dumpiso.c
+   tools/sendiso.c
+   tools/testlibraw.c
+    Copyright (C) 1999-2000 Andreas BOMBE <andreas.bombe@munich.netsurf.de>
+```
+
+### 350. Used by libredox 0.1.25
 
 ```text
 MIT License
@@ -45635,7 +50138,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 331. Used by librtmp1 (Ubuntu package)
+### 351. Used by librtmp1 (Ubuntu package)
 
 ```text
 This work was packaged for Debian by:
@@ -45711,7 +50214,7 @@ License can be found in `/usr/share/common-licenses/GPL-2' and the text of the
 GNU Lesser General Public License is in `/usr/share/common-licenses/LGPL-2.1'.
 ```
 
-### 332. Used by libsasl2-2 (Ubuntu package)
+### 352. Used by libsasl2-2 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -46264,7 +50767,7 @@ License: OpenLDAP
  distribute verbatim copies of this document is granted.
 ```
 
-### 333. Used by libseccomp2 (Ubuntu package)
+### 353. Used by libseccomp2 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -46308,7 +50811,7 @@ License: LGPL-2.1
  Public License can be found in "/usr/share/common-licenses/LGPL-2.1".
 ```
 
-### 334. Used by libsecret-1-0 (Ubuntu package)
+### 354. Used by libsecret-1-0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -46411,7 +50914,7 @@ License: GPL-2+
  Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
 ```
 
-### 335. Used by libselinux1 (Ubuntu package)
+### 355. Used by libselinux1 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -46464,7 +50967,7 @@ Comment:
  Public License version 2 can be found in `/usr/share/common-licenses/GPL-2'.
 ```
 
-### 336. Used by libsharpyuv0 (Ubuntu package), libwebp7 (Ubuntu package), libwebpdemux2 (Ubuntu package), libwebpmux3 (Ubuntu package)
+### 356. Used by libsharpyuv0 (Ubuntu package), libwebp7 (Ubuntu package), libwebpdemux2 (Ubuntu package), libwebpmux3 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -46603,7 +51106,788 @@ License: BSD-3-Clause
  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 337. Used by libsqlite3-0 (Ubuntu package)
+### 357. Used by libshout3 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: libshout
+Upstream-Contact: the Icecast team <team@icecast.org>
+Source: https://downloads.xiph.org/releases/libshout/
+ https://git.xiph.org/icecast-libshout.git
+
+Files: *
+Copyright:
+  2002-2012, the Icecast team <team@icecast.org>
+  2012-2015, Philipp "ph3-der-loewe" Schafft <lion@lion.leolix.org>
+  2014, Brendan Cully <brendan@xiph.org>
+  2014, Ed "oddsock" Zaleski <oddsock@xiph.org>
+  2014, Jack Moffitt <jack@icecast.org>
+  2014, Karl Heyes <karl@xiph.org>
+  2014, Michael Smith <msmith@icecast.org>
+  2014, Moritz Grimm <mdgrimm@gmx.net>
+  2014, Ralph Giles <giles@xiph.org>
+License-Grant:
+ This library is free software; you can redistribute it and/or modify it
+ under the terms of the GNU Library General Public License as published
+ by the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+License: LGPL-2+
+
+Files: */Makefile.in
+Copyright: 1994-2014, Free Software Foundation, Inc.
+License: FSFULLR~Makefile.in
+
+Files: ltmain.sh
+ m4/libtool.m4
+Copyright: 1996-2001,2003-2011, Free Software Foundation, Inc.
+License-Grant:
+ GNU Libtool is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; either version 2 of
+ the License, or (at your option) any later version.
+License: FSFULLR and GPL-2+ with Libtool exception
+ As a special exception to the GNU General Public License,
+ if you distribute this file as part of a program or library that
+ is built using GNU Libtool, you may include this file under the
+ same distribution terms that you use for the rest of that program.
+
+Files: compile
+ depcomp
+ missing
+Copyright: 1999-2014, Free Software Foundation, Inc.
+License-Grant:
+ This program is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by the
+ Free Software Foundation; either version 2, or (at your option) any
+ later version.
+License: GPL-2+ with Autoconf exception
+ As a special exception to the GNU General Public License, if you
+ distribute this file as part of a program that contains a configuration
+ script generated by Autoconf, you may include it under the same
+ distribution terms that you use for the rest of that program.
+
+Files: config.guess
+ config.sub
+Copyright: 1992-2014, Free Software Foundation, Inc.
+License-Grant:
+ This file is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by the
+ Free Software Foundation; either version 3 of the License, or (at your
+ option) any later version.
+License: GPL-3+~file with Autoconf exception
+ As a special exception to the GNU General Public License, if you
+ distribute this file as part of a program that contains a configuration
+ script generated by Autoconf, you may include it under the same
+ distribution terms that you use for the rest of that program. This
+ Exception is an additional permission under section 7 of the GNU
+ General Public License, version 3 ("GPLv3").
+
+Files: src/common/avl/*
+Copyright: 1995-1997, Sam Rushing <rushing@nightmare.com>
+License: NTP~Rushing
+
+Files: configure
+Copyright: 1992-1996,1998-2012, Free Software Foundation, Inc.
+License: FSFUL
+
+Files: aclocal.m4
+ m4/lt*.m4
+Copyright: 1996-2009, Free Software Foundation, Inc
+License: FSFULLR
+
+Files: install-sh
+Copyright: 1994, X Consortium
+License: X11
+
+Files: debian/*
+Copyright: 2003, Keegan Quinn <ice@thebasement.org>
+  2004-2008,2011-2013,2016-2017, Jonas Smedegaard <dr@jones.dk>
+License-Grant:
+ This program is free software; you can redistribute it and/or modify it
+ under the terms of the GNU General Public License as published by the
+ Free Software Foundation; either version 3, or (at your option) any
+ later version.
+License: GPL-3+
+
+License: LGPL-2+
+License-Reference: /usr/share/common-licenses/LGPL-2
+
+License: GPL-2+
+License-Reference: /usr/share/common-licenses/GPL-2
+
+License: GPL-3+
+License-Reference: /usr/share/common-licenses/GPL-3
+
+License: GPL-3+~file
+License-Reference: /usr/share/common-licenses/GPL-3
+
+License: X11
+ Permission is hereby granted, free of charge, to any person obtaining a
+ copy of this software and associated documentation files (the
+ "Software"), to deal in the Software without restriction, including
+ without limitation the rights to use, copy, modify, merge, publish,
+ distribute, sublicense, and/or sell copies of the Software, and to
+ permit persons to whom the Software is furnished to do so, subject to
+ the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included
+ in all copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ IN NO EVENT SHALL THE X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+ .
+ Except as contained in this notice, the name of the X Consortium shall
+ not be used in advertising or otherwise to promote the sale, use or
+ other dealings in this Software without prior written authorization
+ from the X Consortium.
+
+License: NTP~Rushing
+ Permission to use, copy, modify, and distribute this software and its
+ documentation for any purpose and without fee is hereby granted,
+ provided that the above copyright notice appear in all copies and that
+ both that copyright notice and this permission notice appear in
+ supporting documentation, and that the name of Sam Rushing not be used
+ in advertising or publicity pertaining to distribution of the software
+ without specific, written prior permission.
+ .
+ SAM RUSHING DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+ INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+ EVENT SHALL SAM RUSHING BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+ CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ PERFORMANCE OF THIS SOFTWARE.
+
+License: FSFUL
+ This configure script is free software; the Free Software Foundation
+ gives unlimited permission to copy, distribute and modify it.
+
+License: FSFULLR
+ This file is free software; the Free Software Foundation gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
+
+License: FSFULLR~Makefile.in
+ This Makefile.in is free software; the Free Software Foundation gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
+```
+
+### 358. Used by libslang2 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: S-Lang
+Upstream-Contact: John E. Davis <davis@space.mit.edu>
+Source: ftp://space.mit.edu/pub/davis/slang
+Comment:
+ This package was debianized by Jim Mintha <jim@dodo2.adm.uva.nl>
+ on Mon, 16 Aug 1999 21:59:03 +0200.
+
+Files: *
+Copyright: 1995-2011 John E. Davis <davis@space.mit.edu>
+License: GPL-2+
+
+Files: debian/*
+Copyright: 2003-2012 Alastair McKinstry <mckinstry@debian.org>
+           2012      Dmitry Smirnov <onlyjob@member.fsf.org>
+           2003      Petter Reinholdtsen <pere@debian.org>
+           2003      Martin Sjogren <sjogren@debian.org>
+           2002      Junichi Uekawa <dancer@debian.org>
+           1999      Ben Collins <bcollins@debian.org>
+           1997-2003 Jim Mintha <jmintha@debian.org>
+           1997-1998 Ray Dassen <jdassen@wi.LeidenUniv.nl>
+           1995-1996 Chris Fearnley
+License: GPL-2+
+
+License: GPL-2+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ The complete text of the GNU General Public License version 2
+ can be found in '/usr/share/common-licenses/GPL-2'.
+```
+
+### 359. Used by libsndfile1 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: libsndfile
+Upstream-Contact: Erik de Castro Lopo <erikd@mega-nerd.com>
+Source: https://github.com/erikd/libsndfile/
+
+Files: *
+Copyright: 1999-2022, Erik de Castro Lopo <erikd@mega-nerd.com>
+ 2021-2022, David Seifert
+ 2021-2022, Arthur Taylor
+ 2021-2022, evpobr
+License: LGPL-2.1+
+
+Files: src/GSM610/*
+Copyright: 1992, Jutta Degener and Carsten Bormann, Technische Universität Berlin
+License: gsm
+  Any use of this software is permitted provided that this notice is not
+  removed and that neither the authors nor the Technische Universitaet Berlin
+  are deemed to have made any representations as to the suitability of this
+  software for any purpose nor are held responsible for any defects of
+  this software.  THERE IS ABSOLUTELY NO WARRANTY FOR THIS SOFTWARE.
+  .
+  As a matter of courtesy, the authors request to be informed about uses
+  this software has found, about bugs in this software, and about any
+  improvements that may be of general interest.
+
+Files: src/ALAC/*
+Copyright: 2011, Apple Inc.
+  2012-2015, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: Apache-2.0
+
+Files: src/ALAC/shift.h
+Copyright: 2014, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: LGPL-2.1+
+
+Files: src/G72x/*
+Copyright: Sun Microsystems, Inc.
+License: sun
+  This source code is a product of Sun Microsystems, Inc. and is provided
+  for unrestricted use.  Users may copy or modify this source code without
+  charge.
+  .
+  SUN SOURCE CODE IS PROVIDED AS IS WITH NO WARRANTIES OF ANY KIND INCLUDING
+  THE WARRANTIES OF DESIGN, MERCHANTIBILITY AND FITNESS FOR A PARTICULAR
+  PURPOSE, OR ARISING FROM A COURSE OF DEALING, USAGE OR TRADE PRACTICE.
+  .
+  Sun source code is provided with no support and without any obligation on
+  the part of Sun Microsystems, Inc. to assist in its use, correction,
+  modification or enhancement.
+  .
+  SUN MICROSYSTEMS, INC. SHALL HAVE NO LIABILITY WITH RESPECT TO THE
+  INFRINGEMENT OF COPYRIGHTS, TRADE SECRETS OR ANY PATENTS BY THIS SOFTWARE
+  OR ANY PART THEREOF.
+  .
+  In no event will Sun Microsystems, Inc. be liable for any lost revenue
+  or profits or other special, indirect and consequential damages, even if
+  Sun has been advised of the possibility of such damages.
+  .
+  Sun Microsystems, Inc.
+  2550 Garcia Avenue
+  Mountain View, California  94043
+
+Files: src/G72x/g72x_test.c
+Copyright: 1999-2014, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: GPL-2+
+
+Files: src/*ima_oki*
+Copyright: 2007, <robs@users.sourceforge.net>
+  2007-2014, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: LGPL-2+
+
+Files: src/aiff.c
+  src/wav.c
+  src/wavlike.c
+Copyright: 1999-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2004-2005, David Viens <davidv@plogue.com>
+License: LGPL-2.1+
+
+Files: include/sndfile.hh
+Copyright: 2005-2012, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: BSD-3-clause
+
+Files: src/id3.h
+ src/mpeg*
+ src/nms_adpcm.c
+ src/ogg.h
+ src/ogg_vcomment.*
+Copyright: 1999-2019, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2017-2021, Arthur Taylor <art@ified.ca>
+License: LGPL-2.1+
+
+
+Files: src/ogg.c
+Copyright: 1994-2013, Xiph.Org Foundation and contributors
+  2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2007, John ffitch
+  2018, Arthur Taylor <art@ified.ca>
+License: BSD-3-clause and LGPL-2.1+
+
+Files: src/ogg_opus.c
+Copyright: 1994-2013, Xiph.Org Foundation and contributors
+  2013-2020, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2018, Arthur Taylor <art@ified.ca>
+License: BSD-3-clause and LGPL-2.1+
+
+Files: src/ogg_vorbis.c
+Copyright: 2002-2005, Michael Smith <msmith@xiph.org>
+  2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2007, John ffitch
+  2018-2021, Arthur Taylor <art@ified.ca>
+License: BSD-3-clause and LGPL-2.1+
+
+
+
+Files: src/flac.c
+Copyright: 2004, Tobias Gehrig <tgehrig@ira.uka.de>
+  2004-2017, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: LGPL-2.1+
+
+Files: src/cart.c
+Copyright: 2006, Paul Davis <paul@linuxaudiosystems.com>
+  2006-2013, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2012, Chris Roberts <c.roberts@csrfm.com>
+License: LGPL-2.1+
+
+Files: src/chunk.c
+Copyright: 2008-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2012, IOhannes m zmoelnig, IEM <zmoelnig@iem.at>
+License: LGPL-2.1+
+
+Files: src/sd2.c
+Copyright: 2001-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2004, Paavo Jumppanen
+License: LGPL-2.1+
+
+Files: src/broadcast.c
+Copyright: 2006, Paul Davis <paul@linuxaudiosystems.com>
+  2006-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: LGPL-2.1+
+
+Files: src/wve.c
+Copyright: 2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2007, Reuben Thomas
+License: LGPL-2.1+
+
+Files: src/dwvw.c
+Copyright: 1993, NuEdge Development".
+  2002-2014, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: LGPL-2.1+
+
+Files: src/file_io.c
+Copyright: 2002-2014, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2003, Ross Bencina <rbencina@iprimus.com.au>
+License: LGPL-2.1+
+
+Files: src/rf64.c
+Copyright: 2008-2017, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2009, Uli Franke <cls@nebadje.org>
+License: LGPL-2.1+
+
+Files: src/test_nms_adpcm.c
+Copyright: 2007-2018, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2017-2018, Arthur Taylor <art@ified.ca>
+License: LGPL-2+
+
+Files: programs/*
+Copyright: 1999-2019, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: BSD-3-clause
+
+Files: programs/common.c
+  programs/sndfile-metadata-*.c
+Copyright: 1999-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2008-2010, George Blood Audio
+License: BSD-3-clause
+
+Files: programs/sndfile-cmp.c
+Copyright: 2008, Conrad Parker <conrad@metadecks.org>
+  2008-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: BSD-3-clause
+
+Files: examples/*
+Copyright: 1999-2019, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: BSD-3-clause
+
+Files: examples/generate.cs
+Copyright: 2004, James Robson, http://www.arbingersys.com
+License: GPL-2+
+
+Files: examples/sndfilehandle.cc
+Copyright: 2007-2011, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: GPL-2+
+
+Files: Octave/sndfile_load.m
+  Octave/sndfile_play.m
+  Octave/sndfile_save.m
+Copyright: 2002-2011, Erik de Castro Lopo
+License: GPL-2+
+
+Files: tests/*
+ regtest/*
+Copyright:  1999-2019 Erik de Castro Lopo <erikd@mega-nerd.com>
+License: GPL-2+
+
+Files: tests/*.sh.in
+ src/*.py
+Copyright: 2003-2017, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: BSD-3-clause
+
+Files: tests/mpeg_test.c
+Copyright: 2007-2019, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2019, John ffitch <jpff@codemist.co.uk>
+License: GPL-2+
+
+Files: Scripts/android-configure.sh
+Copyright: 2013-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: BSD-3-clause
+
+Files: Scripts/cstyle.py
+Copyright: 2013-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: BSD-2-clause
+
+Files: m4/ax_add_fortify_source.m4
+Copyright: 2017, David Seifert <soap@gentoo.org>
+  2019, Reini Urban <rurban@cpan.org>
+License: FSFAP
+
+Files: m4/ax_append_flag.m4
+ m4/ax_check_compile_flag*.m4
+ m4/ax_check_link_flag*.m4
+Copyright: 2008, Guido U. Draheim <guidod@gmx.de>
+  2011, Maarten Bosmans <mkbosmans@gmail.com>
+License: GPL-3+
+
+Files: m4/ax_recursive_eval.m4
+Copyright: 2008, Alexandre Duret-Lutz <adl@gnu.org>
+License: GPL-2+
+
+Files: m4/ax_compiler_vendor.m4
+Copyright: 2008, Matteo Frigo
+  2008, Steven G. Johnson <stevenj@alum.mit.edu>
+License: GPL-3+
+
+Files: m4/ax_compiler_version.m4
+Copyright: 2014, Bastien ROUCARIES <roucaries.bastien+autoconf@gmail.com>
+License: FSFAP
+
+Files: m4/extra_pkg.m4
+Copyright: 2004, Scott James Remnant <scott@netsplit.com>.
+  2008-2012, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: GPL-2+
+
+Files: m4/ax_require_defined.m4
+Copyright: 2014, Mike Frysinger <vapier@gentoo.org>
+License: FSFAP
+
+Files: m4/clip_mode.m4
+ m4/flexible_array.m4
+ m4/mkoctfile_version.m4
+ m4/octave.m4
+Copyright: 2007, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: NTP
+
+Files: cmake/CMakeAutoGen*
+Copyright: 2017, Anonymous Maarten <anonymous.maarten@gmail.com>
+License: LGPL-2.1+
+
+Files: debian/*
+Copyright: 2016-2017, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2016-2022, IOhannes m zmölnig <umlaeute@debian.org>
+License: LGPL-2.1+
+
+
+License: LGPL-2.1+
+  This package is free software; you can redistribute it and/or modify it
+  under the terms of the GNU Lesser General Public License as published
+  by the Free Software Foundation; either version 2.1 of the License, or
+  (at your option) any later version.
+  .
+  This package is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+  .
+  You should have received a copy of the 'GNU Lesser General Public
+  License' along with this program.  If not, see
+  <http://www.gnu.org/licenses/>.
+Comment:
+  On Debian systems, the complete text of the GNU Lesser General Public License
+  (LGPL) version 2.1 can be found in "/usr/share/common-licenses/LGPL-2.1".
+
+License: LGPL-2+
+  This package is free software; you can redistribute it and/or modify it
+  under the terms of the GNU Lesser General Public License as published
+  by the Free Software Foundation; either version 2 of the License.
+  .
+  This package is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+  .
+  You should have received a copy of the 'GNU Lesser General Public
+  License' along with this program.  If not, see
+  <http://www.gnu.org/licenses/>.
+Comment:
+  On Debian systems, the complete text of the GNU Lesser General Public License
+  (LGPL) version 2 can be found in "/usr/share/common-licenses/LGPL-2".
+
+License: GPL-2+
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by the
+  Free Software Foundation; either version 2, or (at your option) any
+  later version.
+  .
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+  .
+  You should have received a copy of the GNU General Public License along
+  with this program.  If not, see <http://www.gnu.org/licenses/>.
+Comment:
+  On Debian systems, the complete text of the GNU General Public License
+  (GPL) version 2 can be found in "/usr/share/common-licenses/GPL-2".
+
+License: GPL-3+
+  This program is free software; you can redistribute it and/or modify it
+  under the terms of the GNU General Public License as published by the
+  Free Software Foundation; either version 3, or (at your option) any
+  later version.
+  .
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+  .
+  You should have received a copy of the GNU General Public License along
+  with this program.  If not, see <http://www.gnu.org/licenses/>.
+Comment:
+  On Debian systems, the complete text of the GNU General Public License
+  (GPL) version 3 can be found in "/usr/share/common-licenses/GPL-3".
+
+
+License: BSD-3-clause
+  All rights reserved.
+  .
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are
+  met:
+  .
+  1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above
+    copyright notice, this list of conditions and the following
+    disclaimer in the documentation and/or other materials provided
+    with the distribution.
+  3. The name of the author may not be used to endorse or promote
+    products derived from this software without specific prior
+    written permission.
+  .
+  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY
+  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR
+  BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+  TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  THE POSSIBILITY OF SUCH DAMAGE.
+
+License: BSD-2-clause
+  All rights reserved.
+  .
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions are
+  met:
+  .
+  1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above
+    copyright notice, this list of conditions and the following
+    disclaimer in the documentation and/or other materials provided
+    with the distribution.
+  .
+  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY
+  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
+  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR
+  BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+  TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+  THE POSSIBILITY OF SUCH DAMAGE.
+
+License: Apache-2.0
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  .
+      http://www.apache.org/licenses/LICENSE-2.0
+  .
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+Comment:
+  On Debian systems, the complete text of the Apache 2.0 License
+  can be found in /usr/share/common-licenses/Apache-2.0 file.
+
+License: FSFAP
+  Copying and distribution of this file, with or without modification, are
+  permitted in any medium without royalty provided the copyright notice
+  and this notice are preserved.  This file is offered as-is, without any
+  warranty.
+
+License: NTP
+  Permission to use, copy, modify, distribute, and sell this file for any
+  purpose is hereby granted without fee, provided that the above copyright
+  and this permission notice appear in all copies.  No representations are
+  made about the suitability of this software for any purpose.  It is
+  provided "as is" without express or implied warranty.
+```
+
+### 360. Used by libspeex1 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: speex
+Source: https://gitlab.xiph.org/xiph/speex
+Comment:
+ This package was first debianized by A. Maitland Bottoms <bottoms@debian.org>
+ on Tue, 16 Jul 2002 10:02:40 -0400.
+
+Files: *
+Copyright:
+ 2002-2007 Jean-Marc Valin <jean-marc.valin@hermes.usherb.ca>
+ 1994-2007 Xiph.org Foundation
+ 1993, 2002, 2006 David Rowe <david@voicetronix.com.au>
+ 2005-2009 Analog Devices Inc.
+ 2003-2004 Mark Borgerding
+ 2003-2007 Commonwealth Scientific and Industrial Research Organisation (CSIRO)
+ 2005 Christopher Montgomery
+ 2003 EpicGames
+ 1992-1994 Jutta Degener, Carsten Bormann, Technische Universitaet Berlin
+ Tahseen Mohammad
+ 2002, John Edwards
+ 2005-2007 Psi Systems, Inc.
+License: BSD-3-Clause
+
+Files: doc/manual.pdf
+Copyright:
+ 2002-2007 Jean-Marc Valin
+ 2002-2007 Xiph.org Foundation
+License: GFDL-1.1-or-later
+
+Files:
+ include/speex/speex_types.h
+ libspeex/smallft.c
+ libspeex/smallft.h
+Copyright:
+ 1994-2002 Xiph.Org Foundation
+License: BSD-3-Clause
+Comment:
+ taken from libogg
+
+Files:
+ libspeex/lpc.c
+Copyright:
+ 1992, 1993, 1994 by Jutta Degener and Carsten Bormann, Technische Universitaet Berlin
+ Jean-Marc Valin
+License: BSD-3-Clause and custom-1
+
+Files:
+ src/getopt1.c
+ src/getopt.c
+ src/getopt_win.h
+Copyright:
+ 1987,88,89,90,91,92,93,94,96,97,98,99 Free Software Foundation, Inc.
+License: LGPL-2.0-or-later
+
+Files: debian/*
+Copyright:
+ 2002 A. Maitland Bottoms <bottoms@debian.org>
+License: BSD-3-Clause
+
+License: BSD-3-Clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+ - Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ .
+ - Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ .
+ - Neither the name of the Xiph.org Foundation nor the names of its
+ contributors may be used to endorse or promote products derived from
+ this software without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+License: LGPL-2.0-or-later
+ This file is part of the GNU C Library.
+ .
+ The GNU C Library is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Library General Public License as
+ published by the Free Software Foundation; either version 2 of the
+ License, or (at your option) any later version.
+ .
+ The GNU C Library is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+ .
+ You should have received a copy of the GNU Library General Public
+ License along with the GNU C Library; see the file COPYING.LIB.  If not,
+ see <https://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU Library General Public
+ License version 2 can be found in "/usr/share/common-licenses/LGPL-2".
+
+License: custom-1
+ Any use of this software is permitted provided that this notice is not
+ removed and that neither the authors nor the Technische Universitaet Berlin
+ are deemed to have made any representations as to the suitability of this
+ software for any purpose nor are held responsible for any defects of
+ this software.  THERE IS ABSOLUTELY NO WARRANTY FOR THIS SOFTWARE.
+ .
+ As a matter of courtesy, the authors request to be informed about uses
+ this software has found, about bugs in this software, and about any
+ improvements that may be of general interest.
+ .
+ Berlin, 28.11.1994
+ Jutta Degener
+ Carsten Bormann
+
+License: GFDL-1.1-or-later
+ Permission is granted to copy, distribute and/or modify this document
+ under the terms of the GNU Free Documentation License, Version 1.1 or
+ any later version published by the Free Software Foundation;
+ with no Invariant Section, with no Front-Cover Texts, and with no
+ Back-Cover.
+ .
+ On Debian systems, the complete text of the GNU Free Documentation License
+ version 1.2 can be found in "/usr/share/common-licenses/GFDL-1.2".
+```
+
+### 361. Used by libsqlite3-0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -46658,7 +51942,7 @@ License: public-domain
  contributors.
 ```
 
-### 338. Used by libsqlite3-sys 0.38.2, rusqlite 0.40.2
+### 362. Used by libsqlite3-sys 0.38.2, rusqlite 0.40.2
 
 ```text
 Copyright (c) 2014 The rusqlite developers
@@ -46682,7 +51966,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 339. Used by libssh-4 (Ubuntu package)
+### 363. Used by libssh-4 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -47002,7 +52286,7 @@ License: BSD-3-clause
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 340. Used by libssl3t64 (Ubuntu package)
+### 364. Used by libssl3t64 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -47077,7 +52361,7 @@ License: GPL-1+
  Public License can be found in `/usr/share/common-licenses/GPL-1'.
 ```
 
-### 341. Used by libsystemd0 (Ubuntu package), libudev1 (Ubuntu package)
+### 365. Used by libsystemd0 (Ubuntu package), libudev1 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -47369,7 +52653,609 @@ License: CC0-1.0
  found in ‘/usr/share/common-licenses/CC0-1.0’.
 ```
 
-### 342. Used by libtasn1-6 (Ubuntu package)
+### 366. Used by libtag1v5-vanilla (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: TagLib
+Upstream-Contact: https://mail.kde.org/mailman/listinfo/taglib-devel
+Source: https://taglib.github.io/
+License: LGPL-2.1 or MPL-1.1
+
+Files: *
+Copyright:
+ 2002-2008 Scott Wheeler <wheeler@kde.org>
+ 2003-2005 Allan Sandfeld Jensen <kde@carewolf.org>
+ 2003      Ismael Orenstein <orenstein@kde.org>
+ 2005-2012 Lukáš Lalinský <lalinsky@gmail.com>
+ 2010      Alex Novichkov <novichko@atnet.ru>
+ 2010      Anton Sergunov <setosha@gmail.com>
+ 2011      Mathias Panzenböck <grosser.meister.morti@gmx.net>
+ 2012-2016 Tsuda Kageyu <tsuda.kageyu@gmail.com>
+ 2012      Michael Helmling <helmling@mathematik.uni-kl.de>
+           Teemu Tervo <teemu.tervo@gmx.net>
+License: LGPL-2.1 or MPL-1.1
+
+Files: taglib/mpeg/id3v2/frames/*
+Copyright:
+ 2002-2008 Scott Wheeler <wheeler@kde.org>
+ 2006, 2014-2015 Urs Fleisch <ufleisch@users.sourceforge.net>
+ 2006 Aaron VonderHaar <avh4@users.sourceforge.net>
+ 2008 Lukáš Lalinský <lalinsky@gmail.com>
+ 2008 Serkan Kalyoncu
+ 2012 Rupert Daniel <rupert@cancelmonday.com>
+ 2013 Lukas Krejci <krejclu6@fel.cvut.cz>
+License: LGPL-2.1 or MPL-1.1
+
+Files: 3rdparty/utf8-cpp/*
+Copyright: 2006 Nemanja Trifunovic
+License: BSL-1.0
+Comment: The embedded library code is NOT used during build.
+
+Files: taglib/it/itfile.h taglib/mod/modfileprivate.h
+Copyright:
+ 2011 Mathias Panzenböck <grosser.meister.morti@gmx.net>
+License: LGPL-2.1
+
+Files: bindings/c/tag_c.h bindings/c/tag_c.cpp
+Copyright:
+ 2003 Scott Wheeler <wheeler@kde.org>
+License: LGPL-2.1
+
+Files: examples/*
+Copyright:
+ 2003, 2004  Scott Wheeler <wheeler@kde.org>
+License: BSD-2-clause
+
+Files: debian/*
+Copyright:
+ 2004 Christopher L Cheney <ccheney@debian.org>
+ 2005-2007 Adeodato Simó <dato@net.com.org.es>
+ 2008-2013 Modestas Vainius <modestas@vainius.eu>
+ 2016-2017 Matteo Cypriani <mcy@lm7.fr>
+License: LGPL-2.1 or MPL-1.1
+Comment:
+ A license was not specified in the original copyright file. When it was
+ converted to DEP-5 format (September 2016), it was assumed that the packaging
+ files were released under the same double-license as the upstream source.
+
+License: BSD-2-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
+ INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
+ NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+License: LGPL-2.1
+ This library is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License version
+ 2.1 as published by the Free Software Foundation.
+ .
+ This library is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this library; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ 02110-1301  USA
+ .
+ Alternatively, this file is available under the Mozilla Public
+ License Version 1.1.  You may obtain a copy of the License at
+ http://www.mozilla.org/MPL/
+ .
+ On Debian systems, the full text of the GNU Lesser General Public
+ License version 2.1 is available in /usr/share/common-licenses/LGPL-2.1.
+
+License: MPL-1.1
+ Mozilla Public License Version 1.1
+ .
+ 1. Definitions.
+ .
+     1.0.1. "Commercial Use" means distribution or otherwise making the
+     Covered Code available to a third party.
+ .
+     1.1. "Contributor" means each entity that creates or contributes to
+     the creation of Modifications.
+ .
+     1.2. "Contributor Version" means the combination of the Original
+     Code, prior Modifications used by a Contributor, and the Modifications
+     made by that particular Contributor.
+ .
+     1.3. "Covered Code" means the Original Code or Modifications or the
+     combination of the Original Code and Modifications, in each case
+     including portions thereof.
+ .
+     1.4. "Electronic Distribution Mechanism" means a mechanism generally
+     accepted in the software development community for the electronic
+     transfer of data.
+ .
+     1.5. "Executable" means Covered Code in any form other than Source
+     Code.
+ .
+     1.6. "Initial Developer" means the individual or entity identified
+     as the Initial Developer in the Source Code notice required by Exhibit
+     A.
+ .
+     1.7. "Larger Work" means a work which combines Covered Code or
+     portions thereof with code not governed by the terms of this License.
+ .
+     1.8. "License" means this document.
+ .
+     1.8.1. "Licensable" means having the right to grant, to the maximum
+     extent possible, whether at the time of the initial grant or
+     subsequently acquired, any and all of the rights conveyed herein.
+ .
+     1.9. "Modifications" means any addition to or deletion from the
+     substance or structure of either the Original Code or any previous
+     Modifications. When Covered Code is released as a series of files, a
+     Modification is:
+          A. Any addition to or deletion from the contents of a file
+          containing Original Code or previous Modifications.
+ .
+          B. Any new file that contains any part of the Original Code or
+          previous Modifications.
+ .
+     1.10. "Original Code" means Source Code of computer software code
+     which is described in the Source Code notice required by Exhibit A as
+     Original Code, and which, at the time of its release under this
+     License is not already Covered Code governed by this License.
+ .
+     1.10.1. "Patent Claims" means any patent claim(s), now owned or
+     hereafter acquired, including without limitation,  method, process,
+     and apparatus claims, in any patent Licensable by grantor.
+ .
+     1.11. "Source Code" means the preferred form of the Covered Code for
+     making modifications to it, including all modules it contains, plus
+     any associated interface definition files, scripts used to control
+     compilation and installation of an Executable, or source code
+     differential comparisons against either the Original Code or another
+     well known, available Covered Code of the Contributor's choice. The
+     Source Code can be in a compressed or archival form, provided the
+     appropriate decompression or de-archiving software is widely available
+     for no charge.
+ .
+     1.12. "You" (or "Your")  means an individual or a legal entity
+     exercising rights under, and complying with all of the terms of, this
+     License or a future version of this License issued under Section 6.1.
+     For legal entities, "You" includes any entity which controls, is
+     controlled by, or is under common control with You. For purposes of
+     this definition, "control" means (a) the power, direct or indirect,
+     to cause the direction or management of such entity, whether by
+     contract or otherwise, or (b) ownership of more than fifty percent
+     (50%) of the outstanding shares or beneficial ownership of such
+     entity.
+ .
+ 2. Source Code License.
+ .
+     2.1. The Initial Developer Grant.
+     The Initial Developer hereby grants You a world-wide, royalty-free,
+     non-exclusive license, subject to third party intellectual property
+     claims:
+          (a)  under intellectual property rights (other than patent or
+          trademark) Licensable by Initial Developer to use, reproduce,
+          modify, display, perform, sublicense and distribute the Original
+          Code (or portions thereof) with or without Modifications, and/or
+          as part of a Larger Work; and
+ .
+          (b) under Patents Claims infringed by the making, using or
+          selling of Original Code, to make, have made, use, practice,
+          sell, and offer for sale, and/or otherwise dispose of the
+          Original Code (or portions thereof).
+ .
+          (c) the licenses granted in this Section 2.1(a) and (b) are
+          effective on the date Initial Developer first distributes
+          Original Code under the terms of this License.
+ .
+          (d) Notwithstanding Section 2.1(b) above, no patent license is
+          granted: 1) for code that You delete from the Original Code; 2)
+          separate from the Original Code;  or 3) for infringements caused
+          by: i) the modification of the Original Code or ii) the
+          combination of the Original Code with other software or devices.
+ .
+     2.2. Contributor Grant.
+     Subject to third party intellectual property claims, each Contributor
+     hereby grants You a world-wide, royalty-free, non-exclusive license
+ .
+          (a)  under intellectual property rights (other than patent or
+          trademark) Licensable by Contributor, to use, reproduce, modify,
+          display, perform, sublicense and distribute the Modifications
+          created by such Contributor (or portions thereof) either on an
+          unmodified basis, with other Modifications, as Covered Code
+          and/or as part of a Larger Work; and
+ .
+          (b) under Patent Claims infringed by the making, using, or
+          selling of  Modifications made by that Contributor either alone
+          and/or in combination with its Contributor Version (or portions
+          of such combination), to make, use, sell, offer for sale, have
+          made, and/or otherwise dispose of: 1) Modifications made by that
+          Contributor (or portions thereof); and 2) the combination of
+          Modifications made by that Contributor with its Contributor
+          Version (or portions of such combination).
+ .
+          (c) the licenses granted in Sections 2.2(a) and 2.2(b) are
+          effective on the date Contributor first makes Commercial Use of
+          the Covered Code.
+ .
+          (d)    Notwithstanding Section 2.2(b) above, no patent license is
+          granted: 1) for any code that Contributor has deleted from the
+          Contributor Version; 2)  separate from the Contributor Version;
+          3)  for infringements caused by: i) third party modifications of
+          Contributor Version or ii)  the combination of Modifications made
+          by that Contributor with other software  (except as part of the
+          Contributor Version) or other devices; or 4) under Patent Claims
+          infringed by Covered Code in the absence of Modifications made by
+          that Contributor.
+ .
+ 3. Distribution Obligations.
+ .
+     3.1. Application of License.
+     The Modifications which You create or to which You contribute are
+     governed by the terms of this License, including without limitation
+     Section 2.2. The Source Code version of Covered Code may be
+     distributed only under the terms of this License or a future version
+     of this License released under Section 6.1, and You must include a
+     copy of this License with every copy of the Source Code You
+     distribute. You may not offer or impose any terms on any Source Code
+     version that alters or restricts the applicable version of this
+     License or the recipients' rights hereunder. However, You may include
+     an additional document offering the additional rights described in
+     Section 3.5.
+ .
+     3.2. Availability of Source Code.
+     Any Modification which You create or to which You contribute must be
+     made available in Source Code form under the terms of this License
+     either on the same media as an Executable version or via an accepted
+     Electronic Distribution Mechanism to anyone to whom you made an
+     Executable version available; and if made available via Electronic
+     Distribution Mechanism, must remain available for at least twelve (12)
+     months after the date it initially became available, or at least six
+     (6) months after a subsequent version of that particular Modification
+     has been made available to such recipients. You are responsible for
+     ensuring that the Source Code version remains available even if the
+     Electronic Distribution Mechanism is maintained by a third party.
+ .
+     3.3. Description of Modifications.
+     You must cause all Covered Code to which You contribute to contain a
+     file documenting the changes You made to create that Covered Code and
+     the date of any change. You must include a prominent statement that
+     the Modification is derived, directly or indirectly, from Original
+     Code provided by the Initial Developer and including the name of the
+     Initial Developer in (a) the Source Code, and (b) in any notice in an
+     Executable version or related documentation in which You describe the
+     origin or ownership of the Covered Code.
+ .
+     3.4. Intellectual Property Matters
+          (a) Third Party Claims.
+          If Contributor has knowledge that a license under a third party's
+          intellectual property rights is required to exercise the rights
+          granted by such Contributor under Sections 2.1 or 2.2,
+          Contributor must include a text file with the Source Code
+          distribution titled "LEGAL" which describes the claim and the
+          party making the claim in sufficient detail that a recipient will
+          know whom to contact. If Contributor obtains such knowledge after
+          the Modification is made available as described in Section 3.2,
+          Contributor shall promptly modify the LEGAL file in all copies
+          Contributor makes available thereafter and shall take other steps
+          (such as notifying appropriate mailing lists or newsgroups)
+          reasonably calculated to inform those who received the Covered
+          Code that new knowledge has been obtained.
+ .
+          (b) Contributor APIs.
+          If Contributor's Modifications include an application programming
+          interface and Contributor has knowledge of patent licenses which
+          are reasonably necessary to implement that API, Contributor must
+          also include this information in the LEGAL file.
+ .
+               (c)    Representations.
+          Contributor represents that, except as disclosed pursuant to
+          Section 3.4(a) above, Contributor believes that Contributor's
+          Modifications are Contributor's original creation(s) and/or
+          Contributor has sufficient rights to grant the rights conveyed by
+          this License.
+ .
+     3.5. Required Notices.
+     You must duplicate the notice in Exhibit A in each file of the Source
+     Code.  If it is not possible to put such notice in a particular Source
+     Code file due to its structure, then You must include such notice in a
+     location (such as a relevant directory) where a user would be likely
+     to look for such a notice.  If You created one or more Modification(s)
+     You may add your name as a Contributor to the notice described in
+     Exhibit A.  You must also duplicate this License in any documentation
+     for the Source Code where You describe recipients' rights or ownership
+     rights relating to Covered Code.  You may choose to offer, and to
+     charge a fee for, warranty, support, indemnity or liability
+     obligations to one or more recipients of Covered Code. However, You
+     may do so only on Your own behalf, and not on behalf of the Initial
+     Developer or any Contributor. You must make it absolutely clear than
+     any such warranty, support, indemnity or liability obligation is
+     offered by You alone, and You hereby agree to indemnify the Initial
+     Developer and every Contributor for any liability incurred by the
+     Initial Developer or such Contributor as a result of warranty,
+     support, indemnity or liability terms You offer.
+ .
+     3.6. Distribution of Executable Versions.
+     You may distribute Covered Code in Executable form only if the
+     requirements of Section 3.1-3.5 have been met for that Covered Code,
+     and if You include a notice stating that the Source Code version of
+     the Covered Code is available under the terms of this License,
+     including a description of how and where You have fulfilled the
+     obligations of Section 3.2. The notice must be conspicuously included
+     in any notice in an Executable version, related documentation or
+     collateral in which You describe recipients' rights relating to the
+     Covered Code. You may distribute the Executable version of Covered
+     Code or ownership rights under a license of Your choice, which may
+     contain terms different from this License, provided that You are in
+     compliance with the terms of this License and that the license for the
+     Executable version does not attempt to limit or alter the recipient's
+     rights in the Source Code version from the rights set forth in this
+     License. If You distribute the Executable version under a different
+     license You must make it absolutely clear that any terms which differ
+     from this License are offered by You alone, not by the Initial
+     Developer or any Contributor. You hereby agree to indemnify the
+     Initial Developer and every Contributor for any liability incurred by
+     the Initial Developer or such Contributor as a result of any such
+     terms You offer.
+ .
+     3.7. Larger Works.
+     You may create a Larger Work by combining Covered Code with other code
+     not governed by the terms of this License and distribute the Larger
+     Work as a single product. In such a case, You must make sure the
+     requirements of this License are fulfilled for the Covered Code.
+ .
+ 4. Inability to Comply Due to Statute or Regulation.
+ .
+     If it is impossible for You to comply with any of the terms of this
+     License with respect to some or all of the Covered Code due to
+     statute, judicial order, or regulation then You must: (a) comply with
+     the terms of this License to the maximum extent possible; and (b)
+     describe the limitations and the code they affect. Such description
+     must be included in the LEGAL file described in Section 3.4 and must
+     be included with all distributions of the Source Code. Except to the
+     extent prohibited by statute or regulation, such description must be
+     sufficiently detailed for a recipient of ordinary skill to be able to
+     understand it.
+ .
+ 5. Application of this License.
+ .
+     This License applies to code to which the Initial Developer has
+     attached the notice in Exhibit A and to related Covered Code.
+ .
+ 6. Versions of the License.
+ .
+     6.1. New Versions.
+     Netscape Communications Corporation ("Netscape") may publish revised
+     and/or new versions of the License from time to time. Each version
+     will be given a distinguishing version number.
+ .
+     6.2. Effect of New Versions.
+     Once Covered Code has been published under a particular version of the
+     License, You may always continue to use it under the terms of that
+     version. You may also choose to use such Covered Code under the terms
+     of any subsequent version of the License published by Netscape. No one
+     other than Netscape has the right to modify the terms applicable to
+     Covered Code created under this License.
+ .
+     6.3. Derivative Works.
+     If You create or use a modified version of this License (which you may
+     only do in order to apply it to code which is not already Covered Code
+     governed by this License), You must (a) rename Your license so that
+     the phrases "Mozilla", "MOZILLAPL", "MOZPL", "Netscape",
+     "MPL", "NPL" or any confusingly similar phrase do not appear in your
+     license (except to note that your license differs from this License)
+     and (b) otherwise make it clear that Your version of the license
+     contains terms which differ from the Mozilla Public License and
+     Netscape Public License. (Filling in the name of the Initial
+     Developer, Original Code or Contributor in the notice described in
+     Exhibit A shall not of themselves be deemed to be modifications of
+     this License.)
+ .
+ 7. DISCLAIMER OF WARRANTY.
+ .
+     COVERED CODE IS PROVIDED UNDER THIS LICENSE ON AN "AS IS" BASIS,
+     WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING,
+     WITHOUT LIMITATION, WARRANTIES THAT THE COVERED CODE IS FREE OF
+     DEFECTS, MERCHANTABLE, FIT FOR A PARTICULAR PURPOSE OR NON-INFRINGING.
+     THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE COVERED CODE
+     IS WITH YOU. SHOULD ANY COVERED CODE PROVE DEFECTIVE IN ANY RESPECT,
+     YOU (NOT THE INITIAL DEVELOPER OR ANY OTHER CONTRIBUTOR) ASSUME THE
+     COST OF ANY NECESSARY SERVICING, REPAIR OR CORRECTION. THIS DISCLAIMER
+     OF WARRANTY CONSTITUTES AN ESSENTIAL PART OF THIS LICENSE. NO USE OF
+     ANY COVERED CODE IS AUTHORIZED HEREUNDER EXCEPT UNDER THIS DISCLAIMER.
+ .
+ 8. TERMINATION.
+ .
+     8.1.  This License and the rights granted hereunder will terminate
+     automatically if You fail to comply with terms herein and fail to cure
+     such breach within 30 days of becoming aware of the breach. All
+     sublicenses to the Covered Code which are properly granted shall
+     survive any termination of this License. Provisions which, by their
+     nature, must remain in effect beyond the termination of this License
+     shall survive.
+ .
+     8.2.  If You initiate litigation by asserting a patent infringement
+     claim (excluding declatory judgment actions) against Initial Developer
+     or a Contributor (the Initial Developer or Contributor against whom
+     You file such action is referred to as "Participant")  alleging that:
+ .
+     (a)  such Participant's Contributor Version directly or indirectly
+     infringes any patent, then any and all rights granted by such
+     Participant to You under Sections 2.1 and/or 2.2 of this License
+     shall, upon 60 days notice from Participant terminate prospectively,
+     unless if within 60 days after receipt of notice You either: (i)
+     agree in writing to pay Participant a mutually agreeable reasonable
+     royalty for Your past and future use of Modifications made by such
+     Participant, or (ii) withdraw Your litigation claim with respect to
+     the Contributor Version against such Participant.  If within 60 days
+     of notice, a reasonable royalty and payment arrangement are not
+     mutually agreed upon in writing by the parties or the litigation claim
+     is not withdrawn, the rights granted by Participant to You under
+     Sections 2.1 and/or 2.2 automatically terminate at the expiration of
+     the 60 day notice period specified above.
+ .
+     (b)  any software, hardware, or device, other than such Participant's
+     Contributor Version, directly or indirectly infringes any patent, then
+     any rights granted to You by such Participant under Sections 2.1(b)
+     and 2.2(b) are revoked effective as of the date You first made, used,
+     sold, distributed, or had made, Modifications made by that
+     Participant.
+ .
+     8.3.  If You assert a patent infringement claim against Participant
+     alleging that such Participant's Contributor Version directly or
+     indirectly infringes any patent where such claim is resolved (such as
+     by license or settlement) prior to the initiation of patent
+     infringement litigation, then the reasonable value of the licenses
+     granted by such Participant under Sections 2.1 or 2.2 shall be taken
+     into account in determining the amount or value of any payment or
+     license.
+ .
+     8.4.  In the event of termination under Sections 8.1 or 8.2 above,
+     all end user license agreements (excluding distributors and resellers)
+     which have been validly granted by You or any distributor hereunder
+     prior to termination shall survive termination.
+ .
+ 9. LIMITATION OF LIABILITY.
+ .
+     UNDER NO CIRCUMSTANCES AND UNDER NO LEGAL THEORY, WHETHER TORT
+     (INCLUDING NEGLIGENCE), CONTRACT, OR OTHERWISE, SHALL YOU, THE INITIAL
+     DEVELOPER, ANY OTHER CONTRIBUTOR, OR ANY DISTRIBUTOR OF COVERED CODE,
+     OR ANY SUPPLIER OF ANY OF SUCH PARTIES, BE LIABLE TO ANY PERSON FOR
+     ANY INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES OF ANY
+     CHARACTER INCLUDING, WITHOUT LIMITATION, DAMAGES FOR LOSS OF GOODWILL,
+     WORK STOPPAGE, COMPUTER FAILURE OR MALFUNCTION, OR ANY AND ALL OTHER
+     COMMERCIAL DAMAGES OR LOSSES, EVEN IF SUCH PARTY SHALL HAVE BEEN
+     INFORMED OF THE POSSIBILITY OF SUCH DAMAGES. THIS LIMITATION OF
+     LIABILITY SHALL NOT APPLY TO LIABILITY FOR DEATH OR PERSONAL INJURY
+     RESULTING FROM SUCH PARTY'S NEGLIGENCE TO THE EXTENT APPLICABLE LAW
+     PROHIBITS SUCH LIMITATION. SOME JURISDICTIONS DO NOT ALLOW THE
+     EXCLUSION OR LIMITATION OF INCIDENTAL OR CONSEQUENTIAL DAMAGES, SO
+     THIS EXCLUSION AND LIMITATION MAY NOT APPLY TO YOU.
+ .
+ 10. U.S. GOVERNMENT END USERS.
+ .
+     The Covered Code is a "commercial item," as that term is defined in
+     48 C.F.R. 2.101 (Oct. 1995), consisting of "commercial computer
+     software" and "commercial computer software documentation," as such
+     terms are used in 48 C.F.R. 12.212 (Sept. 1995). Consistent with 48
+     C.F.R. 12.212 and 48 C.F.R. 227.7202-1 through 227.7202-4 (June 1995),
+     all U.S. Government End Users acquire Covered Code with only those
+     rights set forth herein.
+ .
+ 11. MISCELLANEOUS.
+ .
+     This License represents the complete agreement concerning subject
+     matter hereof. If any provision of this License is held to be
+     unenforceable, such provision shall be reformed only to the extent
+     necessary to make it enforceable. This License shall be governed by
+     California law provisions (except to the extent applicable law, if
+     any, provides otherwise), excluding its conflict-of-law provisions.
+     With respect to disputes in which at least one party is a citizen of,
+     or an entity chartered or registered to do business in the United
+     States of America, any litigation relating to this License shall be
+     subject to the jurisdiction of the Federal Courts of the Northern
+     District of California, with venue lying in Santa Clara County,
+     California, with the losing party responsible for costs, including
+     without limitation, court costs and reasonable attorneys' fees and
+     expenses. The application of the United Nations Convention on
+     Contracts for the International Sale of Goods is expressly excluded.
+     Any law or regulation which provides that the language of a contract
+     shall be construed against the drafter shall not apply to this
+     License.
+ .
+ 12. RESPONSIBILITY FOR CLAIMS.
+ .
+     As between Initial Developer and the Contributors, each party is
+     responsible for claims and damages arising, directly or indirectly,
+     out of its utilization of rights under this License and You agree to
+     work with Initial Developer and Contributors to distribute such
+     responsibility on an equitable basis. Nothing herein is intended or
+     shall be deemed to constitute any admission of liability.
+ .
+ 13. MULTIPLE-LICENSED CODE.
+ .
+     Initial Developer may designate portions of the Covered Code as
+     "Multiple-Licensed".  "Multiple-Licensed" means that the Initial
+     Developer permits you to utilize portions of the Covered Code under
+     Your choice of the NPL or the alternative licenses, if any, specified
+     by the Initial Developer in the file described in Exhibit A.
+ .
+ EXHIBIT A -Mozilla Public License.
+ .
+     ``The contents of this file are subject to the Mozilla Public License
+     Version 1.1 (the "License"); you may not use this file except in
+     compliance with the License. You may obtain a copy of the License at
+     http://www.mozilla.org/MPL/
+ .
+     Software distributed under the License is distributed on an "AS IS"
+     basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See the
+     License for the specific language governing rights and limitations
+     under the License.
+ .
+     The Original Code is ______________________________________.
+ .
+     The Initial Developer of the Original Code is ________________________.
+     Portions created by ______________________ are Copyright (C) ______
+     _______________________. All Rights Reserved.
+ .
+     Contributor(s): ______________________________________.
+ .
+     Alternatively, the contents of this file may be used under the terms
+     of the _____ license (the  "[___] License"), in which case the
+     provisions of [______] License are applicable instead of those
+     above.  If you wish to allow use of your version of this file only
+     under the terms of the [____] License and not to allow others to use
+     your version of this file under the MPL, indicate your decision by
+     deleting  the provisions above and replace  them with the notice and
+     other provisions required by the [___] License.  If you do not delete
+     the provisions above, a recipient may use your version of this file
+     under either the MPL or the [___] License."
+ .
+     [NOTE: The text of this Exhibit A may differ slightly from the text of
+     the notices in the Source Code files of the Original Code. You should
+     use the text of this Exhibit A rather than the text found in the
+     Original Code Source Code for Your Modifications.]
+
+License: BSL-1.0
+ Permission is hereby granted, free of charge, to any person or organization
+ obtaining a copy of the software and accompanying documentation covered by
+ this license (the "Software") to use, reproduce, display, distribute,
+ execute, and transmit the Software, and to prepare derivative works of the
+ Software, and to permit third-parties to whom the Software is furnished to
+ do so, all subject to the following:
+ .
+ The copyright notices in the Software and this entire statement, including
+ the above license grant, this restriction and the following disclaimer,
+ must be included in all copies of the Software, in whole or in part, and
+ all derivative works of the Software, unless such copies or derivative
+ works are solely in the form of machine-executable object code generated by
+ a source language processor.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT
+ SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE LIABLE
+ FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
+ ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ DEALINGS IN THE SOFTWARE.
+```
+
+### 367. Used by libtasn1-6 (Ubuntu package)
 
 ```text
 This package was debianized by Ivo Timmermans <ivo@debian.org> on
@@ -47457,7 +53343,7 @@ On Debian systems a copy of the complete text of the GNU FDL 1.3
 can be found in /usr/share/common-licenses/GFDL-1.3.
 ```
 
-### 343. Used by libthai0 (Ubuntu package)
+### 368. Used by libthai0 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -47511,7 +53397,55 @@ License: GPL-2+
  version 2 can be found in `/usr/share/common-licenses/GPL-2'.
 ```
 
-### 344. Used by libtiff6 (Ubuntu package)
+### 369. Used by libtheora0 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Theora video compression
+Upstream-Contact: Monty <monty@xiph.org>
+Source: https://git.xiph.org/theora.git
+Files-Excluded: doc/draft-ietf-avt-rtp-theora-00.txt doc/draft-ietf-avt-rtp-theora-00.xml
+Comment: These two files are draft RFCs that are not licensed under a DFSG
+ license, so cannot be included in Debian.
+
+Files: *
+Copyright: 1992-2004, Xiph.org Foundation
+License: BSD-3-Clause
+
+Files: debian/*
+Copyright: 2002, Christopher L Cheney <ccheney@debian.org>
+License: BSD-3-Clause
+
+License: BSD-3-Clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+ - Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ .
+ - Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ .
+ - Neither the name of the Xiph.org Foundation nor the names of its
+ contributors may be used to endorse or promote products derived from
+ this software without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION
+ OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+### 370. Used by libtiff6 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -47563,7 +53497,45 @@ License: Hylafax
  OR PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### 345. Used by libunistring5 (Ubuntu package)
+### 371. Used by libtwolame0 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: twolame
+Upstream-Contact: Nicholas Humfrey <njh@ecs.soton.ac.uk>
+Source: http://www.twolame.org
+
+Files: *
+Copyright: 2001-2004 Michael Cheng
+           2004-2018 The TwoLAME Project
+License: LGPL-2+
+
+Files: debian/*
+Copyright: 2005 Nicholas Humfrey <njh@ecs.soton.ac.uk>
+           2006-2008,2011 Mark Purcell <msp@debian.org>
+           2016-2019 Sebastian Ramacher <sramacher@debian.org>
+License: LGPL-2+
+
+License: LGPL-2+
+ This package is free software; you can redistribute it and/or
+ modify it under the terms of the GNU Lesser General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public
+ License along with this package; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License can be found in `/usr/share/common-licenses/LGPL-2'.
+```
+
+### 372. Used by libunistring5 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -47720,7 +53692,7 @@ License: X11
  tium.
 ```
 
-### 346. Used by libunwind8 (Ubuntu package)
+### 373. Used by libunwind8 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -47834,7 +53806,1205 @@ License: Expat
  WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 347. Used by libwayland-cursor0 (Ubuntu package), libwayland-egl1 (Ubuntu package), libwayland-server0 (Ubuntu package)
+### 374. Used by libv4l-0t64 (Ubuntu package), libv4lconvert0t64 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: v4l-utils
+Upstream-Contact: Linux Media Mailing List <linux-media@vger.kernel.org>
+Source: http://linuxtv.org/downloads/v4l-utils/
+
+Files: *
+Copyright: The v4l-utils authors
+License: GPL-2
+
+Files: android-config.h
+Copyright: 1996-2014, Free Software Foundation, Inc.
+License: LGPL-2.1+
+
+Files: contrib/*
+Copyright: 2006-2012, 2014-2016, 2019, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: GPL-2
+
+Files: contrib/cobalt-ctl/*
+Copyright: 2013-2019, Cisco Systems, Inc. and/or its affiliates.
+License: GPL-2
+
+Files: contrib/freebsd/*
+Copyright: 1999-2012, the contributors
+License: BSD-3-clause or GPL-2+
+
+Files: contrib/freebsd/include/linux/input-event-codes.h
+Copyright: 2015, Hans de Goede <hdegoede@redhat.com>
+ 1999-2002, Vojtech Pavlik
+License: GPL-2
+
+Files: contrib/freebsd/include/linux/input.h
+Copyright: 1999-2002, Vojtech Pavlik
+License: GPL-2
+
+Files: contrib/freebsd/include/linux/ivtv.h
+Copyright: 2004-2007, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+ 2003, 2004, Kevin Thayer <nufan_wfk at yahoo dot com>
+License: GPL-2+
+
+Files: contrib/freebsd/include/linux/uinput.h
+Copyright: no-info-found
+License: GPL-2+
+
+Files: contrib/freebsd/include/linux/v4l2-common.h
+Copyright: 2012, Nokia Corporation <multimedia@maemo.org>
+License: BSD-3-clause or GPL-2+
+
+Files: contrib/gconv/*
+Copyright: 93-97, 99, 1991, 1997-2014, Free Software Foundation, Inc.
+License: LGPL-2.1+
+
+Files: contrib/lircd2toml.py
+Copyright: 2016, 2018-2020, Sean Young <sean@mess.org>
+License: GPL-2
+
+Files: contrib/parsers/au0828/*
+Copyright: 2014, Samsung Electronics Co., Ltd.
+ 2014, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: GPL-2
+
+Files: contrib/parsers/cx25821/*
+Copyright: 2009, Conexant Systems Inc.
+License: GPL-2+
+
+Files: contrib/parsers/em28xx/rewrite_eeprom.pl
+Copyright: 2009, 2010
+License: GPL-2
+
+Files: contrib/parsers/parse-usbsnoop.php
+Copyright: 2009, 2010
+License: GPL-2
+
+Files: contrib/rds-saa6588/*
+Copyright: 1994-2021, Free Software Foundation, Inc.
+License: FSFULLR
+
+Files: contrib/test/*
+Copyright: 2005-2013, Mauro Carvalho Chehab <mchehab@kernel.org>
+License: GPL-2+
+
+Files: contrib/test/mc_nextgen_test.c
+ contrib/test/test-media-unload.pl
+ contrib/test/v4l2gl.c
+ contrib/test/v4l2grab.c
+ contrib/test/vim2m_test_with_gstreamer.sh
+ contrib/test/vim2m_test_with_qvidcap.sh
+Copyright: 2006-2012, 2014-2016, 2019, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: GPL-2
+
+Files: contrib/test/pixfmt-test.c
+Copyright: 2007, 2008, Michael H. Schimek <mschimek@gmx.at>
+License: GPL-2+
+
+Files: contrib/test/sdlcam.c
+Copyright: 2017, Pavel Machek, LGPL
+License: LGPL
+
+Files: contrib/test/sliced-vbi-detect.c
+ contrib/test/sliced-vbi-test.c
+Copyright: 2004, 2006-2008, 2010-2012, 2015, 2018, 2021, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+License: GPL-2+
+
+Files: contrib/test/stress-buffer.c
+Copyright: 2009, Douglas Schilling Landgraf <dougsland@redhat.com>
+License: GPL-2
+
+Files: contrib/test/test-media
+Copyright: 2013-2019, Cisco Systems, Inc. and/or its affiliates.
+License: GPL-2
+
+Files: contrib/xc3028-firmware/*
+Copyright: 2007, Michel Ludwig <michel.ludwig@gmail.com>
+License: GPL-2
+
+Files: contrib/xc3028-firmware/firmware-tool.c
+Copyright: 2007, Michel Ludwig <michel.ludwig@gmail.com>
+ 2007, 2008, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: GPL-2
+
+Files: contrib/xc3028-firmware/xc2028-types.h
+Copyright: 2006-2012, 2014-2016, 2019, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: GPL-2
+
+Files: debian/*
+Copyright: 2008-2023, Gregor Jasny <gjasny@googlemail.com>
+License: GPL-2+
+
+Files: include/*
+Copyright: 2014-2016, Cisco Systems, Inc. and/or its affiliates.
+License: GPL-2
+
+Files: include/gettext.h
+Copyright: 1995-1998, 2000-2002, 2004-2006, 2009-2011, Free Software Foundation, Inc.
+License: GPL-3+
+
+Files: include/linux/bpf.h
+Copyright: 2011-2014, PLUMgrid, http://plumgrid.com
+License: GPL-2
+
+Files: include/linux/cec-funcs.h
+ include/linux/cec.h
+Copyright: 2014-2016, Cisco Systems, Inc. and/or its affiliates.
+License: BSD-3-clause or GPL-2
+
+Files: include/linux/dvb/*
+Copyright: 2000, Marcus Metzler <marcus@convergence.de>
+License: LGPL-2.1+
+
+Files: include/linux/ivtv.h
+Copyright: 2004-2007, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+ 2003, 2004, Kevin Thayer <nufan_wfk at yahoo dot com>
+License: GPL-2+
+
+Files: include/linux/media-bus-format.h
+ include/linux/v4l2-mediabus.h
+Copyright: 2009, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+License: GPL-2
+
+Files: include/linux/media.h
+ include/linux/v4l2-subdev.h
+Copyright: 2010, Nokia Corporation <multimedia@maemo.org>
+License: GPL-2
+
+Files: include/linux/v4l2-common.h
+Copyright: 2012, Nokia Corporation <multimedia@maemo.org>
+License: BSD-3-clause or GPL-2+
+
+Files: include/linux/v4l2-controls.h
+ include/linux/videodev2.h
+Copyright: 1999-2012, the contributors
+License: BSD-3-clause or GPL-2+
+
+Files: include/v4l-getsubopt.h
+Copyright: 93-97, 99, 1991, 1997-2014, Free Software Foundation, Inc.
+License: LGPL-2.1+
+
+Files: lib/*
+Copyright: 2012-2014, Andre Roth <neolynx@gmail.com>
+ 2011-2014, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: LGPL-2.1
+
+Files: lib/include/libdvbv5/countries.h
+Copyright: 2014, Akihiro Tsukada
+ 2006-2009, Winfried Koehler
+License: LGPL-2.1
+
+Files: lib/include/libdvbv5/desc_atsc_service_location.h
+ lib/include/libdvbv5/desc_extension.h
+ lib/include/libdvbv5/desc_isdbt_delivery.h
+ lib/include/libdvbv5/desc_logical_channel.h
+ lib/include/libdvbv5/desc_partial_reception.h
+ lib/include/libdvbv5/desc_registration_id.h
+ lib/include/libdvbv5/desc_t2_delivery.h
+ lib/include/libdvbv5/desc_ts_info.h
+ lib/include/libdvbv5/dvb-demux.h
+ lib/include/libdvbv5/dvb-dev.h
+ lib/include/libdvbv5/dvb-fe.h
+ lib/include/libdvbv5/dvb-file.h
+ lib/include/libdvbv5/dvb-sat.h
+ lib/include/libdvbv5/dvb-scan.h
+ lib/include/libdvbv5/dvb-v5-std.h
+Copyright: 2011-2016, 2020, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: LGPL-2.1
+
+Files: lib/include/libdvbv5/dvb-frontend.h
+Copyright: 2000, Marcus Metzler <marcus@convergence.de>
+License: LGPL-2.1+
+
+Files: lib/include/libv4l-plugin.h
+Copyright: 2010, Nokia Corporation <multimedia@maemo.org>
+License: LGPL-2.1+
+
+Files: lib/include/libv4l1.h
+ lib/include/libv4l2.h
+ lib/include/libv4lconvert.h
+Copyright: 2008-2011, Hans de Goede <hdegoede@redhat.com>
+License: LGPL-2.1+
+
+Files: lib/include/libv4l2rds.h
+Copyright: 2012, 2016, 2018, Cisco Systems, Inc. and/or its affiliates.
+License: LGPL-2.1
+
+Files: lib/libdvbv5/*
+Copyright: 2011-2016, 2020, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: LGPL-2.1
+
+Files: lib/libdvbv5/compat-soname.c
+Copyright: 2012-2014, Andre Roth <neolynx@gmail.com>
+License: LGPL-2.1
+
+Files: lib/libdvbv5/countries.c
+Copyright: 2014, Akihiro Tsukada
+License: LGPL-2.1
+
+Files: lib/libdvbv5/crc32.c
+ lib/libdvbv5/dvb-log.c
+ lib/libdvbv5/dvb-scan.c
+Copyright: 2012-2014, Andre Roth <neolynx@gmail.com>
+ 2011-2014, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: LGPL-2.1
+
+Files: lib/libdvbv5/descriptors/*
+Copyright: 2012-2014, Andre Roth <neolynx@gmail.com>
+ 2011-2014, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: LGPL-2.1
+
+Files: lib/libdvbv5/descriptors/desc_atsc_service_location.c
+ lib/libdvbv5/descriptors/desc_extension.c
+ lib/libdvbv5/descriptors/desc_isdbt_delivery.c
+ lib/libdvbv5/descriptors/desc_logical_channel.c
+ lib/libdvbv5/descriptors/desc_partial_reception.c
+ lib/libdvbv5/descriptors/desc_registration_id.c
+ lib/libdvbv5/descriptors/desc_t2_delivery.c
+ lib/libdvbv5/descriptors/desc_ts_info.c
+Copyright: 2011-2016, 2020, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: LGPL-2.1
+
+Files: lib/libdvbv5/dvb-demux.c
+Copyright: 2001, Johannes Stezenbach (js@convergence.de)
+License: LGPL-2.1
+
+Files: lib/libdvbv5/tables/*
+Copyright: 2012-2014, Andre Roth <neolynx@gmail.com>
+License: LGPL-2.1
+
+Files: lib/libdvbv5/tables/header.c
+ lib/libdvbv5/tables/nit.c
+ lib/libdvbv5/tables/pat.c
+ lib/libdvbv5/tables/pmt.c
+ lib/libdvbv5/tables/sdt.c
+ lib/libdvbv5/tables/vct.c
+Copyright: 2012-2014, Andre Roth <neolynx@gmail.com>
+ 2011-2014, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: LGPL-2.1
+
+Files: lib/libv4l-mplane/*
+Copyright: 2011, 2012, Mauro Carvalho Chehab
+License: LGPL-2.1+
+
+Files: lib/libv4l-mplane/libv4l-mplane.c
+Copyright: 2006, 2011, 2012, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: LGPL-2.1+
+
+Files: lib/libv4l1/*
+Copyright: 2008-2011, Hans de Goede <hdegoede@redhat.com>
+License: LGPL-2.1+
+
+Files: lib/libv4l1/libv4l1.c
+Copyright: 2008-2010, Hans de Goede <hdegoede@redhat.com>
+ 2003-2009, Bill Dirks <bill@thedirks.org>, et al.
+License: LGPL-2.1+
+
+Files: lib/libv4l2/*
+Copyright: 2008-2011, Hans de Goede <hdegoede@redhat.com>
+License: LGPL-2.1+
+
+Files: lib/libv4l2/log.c
+Copyright: 2008, 2009, Sjoerd Piepenbrink <need4weed@gmail.com>
+ 2008, 2009, Hans de Goede <hdegoede@redhat.com>
+ 2008, 2009, Elmar Kleijn <elmar_kleijn@hotmail.com>
+License: LGPL-2.1+
+
+Files: lib/libv4l2/v4l2-plugin-android.c
+ lib/libv4l2/v4l2-plugin.c
+Copyright: 2010, Nokia Corporation <multimedia@maemo.org>
+License: LGPL-2.1+
+
+Files: lib/libv4l2rds/*
+Copyright: 2012, 2016, 2018, Cisco Systems, Inc. and/or its affiliates.
+License: LGPL-2.1
+
+Files: lib/libv4lconvert/*
+Copyright: 2008-2011, Hans de Goede <hdegoede@redhat.com>
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/control/*
+Copyright: 2008-2010, Hans de Goede <hdegoede@redhat.com>
+ 2008, 2009, Sjoerd Piepenbrink <need4weed@gmail.com>
+ 2008, 2009, Radjnies Bhansingh <radjnies@gmail.com>
+ 2008, 2009, Elmar Kleijn <elmar_kleijn@hotmail.com>
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/helper-funcs.h
+Copyright: 2009, Hans de Goede <hdegoede@redhat.com>
+License: BSD-2-clause
+
+Files: lib/libv4lconvert/jidctflt.c
+ lib/libv4lconvert/jpeg_memsrcdest.c
+Copyright: 1994-1998, Thomas G. Lane.
+License: jpeg-group
+
+Files: lib/libv4lconvert/jl2005bcd.c
+Copyright: 2010, Theodore Kilgore <kilgota@auburn.edu>
+ 2010, Hans de Goede <hdegoede@redhat.com>
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/jpgl.c
+Copyright: 2003, Sylvain Munaut <nw8xx ]at[ 246tNt.com>
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/libv4lsyscall-priv.h
+Copyright: 2009, Hans Petter Selasky.
+License: BSD-2-clause
+
+Files: lib/libv4lconvert/mr97310a.c
+Copyright: 2004-2009, Theodore Kilgore <kilgota@auburn.edu>
+License: LGPL-2+
+
+Files: lib/libv4lconvert/nv12_16l16.c
+Copyright: 2006, 2009, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/ov511-decomp.c
+ lib/libv4lconvert/ov518-decomp.c
+Copyright: 1999-2003, Mark W. McClelland.
+ 1998-2000, OmniVision Technologies
+License: GPL-2
+
+Files: lib/libv4lconvert/pac207.c
+Copyright: 2003-2005, Michel Xhaard
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/processing/*
+Copyright: 2008, 2009, Sjoerd Piepenbrink <need4weed@gmail.com>
+ 2008, 2009, Hans de Goede <hdegoede@redhat.com>
+ 2008, 2009, Elmar Kleijn <elmar_kleijn@hotmail.com>
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/processing/autogain.c
+ lib/libv4lconvert/processing/gamma.c
+Copyright: 2008-2011, Hans de Goede <hdegoede@redhat.com>
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/rgbyuv.c
+Copyright: 2009, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+ 2008, Hans de Goede <hdegoede@redhat.com>
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/sn9c10x.c
+Copyright: 2005
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/sn9c2028-decomp.c
+Copyright: 2005, Theodore Kilgore <kilgota@auburn.edu>
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/sn9c20x.c
+Copyright: 2008, 2009, Algorithm based on Java code writtenJens on microdia google group
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/spca561-decompress.c
+Copyright: 2005, Andrzej Szombierski [qq@kuku.eu.org]
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/sq905c.c
+Copyright: 2009, Theodore Kilgore <kilgota@auburn.edu>
+ 2005, and 2007, Theodore Kilgore <kilgota@auburn.edu>
+License: LGPL-2.1+
+
+Files: lib/libv4lconvert/tinyjpeg-internal.h
+ lib/libv4lconvert/tinyjpeg.c
+ lib/libv4lconvert/tinyjpeg.h
+Copyright: 2006, Luc Saillard <luc@saillard.org>
+License: BSD-3-clause
+
+Files: meson.build
+Copyright: no-info-found
+License: LGPL-2.1
+
+Files: utils/*
+Copyright: 2004, 2006-2008, 2010-2012, 2015, 2018, 2021, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+License: GPL-2+
+
+Files: utils/cec-compliance/*
+Copyright: 2013-2019, Cisco Systems, Inc. and/or its affiliates.
+License: GPL-2
+
+Files: utils/cec-ctl/*
+Copyright: 2013-2019, Cisco Systems, Inc. and/or its affiliates.
+License: GPL-2
+
+Files: utils/cec-follower/*
+Copyright: 2014-2016, Cisco Systems, Inc. and/or its affiliates.
+License: BSD-3-clause or GPL-2
+
+Files: utils/common/*
+Copyright: 2012, 2016, 2018, Cisco Systems, Inc. and/or its affiliates.
+License: LGPL-2.1
+
+Files: utils/common/codec-fwht.c
+ utils/common/codec-fwht.h
+Copyright: 2018, Cisco Systems, Inc. and/or its affiliates.
+ 2016, Tom aan de Wiel
+License: LGPL-2.1
+
+Files: utils/common/cv4l-helpers.h
+ utils/common/v4l-helpers.h
+Copyright: 2014-2016, Cisco Systems, Inc. and/or its affiliates.
+License: BSD-3-clause or GPL-2
+
+Files: utils/common/ir-encode.c
+Copyright: 2016, 2018-2020, Sean Young <sean@mess.org>
+License: GPL-2
+
+Files: utils/common/keymap.c
+ utils/common/keymap.h
+Copyright: no-info-found
+License: GPL-2
+
+Files: utils/common/toml.c
+ utils/common/toml.h
+Copyright: 2017-2019, CK Tan
+License: Expat
+
+Files: utils/common/v4l2-tpg-colors.c
+ utils/common/v4l2-tpg-colors.h
+ utils/common/v4l2-tpg-core.c
+ utils/common/v4l2-tpg.h
+Copyright: 2013-2019, Cisco Systems, Inc. and/or its affiliates.
+License: GPL-2
+
+Files: utils/cx18-ctl/*
+Copyright: 2004, 2006, 2007, Hans Verkuil <hverkuil@xs4all.nl>
+ 2003, 2004, Kevin Thayer <nufan_wfk at yahoo dot com>
+License: GPL-2+
+
+Files: utils/cx18-ctl/cx18-ctl.c
+Copyright: 2004-2007, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+ 2003, 2004, Kevin Thayer <nufan_wfk at yahoo dot com>
+License: GPL-2+
+
+Files: utils/dvb/*
+Copyright: 2006-2012, 2014-2016, 2019, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: GPL-2
+
+Files: utils/ir-ctl/*
+Copyright: no-info-found
+License: GPL-2
+
+Files: utils/ir-ctl/ir-ctl.c
+Copyright: 2016, 2018-2020, Sean Young <sean@mess.org>
+License: GPL-2
+
+Files: utils/ivtv-ctl/*
+Copyright: 2004, 2006, 2007, Hans Verkuil <hverkuil@xs4all.nl>
+ 2003, 2004, Kevin Thayer <nufan_wfk at yahoo dot com>
+License: GPL-2+
+
+Files: utils/ivtv-ctl/ivtv-ctl.c
+Copyright: 2004-2007, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+ 2003, 2004, Kevin Thayer <nufan_wfk at yahoo dot com>
+License: GPL-2+
+
+Files: utils/keytable/*
+Copyright: no-info-found
+License: GPL-2
+
+Files: utils/keytable/bpf_protocols/*
+Copyright: 2016, 2018-2020, Sean Young <sean@mess.org>
+License: GPL-2
+
+Files: utils/keytable/keytable.c
+Copyright: 2006-2012, 2014-2016, 2019, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: GPL-2
+
+Files: utils/libcecutil/*
+Copyright: 2016, 2017, 2019, Cisco Systems, Inc. and/or its affiliates.
+License: BSD-3-clause or LGPL-2.1
+
+Files: utils/libcecutil/cec-gen.pl
+Copyright: no-info-found
+License: BSD-3-clause or GPL-2
+
+Files: utils/libmedia_dev/*
+Copyright: 2006, 2011, 2012, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: LGPL-2.1+
+
+Files: utils/libv4l2util/*
+Copyright: 2006, 2011, 2012, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: LGPL-2.1+
+
+Files: utils/libv4l2util/frequencies.c
+Copyright: 2006, Nathan Laredo <laredo@gnu.org>
+ 2006, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+License: LGPL-2.1+
+
+Files: utils/libv4l2util/libv4l2util.h
+Copyright: 2006, 2009, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+License: LGPL-2.1+
+
+Files: utils/media-ctl/*
+Copyright: 2010-2014, Ideas on board SPRL
+License: LGPL-2.1+
+
+Files: utils/qv4l2/alsa_stream.c
+Copyright: Jaroslav Kysela <perex@perex.cz>
+ Devin Heitmueller <dheitmueller@kernellabs.com>
+ 2011, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: GPL-2+
+
+Files: utils/qv4l2/capture-win-gl.cpp
+ utils/qv4l2/capture-win-gl.h
+ utils/qv4l2/tpg-tab.cpp
+Copyright: 2013-2019, Cisco Systems, Inc. and/or its affiliates.
+License: GPL-2
+
+Files: utils/qv4l2/raw2sliced.cpp
+ utils/qv4l2/raw2sliced.h
+Copyright: 2012, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+ 2000-2004, Michael H. Schimek <mschimek@gmx.at>
+License: LGPL-2+
+
+Files: utils/qvidcap/*
+Copyright: 2013-2019, Cisco Systems, Inc. and/or its affiliates.
+License: GPL-2
+
+Files: utils/rds-ctl/*
+Copyright: 2012, 2016, 2018, Cisco Systems, Inc. and/or its affiliates.
+License: LGPL-2.1
+
+Files: utils/v4l2-ctl/*
+Copyright: 2004-2007, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+ 2003, 2004, Kevin Thayer <nufan_wfk at yahoo dot com>
+License: GPL-2+
+
+Files: utils/v4l2-ctl/v4l2-ctl-modes.cpp
+Copyright: 2015, Cisco Systems, Inc. and/or its affiliates. All rights
+License: GPL-2
+
+Files: utils/v4l2-dbg/*
+Copyright: 2006-2012, 2014-2016, 2019, Mauro Carvalho Chehab <mchehab@kernel+samsung.org>
+License: GPL-2
+
+Files: utils/v4l2-dbg/v4l2-dbg.cpp
+Copyright: 2004, 2006-2008, 2010-2012, 2015, 2018, 2021, Hans Verkuil <hverkuil-cisco@xs4all.nl>
+License: GPL-2+
+
+Files: utils/v4l2-sysfs-path/*
+Copyright: 2011, Red Hat, Inc.
+License: HPND-sell-variant
+
+Files: utils/v4l2-tracer/*
+Copyright: 2022, Collabora Ltd.
+License: GPL-2
+
+License: BSD-2-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ .
+ 1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+ .
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+
+License: BSD-3-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are met:
+ .
+ 1) Redistributions of source code must retain the above copyright notice,
+ this list of conditions and the following disclaimer.
+ .
+ 2) Redistributions in binary form must reproduce the above copyright notice,
+ this list of conditions and the following disclaimer in the documentation
+ and/or other materials provided with the distribution.
+ .
+ 3) Neither the name of the ORGANIZATION nor the names of its contributors
+ may be used to endorse or promote products derived from this software
+ without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+
+License: Expat
+ Permission is hereby granted, free of charge, to any person
+ obtaining a copy of this software and associated
+ documentation files (the "Software"), to deal in the Software
+ without restriction, including without limitation the rights to
+ use, copy, modify, merge, publish, distribute, sublicense,
+ and/or sell copies of the Software, and to permit persons to
+ whom the Software is furnished to do so, subject to the
+ following conditions:
+ .
+ The above copyright notice and this permission notice shall
+ be included in all copies or substantial portions of the
+ Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT
+ WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ MERCHANTABILITY, FITNESS FOR A PARTICULAR
+ PURPOSE AND NONINFRINGEMENT. IN NO EVENT
+ SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR
+ OTHER DEALINGS IN THE SOFTWARE.
+
+License: FSFULLR
+ This file is free software; the Free Software Foundation gives
+ unlimited permission to copy and/or distribute it, with or without
+ modifications, as long as this notice is preserved.
+
+License: GPL-2
+ This package is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License version 2 as
+ published by the Free Software Foundation.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this package; if not, write to the Free Software
+ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the complete text of the GNU General Public License version
+ 2 can be found in `/usr/share/common-licenses/GPL-2'.
+
+License: GPL-2+
+ This program is free software; you can redistribute it
+ and/or modify it under the terms of the GNU General Public
+ License as published by the Free Software Foundation; either
+ version 2 of the License, or (at your option) any later
+ version.
+ .
+ This program is distributed in the hope that it will be
+ useful, but WITHOUT ANY WARRANTY; without even the implied
+ warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+ PURPOSE.  See the GNU General Public License for more
+ details.
+ .
+ You should have received a copy of the GNU General Public
+ License along with this package; if not, write to the Free
+ Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ Boston, MA  02110-1301 USA
+ .
+ On Debian systems, the full text of the GNU General Public
+ License version 2 can be found in the file
+ `/usr/share/common-licenses/GPL-2'.
+
+License: GPL-3+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems the full text of the GNU General Public
+ License can be found in the `/usr/share/common-licenses/GPL-3' file.
+
+License: HPND-sell-variant
+ Permission to use, copy, modify, distribute, and sell this software
+ and its documentation for any purpose is hereby granted without
+ fee, provided that the above copyright notice appear in all copies
+ and that both that copyright notice and this permission notice
+ appear in supporting documentation, and that the name of Red Hat
+ not be used in advertising or publicity pertaining to distribution
+ of the software without specific, written prior permission.  Red
+ Hat makes no representations about the suitability of this software
+ for any purpose.  It is provided "as is" without express or implied
+ warranty.
+ .
+ THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+ INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN
+ NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+ CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+ OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
+ NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+ CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+License: LGPL
+ This file may be redistributed under the terms of the
+ GNU Lesser General Public License.
+ .
+ On Debian systems, the complete text of the GNU Lesser General Public
+ License can be found in ‘/usr/share/common-licenses/LGPL’.
+
+License: LGPL-2+
+ This program is free software: you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ GNU Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program. If not, see <http://www.gnu.org/licenses/>.
+ .
+ The complete text of the GNU Lesser General Public License
+ can be found in /usr/share/common-licenses/LGPL-2 file.
+
+License: LGPL-2.1
+ This program is free software; you can redistribute it and/or modify it
+ under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation; either version 2.1 of the License, or
+ (at your option) any later version.
+ .
+ This program is distributed in the hope that it will be useful, but
+ WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public License
+ along with this program; If not, see <http://www.gnu.org/licenses/>.
+ .
+ On Debian systems, the complete text of the GNU Lesser General Public
+ License version 2.1 can be found in `/usr/share/common-licenses/LGPL-2.1'.
+
+License: LGPL-2.1+
+ This program is free software; you can redistribute it and/or modify
+ it under the terms of the GNU Lesser General Public License as published by
+ the Free Software Foundation; either version 2.1, or (at your option)
+ any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU Lesser General Public License for more details.
+ .
+ You should have received a copy of the GNU Lesser General Public License along
+ with this program; if not, write to the Free Software Foundation,
+ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+ .
+ On Debian systems, the complete text of the GNU Lesser General Public
+ License version 2.1 can be found in ‘/usr/share/common-licenses/LGPL-2.1’.
+
+License: jpeg-group
+ This file is part of the Independent JPEG Group's software.
+ .
+ The authors make NO WARRANTY or representation, either express or implied,
+ with respect to this software, its quality, accuracy, merchantability, or
+ fitness for a particular purpose.  This software is provided "AS IS", and you,
+ its user, assume the entire risk as to its quality and accuracy.
+ .
+ This software is copyright (C) 1991-1998, Thomas G. Lane.
+ All Rights Reserved except as specified below.
+ .
+ Permission is hereby granted to use, copy, modify, and distribute this
+ software (or portions thereof) for any purpose, without fee, subject to these
+ conditions:
+ (1) If any part of the source code for this software is distributed, then this
+ README file must be included, with this copyright and no-warranty notice
+ unaltered; and any additions, deletions, or changes to the original files
+ must be clearly indicated in accompanying documentation.
+ (2) If only executable code is distributed, then the accompanying
+ documentation must state that "this software is based in part on the work of
+ the Independent JPEG Group".
+ (3) Permission for use of this software is granted only if the user accepts
+ full responsibility for any undesirable consequences; the authors accept
+ NO LIABILITY for damages of any kind.
+ .
+ These conditions apply to any software derived from or based on the IJG code,
+ not just to the unmodified library.  If you use our work, you ought to
+ acknowledge us.
+ .
+ Permission is NOT granted for the use of any IJG author's name or company name
+ in advertising or publicity relating to this software or products derived from
+ it.  This software may be referred to only as "the Independent JPEG Group's
+ software".
+ .
+ We specifically permit and encourage the use of this software as the basis of
+ commercial products, provided that all warranty or liability claims are
+ assumed by the product vendor.
+ .
+ This implementation is based on Arai, Agui, and Nakajima's algorithm for
+ scaled DCT.  Their original paper (Trans. IEICE E-71(11):1095) is in
+ Japanese, but the algorithm is described in the Pennebaker & Mitchell
+ JPEG textbook (see REFERENCES section in file README).  The following code
+ is based directly on figure 4-8 in P&M.
+```
+
+### 375. Used by libvisual-0.4-0 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Libvisual
+Upstream-Contact: https://github.com/Libvisual/libvisual/issues
+Source: https://github.com/Libvisual/libvisual
+Comment: see also: http://libvisual.org and http://sf.net/projects/libvisual
+
+Files: *
+Copyright: 2002-2006 Dennis Smit <ds@nerds-incorporated.org, synap@users.sf.net>
+           2002-2004 Sepp Wijnands <mrrazz@nerds-incorporated.org,
+                                    sw@nerds-incorporated.org>
+           2002-2004 Tom Wimmenhove <nohup@nerds-incorporated.org>
+           2023      Libvisual team
+License: LGPL-2.1+
+
+Files: libvisual/gettext.h
+Copyright: 1995-2002 Free Software Foundation, Inc
+License: LGPL-2+
+
+Files: tools/lv-tool/lv-tool.cpp
+Copyright: 2004-2006 Dennis Smit
+           2012-2023 Libvisual team
+License: GPL-2+
+
+Files: po/*
+Copyright: 2005      ? <dprotti@users.sourceforge.net>
+           2008-2017 Chris Leick <c.leick@vollbio.de>
+License: LGPL-2.1+
+
+Files: debian/*
+Copyright: 2005-2006 David Schleef <ds@schleef.org>
+           2007      Sjoerd Simons <sjoerd@debian.org>
+           2007-2010 Brandon Holtsclaw <brandon@imbrandon.com>
+           2008      Pierre Habouzit <madcoder@debian.org>
+           2011      Steve Langasek <vorlon@debian.org>
+           2012      Boris Pek <tehnick-8@mail.ru>
+           2014      Helge Kreutzmann <debian@helgefjell.de>
+           2015-2023 Joao Eriberto Mota Filho <eriberto@debian.org>
+           2018      Ondřej Nový <onovy@debian.org>
+           2020      Sebastien Bacher <seb128@ubuntu.com>
+           2022      Jelmer Vernooĳ <jelmer@debian.org>
+License: LGPL-2.1+
+
+License: LGPL-2.1+
+ This program is free software: you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the Free
+ Software Foundation, either version 2.1 of the License, or (at your option)
+ any later version.
+ .
+ This program is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A
+ PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License along with
+ this program. If not, see <http://www.gnu.org/licenses/>.
+Comment:
+ On Debian systems, the complete text of the GNU Lesser General Public License
+ can be found in `/usr/share/common-licenses/LGPL-2.1'.
+
+License: LGPL-2+
+ This program is free software; you can redistribute it and/or modify it
+ under the terms of the GNU Library General Public License as published
+ by the Free Software Foundation; either version 2, or (at your option)
+ any later version.
+ .
+ This program is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ Library General Public License for more details.
+ .
+ You should have received a copy of the GNU Library General Public
+ License along with this library; if not, write to the
+ Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
+ Boston, MA  02110-1301, USA.
+Comment:
+ GNU Library General Public License has been superseded by the GNU Lesser
+ General Public License. However, the source code uses the old licensing
+ yet.
+
+License: GPL-2+
+ This package is free software; you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation; either version 2 of the License, or
+ (at your option) any later version.
+ .
+ This package is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ .
+ You should have received a copy of the GNU General Public License
+ along with this program. If not, see <https://www.gnu.org/licenses/>
+Comment:
+ On Debian systems, the complete text of the GNU General
+ Public License version 2 can be found in "/usr/share/common-licenses/GPL-2".
+```
+
+### 376. Used by libvorbis0a (Ubuntu package), libvorbisenc2 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: Vorbis audio compression
+Upstream-Contact: Monty <monty@xiph.org>
+Source: https://www.xiph.org/downloads/
+
+Files: *
+Copyright: 2002-2020, Xiph.org Foundation
+License: BSD-3-Clause
+
+Files: doc/rfc5215.*
+Copyright: 2008, The IETF Trust
+License: RFC-special
+ The authors agree to grant third parties the irrevocable right to
+ copy, use, and distribute the work, with or without modification, in
+ any medium, without royalty, provided that, unless separate
+ permission is granted, redistributed modified works do not contain
+ misleading author, version, name of work, or endorsement information.
+
+Files: debian/*
+Copyright: 2000, Christopher L Cheney <ccheney@debian.org>
+License: BSD-3-Clause
+
+License: BSD-3-Clause
+ Copyright (c) 2002-2020, Xiph.org Foundation
+ .
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+ - Redistributions of source code must retain the above copyright
+ notice, this list of conditions and the following disclaimer.
+ .
+ - Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the
+ documentation and/or other materials provided with the distribution.
+ .
+ - Neither the name of the Xiph.org Foundation nor the names of its
+ contributors may be used to endorse or promote products derived from
+ this software without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION
+ OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+```
+
+### 377. Used by libvpx9 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: libvpx
+Source: http://www.webmproject.org/
+Comment:
+ Additional IP Rights Grant (Patents)
+ ------------------------------------
+ .
+ "These implementations" means the copyrightable works that implement the WebM
+ codecs distributed by Google as part of the WebM Project.
+ .
+ Google hereby grants to you a perpetual, worldwide, non-exclusive, no-charge,
+ royalty-free, irrevocable (except as stated in this section) patent license to
+ make, have made, use, offer to sell, sell, import, transfer, and otherwise
+ run, modify and propagate the contents of these implementations of WebM, where
+ such license applies only to those patent claims, both currently owned by
+ Google and acquired in the future, licensable by Google that are necessarily
+ infringed by these implementations of WebM. This grant does not include claims
+ that would be infringed only as a consequence of further modification of these
+ implementations. If you or your agent or exclusive licensee institute or order
+ or agree to the institution of patent litigation or any other patent
+ enforcement activity against any entity (including a cross-claim or
+ counterclaim in a lawsuit) alleging that any of these implementations of WebM
+ or any code incorporated within any of these implementations of WebM
+ constitute direct or contributory patent infringement, or inducement of
+ patent infringement, then any patent rights granted to you under this License
+ for these implementations of WebM shall terminate as of the date such
+ litigation is filed.
+
+Files: *
+Copyright: (c) 2010-2023, The WebM Project authors
+License: BSD-3-Clause
+
+Files: md5_utils.*
+Copyright: public-domain
+License: public-domain
+ The algorithm is due to Ron Rivest. This code was
+ written by Colin Plumb in 1993, no copyright is claimed.
+ This code is in the public domain; do with it what you wish.
+ .
+ Changed so as no longer to depend on Colin Plumb's `usual.h' header
+ definitions by Ian Jackson <ian@chiark.greenend.org.uk>.
+ Still in the public domain.
+
+Files: vpx_util/endian_inl.h
+       vpx_util/vpx_thread.*
+       third_party/googletest/*
+       tools/cpplint.py
+Copyright: (c) 2005-2014, Google Inc.
+License: BSD-3-Clause
+
+Files: third_party/libyuv/*
+Copyright: (c) 2011-2015, The LibYuv Project Authors
+License: BSD-3-Clause
+
+Files: third_party/x86inc/*
+Copyright: (c) 2005-2012, x264 project
+           (c) 2005-2012, Loren Merritt <lorenm@u.washington.edu>
+           (c) 2005-2012, Anton Mitrofanov <BugMaster@narod.ru>
+           (c) 2005-2012, Jason Garrett-Glaser <darkshikari@gmail.com>
+           (c) 2005-2012, Henrik Gramner <hengar-6@student.ltu.se>
+License: ISC
+
+Files: debian/*
+Copyright: (c) 2010-2016, Sebastian Dröge <slomo@debian.org>
+           (c) 2016-2019, Ondřej Nový <onovy@debian.org>
+           2020-2024, Sebastian Ramacher
+License: BSD-3-Clause
+
+License: BSD-3-Clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions are
+ met:
+ * Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in
+   the documentation and/or other materials provided with the
+   distribution.
+ * Neither the name of Google, nor the WebM Project, nor the names
+   of its contributors may be used to endorse or promote products
+   derived from this software without specific prior written
+   permission.
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+License: ISC
+ Permission to use, copy, modify, and/or distribute this software for any
+ purpose with or without fee is hereby granted, provided that the above
+ copyright notice and this permission notice appear in all copies.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+```
+
+### 378. Used by libwavpack1 (Ubuntu package)
+
+```text
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: wavpack
+Upstream-Source: http://www.wavpack.org
+
+Files: *
+Copyright: 1998-2015, Conifer Software
+           1998-2022, David Bryant
+           2006, Joachim Henke
+           2004-2012, LoRd_MuldeR
+           2005, Sebastian Dröge
+License: BSD-3-clause
+
+Files: debian/*
+Copyright: 2005-2013, Sebastian Dröge
+           2016-2022, Sebastian Ramacher
+License: BSD-3-clause
+
+Files: cli/win32_unicode_support.c
+       cli/win32_unicode_support.h
+Copyright: 2004-2012, LoRd_MuldeR
+License: BSD-2-clause
+
+Files: cli/md5.*
+Copyright: public-docmain
+License: public-domain
+ This code implements the MD5 message-digest algorithm.
+ The algorithm is due to Ron Rivest.  This code was
+ written by Colin Plumb in 1993, no copyright is claimed.
+ This code is in the public domain; do with it what you wish.
+
+License: BSD-2-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ SUCH DAMAGE.
+
+License: BSD-3-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ .
+  1. Redistributions of source code must retain the above copyright
+     notice, this list of conditions and the following disclaimer.
+  2. Redistributions in binary form must reproduce the above copyright
+     notice, this list of conditions and the following disclaimer in the
+     documentation and/or other materials provided with the distribution.
+  3. Neither the name of the Institute nor the names of its contributors
+     may be used to endorse or promote products derived from this software
+     without specific prior written permission.
+ .
+ THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
+ ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
+ FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ SUCH DAMAGE.
+```
+
+### 379. Used by libwayland-cursor0 (Ubuntu package), libwayland-egl1 (Ubuntu package), libwayland-server0 (Ubuntu package)
 
 ```text
 Upstream-Name: wayland
@@ -47892,7 +55062,7 @@ License: X11
      http://cgit.freedesktop.org/xorg/xserver/tree/COPYING
 ```
 
-### 348. Used by libxau6 (Ubuntu package)
+### 380. Used by libxau6 (Ubuntu package)
 
 ```text
 This package was downloaded from
@@ -47921,7 +55091,7 @@ used in advertising or otherwise to promote the sale, use or other dealings
 in this Software without prior written authorization from The Open Group.
 ```
 
-### 349. Used by libxcb-render0 (Ubuntu package), libxcb-shm0 (Ubuntu package)
+### 381. Used by libxcb-render0 (Ubuntu package), libxcb-shm0 (Ubuntu package)
 
 ```text
 This package was debianized by Jamey Sharp <sharpone@debian.org> on
@@ -47968,7 +55138,7 @@ Software without prior written authorization from the
 authors.
 ```
 
-### 350. Used by libxcomposite1 (Ubuntu package)
+### 382. Used by libxcomposite1 (Ubuntu package)
 
 ```text
 This package was downloaded from
@@ -48016,7 +55186,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 351. Used by libxcursor1 (Ubuntu package)
+### 383. Used by libxcursor1 (Ubuntu package)
 
 ```text
 This package was debianized by ISHIKAWA Mutsumi <ishikawa@debian.org> on
@@ -48077,7 +55247,7 @@ Debian license:
   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### 352. Used by libxdamage1 (Ubuntu package)
+### 384. Used by libxdamage1 (Ubuntu package)
 
 ```text
 This package was downloaded from
@@ -48105,7 +55275,7 @@ TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### 353. Used by libxdmcp6 (Ubuntu package)
+### 385. Used by libxdmcp6 (Ubuntu package)
 
 ```text
 This package was downloaded from
@@ -48136,7 +55306,7 @@ in this Software without prior written authorization from The Open Group.
 Author:  Keith Packard, MIT X Consortium
 ```
 
-### 354. Used by libxext6 (Ubuntu package)
+### 386. Used by libxext6 (Ubuntu package)
 
 ```text
 This package was downloaded from
@@ -48340,7 +55510,7 @@ information in this document.  This documentation is provided ``as is''
 without express or implied warranty.
 ```
 
-### 355. Used by libxfixes3 (Ubuntu package)
+### 387. Used by libxfixes3 (Ubuntu package)
 
 ```text
 This package was downloaded from
@@ -48389,7 +55559,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 356. Used by libxi6 (Ubuntu package)
+### 388. Used by libxi6 (Ubuntu package)
 
 ```text
 This package was downloaded from
@@ -48481,7 +55651,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 357. Used by libxinerama1 (Ubuntu package)
+### 389. Used by libxinerama1 (Ubuntu package)
 
 ```text
 This package was downloaded from
@@ -48555,7 +55725,7 @@ dealings in this Software without prior written authorization from Digital
 Equipment Corporation.
 ```
 
-### 358. Used by libxkbcommon0 (Ubuntu package)
+### 390. Used by libxkbcommon0 (Ubuntu package)
 
 ```text
 Source: http://xkbcommon.org/
@@ -48629,7 +55799,7 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 ```
 
-### 359. Used by libxml2 (Ubuntu package)
+### 391. Used by libxml2 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -48709,7 +55879,7 @@ License: ISC
  CONTRIBUTORS ACCEPT NO RESPONSIBILITY IN ANY CONCEIVABLE MANNER.
 ```
 
-### 360. Used by libxrandr2 (Ubuntu package)
+### 392. Used by libxrandr2 (Ubuntu package)
 
 ```text
 This package was downloaded from
@@ -48782,7 +55952,7 @@ TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
 OF THIS SOFTWARE.
 ```
 
-### 361. Used by libxrender1 (Ubuntu package)
+### 393. Used by libxrender1 (Ubuntu package)
 
 ```text
 This package was downloaded from
@@ -48828,7 +55998,7 @@ OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### 362. Used by libxslt1.1 (Ubuntu package)
+### 394. Used by libxslt1.1 (Ubuntu package)
 
 ```text
 This package was debianized by Nicolás Lichtmaier <nick@debian.org> on
@@ -48896,7 +56066,192 @@ ings in this Software without prior written authorization from him.
 ----------------------------------------------------------------------
 ```
 
-### 363. Used by libzstd1 (Ubuntu package)
+### 395. Used by libxtst6 (Ubuntu package)
+
+```text
+This package was downloaded from
+https://xorg.freedesktop.org/releases/individual/lib/
+
+Copyright 1990, 1991 by UniSoft Group Limited
+Copyright 1992, 1993, 1995, 1998  The Open Group
+
+Permission to use, copy, modify, distribute, and sell this software and its
+documentation for any purpose is hereby granted without fee, provided that
+the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation.
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE OPEN GROUP BE LIABLE FOR ANY CLAIM, DAMAGES OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice, the name of The Open Group shall
+not be used in advertising or otherwise to promote the sale, use or
+other dealings in this Software without prior written authorization
+from The Open Group.
+
+***************************************************************************
+
+Copyright 1995 Network Computing Devices
+
+Permission to use, copy, modify, distribute, and sell this software and
+its documentation for any purpose is hereby granted without fee, provided
+that the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation, and that the name of Network Computing Devices
+not be used in advertising or publicity pertaining to distribution
+of the software without specific, written prior permission.
+
+NETWORK COMPUTING DEVICES DISCLAIMs ALL WARRANTIES WITH REGARD TO
+THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS, IN NO EVENT SHALL NETWORK COMPUTING DEVICES BE LIABLE
+FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN
+AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
+OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+
+***************************************************************************
+
+Copyright 2005  Red Hat, Inc.
+
+Permission to use, copy, modify, distribute, and sell this software and its
+documentation for any purpose is hereby granted without fee, provided that
+the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation, and that the name of Red Hat not be used in
+advertising or publicity pertaining to distribution of the software without
+specific, written prior permission.  Red Hat makes no
+representations about the suitability of this software for any purpose.  It
+is provided "as is" without express or implied warranty.
+
+RED HAT DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+EVENT SHALL RED HAT BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+
+***************************************************************************
+
+Copyright © 1992 by UniSoft Group Ltd.
+
+Permission to use, copy, modify, and distribute this documentation for
+any purpose and without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+UniSoft makes no representations about the suitability for any purpose of
+the information in this document.  This documentation is provided "as is"
+without express or implied warranty.
+
+***************************************************************************
+
+Copyright © 1992, 1994, 1995 X Consortium
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and associated documentation files (the "Software"),
+to deal in the Software without restriction, including without limitation
+the rights to use, copy, modify, merge, publish, distribute, sublicense,
+and/or sell copies of the Software, and to permit persons to whom the
+Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+THE X CONSORTIUM BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
+OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Except as contained in this notice, the name of the X Consortium shall not
+be used in advertising or otherwise to promote the sale, use or other
+dealings in this Software without prior written authorization from the
+X Consortium.
+
+***************************************************************************
+
+Copyright 1994 Network Computing Devices, Inc.
+
+Permission to use, copy, modify, distribute, and sell this
+documentation for any purpose is hereby granted without fee,
+provided that the above copyright notice and this permission
+notice appear in all copies.  Network Computing Devices, Inc.
+makes no representations about the suitability for any purpose
+of the information in this document.  This documentation is
+provided "as is" without express or implied warranty.
+```
+
+### 396. Used by libxv1 (Ubuntu package)
+
+```text
+This package was downloaded from
+https://xorg.freedesktop.org/releases/individual/lib/
+
+Original Debian package author(s): Stephen Early, Mark Eichin, Branden
+  Robinson, ISHIKAWA Mutsumi, Daniel Stone
+
+The sofware was later repackaged by:
+  Daniel Stone <daniel.stone@ubuntu.com> on Mon, 16 May 2005 22:10:17 +1000
+
+Copyright:
+
+Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts,
+and the Massachusetts Institute of Technology, Cambridge, Massachusetts.
+
+Written by:
+David Carver (Digital Workstation Engineering/Project Athena)
+Mark Vojkovich (XFree86 Project)
+
+License:
+                        All Rights Reserved
+
+Permission to use, copy, modify, and distribute this software and its
+documentation for any purpose and without fee is hereby granted,
+provided that the above copyright notice appear in all copies and that
+both that copyright notice and this permission notice appear in
+supporting documentation, and that the names of Digital or MIT not be
+used in advertising or publicity pertaining to distribution of the
+software without specific, written prior permission.
+
+DIGITAL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL
+DIGITAL BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR
+ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS,
+WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION,
+ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
+SOFTWARE.
+
+Copyright 2005 Red Hat, Inc.
+
+Permission to use, copy, modify, distribute, and sell this software and its
+documentation for any purpose is hereby granted without fee, provided that
+the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation, and that the name of Red Hat not be used in
+advertising or publicity pertaining to distribution of the software without
+specific, written prior permission.  Red Hat makes no
+representations about the suitability of this software for any purpose.  It
+is provided "as is" without express or implied warranty.
+
+RED HAT DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+EVENT SHALL RED HAT BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+```
+
+### 397. Used by libzstd1 (Ubuntu package)
 
 ```text
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
@@ -49024,7 +56379,7 @@ License: BSD-3-clause
  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 364. Used by linux-raw-sys 0.12.1, linux-raw-sys 0.4.15
+### 398. Used by linux-raw-sys 0.12.1, linux-raw-sys 0.4.15
 
 ```text
 Short version for non-lawyers:
@@ -49058,7 +56413,7 @@ is licensed under:
 at your option.
 ```
 
-### 365. Used by linuxdeploy AppRun and GTK plugin hooks (Linux AppImage)
+### 399. Used by linuxdeploy AppRun and GTK plugin hooks (Linux AppImage)
 
 ```text
 MIT License
@@ -49081,7 +56436,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 366. Used by lock_api 0.4.14, parking_lot 0.12.5, parking_lot_core 0.9.12
+### 400. Used by lock_api 0.4.14, parking_lot 0.12.5, parking_lot_core 0.9.12
 
 ```text
 Copyright (c) 2016 The Rust Project Developers
@@ -49111,7 +56466,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 367. Used by loop9 0.1.5
+### 401. Used by loop9 0.1.5
 
 ```text
 © Kornel Lesiński
@@ -49123,7 +56478,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 368. Used by lopdf 0.44.0
+### 402. Used by lopdf 0.44.0
 
 ```text
 MIT License
@@ -49149,7 +56504,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 369. Used by mach2 0.4.3
+### 403. Used by mach2 0.4.3
 
 ```text
 Copyright (c) 2019 Nick Fitzgerald, 2021 Yuki Okushi
@@ -49179,7 +56534,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 370. Used by mach2 0.4.3
+### 404. Used by mach2 0.4.3
 
 ```text
 Copyright (c) 2019 Nick Fitzgerald, 2021 Yuki Okushi
@@ -49207,7 +56562,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 371. Used by maybe-owned 0.3.4
+### 405. Used by maybe-owned 0.3.4
 
 ```text
                               Apache License
@@ -49413,7 +56768,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### 372. Used by maybe-owned 0.3.4
+### 406. Used by maybe-owned 0.3.4
 
 ```text
 Copyright (c) 2016 Philipp Korber
@@ -49443,7 +56798,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 373. Used by maybe-rayon 0.1.1
+### 407. Used by maybe-rayon 0.1.1
 
 ```text
 MIT License
@@ -49469,7 +56824,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 374. Used by md-5 0.11.0, sha1 0.11.0, sha2 0.11.1
+### 408. Used by md-5 0.11.0, sha1 0.11.0, sha2 0.11.1
 
 ```text
 Copyright (c) 2016-2026 The RustCrypto Project Developers
@@ -49502,7 +56857,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 375. Used by memfd 0.6.6
+### 409. Used by memfd 0.6.6
 
 ```text
 Copyright <YEAR> <COPYRIGHT HOLDER>
@@ -49523,7 +56878,7 @@ DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
 OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 376. Used by memoffset 0.9.1
+### 410. Used by memoffset 0.9.1
 
 ```text
 Copyright (c) 2017 Gilad Naaman
@@ -49547,7 +56902,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 377. Used by mime 0.3.18
+### 411. Used by mime 0.3.18
 
 ```text
 Copyright (c) 2014 Sean McArthur
@@ -49571,7 +56926,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 378. Used by mime_guess 2.0.5
+### 412. Used by mime_guess 2.0.5
 
 ```text
 The MIT License (MIT)
@@ -49597,7 +56952,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 379. Used by miniz_oxide 0.8.9, miniz_oxide 0.9.1
+### 413. Used by miniz_oxide 0.8.9, miniz_oxide 0.9.1
 
 ```text
 Copyright 2013-2014 RAD Game Tools and Valve Software
@@ -49616,7 +56971,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### 380. Used by miniz_oxide 0.8.9, miniz_oxide 0.9.1
+### 414. Used by miniz_oxide 0.8.9, miniz_oxide 0.9.1
 
 ```text
 MIT License
@@ -49646,7 +57001,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 381. Used by miniz_oxide 0.8.9, miniz_oxide 0.9.1
+### 415. Used by miniz_oxide 0.8.9, miniz_oxide 0.9.1
 
 ```text
 MIT License
@@ -49675,7 +57030,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 382. Used by mio 1.2.4
+### 416. Used by mio 1.2.4
 
 ```text
 Copyright (c) 2014 Carl Lerche and other MIO contributors
@@ -49699,7 +57054,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 383. Used by ml-kem 0.2.3
+### 417. Used by ml-kem 0.2.3
 
 ```text
 Copyright (c) 2024 RustCrypto Developers
@@ -49723,7 +57078,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 384. Used by moxcms 0.8.1, pxfm 0.1.30
+### 418. Used by moxcms 0.8.1, pxfm 0.1.30
 
 ```text
                                  Apache License
@@ -49929,7 +57284,7 @@ SOFTWARE.
    limitations under the License.
 ```
 
-### 385. Used by moxcms 0.8.1, pxfm 0.1.30
+### 419. Used by moxcms 0.8.1, pxfm 0.1.30
 
 ```text
 Copyright (c) Radzivon Bartoshyk. All rights reserved.
@@ -49960,7 +57315,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 386. Used by muda 0.19.3
+### 420. Used by muda 0.19.3
 
 ```text
 SPDXVersion: SPDX-2.1
@@ -49984,7 +57339,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/muda.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### 387. Used by multiversion 0.8.1, multiversion-macros 0.8.1
+### 421. Used by multiversion 0.8.1, multiversion-macros 0.8.1
 
 ```text
 Copyright 2019 Caleb Zulawski
@@ -49996,7 +57351,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 388. Used by multiversion_no_op 1.0.0
+### 422. Used by multiversion_no_op 1.0.0
 
 ```text
 Copyright Mozilla Foundation
@@ -50016,7 +57371,7 @@ See the Licenses for the specific language governing permissions and
 limitations under the Licenses.
 ```
 
-### 389. Used by ndk 0.9.0
+### 423. Used by ndk 0.9.0
 
 ```text
 ndk is offered under MIT OR Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -50041,7 +57396,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 390. Used by ndk-sys 0.6.0+11769913
+### 424. Used by ndk-sys 0.6.0+11769913
 
 ```text
 ndk-sys is offered under MIT OR Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -50066,7 +57421,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 391. Used by new_debug_unreachable 1.0.6
+### 425. Used by new_debug_unreachable 1.0.6
 
 ```text
 Copyright (c) 2015 Jonathan Reem
@@ -50096,7 +57451,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 392. Used by nix 0.31.3
+### 426. Used by nix 0.31.3
 
 ```text
 The MIT License (MIT)
@@ -50122,7 +57477,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 393. Used by no_std_io2 0.9.4
+### 427. Used by no_std_io2 0.9.4
 
 ```text
 Copyright (c) 2020-2021  Brendan Molloy <brendan@bbqsrc.net>
@@ -50146,7 +57501,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 394. Used by nom 8.0.0
+### 428. Used by nom 8.0.0
 
 ```text
 Copyright (c) 2014-2019 Geoffroy Couprie
@@ -50171,7 +57526,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 395. Used by noop_proc_macro 0.3.0
+### 429. Used by noop_proc_macro 0.3.0
 
 ```text
 MIT License
@@ -50197,7 +57552,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 396. Used by notify 8.2.2
+### 430. Used by notify 8.2.2
 
 ```text
 Creative Commons CC0 1.0 Universal
@@ -50243,7 +57598,7 @@ For these and/or other purposes and motivations, and without any expectation of 
      d. Affirmer understands and acknowledges that Creative Commons is not a party to this document and has no duty or obligation with respect to this CC0 or use of the Work.
 ```
 
-### 397. Used by notify-types 2.2.0
+### 431. Used by notify-types 2.2.0
 
 ```text
                               Apache License
@@ -50449,7 +57804,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### 398. Used by notify-types 2.2.0
+### 432. Used by notify-types 2.2.0
 
 ```text
 Copyright (c) 2023 Notify Contributors
@@ -50479,7 +57834,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 399. Used by ntapi 0.4.3
+### 433. Used by ntapi 0.4.3
 
 ```text
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -50501,7 +57856,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 400. Used by num-conv 0.2.2
+### 434. Used by num-conv 0.2.2
 
 ```text
 Copyright (c) Jacob Pratt
@@ -50525,7 +57880,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 401. Used by num_enum 0.7.6, num_enum_derive 0.7.6
+### 435. Used by num_enum 0.7.6, num_enum_derive 0.7.6
 
 ```text
 Copyright (c) 2018, Daniel Wagner-Hall
@@ -50557,7 +57912,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 402. Used by objc2 0.6.5
+### 436. Used by objc2 0.6.5
 
 ```text
 objc2 is offered under MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50582,7 +57937,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 403. Used by objc2-app-kit 0.3.2
+### 437. Used by objc2-app-kit 0.3.2
 
 ```text
 objc2-app-kit is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50607,7 +57962,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 404. Used by objc2-cloud-kit 0.3.2
+### 438. Used by objc2-cloud-kit 0.3.2
 
 ```text
 objc2-cloud-kit is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50632,7 +57987,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 405. Used by objc2-core-data 0.3.2
+### 439. Used by objc2-core-data 0.3.2
 
 ```text
 objc2-core-data is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50657,7 +58012,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 406. Used by objc2-core-foundation 0.3.2
+### 440. Used by objc2-core-foundation 0.3.2
 
 ```text
 objc2-core-foundation is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50682,7 +58037,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 407. Used by objc2-core-graphics 0.3.2
+### 441. Used by objc2-core-graphics 0.3.2
 
 ```text
 objc2-core-graphics is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50707,7 +58062,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 408. Used by objc2-core-image 0.3.2
+### 442. Used by objc2-core-image 0.3.2
 
 ```text
 objc2-core-image is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50732,7 +58087,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 409. Used by objc2-core-location 0.3.2
+### 443. Used by objc2-core-location 0.3.2
 
 ```text
 objc2-core-location is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50757,7 +58112,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 410. Used by objc2-core-services 0.3.2
+### 444. Used by objc2-core-services 0.3.2
 
 ```text
 objc2-core-services is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50782,7 +58137,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 411. Used by objc2-core-text 0.3.2
+### 445. Used by objc2-core-text 0.3.2
 
 ```text
 objc2-core-text is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50807,7 +58162,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 412. Used by objc2-encode 4.1.0
+### 446. Used by objc2-encode 4.1.0
 
 ```text
 objc2-encode is offered under MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50832,7 +58187,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 413. Used by objc2-exception-helper 0.1.1
+### 447. Used by objc2-exception-helper 0.1.1
 
 ```text
 objc2-exception-helper is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50857,7 +58212,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 414. Used by objc2-foundation 0.3.2
+### 448. Used by objc2-foundation 0.3.2
 
 ```text
 objc2-foundation is offered under MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50882,7 +58237,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 415. Used by objc2-io-kit 0.3.2
+### 449. Used by objc2-io-kit 0.3.2
 
 ```text
 objc2-io-kit is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50907,7 +58262,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 416. Used by objc2-io-surface 0.3.2
+### 450. Used by objc2-io-surface 0.3.2
 
 ```text
 objc2-io-surface is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50932,7 +58287,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 417. Used by objc2-quartz-core 0.3.2
+### 451. Used by objc2-quartz-core 0.3.2
 
 ```text
 objc2-quartz-core is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50957,7 +58312,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 418. Used by objc2-ui-kit 0.3.2
+### 452. Used by objc2-ui-kit 0.3.2
 
 ```text
 objc2-ui-kit is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -50982,7 +58337,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 419. Used by objc2-user-notifications 0.3.2
+### 453. Used by objc2-user-notifications 0.3.2
 
 ```text
 objc2-user-notifications is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -51007,7 +58362,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 420. Used by objc2-web-kit 0.3.2
+### 454. Used by objc2-web-kit 0.3.2
 
 ```text
 objc2-web-kit is offered under Zlib OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -51032,7 +58387,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 421. Used by object 0.37.3
+### 455. Used by object 0.37.3
 
 ```text
 Copyright (c) 2015 The Gimli Developers
@@ -51062,7 +58417,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 422. Used by opaque-debug 0.3.1
+### 456. Used by opaque-debug 0.3.1
 
 ```text
 Copyright (c) 2018-2024 The RustCrypto Project Developers
@@ -51092,7 +58447,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 423. Used by open 5.4.5
+### 457. Used by open 5.4.5
 
 ```text
 The MIT License (MIT)
@@ -51122,7 +58477,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 424. Used by option-ext 0.2.0
+### 458. Used by option-ext 0.2.0
 
 ```text
 Mozilla Public License Version 2.0
@@ -51500,7 +58855,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
   defined by the Mozilla Public License, v. 2.0.
 ```
 
-### 425. Used by os_pipe 1.2.3
+### 459. Used by os_pipe 1.2.3
 
 ```text
 The MIT License (MIT)
@@ -51524,7 +58879,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 426. Used by ouroboros 0.18.5, ouroboros_macro 0.18.5
+### 460. Used by ouroboros 0.18.5, ouroboros_macro 0.18.5
 
 ```text
                                  Apache License
@@ -51730,7 +59085,7 @@ THE SOFTWARE.
    limitations under the License.
 ```
 
-### 427. Used by ouroboros 0.18.5, ouroboros_macro 0.18.5
+### 461. Used by ouroboros 0.18.5, ouroboros_macro 0.18.5
 
 ```text
 MIT License
@@ -51756,7 +59111,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 428. Used by p256 0.13.2, primeorder 0.13.6
+### 462. Used by p256 0.13.2, primeorder 0.13.6
 
 ```text
 Copyright (c) 2020-2023 RustCrypto Developers
@@ -51786,7 +59141,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 429. Used by parking 2.2.1
+### 463. Used by parking 2.2.1
 
 ```text
 ===============================================================================
@@ -51800,7 +59155,7 @@ option. All files in the project carrying such notice may not be
 copied, modified, or distributed except according to those terms.
 ```
 
-### 430. Used by pathfinder_geometry 0.5.1
+### 464. Used by pathfinder_geometry 0.5.1
 
 ```text
 pathfinder_geometry is offered under MIT/Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -51825,7 +59180,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 431. Used by pathfinder_simd 0.5.6
+### 465. Used by pathfinder_simd 0.5.6
 
 ```text
 pathfinder_simd is offered under MIT OR Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -51850,7 +59205,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 432. Used by pbkdf2 0.12.2
+### 466. Used by pbkdf2 0.12.2
 
 ```text
 Copyright (c) 2017 Artyom Pavlov
@@ -51881,7 +59236,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 433. Used by phf 0.12.1, phf 0.13.1, phf_generator 0.13.1, phf_macros 0.13.1, phf_shared 0.12.1, phf_shared 0.13.1
+### 467. Used by phf 0.12.1, phf 0.13.1, phf_generator 0.13.1, phf_macros 0.13.1, phf_shared 0.12.1, phf_shared 0.13.1
 
 ```text
 The MIT License (MIT)
@@ -51906,7 +59261,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 434. Used by pico-args 0.5.0
+### 468. Used by pico-args 0.5.0
 
 ```text
 Copyright (c) 2019 Yevhenii Reizner
@@ -51930,7 +59285,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 435. Used by plist 1.10.3
+### 469. Used by plist 1.10.3
 
 ```text
 Copyright (c) 2015 Edward Barnard
@@ -51954,7 +59309,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 436. Used by png 0.17.16, png 0.18.1
+### 470. Used by png 0.17.16, png 0.18.1
 
 ```text
 Copyright (c) 2015 nwin
@@ -51984,7 +59339,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 437. Used by pollster 0.4.0
+### 471. Used by pollster 0.4.0
 
 ```text
 Copyright (c) 2020-2021 Joshua Barretto
@@ -52014,7 +59369,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 438. Used by poly1305 0.8.0
+### 472. Used by poly1305 0.8.0
 
 ```text
 Copyright (c) 2015-2019 RustCrypto Developers
@@ -52044,7 +59399,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 439. Used by polyval 0.6.2
+### 473. Used by polyval 0.6.2
 
 ```text
 Copyright (c) 2019-2023 RustCrypto Developers
@@ -52074,7 +59429,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 440. Used by postcard 1.1.3
+### 474. Used by postcard 1.1.3
 
 ```text
 Copyright (c) 2019 Anthony James Munns
@@ -52104,7 +59459,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 441. Used by powerfmt 0.2.1
+### 475. Used by powerfmt 0.2.1
 
 ```text
                                  Apache License
@@ -52310,7 +59665,7 @@ DEALINGS IN THE SOFTWARE.
    limitations under the License.
 ```
 
-### 442. Used by powerfmt 0.2.1
+### 476. Used by powerfmt 0.2.1
 
 ```text
 Copyright (c) 2023 Jacob Pratt et al.
@@ -52334,7 +59689,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 443. Used by ppv-lite86 0.2.21
+### 477. Used by ppv-lite86 0.2.21
 
 ```text
                               Apache License
@@ -52540,7 +59895,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### 444. Used by ppv-lite86 0.2.21
+### 478. Used by ppv-lite86 0.2.21
 
 ```text
 Copyright (c) 2019 The CryptoCorrosion Contributors
@@ -52570,7 +59925,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 445. Used by precomputed-hash 0.1.1
+### 479. Used by precomputed-hash 0.1.1
 
 ```text
 MIT License
@@ -52596,7 +59951,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 446. Used by printpdf 0.12.8
+### 480. Used by printpdf 0.12.8
 
 ```text
 MIT License
@@ -52622,7 +59977,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 447. Used by proc-macro-error 1.0.4, proc-macro-error-attr 1.0.4, proc-macro-error-attr3 3.1.1
+### 481. Used by proc-macro-error 1.0.4, proc-macro-error-attr 1.0.4, proc-macro-error-attr3 3.1.1
 
 ```text
                               Apache License
@@ -52828,7 +60183,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### 448. Used by proc-macro-error 1.0.4, proc-macro-error-attr 1.0.4, proc-macro-error-attr3 3.1.1
+### 482. Used by proc-macro-error 1.0.4, proc-macro-error-attr 1.0.4, proc-macro-error-attr3 3.1.1
 
 ```text
 MIT License
@@ -52854,7 +60209,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 449. Used by proc-macro-error3 3.1.1
+### 483. Used by proc-macro-error3 3.1.1
 
 ```text
                               Apache License
@@ -53061,7 +60416,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### 450. Used by proc-macro-error3 3.1.1
+### 484. Used by proc-macro-error3 3.1.1
 
 ```text
 MIT License
@@ -53088,7 +60443,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 451. Used by proc-macro2-diagnostics 0.10.1
+### 485. Used by proc-macro2-diagnostics 0.10.1
 
 ```text
 The MIT License (MIT)
@@ -53112,7 +60467,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 452. Used by profiling 1.0.18
+### 486. Used by profiling 1.0.18
 
 ```text
 profiling is offered under MIT OR Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -53137,7 +60492,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 453. Used by profiling-procmacros 1.0.18
+### 487. Used by profiling-procmacros 1.0.18
 
 ```text
 profiling-procmacros is offered under MIT OR Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -53162,7 +60517,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 454. Used by pulldown-cmark 0.13.6, pulldown-cmark-escape 0.11.0
+### 488. Used by pulldown-cmark 0.13.6, pulldown-cmark-escape 0.11.0
 
 ```text
 The MIT License
@@ -53188,7 +60543,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 455. Used by pulley-interpreter 36.0.20
+### 489. Used by pulley-interpreter 36.0.20
 
 ```text
 pulley-interpreter is offered under Apache-2.0 WITH LLVM-exception; it publishes no licence file, so the standard Apache-2.0 text follows.
@@ -53285,7 +60640,7 @@ limitations under the License.
    Software.
 ```
 
-### 456. Used by pulley-macros 36.0.20
+### 490. Used by pulley-macros 36.0.20
 
 ```text
 pulley-macros is offered under Apache-2.0 WITH LLVM-exception; it publishes no licence file, so the standard Apache-2.0 text follows.
@@ -53382,7 +60737,7 @@ limitations under the License.
    Software.
 ```
 
-### 457. Used by qoi 0.4.1
+### 491. Used by qoi 0.4.1
 
 ```text
 Copyright (c) 2022 Ivan Smirnov
@@ -53412,7 +60767,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 458. Used by quick-error 2.0.1
+### 492. Used by quick-error 2.0.1
 
 ```text
 Copyright (c) 2015 The quick-error Developers
@@ -53436,7 +60791,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 459. Used by r-efi 5.3.0, r-efi 6.0.0
+### 493. Used by r-efi 5.3.0, r-efi 6.0.0
 
 ```text
 r-efi is offered under MIT OR Apache-2.0 OR LGPL-2.1-or-later; it publishes no licence file, so the standard MIT text follows.
@@ -53461,7 +60816,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 460. Used by rand 0.10.3, rand 0.8.8, rand 0.9.5, rand_chacha 0.9.0
+### 494. Used by rand 0.10.3, rand 0.8.8, rand 0.9.5, rand_chacha 0.9.0
 
 ```text
                               Apache License
@@ -53642,7 +60997,7 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 END OF TERMS AND CONDITIONS
 ```
 
-### 461. Used by rand 0.10.3, rand 0.8.8, rand 0.9.5, rand_chacha 0.3.1, rand_chacha 0.9.0, rand_core 0.6.4, rand_core 0.9.5
+### 495. Used by rand 0.10.3, rand 0.8.8, rand 0.9.5, rand_chacha 0.3.1, rand_chacha 0.9.0, rand_core 0.6.4, rand_core 0.9.5
 
 ```text
 Copyright 2018 Developers of the Rand project
@@ -53673,7 +61028,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 462. Used by rand 0.10.3, rand 0.8.8, rand 0.9.5, rand_chacha 0.3.1, rand_chacha 0.9.0, rand_core 0.6.4, rand_core 0.9.5
+### 496. Used by rand 0.10.3, rand 0.8.8, rand 0.9.5, rand_chacha 0.3.1, rand_chacha 0.9.0, rand_core 0.6.4, rand_core 0.9.5
 
 ```text
 Copyrights in the Rand project are retained by their contributors. No
@@ -53690,7 +61045,7 @@ The Rand project includes code from the Rust project
 published under these same licenses.
 ```
 
-### 463. Used by rand_core 0.10.1, rand_core 0.6.4, rand_core 0.9.5
+### 497. Used by rand_core 0.10.1, rand_core 0.6.4, rand_core 0.9.5
 
 ```text
                               Apache License
@@ -53882,7 +61237,7 @@ APPENDIX: How to apply the Apache License to your work.
    identification within third-party archives.
 ```
 
-### 464. Used by rand_core 0.10.1
+### 498. Used by rand_core 0.10.1
 
 ```text
 Copyright (c) 2018-2026 The Rand Project Developers
@@ -53912,7 +61267,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 465. Used by rand_core 0.10.1
+### 499. Used by rand_core 0.10.1
 
 ```text
 Copyrights in the Rand project are retained by their contributors. No
@@ -53926,7 +61281,7 @@ licensed under the Apache License, Version 2.0 <LICENSE-APACHE> or
 <LICENSE-MIT> or <http://opensource.org/licenses/MIT>, at your option.
 ```
 
-### 466. Used by rangemap 1.8.0
+### 500. Used by rangemap 1.8.0
 
 ```text
                                  Apache License
@@ -54121,7 +61476,7 @@ licensed under the Apache License, Version 2.0 <LICENSE-APACHE> or
    limitations under the License.
 ```
 
-### 467. Used by rangemap 1.8.0
+### 501. Used by rangemap 1.8.0
 
 ```text
 Copyright 2019 Jeffrey Parsons
@@ -54133,7 +61488,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 468. Used by rav1e 0.8.1
+### 502. Used by rav1e 0.8.1
 
 ```text
 BSD 2-Clause License
@@ -54163,7 +61518,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 469. Used by ravif 0.13.0
+### 503. Used by ravif 0.13.0
 
 ```text
 BSD 3-Clause License
@@ -54197,7 +61552,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 470. Used by raw-window-handle 0.6.2
+### 504. Used by raw-window-handle 0.6.2
 
 ```text
 Copyright (c) 2020 Osspial
@@ -54213,7 +61568,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### 471. Used by raw-window-handle 0.6.2
+### 505. Used by raw-window-handle 0.6.2
 
 ```text
 MIT License
@@ -54239,7 +61594,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 472. Used by recvmsg 1.0.0
+### 506. Used by recvmsg 1.0.0
 
 ```text
 BSD Zero Clause License
@@ -54258,7 +61613,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
 ```
 
-### 473. Used by redox_syscall 0.5.18
+### 507. Used by redox_syscall 0.5.18
 
 ```text
 Copyright (c) 2017 Redox OS Developers
@@ -54285,7 +61640,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 474. Used by redox_users 0.5.3
+### 508. Used by redox_users 0.5.3
 
 ```text
 The MIT License (MIT)
@@ -54311,7 +61666,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 475. Used by reqwest 0.13.5
+### 509. Used by reqwest 0.13.5
 
 ```text
                               Apache License
@@ -54517,7 +61872,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### 476. Used by reqwest 0.13.5
+### 510. Used by reqwest 0.13.5
 
 ```text
 Copyright (c) 2016-2026 Sean McArthur
@@ -54541,7 +61896,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 477. Used by resvg 0.45.1, usvg 0.45.1
+### 511. Used by resvg 0.45.1, usvg 0.45.1
 
 ```text
 Copyright 2017 the Resvg Authors
@@ -54571,7 +61926,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 478. Used by rfd 0.16.1
+### 512. Used by rfd 0.16.1
 
 ```text
 MIT License
@@ -54597,7 +61952,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 479. Used by rgb 0.8.53
+### 513. Used by rgb 0.8.53
 
 ```text
 MIT License
@@ -54623,7 +61978,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 480. Used by roxmltree 0.20.0, roxmltree 0.21.2
+### 514. Used by roxmltree 0.20.0, roxmltree 0.21.2
 
 ```text
 The MIT License (MIT)
@@ -54649,7 +62004,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 481. Used by rsqlite-vfs 0.1.1
+### 515. Used by rsqlite-vfs 0.1.1
 
 ```text
 rsqlite-vfs is offered under MIT; it publishes no licence file, so the standard MIT text follows.
@@ -54674,7 +62029,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 482. Used by rust-embed 8.13.0, rust-embed-impl 8.13.0, rust-embed-utils 8.13.0
+### 516. Used by rust-embed 8.13.0, rust-embed-impl 8.13.0, rust-embed-utils 8.13.0
 
 ```text
 The MIT License (MIT)
@@ -54700,7 +62055,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 483. Used by rust_xlsxwriter 0.102.0
+### 517. Used by rust_xlsxwriter 0.102.0
 
 ```text
                                  Apache License
@@ -54906,7 +62261,7 @@ SOFTWARE.
    limitations under the License.
 ```
 
-### 484. Used by rust_xlsxwriter 0.102.0
+### 518. Used by rust_xlsxwriter 0.102.0
 
 ```text
 MIT License
@@ -54932,7 +62287,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 485. Used by rustix 0.38.44, rustix 1.1.6
+### 519. Used by rustix 0.38.44, rustix 1.1.6
 
 ```text
 Short version for non-lawyers:
@@ -54966,7 +62321,7 @@ is licensed under:
 at your option.
 ```
 
-### 486. Used by rustix-linux-procfs 0.1.1
+### 520. Used by rustix-linux-procfs 0.1.1
 
 ```text
 Short version for non-lawyers:
@@ -55000,7 +62355,7 @@ is licensed under:
 at your option.
 ```
 
-### 487. Used by salsa20 0.10.2
+### 521. Used by salsa20 0.10.2
 
 ```text
 Copyright (c) 2019 Eric McCorkle
@@ -55030,7 +62385,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 488. Used by same-file 1.0.6, winapi-util 0.1.11
+### 522. Used by same-file 1.0.6, winapi-util 0.1.11
 
 ```text
 The MIT License (MIT)
@@ -55056,7 +62411,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 489. Used by schemars 0.8.22, schemars 0.9.0, schemars 1.2.3, schemars_derive 0.8.22
+### 523. Used by schemars 0.8.22, schemars 0.9.0, schemars 1.2.3, schemars_derive 0.8.22
 
 ```text
 MIT License
@@ -55082,7 +62437,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 490. Used by scopeguard 1.2.0
+### 524. Used by scopeguard 1.2.0
 
 ```text
 Copyright (c) 2016-2019 Ulrik Sverdrup "bluss" and scopeguard developers
@@ -55112,7 +62467,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 491. Used by screencapturekit 10.0.3
+### 525. Used by screencapturekit 10.0.3
 
 ```text
 The MIT License (MIT)
@@ -55126,7 +62481,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 492. Used by scrypt 0.11.0
+### 526. Used by scrypt 0.11.0
 
 ```text
 Copyright (c) 2021-2023 The RustCrypto Project Developers
@@ -55156,7 +62511,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 493. Used by sec1 0.7.3
+### 527. Used by sec1 0.7.3
 
 ```text
 Copyright (c) 2021-2022 The RustCrypto Project Developers
@@ -55186,7 +62541,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 494. Used by secrecy 0.10.3
+### 528. Used by secrecy 0.10.3
 
 ```text
 MIT License
@@ -55212,7 +62567,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 495. Used by selectors 0.36.1
+### 529. Used by selectors 0.36.1
 
 ```text
 selectors is offered under MPL-2.0; it publishes no licence file, so the standard MPL-2.0 text follows.
@@ -55592,7 +62947,7 @@ Exhibit B - "Incompatible With Secondary Licenses" Notice
   defined by the Mozilla Public License, v. 2.0.
 ```
 
-### 496. Used by self_cell 1.3.0
+### 530. Used by self_cell 1.3.0
 
 ```text
                     GNU GENERAL PUBLIC LICENSE
@@ -55936,7 +63291,7 @@ library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.
 ```
 
-### 497. Used by serialize-to-javascript 0.1.2, serialize-to-javascript-impl 0.1.2
+### 531. Used by serialize-to-javascript 0.1.2, serialize-to-javascript-impl 0.1.2
 
 ```text
 MIT License
@@ -55962,7 +63317,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 498. Used by sha2 0.10.9
+### 532. Used by sha2 0.10.9
 
 ```text
 Copyright (c) 2006-2009 Graydon Hoare
@@ -55994,7 +63349,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 499. Used by sha3 0.10.9
+### 533. Used by sha3 0.10.9
 
 ```text
 Copyright (c) 2006-2009 Graydon Hoare
@@ -56027,7 +63382,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 500. Used by signal-hook-registry 1.4.8
+### 534. Used by signal-hook-registry 1.4.8
 
 ```text
 Copyright (c) 2017 tokio-jsonrpc developers
@@ -56057,7 +63412,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 501. Used by simd-adler32 0.3.10
+### 535. Used by simd-adler32 0.3.10
 
 ```text
 MIT License
@@ -56083,7 +63438,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 502. Used by simd_helpers 0.1.0
+### 536. Used by simd_helpers 0.1.0
 
 ```text
 simd_helpers is offered under MIT; it publishes no licence file, so the standard MIT text follows.
@@ -56108,7 +63463,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 503. Used by simplecss 0.2.2
+### 537. Used by simplecss 0.2.2
 
 ```text
 The MIT License (MIT)
@@ -56134,7 +63489,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 504. Used by siphasher 1.0.4
+### 538. Used by siphasher 1.0.4
 
 ```text
 Copyright 2012-2016 The Rust Project Developers.
@@ -56146,7 +63501,7 @@ http://www.apache.org/licenses/LICENSE-2.0> or the MIT license
 option.
 ```
 
-### 505. Used by slab 0.4.12
+### 539. Used by slab 0.4.12
 
 ```text
 Copyright (c) 2019 Carl Lerche
@@ -56176,7 +63531,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 506. Used by smallvec 1.16.5
+### 540. Used by smallvec 1.16.5
 
 ```text
 Copyright (c) 2018 The Servo Project Developers
@@ -56206,7 +63561,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 507. Used by softbuffer 0.4.8
+### 541. Used by softbuffer 0.4.8
 
 ```text
 Apache License
@@ -56412,7 +63767,7 @@ Apache License
    limitations under the License.
 ```
 
-### 508. Used by softbuffer 0.4.8
+### 542. Used by softbuffer 0.4.8
 
 ```text
 Copyright 2022 Kirill Chibisov
@@ -56436,7 +63791,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 509. Used by sqlite-wasm-rs 0.5.5
+### 543. Used by sqlite-wasm-rs 0.5.5
 
 ```text
 MIT License
@@ -56462,7 +63817,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 510. Used by stable_deref_trait 1.2.1
+### 544. Used by stable_deref_trait 1.2.1
 
 ```text
 Copyright (c) 2017 Robert Grosse
@@ -56492,7 +63847,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 511. Used by static_assertions 1.1.0
+### 545. Used by static_assertions 1.1.0
 
 ```text
 MIT License
@@ -56518,7 +63873,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 512. Used by strict-num 0.1.1
+### 546. Used by strict-num 0.1.1
 
 ```text
 Copyright (c) 2022 Yevhenii Reizner
@@ -56542,7 +63897,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 513. Used by stringprep 0.1.5
+### 547. Used by stringprep 0.1.5
 
 ```text
 Copyright (c) 2017 The rust-stringprep Developers
@@ -56566,7 +63921,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 514. Used by strsim 0.11.1
+### 548. Used by strsim 0.11.1
 
 ```text
 The MIT License (MIT)
@@ -56594,7 +63949,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 515. Used by subtle 2.6.1
+### 549. Used by subtle 2.6.1
 
 ```text
 Copyright (c) 2016-2017 Isis Agora Lovecruft, Henry de Valence. All rights reserved.
@@ -56628,7 +63983,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 516. Used by svelte 5.57.1
+### 550. Used by svelte 5.57.1
 
 ```text
 Copyright (c) 2016-2025 [Svelte Contributors](https://github.com/sveltejs/svelte/graphs/contributors)
@@ -56640,7 +63995,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 517. Used by svgtypes 0.15.3
+### 551. Used by svgtypes 0.15.3
 
 ```text
 Copyright (c) 2018 Yevhenii Reizner
@@ -56664,7 +64019,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 518. Used by swift-rs 1.0.9
+### 552. Used by swift-rs 1.0.9
 
 ```text
                                  Apache License
@@ -56870,7 +64225,7 @@ THE SOFTWARE.
    limitations under the License.
 ```
 
-### 519. Used by swift-rs 1.0.9
+### 553. Used by swift-rs 1.0.9
 
 ```text
 Copyright (c) 2023 The swift-rs Developers
@@ -56894,7 +64249,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 520. Used by synstructure 0.14.0
+### 554. Used by synstructure 0.14.0
 
 ```text
 Copyright 2016 Nika Layzell
@@ -56906,7 +64261,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 521. Used by sysinfo 0.38.4
+### 555. Used by sysinfo 0.38.4
 
 ```text
 The MIT License (MIT)
@@ -56932,7 +64287,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 522. Used by system-interface 0.27.3
+### 556. Used by system-interface 0.27.3
 
 ```text
 Short version for non-lawyers:
@@ -56966,7 +64321,7 @@ is licensed under:
 at your option.
 ```
 
-### 523. Used by tao 0.35.3
+### 557. Used by tao 0.35.3
 
 ```text
 SPDXVersion: SPDX-2.1
@@ -56989,7 +64344,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tao.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### 524. Used by tao-macros 0.1.4
+### 558. Used by tao-macros 0.1.4
 
 ```text
 MIT License
@@ -57015,7 +64370,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 525. Used by tao-macros 0.1.4
+### 559. Used by tao-macros 0.1.4
 
 ```text
 SPDXVersion: SPDX-2.1
@@ -57039,7 +64394,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tao.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### 526. Used by target-features 0.1.6
+### 560. Used by target-features 0.1.6
 
 ```text
 Copyright 2022 Caleb Zulawski
@@ -57051,7 +64406,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 527. Used by tauri-plugin-clipboard-manager 2.3.3, tauri-plugin-dialog 2.7.3, tauri-plugin-fs 2.5.2, tauri-plugin-global-shortcut 2.3.2, tauri-plugin-opener 2.5.5, tauri-plugin-single-instance 2.4.5
+### 561. Used by tauri-plugin-clipboard-manager 2.3.3, tauri-plugin-dialog 2.7.3, tauri-plugin-fs 2.5.2, tauri-plugin-global-shortcut 2.3.2, tauri-plugin-opener 2.5.5, tauri-plugin-single-instance 2.4.5
 
 ```text
 SPDXVersion: SPDX-2.1
@@ -57076,7 +64431,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tauri.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### 528. Used by tauri-plugin-single-instance 2.4.5
+### 562. Used by tauri-plugin-single-instance 2.4.5
 
 ```text
 MIT License
@@ -57102,7 +64457,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 529. Used by tempfile 3.27.0
+### 563. Used by tempfile 3.27.0
 
 ```text
 Copyright (c) 2015 Steven Allen
@@ -57132,7 +64487,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 530. Used by tendril 0.5.1
+### 564. Used by tendril 0.5.1
 
 ```text
 Copyright (c) 2015 Keegan McAllister
@@ -57162,7 +64517,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 531. Used by tiff 0.11.3
+### 565. Used by tiff 0.11.3
 
 ```text
 MIT License
@@ -57188,7 +64543,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 532. Used by time 0.3.55, time-core 0.1.9, time-macros 0.2.32
+### 566. Used by time 0.3.55, time-core 0.1.9, time-macros 0.2.32
 
 ```text
 Copyright (c) Jacob Pratt et al.
@@ -57212,7 +64567,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 533. Used by tiny-skia 0.11.4, tiny-skia-path 0.11.4
+### 567. Used by tiny-skia 0.11.4, tiny-skia-path 0.11.4
 
 ```text
 Copyright (c) 2011 Google Inc. All rights reserved.
@@ -57247,7 +64602,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 534. Used by tokio 1.54.1, tokio-util 0.7.20
+### 568. Used by tokio 1.54.1, tokio-util 0.7.20
 
 ```text
 MIT License
@@ -57273,7 +64628,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 535. Used by tokio-macros 2.7.2
+### 569. Used by tokio-macros 2.7.2
 
 ```text
 MIT License
@@ -57300,7 +64655,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 536. Used by tower 0.5.3, tower-layer 0.3.3, tower-service 0.3.3
+### 570. Used by tower 0.5.3, tower-layer 0.3.3, tower-service 0.3.3
 
 ```text
 Copyright (c) 2019 Tower Contributors
@@ -57330,7 +64685,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 537. Used by tower-http 0.6.11
+### 571. Used by tower-http 0.6.11
 
 ```text
 Copyright (c) 2019-2021 Tower Contributors
@@ -57360,7 +64715,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 538. Used by tracing 0.1.44, tracing-attributes 0.1.31, tracing-core 0.1.36
+### 572. Used by tracing 0.1.44, tracing-attributes 0.1.31, tracing-core 0.1.36
 
 ```text
 Copyright (c) 2019 Tokio Contributors
@@ -57390,7 +64745,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 539. Used by tray-icon 0.24.2
+### 573. Used by tray-icon 0.24.2
 
 ```text
 SPDXVersion: SPDX-2.1
@@ -57414,7 +64769,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/tray-icon.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### 540. Used by tree_magic_mini 3.2.2
+### 574. Used by tree_magic_mini 3.2.2
 
 ```text
 MIT License
@@ -57440,7 +64795,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 541. Used by try-lock 0.2.5
+### 575. Used by try-lock 0.2.5
 
 ```text
 Copyright (c) 2018-2023 Sean McArthur
@@ -57465,7 +64820,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 542. Used by tungstenite 0.30.0
+### 576. Used by tungstenite 0.30.0
 
 ```text
 Copyright (c) 2017 Alexey Galakhov
@@ -57490,7 +64845,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 543. Used by type-map 0.5.1
+### 577. Used by type-map 0.5.1
 
 ```text
                               Apache License
@@ -57900,7 +65255,7 @@ limitations under the License.
    limitations under the License.
 ```
 
-### 544. Used by type-map 0.5.1
+### 578. Used by type-map 0.5.1
 
 ```text
 Copyright (c) 2022 Jacob Brown
@@ -57984,7 +65339,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 545. Used by typenum 1.20.1
+### 579. Used by typenum 1.20.1
 
 ```text
                               Apache License
@@ -58190,13 +65545,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### 546. Used by typenum 1.20.1
+### 580. Used by typenum 1.20.1
 
 ```text
 MIT OR Apache-2.0
 ```
 
-### 547. Used by typenum 1.20.1
+### 581. Used by typenum 1.20.1
 
 ```text
 The MIT License (MIT)
@@ -58222,7 +65577,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 548. Used by uds_windows 1.2.1
+### 582. Used by uds_windows 1.2.1
 
 ```text
     MIT License
@@ -58248,7 +65603,7 @@ SOFTWARE.
     SOFTWARE
 ```
 
-### 549. Used by unic-char-property 0.9.0
+### 583. Used by unic-char-property 0.9.0
 
 ```text
 unic-char-property is offered under MIT/Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -58273,7 +65628,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 550. Used by unic-char-range 0.9.0
+### 584. Used by unic-char-range 0.9.0
 
 ```text
 unic-char-range is offered under MIT/Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -58298,7 +65653,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 551. Used by unic-common 0.9.0
+### 585. Used by unic-common 0.9.0
 
 ```text
 unic-common is offered under MIT/Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -58323,7 +65678,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 552. Used by unic-ucd-ident 0.9.0
+### 586. Used by unic-ucd-ident 0.9.0
 
 ```text
 unic-ucd-ident is offered under MIT/Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -58348,7 +65703,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 553. Used by unic-ucd-version 0.9.0
+### 587. Used by unic-ucd-version 0.9.0
 
 ```text
 unic-ucd-version is offered under MIT/Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -58373,7 +65728,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 554. Used by unicode-bidi 0.3.18
+### 588. Used by unicode-bidi 0.3.18
 
 ```text
 This project is copyright 2015, The Servo Project Developers (given in the
@@ -58386,7 +65741,7 @@ carrying such notice may not be copied, modified, or distributed except
 according to those terms.
 ```
 
-### 555. Used by unicode-normalization 0.1.26, unicode-properties 0.1.5, unicode-segmentation 1.13.3, unicode-xid 0.2.6
+### 589. Used by unicode-normalization 0.1.26, unicode-properties 0.1.5, unicode-segmentation 1.13.3, unicode-xid 0.2.6
 
 ```text
 Licensed under the Apache License, Version 2.0
@@ -58398,7 +65753,7 @@ notice may not be copied, modified, or distributed except
 according to those terms.
 ```
 
-### 556. Used by unicode-properties 0.1.5
+### 590. Used by unicode-properties 0.1.5
 
 ```text
 UNICODE LICENSE V3
@@ -58442,7 +65797,7 @@ dealings in these Data Files or Software without prior written
 authorization of the copyright holder.
 ```
 
-### 557. Used by universal-hash 0.5.1
+### 591. Used by universal-hash 0.5.1
 
 ```text
 Copyright (c) 2019-2020 RustCrypto Developers
@@ -58472,7 +65827,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 558. Used by urlencoding 2.1.3
+### 592. Used by urlencoding 2.1.3
 
 ```text
 © 2016 Bertram Truong
@@ -58497,7 +65852,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 559. Used by urlpattern 0.3.0
+### 593. Used by urlpattern 0.3.0
 
 ```text
 MIT License
@@ -58523,7 +65878,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 560. Used by utf8_iter 1.1.0
+### 594. Used by utf8_iter 1.1.0
 
 ```text
 Copyright Mozilla Foundation
@@ -58570,7 +65925,7 @@ licensed under the Apache License, Version 2.0 <LICENSE-APACHE> or
 <LICENSE-MIT> or <http://opensource.org/licenses/MIT>, at your option.
 ```
 
-### 561. Used by utf8parse 0.2.2
+### 595. Used by utf8parse 0.2.2
 
 ```text
 Copyright (c) 2016 Joe Wilm
@@ -58600,7 +65955,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 562. Used by utf_types 1.0.0
+### 596. Used by utf_types 1.0.0
 
 ```text
 Copyright Mozilla Foundation
@@ -58625,7 +65980,7 @@ Test code is dedicated to the Public Domain when so designated (see
 the individual files for PD/CC0-dedicated sections).
 ```
 
-### 563. Used by uuid 1.26.1
+### 597. Used by uuid 1.26.1
 
 ```text
 Copyright (c) 2014 The Rust Project Developers
@@ -58656,7 +66011,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 564. Used by v_frame 0.3.9
+### 598. Used by v_frame 0.3.9
 
 ```text
 BSD 2-Clause License
@@ -58686,7 +66041,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 565. Used by want 0.3.2
+### 599. Used by want 0.3.2
 
 ```text
 Copyright (c) 2018-2019 Sean McArthur
@@ -58710,7 +66065,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 566. Used by wasm-encoder 0.236.1
+### 600. Used by wasm-encoder 0.236.1
 
 ```text
 wasm-encoder is offered under Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -58735,7 +66090,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 567. Used by wasmparser 0.236.1
+### 601. Used by wasmparser 0.236.1
 
 ```text
 wasmparser is offered under Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -58760,7 +66115,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 568. Used by wasmprinter 0.236.1
+### 602. Used by wasmprinter 0.236.1
 
 ```text
 wasmprinter is offered under Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -58785,7 +66140,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 569. Used by wasmtime-internal-asm-macros 36.0.20
+### 603. Used by wasmtime-internal-asm-macros 36.0.20
 
 ```text
 wasmtime-internal-asm-macros is offered under Apache-2.0 WITH LLVM-exception; it publishes no licence file, so the standard Apache-2.0 text follows.
@@ -58882,7 +66237,7 @@ limitations under the License.
    Software.
 ```
 
-### 570. Used by wasmtime-internal-component-macro 36.0.20
+### 604. Used by wasmtime-internal-component-macro 36.0.20
 
 ```text
 wasmtime-internal-component-macro is offered under Apache-2.0 WITH LLVM-exception; it publishes no licence file, so the standard Apache-2.0 text follows.
@@ -58979,7 +66334,7 @@ limitations under the License.
    Software.
 ```
 
-### 571. Used by wasmtime-internal-component-util 36.0.20
+### 605. Used by wasmtime-internal-component-util 36.0.20
 
 ```text
 wasmtime-internal-component-util is offered under Apache-2.0 WITH LLVM-exception; it publishes no licence file, so the standard Apache-2.0 text follows.
@@ -59076,7 +66431,7 @@ limitations under the License.
    Software.
 ```
 
-### 572. Used by wasmtime-internal-jit-debug 36.0.20
+### 606. Used by wasmtime-internal-jit-debug 36.0.20
 
 ```text
 wasmtime-internal-jit-debug is offered under Apache-2.0 WITH LLVM-exception; it publishes no licence file, so the standard Apache-2.0 text follows.
@@ -59173,7 +66528,7 @@ limitations under the License.
    Software.
 ```
 
-### 573. Used by wasmtime-internal-jit-icache-coherence 36.0.20
+### 607. Used by wasmtime-internal-jit-icache-coherence 36.0.20
 
 ```text
 wasmtime-internal-jit-icache-coherence is offered under Apache-2.0 WITH LLVM-exception; it publishes no licence file, so the standard Apache-2.0 text follows.
@@ -59270,7 +66625,7 @@ limitations under the License.
    Software.
 ```
 
-### 574. Used by wasmtime-internal-math 36.0.20
+### 608. Used by wasmtime-internal-math 36.0.20
 
 ```text
 wasmtime-internal-math is offered under Apache-2.0 WITH LLVM-exception; it publishes no licence file, so the standard Apache-2.0 text follows.
@@ -59367,7 +66722,7 @@ limitations under the License.
    Software.
 ```
 
-### 575. Used by wasmtime-internal-slab 36.0.20
+### 609. Used by wasmtime-internal-slab 36.0.20
 
 ```text
 wasmtime-internal-slab is offered under Apache-2.0 WITH LLVM-exception; it publishes no licence file, so the standard Apache-2.0 text follows.
@@ -59464,7 +66819,7 @@ limitations under the License.
    Software.
 ```
 
-### 576. Used by wasmtime-internal-versioned-export-macros 36.0.20
+### 610. Used by wasmtime-internal-versioned-export-macros 36.0.20
 
 ```text
 wasmtime-internal-versioned-export-macros is offered under Apache-2.0 WITH LLVM-exception; it publishes no licence file, so the standard Apache-2.0 text follows.
@@ -59561,7 +66916,7 @@ limitations under the License.
    Software.
 ```
 
-### 577. Used by wasmtime-internal-wit-bindgen 36.0.20
+### 611. Used by wasmtime-internal-wit-bindgen 36.0.20
 
 ```text
 wasmtime-internal-wit-bindgen is offered under Apache-2.0 WITH LLVM-exception; it publishes no licence file, so the standard Apache-2.0 text follows.
@@ -59658,7 +67013,7 @@ limitations under the License.
    Software.
 ```
 
-### 578. Used by wasmtime-wasi-io 36.0.20
+### 612. Used by wasmtime-wasi-io 36.0.20
 
 ```text
 wasmtime-wasi-io is offered under Apache-2.0 WITH LLVM-exception; it publishes no licence file, so the standard Apache-2.0 text follows.
@@ -59755,7 +67110,7 @@ limitations under the License.
    Software.
 ```
 
-### 579. Used by wayland-backend 0.3.17, wayland-client 0.31.15, wayland-protocols 0.32.13, wayland-protocols-wlr 0.3.12, wayland-scanner 0.31.11, wayland-sys 0.31.11
+### 613. Used by wayland-backend 0.3.17, wayland-client 0.31.15, wayland-protocols 0.32.13, wayland-protocols-wlr 0.3.12, wayland-scanner 0.31.11, wayland-sys 0.31.11
 
 ```text
 Copyright (c) 2015 Elinor Berger
@@ -59779,7 +67134,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ```
 
-### 580. Used by web-time 1.1.0
+### 614. Used by web-time 1.1.0
 
 ```text
                                  Apache License
@@ -59985,7 +67340,7 @@ THE SOFTWARE.
    limitations under the License.
 ```
 
-### 581. Used by web-time 1.1.0
+### 615. Used by web-time 1.1.0
 
 ```text
 MIT License
@@ -60011,7 +67366,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 582. Used by webkit2gtk 2.0.2
+### 616. Used by webkit2gtk 2.0.2
 
 ```text
 Copyright (c) 2016 Boucher, Antoni <bouanto@zoho.com>
@@ -60036,7 +67391,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 583. Used by webkit2gtk-sys 2.0.2
+### 617. Used by webkit2gtk-sys 2.0.2
 
 ```text
 Copyright (c) 2016 Boucher, Antoni <bouanto@zoho.com>
@@ -60059,7 +67414,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 584. Used by webview2-com 0.38.2
+### 618. Used by webview2-com 0.38.2
 
 ```text
 webview2-com is offered under MIT; it publishes no licence file, so the standard MIT text follows.
@@ -60084,7 +67439,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 585. Used by webview2-com-macros 0.8.1
+### 619. Used by webview2-com-macros 0.8.1
 
 ```text
 webview2-com-macros is offered under MIT; it publishes no licence file, so the standard MIT text follows.
@@ -60109,7 +67464,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 586. Used by webview2-com-sys 0.38.2
+### 620. Used by webview2-com-sys 0.38.2
 
 ```text
 webview2-com-sys is offered under MIT; it publishes no licence file, so the standard MIT text follows.
@@ -60134,7 +67489,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 587. Used by weezl 0.1.12, weezl 0.2.1
+### 621. Used by weezl 0.1.12, weezl 0.2.1
 
 ```text
 The MIT License (MIT)
@@ -60160,7 +67515,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 588. Used by winapi 0.3.9
+### 622. Used by winapi 0.3.9
 
 ```text
 Copyright (c) 2015-2018 The winapi-rs Developers
@@ -60184,7 +67539,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 589. Used by winapi-i686-pc-windows-gnu 0.4.0
+### 623. Used by winapi-i686-pc-windows-gnu 0.4.0
 
 ```text
 winapi-i686-pc-windows-gnu is offered under MIT/Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -60209,7 +67564,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 590. Used by winapi-x86_64-pc-windows-gnu 0.4.0
+### 624. Used by winapi-x86_64-pc-windows-gnu 0.4.0
 
 ```text
 winapi-x86_64-pc-windows-gnu is offered under MIT/Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -60234,7 +67589,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 591. Used by window-vibrancy 0.6.0
+### 625. Used by window-vibrancy 0.6.0
 
 ```text
 MIT License
@@ -60260,7 +67615,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 592. Used by window-vibrancy 0.6.0
+### 626. Used by window-vibrancy 0.6.0
 
 ```text
 SPDXVersion: SPDX-2.1
@@ -60284,7 +67639,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/window-vibrancy.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### 593. Used by windows 0.61.3, windows 0.62.2, windows-collections 0.2.0, windows-collections 0.3.2, windows-core 0.61.2, windows-core 0.62.2, windows-future 0.2.1, windows-future 0.3.2, windows-implement 0.60.2, windows-interface 0.59.3, windows-link 0.1.3, windows-link 0.2.1, windows-numerics 0.2.0, windows-numerics 0.3.1, windows-result 0.3.4, windows-result 0.4.1, windows-strings 0.4.2, windows-strings 0.5.1, windows-sys 0.45.0, windows-sys 0.59.0, windows-sys 0.60.2, windows-sys 0.61.2, windows-targets 0.42.2, windows-targets 0.52.6, windows-targets 0.53.5, windows-threading 0.1.0, windows-threading 0.2.1, windows-version 0.1.7, windows_aarch64_gnullvm 0.42.2, windows_aarch64_gnullvm 0.52.6, windows_aarch64_gnullvm 0.53.1, windows_aarch64_msvc 0.42.2, windows_aarch64_msvc 0.52.6, windows_aarch64_msvc 0.53.1, windows_i686_gnu 0.42.2, windows_i686_gnu 0.52.6, windows_i686_gnu 0.53.1, windows_i686_gnullvm 0.52.6, windows_i686_gnullvm 0.53.1, windows_i686_msvc 0.42.2, windows_i686_msvc 0.52.6, windows_i686_msvc 0.53.1, windows_x86_64_gnu 0.42.2, windows_x86_64_gnu 0.52.6, windows_x86_64_gnu 0.53.1, windows_x86_64_gnullvm 0.42.2, windows_x86_64_gnullvm 0.52.6, windows_x86_64_gnullvm 0.53.1, windows_x86_64_msvc 0.42.2, windows_x86_64_msvc 0.52.6, windows_x86_64_msvc 0.53.1
+### 627. Used by windows 0.61.3, windows 0.62.2, windows-collections 0.2.0, windows-collections 0.3.2, windows-core 0.61.2, windows-core 0.62.2, windows-future 0.2.1, windows-future 0.3.2, windows-implement 0.60.2, windows-interface 0.59.3, windows-link 0.1.3, windows-link 0.2.1, windows-numerics 0.2.0, windows-numerics 0.3.1, windows-result 0.3.4, windows-result 0.4.1, windows-strings 0.4.2, windows-strings 0.5.1, windows-sys 0.45.0, windows-sys 0.59.0, windows-sys 0.60.2, windows-sys 0.61.2, windows-targets 0.42.2, windows-targets 0.52.6, windows-targets 0.53.5, windows-threading 0.1.0, windows-threading 0.2.1, windows-version 0.1.7, windows_aarch64_gnullvm 0.42.2, windows_aarch64_gnullvm 0.52.6, windows_aarch64_gnullvm 0.53.1, windows_aarch64_msvc 0.42.2, windows_aarch64_msvc 0.52.6, windows_aarch64_msvc 0.53.1, windows_i686_gnu 0.42.2, windows_i686_gnu 0.52.6, windows_i686_gnu 0.53.1, windows_i686_gnullvm 0.52.6, windows_i686_gnullvm 0.53.1, windows_i686_msvc 0.42.2, windows_i686_msvc 0.52.6, windows_i686_msvc 0.53.1, windows_x86_64_gnu 0.42.2, windows_x86_64_gnu 0.52.6, windows_x86_64_gnu 0.53.1, windows_x86_64_gnullvm 0.42.2, windows_x86_64_gnullvm 0.52.6, windows_x86_64_gnullvm 0.53.1, windows_x86_64_msvc 0.42.2, windows_x86_64_msvc 0.52.6, windows_x86_64_msvc 0.53.1
 
 ```text
                                  Apache License
@@ -60490,7 +67845,7 @@ Creator: Person: Daniel Thompson-Yvetot
    limitations under the License.
 ```
 
-### 594. Used by windows 0.61.3, windows 0.62.2, windows-collections 0.2.0, windows-collections 0.3.2, windows-core 0.61.2, windows-core 0.62.2, windows-future 0.2.1, windows-future 0.3.2, windows-implement 0.60.2, windows-interface 0.59.3, windows-link 0.1.3, windows-link 0.2.1, windows-numerics 0.2.0, windows-numerics 0.3.1, windows-result 0.3.4, windows-result 0.4.1, windows-strings 0.4.2, windows-strings 0.5.1, windows-sys 0.45.0, windows-sys 0.59.0, windows-sys 0.60.2, windows-sys 0.61.2, windows-targets 0.42.2, windows-targets 0.52.6, windows-targets 0.53.5, windows-threading 0.1.0, windows-threading 0.2.1, windows-version 0.1.7, windows_aarch64_gnullvm 0.42.2, windows_aarch64_gnullvm 0.52.6, windows_aarch64_gnullvm 0.53.1, windows_aarch64_msvc 0.42.2, windows_aarch64_msvc 0.52.6, windows_aarch64_msvc 0.53.1, windows_i686_gnu 0.42.2, windows_i686_gnu 0.52.6, windows_i686_gnu 0.53.1, windows_i686_gnullvm 0.52.6, windows_i686_gnullvm 0.53.1, windows_i686_msvc 0.42.2, windows_i686_msvc 0.52.6, windows_i686_msvc 0.53.1, windows_x86_64_gnu 0.42.2, windows_x86_64_gnu 0.52.6, windows_x86_64_gnu 0.53.1, windows_x86_64_gnullvm 0.42.2, windows_x86_64_gnullvm 0.52.6, windows_x86_64_gnullvm 0.53.1, windows_x86_64_msvc 0.42.2, windows_x86_64_msvc 0.52.6, windows_x86_64_msvc 0.53.1
+### 628. Used by windows 0.61.3, windows 0.62.2, windows-collections 0.2.0, windows-collections 0.3.2, windows-core 0.61.2, windows-core 0.62.2, windows-future 0.2.1, windows-future 0.3.2, windows-implement 0.60.2, windows-interface 0.59.3, windows-link 0.1.3, windows-link 0.2.1, windows-numerics 0.2.0, windows-numerics 0.3.1, windows-result 0.3.4, windows-result 0.4.1, windows-strings 0.4.2, windows-strings 0.5.1, windows-sys 0.45.0, windows-sys 0.59.0, windows-sys 0.60.2, windows-sys 0.61.2, windows-targets 0.42.2, windows-targets 0.52.6, windows-targets 0.53.5, windows-threading 0.1.0, windows-threading 0.2.1, windows-version 0.1.7, windows_aarch64_gnullvm 0.42.2, windows_aarch64_gnullvm 0.52.6, windows_aarch64_gnullvm 0.53.1, windows_aarch64_msvc 0.42.2, windows_aarch64_msvc 0.52.6, windows_aarch64_msvc 0.53.1, windows_i686_gnu 0.42.2, windows_i686_gnu 0.52.6, windows_i686_gnu 0.53.1, windows_i686_gnullvm 0.52.6, windows_i686_gnullvm 0.53.1, windows_i686_msvc 0.42.2, windows_i686_msvc 0.52.6, windows_i686_msvc 0.53.1, windows_x86_64_gnu 0.42.2, windows_x86_64_gnu 0.52.6, windows_x86_64_gnu 0.53.1, windows_x86_64_gnullvm 0.42.2, windows_x86_64_gnullvm 0.52.6, windows_x86_64_gnullvm 0.53.1, windows_x86_64_msvc 0.42.2, windows_x86_64_msvc 0.52.6, windows_x86_64_msvc 0.53.1
 
 ```text
     MIT License
@@ -60516,7 +67871,7 @@ Creator: Person: Daniel Thompson-Yvetot
     SOFTWARE
 ```
 
-### 595. Used by windows-capture 2.0.1
+### 629. Used by windows-capture 2.0.1
 
 ```text
 MIT License
@@ -60542,7 +67897,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 596. Used by winnow 0.5.40, winnow 1.0.5
+### 630. Used by winnow 0.5.40, winnow 1.0.5
 
 ```text
 Permission is hereby granted, free of charge, to any person obtaining
@@ -60565,7 +67920,7 @@ OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 597. Used by wit-parser 0.236.1
+### 631. Used by wit-parser 0.236.1
 
 ```text
 wit-parser is offered under Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT; it publishes no licence file, so the standard MIT text follows.
@@ -60590,7 +67945,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 598. Used by wl-clipboard-rs 0.9.5
+### 632. Used by wl-clipboard-rs 0.9.5
 
 ```text
 Copyright (c) 2019 Ivan Molodetskikh
@@ -60620,7 +67975,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 599. Used by wry 0.55.1
+### 633. Used by wry 0.55.1
 
 ```text
 MIT License
@@ -60646,7 +68001,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 600. Used by wry 0.55.1
+### 634. Used by wry 0.55.1
 
 ```text
 SPDXVersion: SPDX-2.1
@@ -60671,7 +68026,7 @@ PackageDownloadLocation: git+ssh://github.com/tauri-apps/wry.git
 Creator: Person: Daniel Thompson-Yvetot
 ```
 
-### 601. Used by x11rb 0.13.2, x11rb-protocol 0.13.2
+### 635. Used by x11rb 0.13.2, x11rb-protocol 0.13.2
 
 ```text
 Copyright 2019 x11rb Contributers
@@ -60701,7 +68056,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 602. Used by x25519-dalek 2.0.1
+### 636. Used by x25519-dalek 2.0.1
 
 ```text
 Copyright (c) 2017-2021 isis agora lovecruft. All rights reserved.
@@ -60735,7 +68090,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 603. Used by xkeysym 0.2.1
+### 637. Used by xkeysym 0.2.1
 
 ```text
                                  Apache License
@@ -60941,7 +68296,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    limitations under the License.
 ```
 
-### 604. Used by xkeysym 0.2.1
+### 638. Used by xkeysym 0.2.1
 
 ```text
 Copyright (c) 2022-2023 John Nunley
@@ -60965,7 +68320,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 605. Used by xkeysym 0.2.1
+### 639. Used by xkeysym 0.2.1
 
 ```text
 Copyright (c) 2022-2023 John Nunley
@@ -60981,7 +68336,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### 606. Used by xmlwriter 0.1.0
+### 640. Used by xmlwriter 0.1.0
 
 ```text
 The MIT License (MIT)
@@ -61007,7 +68362,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 607. Used by y4m 0.8.0
+### 641. Used by y4m 0.8.0
 
 ```text
 The MIT License (MIT)
@@ -61034,7 +68389,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 608. Used by yaml-rust2 0.13.0
+### 642. Used by yaml-rust2 0.13.0
 
 ```text
 yaml-rust2 is offered under MIT OR Apache-2.0; it publishes no licence file, so the standard MIT text follows.
@@ -61059,7 +68414,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 609. Used by yansi 1.0.1
+### 643. Used by yansi 1.0.1
 
 ```text
                               Apache License
@@ -61265,7 +68620,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ```
 
-### 610. Used by yansi 1.0.1
+### 644. Used by yansi 1.0.1
 
 ```text
 The MIT License (MIT)
@@ -61289,7 +68644,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 611. Used by zbus 5.19.0, zbus_macros 5.19.0, zbus_names 4.3.5, zvariant 5.15.1, zvariant_derive 5.15.1
+### 645. Used by zbus 5.19.0, zbus_macros 5.19.0, zbus_names 4.3.5, zvariant 5.15.1, zvariant_derive 5.15.1
 
 ```text
 Copyright (c) 2024 Zeeshan Ali Khan & zbus contributors
@@ -61319,7 +68674,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 612. Used by zcheapstr 1.2.0
+### 646. Used by zcheapstr 1.2.0
 
 ```text
 Copyright (c) 2026 Zeeshan Ali Khan & zcheapstr contributors
@@ -61349,7 +68704,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 613. Used by zerocopy 0.8.63, zerocopy-derive 0.8.63
+### 647. Used by zerocopy 0.8.63, zerocopy-derive 0.8.63
 
 ```text
                                  Apache License
@@ -61555,7 +68910,7 @@ DEALINGS IN THE SOFTWARE.
    limitations under the License.
 ```
 
-### 614. Used by zerocopy 0.8.63, zerocopy-derive 0.8.63
+### 648. Used by zerocopy 0.8.63, zerocopy-derive 0.8.63
 
 ```text
 Copyright 2019 The Fuchsia Authors.
@@ -61584,7 +68939,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 615. Used by zerocopy 0.8.63, zerocopy-derive 0.8.63
+### 649. Used by zerocopy 0.8.63, zerocopy-derive 0.8.63
 
 ```text
 Copyright 2023 The Fuchsia Authors
@@ -61614,7 +68969,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 616. Used by zeroize 1.9.1
+### 650. Used by zeroize 1.9.1
 
 ```text
 Copyright (c) 2018-2026 The RustCrypto Project Developers
@@ -61644,7 +68999,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 617. Used by zip 9.5.0
+### 651. Used by zip 9.5.0
 
 ```text
 The MIT License (MIT)
@@ -61670,7 +69025,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 618. Used by zlib-rs 0.6.8
+### 652. Used by zlib-rs 0.6.8
 
 ```text
 (C) 2024 Trifecta Tech Foundation
@@ -61694,7 +69049,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### 619. Used by zopfli 0.8.4
+### 653. Used by zopfli 0.8.4
 
 ```text
                                  Apache License
@@ -61900,7 +69255,7 @@ freely, subject to the following restrictions:
    limitations under the License.
 ```
 
-### 620. Used by zune-core 0.5.3, zune-jpeg 0.5.15
+### 654. Used by zune-core 0.5.3, zune-jpeg 0.5.15
 
 ```text
 MIT License
@@ -61926,7 +69281,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 621. Used by zune-core 0.5.3, zune-jpeg 0.5.15
+### 655. Used by zune-core 0.5.3, zune-jpeg 0.5.15
 
 ```text
 zlib License
@@ -61950,7 +69305,7 @@ freely, subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 ```
 
-### 622. Used by zune-inflate 0.2.54
+### 656. Used by zune-inflate 0.2.54
 
 ```text
 zune-inflate is offered under MIT OR Apache-2.0 OR Zlib; it publishes no licence file, so the standard MIT text follows.
@@ -61975,7 +69330,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTI
 USE OR OTHER DEALINGS IN THE SOFTWARE.
 ```
 
-### 623. Used by zxcvbn 3.1.1
+### 657. Used by zxcvbn 3.1.1
 
 ```text
 The MIT License (MIT)
@@ -62000,7 +69355,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
-### 624. Used by zxing-cpp 0.5.3
+### 658. Used by zxing-cpp 0.5.3
 
 ```text
 zxing-cpp is offered under Apache-2.0; it publishes no licence file, so the standard Apache-2.0 text follows.
