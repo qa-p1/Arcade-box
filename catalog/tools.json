@@ -11434,7 +11434,7 @@
             "type": "text",
             "default": "g",
             "placeholder": "gimsx",
-            "help": "i case-insensitive, m multiline, s dot-all, x ignore whitespace; g replaces all."
+            "help": "i case-insensitive, m multiline, s dot-all, x ignore whitespace; g replaces every match (the match list always shows all)."
           },
           {
             "key": "replacement",
@@ -11681,6 +11681,14 @@
               {
                 "value": "blake3",
                 "label": "BLAKE3"
+              },
+              {
+                "value": "sha1",
+                "label": "SHA-1 (legacy checksums)"
+              },
+              {
+                "value": "md5",
+                "label": "MD5 (legacy checksums)"
               }
             ]
           },

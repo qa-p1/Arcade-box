@@ -97,6 +97,11 @@ fn regex_playground(
     if pattern.len() > 64 * 1024 || text.len() > MAX_TEXT_BYTES {
         return Err("The regular expression or test text is too large".into());
     }
+    if let Some(unknown) = flags.chars().find(|flag| !"gimsx".contains(*flag)) {
+        return Err(format!(
+            "Unknown regex flag `{unknown}`; use g (replace all), i, m, s or x"
+        ));
+    }
     let mut builder = RegexBuilder::new(&pattern);
     builder
         .case_insensitive(flags.contains('i'))
@@ -253,11 +258,15 @@ pub(crate) fn digest_reader(
         Sha256(Sha256),
         Sha512(Sha512),
         Blake3(Box<blake3::Hasher>),
+        Md5(md5::Md5),
+        Sha1(sha1::Sha1),
     }
     let mut digest = match algorithm {
         "sha256" => Digest::Sha256(Sha256::new()),
         "sha512" => Digest::Sha512(Sha512::new()),
         "blake3" => Digest::Blake3(Box::new(blake3::Hasher::new())),
+        "md5" => Digest::Md5(<md5::Md5 as md5::Digest>::new()),
+        "sha1" => Digest::Sha1(<sha1::Sha1 as sha1::Digest>::new()),
         _ => return Err(format!("Unsupported hash algorithm: {algorithm}")),
     };
     let mut chunk = vec![0u8; 1024 * 1024];
@@ -273,13 +282,21 @@ pub(crate) fn digest_reader(
             Digest::Blake3(hasher) => {
                 hasher.update(&chunk[..count]);
             }
+            Digest::Md5(hasher) => md5::Digest::update(hasher, &chunk[..count]),
+            Digest::Sha1(hasher) => sha1::Digest::update(hasher, &chunk[..count]),
         }
     }
     Ok(match digest {
         Digest::Sha256(hasher) => format!("{:x}", hasher.finalize()),
         Digest::Sha512(hasher) => format!("{:x}", hasher.finalize()),
         Digest::Blake3(hasher) => hasher.finalize().to_hex().to_string(),
+        Digest::Md5(hasher) => lower_hex(&md5::Digest::finalize(hasher)),
+        Digest::Sha1(hasher) => lower_hex(&sha1::Digest::finalize(hasher)),
     })
+}
+
+fn lower_hex(bytes: &[u8]) -> String {
+    bytes.iter().map(|byte| format!("{byte:02x}")).collect()
 }
 
 fn encode_bytes(bytes: &[u8], encoding: &str) -> Result<String, String> {
@@ -298,12 +315,28 @@ fn encode_bytes(bytes: &[u8], encoding: &str) -> Result<String, String> {
 
 fn decode_bytes(input: &str, encoding: &str) -> Result<Vec<u8>, String> {
     let compact = input
-        .chars()
-        .filter(|character| !character.is_ascii_whitespace())
+        .split_ascii_whitespace()
+        // B-22: hex dumps often write each byte or the whole value as 0x….
+        .map(|token| {
+            if encoding == "hex" {
+                token
+                    .strip_prefix("0x")
+                    .or_else(|| token.strip_prefix("0X"))
+                    .unwrap_or(token)
+            } else {
+                token
+            }
+        })
         .collect::<String>();
     match encoding {
-        "base64" => BASE64
-            .decode(compact.as_bytes())
+        // Accept padded or unpadded, standard or URL-safe Base64.
+        "base64" => URL_SAFE_NO_PAD
+            .decode(
+                compact
+                    .trim_end_matches('=')
+                    .replace('+', "-")
+                    .replace('/', "_"),
+            )
             .map_err(|_| "Input is not valid Base64".into()),
         "base32" => BASE32_NOPAD
             .decode(compact.to_ascii_uppercase().as_bytes())
@@ -378,7 +411,18 @@ fn url_tool(
             Ok(text_result(manifest, decoded, "text/url"))
         }
         "inspect" => {
-            let parsed = url::Url::parse(input.trim()).map_err(|error| format!("URL: {error}"))?;
+            let input = input.trim();
+            if input.is_empty() {
+                return Err("Enter a URL to inspect".into());
+            }
+            // B-22: `example.com/path` is a web address without its scheme.
+            let parsed = match url::Url::parse(input) {
+                Err(url::ParseError::RelativeUrlWithoutBase) => {
+                    url::Url::parse(&format!("https://{input}"))
+                }
+                other => other,
+            }
+            .map_err(|error| format!("URL: {error}"))?;
             if !matches!(
                 parsed.scheme(),
                 "http" | "https" | "ftp" | "file" | "mailto"
@@ -434,11 +478,9 @@ fn percent_decode(input: &str) -> Result<String, String> {
             output.push((high << 4) | low);
             index += 3;
         } else {
-            output.push(if bytes[index] == b'+' {
-                b' '
-            } else {
-                bytes[index]
-            });
+            // `+` stays `+`: only HTML form bodies use it for a space, and the
+            // encoder writes spaces as %20.
+            output.push(bytes[index]);
             index += 1;
         }
     }
@@ -499,7 +541,13 @@ fn jwt_inspector(
     cancelled: &AtomicBool,
 ) -> Result<ToolResult, String> {
     let token = single_text(request, runtime, 64 * 1024, cancelled)?;
-    let parts = token.trim().split('.').collect::<Vec<_>>();
+    let token = token.trim();
+    let token = token
+        .strip_prefix("Bearer ")
+        .or_else(|| token.strip_prefix("bearer "))
+        .unwrap_or(token)
+        .trim();
+    let parts = token.split('.').collect::<Vec<_>>();
     if parts.len() != 3 {
         return Err("A signed JWT needs header, payload, and signature sections".into());
     }
@@ -556,8 +604,8 @@ fn cron_explainer(
     let minute = CronField::parse(parts[0], 0, 59, false)?;
     let hour = CronField::parse(parts[1], 0, 23, false)?;
     let day = CronField::parse(parts[2], 1, 31, false)?;
-    let month = CronField::parse(parts[3], 1, 12, false)?;
-    let weekday = CronField::parse(parts[4], 0, 7, true)?;
+    let month = CronField::parse(&names_to_numbers(parts[3], &MONTHS, 1), 1, 12, false)?;
+    let weekday = CronField::parse(&names_to_numbers(parts[4], &WEEKDAYS, 0), 0, 7, true)?;
     let zone: Tz = option_str(request, "timeZone", "UTC")
         .parse()
         .map_err(|_| "Choose a valid IANA time zone, for example UTC or Asia/Kolkata")?;
@@ -596,15 +644,137 @@ fn cron_explainer(
     if next.is_empty() {
         return Err("No matching occurrence was found within the next two years".into());
     }
-    let description = format!(
-        "Five-field cron schedule in {zone}: minute {}, hour {}, day-of-month {}, month {}, day-of-week {}.",
-        parts[0], parts[1], parts[2], parts[3], parts[4]
-    );
+    let description = describe_cron(&parts, zone.name());
     Ok(json_result(
         manifest,
         json!({"expression": expression.trim(), "dialect": "Unix five-field cron", "timeZone": zone.name(), "description": description, "nextOccurrences": next}),
         "structured/cron",
     ))
+}
+
+const MONTHS: [&str; 12] = [
+    "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+];
+const WEEKDAYS: [&str; 7] = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+const MONTH_NAMES: [&str; 12] = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+];
+const WEEKDAY_NAMES: [&str; 8] = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+];
+
+/// `MON-FRI` → `1-5`, `jan,jul` → `1,7` (B-22).
+fn names_to_numbers(field: &str, names: &[&str], first: usize) -> String {
+    let mut output = String::new();
+    let mut word = String::new();
+    let flush = |word: &mut String, output: &mut String| {
+        if !word.is_empty() {
+            let upper = word.to_ascii_uppercase();
+            match names.iter().position(|name| *name == upper) {
+                Some(index) => output.push_str(&(index + first).to_string()),
+                None => output.push_str(word),
+            }
+            word.clear();
+        }
+    };
+    for character in field.chars() {
+        if character.is_ascii_alphabetic() {
+            word.push(character);
+        } else {
+            flush(&mut word, &mut output);
+            output.push(character);
+        }
+    }
+    flush(&mut word, &mut output);
+    output
+}
+
+/// A plain-English reading of one field: "every 15 minutes", "9 through 17 every 2".
+fn describe_field(field: &str, unit: &str, label: impl Fn(usize) -> String) -> Option<String> {
+    if field == "*" {
+        return None;
+    }
+    if let Some(step) = field.strip_prefix("*/") {
+        return Some(format!("every {step} {unit}s"));
+    }
+    let parts = field
+        .split(',')
+        .map(|segment| {
+            let (range, step) = match segment.split_once('/') {
+                Some((range, step)) => (range, Some(step)),
+                None => (segment, None),
+            };
+            let range = match range.split_once('-') {
+                Some((start, end)) => format!(
+                    "{} through {}",
+                    start.parse().map(&label).unwrap_or_else(|_| start.into()),
+                    end.parse().map(&label).unwrap_or_else(|_| end.into())
+                ),
+                None => range.parse().map(&label).unwrap_or_else(|_| range.into()),
+            };
+            match step {
+                Some(step) => format!("every {step} {unit}s from {range}"),
+                None => range,
+            }
+        })
+        .collect::<Vec<_>>();
+    Some(parts.join(", "))
+}
+
+fn describe_cron(parts: &[&str], zone: &str) -> String {
+    let minute = parts[0];
+    let hour = parts[1];
+    let time = match (minute.parse::<u32>(), hour.parse::<u32>()) {
+        (Ok(m), Ok(h)) => format!("At {h:02}:{m:02}"),
+        _ => {
+            let minutes = describe_field(minute, "minute", |m| format!("minute {m}"))
+                .unwrap_or_else(|| "every minute".into());
+            match describe_field(hour, "hour", |h| format!("{h:02}:00")) {
+                Some(hours) => format!("At {minutes}, hours {hours}"),
+                None => format!("At {minutes}"),
+            }
+        }
+    };
+    let mut text = time;
+    if let Some(days) = describe_field(parts[2], "day", |d| format!("day {d}")) {
+        text.push_str(&format!(", on {days} of the month"));
+    }
+    let weekday = names_to_numbers(parts[4], &WEEKDAYS, 0);
+    if let Some(days) = describe_field(&weekday, "day", |d| {
+        WEEKDAY_NAMES
+            .get(d)
+            .map_or(d.to_string(), |name| (*name).into())
+    }) {
+        let join = if parts[2] == "*" { ", on" } else { ", or on" };
+        text.push_str(&format!("{join} {days}"));
+    }
+    let month = names_to_numbers(parts[3], &MONTHS, 1);
+    if let Some(months) = describe_field(&month, "month", |m| {
+        m.checked_sub(1)
+            .and_then(|index| MONTH_NAMES.get(index))
+            .map_or(m.to_string(), |name| (*name).into())
+    }) {
+        text.push_str(&format!(", in {months}"));
+    }
+    format!("{text} ({zone}).")
 }
 
 #[derive(Clone)]
@@ -663,9 +833,9 @@ impl CronField {
 }
 
 fn parse_cron_number(value: &str, min: usize, max: usize) -> Result<usize, String> {
-    let parsed = value
-        .parse::<usize>()
-        .map_err(|_| "Cron fields must use numeric values in the supported five-field dialect")?;
+    let parsed = value.parse::<usize>().map_err(|_| {
+        format!("`{value}` is not a cron value; use numbers, or JAN–DEC and SUN–SAT names")
+    })?;
     if parsed < min || parsed > max {
         return Err(format!("Cron field value must be between {min} and {max}"));
     }
@@ -713,5 +883,36 @@ mod tests {
         assert!(!field.contains(31));
         let sunday = CronField::parse("0,7", 0, 7, true).unwrap();
         assert!(sunday.contains(0));
+    }
+
+    #[test]
+    fn developer_inputs_people_paste_are_accepted() {
+        // B-22: unpadded and URL-safe Base64, 0x hex, MD5 and SHA-1, cron names.
+        assert_eq!(decode_bytes("QXJjYWRl", "base64").unwrap(), b"Arcade");
+        assert_eq!(decode_bytes("QXJjYWRlIEJveA", "base64").unwrap(), b"Arcade Box");
+        assert_eq!(decode_bytes("-_8=", "base64").unwrap(), [0xfb, 0xff]);
+        assert_eq!(decode_bytes("0x4142 0x43", "hex").unwrap(), b"ABC");
+        assert_eq!(percent_decode("a+b%20c").unwrap(), "a+b c");
+        let none = AtomicBool::new(false);
+        assert_eq!(
+            digest_reader(&b"abc"[..], "md5", &none).unwrap(),
+            "900150983cd24fb0d6963f7d28e17f72"
+        );
+        assert_eq!(
+            digest_reader(&b"abc"[..], "sha1", &none).unwrap(),
+            "a9993e364706816aba3e25717850c26c9cd0d89d"
+        );
+        assert_eq!(names_to_numbers("MON-FRI", &WEEKDAYS, 0), "1-5");
+        assert_eq!(names_to_numbers("jan,jul", &MONTHS, 1), "1,7");
+        let hours = CronField::parse("9-17/2", 0, 23, false).unwrap();
+        assert!(hours.contains(11) && !hours.contains(10));
+        assert_eq!(
+            describe_cron(&["0", "9-17/2", "*", "*", "MON-FRI"], "UTC"),
+            "At minute 0, hours every 2 hours from 09:00 through 17:00, on Monday through Friday (UTC)."
+        );
+        assert_eq!(
+            describe_cron(&["30", "6", "1", "JAN", "*"], "UTC"),
+            "At 06:30, on day 1 of the month, in January (UTC)."
+        );
     }
 }
