@@ -77,7 +77,7 @@ jobs:
       - name: Install Linux desktop dependencies
         if: runner.os == 'Linux'
         run: >-
-          Arcade-box/scripts/apt-install.sh
+          scripts/apt-install.sh
           libwebkit2gtk-4.1-dev build-essential file libxdo-dev libssl-dev
           libayatana-appindicator3-dev librsvg2-dev qpdf ffmpeg libvips-tools lua5.4
           xvfb dbus-x11 xdotool python3-dbus python3-gi
