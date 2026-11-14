@@ -1,0 +1,29 @@
+# Nightly: main CI's already-tested installers (artifacts arcade-box-*) as a signed prerelease
+# vX.Y.Z-nightly.YYYYMMDD.N, with no rebuild. Skipped when main hasn't changed or its CI isn't green.
+name: Nightly
+on:
+  schedule: [{ cron: "47 2 * * *" }]
+  workflow_dispatch:
+permissions:
+  contents: write
+  actions: read
+jobs:
+  version:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: v
+        run: echo "version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')" >> "$GITHUB_OUTPUT"
+  nightly:
+    needs: version
+    uses: qa-p1/Arcade-Link/.github/workflows/app-nightly.yml@v1.0.7
+    with:
+      app: arcade.box
+      version: ${{ needs.version.outputs.version }}
+      artifacts: arcade-box-*
+      link-ref: v1.0.7
+    secrets:
+      ARCADE_UPDATE_SIGNING_KEY: ${{ secrets.ARCADE_UPDATE_SIGNING_KEY }}

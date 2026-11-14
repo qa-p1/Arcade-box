@@ -17,29 +17,55 @@ import tempfile
 WINDOW_ARGS = ("--settings",)
 
 
-def survives(executable, env, work, *args, seconds=15):
-    """Starts `executable` from the user's directory `work` and fails if it
-    exits within `seconds`; then stops it and everything it started."""
+def unpacked_copies(root):
+    """Processes running Box from an unpacked copy under `root` (Link U1)."""
+    found = []
+    for proc in Path("/proc").iterdir():
+        try:
+            exe = os.readlink(proc / "exe")
+        except OSError:
+            continue
+        if exe.startswith(str(root) + "/") and "/arcade/runtime/box-" in exe and exe.endswith("/arcade-desktop"):
+            found.append(int(proc.name))
+    return found
+
+
+def survives(executable, env, work, root, *args, seconds=15):
+    """Starts `executable` from the user's directory `work` and fails unless Box
+    is still running `seconds` later from its unpacked copy under `root`; then
+    stops it and everything it started. The launcher copies the image once to
+    <data>/arcade/runtime/, starts Box from there and exits 0 (U1, D14), so a
+    shell holds the session open after it."""
     work.mkdir(exist_ok=True)
     with tempfile.TemporaryFile() as log:
         child = subprocess.Popen(
-            [str(executable), *args], cwd=work, env=dict(env, OWD=str(work)),
+            ["sh", "-c", '"$0" "$@" || exit $?; exec sleep 600', str(executable), *args],
+            cwd=work, env=dict(env, OWD=str(work)),
             stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, start_new_session=True,
         )
+        unpacked = []
         try:
             code = child.wait(timeout=seconds)
         except subprocess.TimeoutExpired:
             code = None
+            unpacked = unpacked_copies(root)
         finally:
+            for pid in unpacked_copies(root):
+                try:
+                    os.kill(pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
             try:
                 os.killpg(child.pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
             child.wait()
-        if code is not None:
+        if code is not None or not unpacked:
             log.seek(0)
             output = log.read().decode(errors="replace")[-4000:]
-            raise RuntimeError(f"{executable} {' '.join(args)} exited {code} within {seconds}s:\n{output}")
+            if code is not None:
+                raise RuntimeError(f"{executable} {' '.join(args)} exited {code} within {seconds}s:\n{output}")
+            raise RuntimeError(f"{executable} {' '.join(args)} is not running from its unpacked copy (U1):\n{output}")
 
 
 def main():
@@ -91,6 +117,8 @@ def main():
                   "libgstaudioconvert.so", "libgstaudioresample.so", "libgstautodetect.so", "libgstpulseaudio.so",
                   "libgstvpx.so", "libgstmatroska.so", "libgstopus.so", "libgstvorbis.so"}
         assert needed <= plugins, f"GStreamer plugins missing from the image: {sorted(needed - plugins)} (has {len(plugins)})"
+        # OPEN1 (D14): Box preloads the trimmer into WebKit's helper processes (memory.rs).
+        assert (extracted / "squashfs-root/usr/lib/libarcade-trim.so").is_file(), "AppImage lacks libarcade-trim.so"
         shutil.rmtree(extracted)
 
         version = run(download, "--version").strip().split()[-1]
@@ -130,7 +158,7 @@ def main():
         # $APPDIR/usr and the mounting runtime sets $OWD (extract-and-run
         # doesn't, so it is set here); WebKit finds its helpers relative to
         # $APPDIR/usr and aborts the whole app when they aren't there.
-        survives(installed, env, root / "work", *WINDOW_ARGS)
+        survives(installed, env, root / "work", root, *WINDOW_ARGS)
 
         # Being alive is insufficient: exercise the packaged WebView's native
         # catalog, dashboard event permissions, Island handoff and calculation.

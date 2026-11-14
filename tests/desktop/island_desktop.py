@@ -10,6 +10,7 @@ the Island taking clicks (both fixed). A check named "KNOWN BUG <id>" must find 
 (XFAIL) until the fix lands, then it reports XPASS and fails the run until the marker is removed (docs/v1/DECISIONS.md
 D3). Exit 0 when every check is as expected, 1 otherwise.
 """
+import json
 import os
 import shutil
 import sqlite3
@@ -38,6 +39,21 @@ results = []
 
 def run(*args, timeout=60):
     return subprocess.run([app, *args], env=env, stdout=log, stderr=subprocess.STDOUT, timeout=timeout)
+
+
+def stopped(timeout=30):
+    """Whether Box reports itself not running within `timeout`. The launcher hands over to its unpacked copy and
+    exits at once (U1, D14), so the resident is followed through --status rather than the launched process."""
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        status = subprocess.run([app, "--status"], env=env, capture_output=True, text=True, timeout=15)
+        try:
+            if not json.loads(status.stdout.strip().splitlines()[-1]).get("running"):
+                return True
+        except (IndexError, ValueError):
+            pass
+        time.sleep(0.2)
+    return False
 
 
 def dump_logs():
@@ -120,7 +136,8 @@ try:
 except AssertionError:
     fail(f"the shortcut was never bound: {d.bound_shortcuts()}")
 run("--quit")
-resident.wait(timeout=30)
+if not stopped():
+    fail("--quit did not stop the first Box")
 # ARCADE_HOME is the isolated profile root: Box's data folder is arcade/box under its .local/share (Link paths).
 data = Path(env["ARCADE_HOME"], ".local/share/arcade/box")
 databases = [p for p in data.rglob("*") if p.suffix in (".db", ".sqlite", ".sqlite3")]
@@ -229,7 +246,7 @@ try:
         check("Escape in the empty search closes the Island", island_hidden())
 
     quit_status = run("--quit")
-    check("--quit stops Box", quit_status.returncode == 0 and resident.wait(timeout=30) is not None)
+    check("--quit stops Box", quit_status.returncode == 0 and stopped())
 finally:
     other.kill()
     if resident.poll() is None:

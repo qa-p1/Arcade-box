@@ -39,7 +39,7 @@ Download the file for your system from [Releases](https://github.com/qa-p1/Arcad
 - Builds are unsigned. On Windows, SmartScreen may warn: choose **More info → Run anyway**. On macOS the app is not notarized: right-click it and choose **Open** the first time.
 - If FUSE is missing on Linux, run the AppImage with `--appimage-extract-and-run`.
 
-Releases are made by hand from a tag on `main` (`tag.yml`, then `release.yml`); a rolling nightly pre-release can be refreshed from `main`. Every release includes `arcade-release.json` and `SHA256SUMS.txt` for Arcade Tools and manual verification. See [Getting started](docs/user/getting-started.md) and [packaging](docs/dev/packaging.md).
+Releases start from a release-candidate tag on `main` (`tag.yml`), publish as a hidden test prerelease (`release.yml`), and are promoted byte for byte to stable once every gate passed (`promote.yml`); `nightly.yml` publishes main's tested installers each night. Every release includes `arcade-release.json` for Arcade Tools. See [Getting started](docs/user/getting-started.md) and [packaging](docs/dev/packaging.md).
 
 ## Features
 

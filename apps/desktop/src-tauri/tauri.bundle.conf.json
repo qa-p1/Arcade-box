@@ -7,6 +7,7 @@
     "linux": {
       "appimage": {
         "files": {
+          "/usr/lib/libarcade-trim.so": "binaries/libarcade-trim.so",
           "/usr/share/applications/dev.arcade.Box.desktop": "../../../packaging/linux/dev.arcade.Box.desktop",
           "/usr/share/icons/hicolor/scalable/apps/dev.arcade.Box.svg": "../../../packaging/linux/dev.arcade.Box.svg",
           "/usr/share/icons/hicolor/symbolic/apps/dev.arcade.Box-symbolic.svg": "../../../packaging/linux/dev.arcade.Box-symbolic.svg"

@@ -2,6 +2,12 @@
 
 Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
 
+## 2026-11-14 (cloud session)
+
+- **Step 5, memory (D14):** U1 unpacked runtime, W1 + W3b release after the last window, W0 after startup and after
+  hidden Link work, OPEN1 open-window trimming (Box and its WebKit helpers via `libarcade-trim.so`), BX1 a 64 MiB
+  budget for the clipboard history. Package and Tier 1 tests follow the resident instead of the launcher.
+
 ## 2026-11-13 (local session)
 
 - **Step 3, the P2 fixes** (PR #35), each with a regression test that failed before:

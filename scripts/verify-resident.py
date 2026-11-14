@@ -113,8 +113,23 @@ def main():
         installed = Path(receipt['path'])
         endpoint = root / 'profile/run' / (app + '.endpoint')
         def run(*args):
-            return subprocess.run([str(installed), *args], env=env, check=True,
-                                  capture_output=True, text=True, timeout=25)
+            try:
+                return subprocess.run([str(installed), *args], env=env, check=True,
+                                      capture_output=True, text=True, timeout=25)
+            except subprocess.TimeoutExpired as error:
+                # What the hung launch said, and every process of this profile's app (a second instance that
+                # failed to hand over would hold the pipes open).
+                print(f'{" ".join(args)} did not return in 25 s; its output:\n{error.stdout or ""}{error.stderr or ""}',
+                      file=sys.stderr)
+                ps = subprocess.run(['ps', '-eo', 'pid,ppid,stat,etimes,args'], capture_output=True, text=True).stdout
+                print('\n'.join(line for line in ps.splitlines() if 'PID' in line or 'arcade' in line.lower()),
+                      file=sys.stderr)
+                raise
+            except subprocess.CalledProcessError as error:
+                # What the launch said when it failed (the resident's own log is printed by the caller).
+                print(f'{" ".join(args)} exited {error.returncode}; its output:\n{error.stdout}{error.stderr}',
+                      file=sys.stderr)
+                raise
         def pid():
             try:
                 return json.loads(endpoint.read_text())['pid']
@@ -148,7 +163,10 @@ def main():
                     # close, then exercise two quick create/destroy cycles.
                     deadline = time.monotonic() + (26 if cycle == 0 else 1)
                     while time.monotonic() < deadline:
-                        assert child.poll() is None, 'Closing a window exited/restarted the app'
+                        # The installed AppImage hands over to its unpacked copy (Link U1): its launcher exits 0 and
+                        # the resident named by the endpoint carries on, so follow that PID.
+                        assert child.poll() in (None, 0), f'launcher exited {child.returncode}'
+                        assert Path(f'/proc/{original}').exists(), 'Closing a window exited the app'
                         assert pid() == original, 'Closing a window changed the resident PID'
                         time.sleep(.1)
                     wait(lambda: not renderers(original), 'closed WebView releases its renderer', seconds=10)
