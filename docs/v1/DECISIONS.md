@@ -166,3 +166,8 @@ Copies in `arcade-core` that had to change together but didn't say so, now one e
 - How many files Compare text takes (2 to compare, 3 to merge, in order) was written out four times across
   `box.svelte.ts` and `IslandTool.svelte`, beside a `pdf.merge` special case the catalog already covered
   (`ui.input.kind: files`). One `fileList(tool)` in `box.svelte.ts` answers it for every tool.
+- `arcade-core/src/lib.rs` kept the pipeline helpers (`validate_pipeline_id`, `humanize_id`, `pipeline_manifest`)
+  and the catalog and request preparation (`builtin_catalog`, `input_compatible`, `fill_ui_defaults`,
+  `text_options_from_numbers`) beside the `Arcade` runtime. They are in `pipeline.rs` and a new `catalog.rs`;
+  `lib.rs` 1,023 -> 767 lines. The U-1 doc comment, which had slid onto `fill_ui_defaults`, is back on
+  `text_options_from_numbers`.
