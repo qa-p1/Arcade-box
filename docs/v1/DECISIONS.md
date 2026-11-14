@@ -171,3 +171,6 @@ Copies in `arcade-core` that had to change together but didn't say so, now one e
   `text_options_from_numbers`) beside the `Arcade` runtime. They are in `pipeline.rs` and a new `catalog.rs`;
   `lib.rs` 1,023 -> 767 lines. The U-1 doc comment, which had slid onto `fill_ui_defaults`, is back on
   `text_options_from_numbers`.
+- `box.svelte.ts` had its own `formatBytes` (1024-based, two decimals: "1.18 MB") and `formatDuration` beside the
+  design kit's `formatSize`/`formatDuration`, which every app shares through `format-cases.json` ("1.2 MB"). Box's
+  now only parse their input and call the kit's, so a size reads the same in Box as in Tools or Shelf.
