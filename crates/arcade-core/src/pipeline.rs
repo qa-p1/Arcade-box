@@ -788,6 +788,169 @@ fn compatible(output_type: &str, input_type: &str) -> bool {
     output_type == input_type || input_type.strip_suffix("[]") == Some(output_type)
 }
 
+pub(crate) fn validate_pipeline_id(id: &str) -> Result<(), CoreError> {
+    if id.is_empty()
+        || id.len() > 80
+        || !id
+            .bytes()
+            .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-')
+        || id.starts_with('-')
+        || id.ends_with('-')
+        || id.contains("--")
+    {
+        return Err(CoreError::Execution(
+            "pipeline ID must use lowercase letters, numbers, and single hyphens".into(),
+        ));
+    }
+    Ok(())
+}
+
+pub(crate) fn humanize_id(id: &str) -> String {
+    id.split('-')
+        .filter(|part| !part.is_empty())
+        .map(|part| {
+            let mut chars = part.chars();
+            match chars.next() {
+                Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
+                None => String::new(),
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+pub(crate) fn pipeline_manifest(
+    runtime: &Arcade,
+    pipeline: &Pipeline,
+    tools: &[ToolManifest],
+) -> ToolManifest {
+    let mut input_types = BTreeSet::new();
+    let mut output_types = BTreeSet::new();
+    let mut related_tools = BTreeSet::new();
+    let mut privacy_class = PrivacyClass::Local;
+    let mut implemented = true;
+    let by_node = pipeline
+        .nodes
+        .iter()
+        .map(|node| (node.id.as_str(), node))
+        .collect::<HashMap<_, _>>();
+    let link_settings = crate::link::LinkSettings::load(runtime);
+    for node in &pipeline.nodes {
+        if let Some(link) = &node.link {
+            let action = runtime.link_registry.get().and_then(|registry| {
+                registry.with(|r| {
+                    r.get(&link.app)
+                        .filter(|m| m.settings.link_enabled && link_settings.uses(&link.app))
+                        .and_then(|m| m.action(&link.action))
+                        .cloned()
+                })
+            });
+            if let Some(action) = action {
+                implemented &=
+                    action.available && action.on_this_platform() && action.version == link.version;
+                for input in &node.inputs {
+                    if matches!(input, InputSource::External { .. }) {
+                        input_types.extend(action.accepts.iter().cloned());
+                    }
+                }
+                if pipeline.output_nodes.contains(&node.id) {
+                    output_types.extend(action.produces.iter().cloned());
+                }
+                if action.privacy == "cloud" {
+                    privacy_class = PrivacyClass::Cloud;
+                } else if action.privacy == "network" && privacy_class == PrivacyClass::Local {
+                    privacy_class = PrivacyClass::Network;
+                }
+            } else {
+                implemented = false;
+            }
+            continue;
+        }
+        related_tools.insert(node.tool_id.clone());
+        let Some(tool) = tools.iter().find(|tool| tool.id == node.tool_id) else {
+            implemented = false;
+            continue;
+        };
+        implemented &= tool.status == ImplementationStatus::Implemented;
+        if tool.privacy_class == PrivacyClass::Cloud {
+            privacy_class = PrivacyClass::Cloud;
+        } else if tool.privacy_class == PrivacyClass::Network
+            && privacy_class == PrivacyClass::Local
+        {
+            privacy_class = PrivacyClass::Network;
+        }
+        for input in &node.inputs {
+            if matches!(input, InputSource::External { .. }) {
+                input_types.extend(
+                    tool.inputs
+                        .iter()
+                        .map(|value| value.strip_suffix("[]").unwrap_or(value).to_owned()),
+                );
+            }
+        }
+    }
+    for output_node in &pipeline.output_nodes {
+        let Some(node) = by_node.get(output_node.as_str()) else {
+            continue;
+        };
+        if let Some(tool) = tools.iter().find(|tool| tool.id == node.tool_id) {
+            output_types.extend(tool.outputs.iter().cloned());
+        }
+    }
+    if output_types.is_empty() {
+        output_types.insert("text/plain".into());
+    }
+    let name = if pipeline.name.trim().is_empty() {
+        humanize_id(&pipeline.id)
+    } else {
+        pipeline.name.clone()
+    };
+    let mut phrases = vec![name.clone(), "saved pipeline".into()];
+    phrases.extend(pipeline.id.split('-').map(str::to_owned));
+    let inputs: Vec<String> = input_types.into_iter().collect();
+    let input_kind = if inputs.is_empty() {
+        "none"
+    } else if inputs.iter().any(|t| t == "folder/reference") {
+        "folder"
+    } else if inputs.iter().any(|t| t.starts_with("file/")) {
+        "file"
+    } else if inputs.iter().any(|t| t.ends_with("/url")) {
+        "url"
+    } else {
+        "text"
+    };
+    let ui = serde_json::from_value(serde_json::json!({"version":1,"input":{"kind":input_kind,"label":"Pipeline input"},"controls":[]})).ok();
+    ToolManifest {
+        id: format!("arcade.pipeline.{}", pipeline.id),
+        version: format!("{}.0.0", pipeline.version),
+        api_version: arcade_contract::TOOL_API_VERSION.into(),
+        name: name.clone(),
+        description: format!("Run the saved {name} pipeline."),
+        category: "Pipelines".into(),
+        aliases: vec![pipeline.id.clone()],
+        privacy_class,
+        inputs,
+        outputs: output_types.into_iter().collect(),
+        providers: Vec::new(),
+        status: if implemented {
+            ImplementationStatus::Implemented
+        } else {
+            ImplementationStatus::Partial
+        },
+        platforms: Default::default(),
+        permissions: serde_json::json!({}),
+        execution: serde_json::json!({
+            "runtime": "pipeline",
+            "pipelineId": pipeline.id,
+        }),
+        phrases,
+        related_tools: related_tools.into_iter().collect(),
+        ui,
+        presets: Vec::new(),
+        link: None,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1218,168 +1381,5 @@ mod tests {
         };
 
         assert!(pipeline.validate(&runtime).is_ok());
-    }
-}
-
-pub(crate) fn validate_pipeline_id(id: &str) -> Result<(), CoreError> {
-    if id.is_empty()
-        || id.len() > 80
-        || !id
-            .bytes()
-            .all(|byte| byte.is_ascii_lowercase() || byte.is_ascii_digit() || byte == b'-')
-        || id.starts_with('-')
-        || id.ends_with('-')
-        || id.contains("--")
-    {
-        return Err(CoreError::Execution(
-            "pipeline ID must use lowercase letters, numbers, and single hyphens".into(),
-        ));
-    }
-    Ok(())
-}
-
-pub(crate) fn humanize_id(id: &str) -> String {
-    id.split('-')
-        .filter(|part| !part.is_empty())
-        .map(|part| {
-            let mut chars = part.chars();
-            match chars.next() {
-                Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
-                None => String::new(),
-            }
-        })
-        .collect::<Vec<_>>()
-        .join(" ")
-}
-
-pub(crate) fn pipeline_manifest(
-    runtime: &Arcade,
-    pipeline: &Pipeline,
-    tools: &[ToolManifest],
-) -> ToolManifest {
-    let mut input_types = BTreeSet::new();
-    let mut output_types = BTreeSet::new();
-    let mut related_tools = BTreeSet::new();
-    let mut privacy_class = PrivacyClass::Local;
-    let mut implemented = true;
-    let by_node = pipeline
-        .nodes
-        .iter()
-        .map(|node| (node.id.as_str(), node))
-        .collect::<HashMap<_, _>>();
-    let link_settings = crate::link::LinkSettings::load(runtime);
-    for node in &pipeline.nodes {
-        if let Some(link) = &node.link {
-            let action = runtime.link_registry.get().and_then(|registry| {
-                registry.with(|r| {
-                    r.get(&link.app)
-                        .filter(|m| m.settings.link_enabled && link_settings.uses(&link.app))
-                        .and_then(|m| m.action(&link.action))
-                        .cloned()
-                })
-            });
-            if let Some(action) = action {
-                implemented &=
-                    action.available && action.on_this_platform() && action.version == link.version;
-                for input in &node.inputs {
-                    if matches!(input, InputSource::External { .. }) {
-                        input_types.extend(action.accepts.iter().cloned());
-                    }
-                }
-                if pipeline.output_nodes.contains(&node.id) {
-                    output_types.extend(action.produces.iter().cloned());
-                }
-                if action.privacy == "cloud" {
-                    privacy_class = PrivacyClass::Cloud;
-                } else if action.privacy == "network" && privacy_class == PrivacyClass::Local {
-                    privacy_class = PrivacyClass::Network;
-                }
-            } else {
-                implemented = false;
-            }
-            continue;
-        }
-        related_tools.insert(node.tool_id.clone());
-        let Some(tool) = tools.iter().find(|tool| tool.id == node.tool_id) else {
-            implemented = false;
-            continue;
-        };
-        implemented &= tool.status == ImplementationStatus::Implemented;
-        if tool.privacy_class == PrivacyClass::Cloud {
-            privacy_class = PrivacyClass::Cloud;
-        } else if tool.privacy_class == PrivacyClass::Network
-            && privacy_class == PrivacyClass::Local
-        {
-            privacy_class = PrivacyClass::Network;
-        }
-        for input in &node.inputs {
-            if matches!(input, InputSource::External { .. }) {
-                input_types.extend(
-                    tool.inputs
-                        .iter()
-                        .map(|value| value.strip_suffix("[]").unwrap_or(value).to_owned()),
-                );
-            }
-        }
-    }
-    for output_node in &pipeline.output_nodes {
-        let Some(node) = by_node.get(output_node.as_str()) else {
-            continue;
-        };
-        if let Some(tool) = tools.iter().find(|tool| tool.id == node.tool_id) {
-            output_types.extend(tool.outputs.iter().cloned());
-        }
-    }
-    if output_types.is_empty() {
-        output_types.insert("text/plain".into());
-    }
-    let name = if pipeline.name.trim().is_empty() {
-        humanize_id(&pipeline.id)
-    } else {
-        pipeline.name.clone()
-    };
-    let mut phrases = vec![name.clone(), "saved pipeline".into()];
-    phrases.extend(pipeline.id.split('-').map(str::to_owned));
-    let inputs: Vec<String> = input_types.into_iter().collect();
-    let input_kind = if inputs.is_empty() {
-        "none"
-    } else if inputs.iter().any(|t| t == "folder/reference") {
-        "folder"
-    } else if inputs.iter().any(|t| t.starts_with("file/")) {
-        "file"
-    } else if inputs.iter().any(|t| t.ends_with("/url")) {
-        "url"
-    } else {
-        "text"
-    };
-    let ui = serde_json::from_value(serde_json::json!({"version":1,"input":{"kind":input_kind,"label":"Pipeline input"},"controls":[]})).ok();
-    ToolManifest {
-        id: format!("arcade.pipeline.{}", pipeline.id),
-        version: format!("{}.0.0", pipeline.version),
-        api_version: arcade_contract::TOOL_API_VERSION.into(),
-        name: name.clone(),
-        description: format!("Run the saved {name} pipeline."),
-        category: "Pipelines".into(),
-        aliases: vec![pipeline.id.clone()],
-        privacy_class,
-        inputs,
-        outputs: output_types.into_iter().collect(),
-        providers: Vec::new(),
-        status: if implemented {
-            ImplementationStatus::Implemented
-        } else {
-            ImplementationStatus::Partial
-        },
-        platforms: Default::default(),
-        permissions: serde_json::json!({}),
-        execution: serde_json::json!({
-            "runtime": "pipeline",
-            "pipelineId": pipeline.id,
-        }),
-        phrases,
-        related_tools: related_tools.into_iter().collect(),
-        ui,
-        presets: Vec::new(),
-        link: None,
     }
 }
