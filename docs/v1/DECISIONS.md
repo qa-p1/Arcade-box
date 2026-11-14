@@ -140,3 +140,13 @@ Rust: `cargo machete` (clean; `md-5` and `zxing-cpp` are imported as `md5`/`zxin
 test fixture `tests/visual.ts` that `tests/*.mjs` load; `src/design/` is vendored from Link and ignored. Removed:
 `ShortcutClash.svelte` (no importer), `runTool`/`initials`, the `run_tool` Tauri command (the frontend runs every
 tool as a job), and the `ToolStatus` type; types used only in their own file are no longer exported.
+
+## D12 — Untangle (step 2): the desktop crate's root holds only what everything shares
+
+`apps/desktop/src-tauri/src/lib.rs` was 2,542 lines with four reasons to change: the Tauri commands, the Island
+window (visibility, placement, fitting, input region, release, and the Link/tool opens that wait for it), the tray
+(native, recovery while Tools hosts the icon, and the host watcher) and the resident process (restart, predecessor,
+second instance, `--status`). Each of the last three had its own globals in the root, so a change to one meant
+reading all of it. They are now `island.rs`, `tray.rs` and `instance.rs`, each owning its state; `lib.rs` keeps the
+commands, `run()` and the few helpers every module uses (`OS_ID`, `in_box_folder`). A pure move: no behaviour
+changed (compiler-checked; desktop tests and the Island key/layout checks unchanged). Commands are next, by feature.
