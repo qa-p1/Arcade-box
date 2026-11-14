@@ -10,6 +10,7 @@ import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, Pr
 import { acceptsSelectedFile, acceptsTextInput, fileInputMime, inputMime, isRunnable, privacyHint, usesFileInput } from './lib/tool-utils';
 import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem } from './lib/standard-ui';
 import { getContext, setContext } from 'svelte';
+import * as Format from './design/format';
 
 /** The dashboard's pages, as the tray, CLI and Link name them (dashboard.rs PAGES). */
 const DASHBOARD_PAGES = ['all', 'favorites', 'recent', 'jobs', 'pipelines', 'plugins', 'engines', 'settings'] as const;
@@ -1422,6 +1423,17 @@ export function createBox() {
     return hasTextFileSwitch(tool) ? textInputMode === 'file' : usesFileInput(tool);
   }
 
+  /** How many files a tool takes and whether their order matters: the one place the frontend decides it. The
+   *  catalog's `ui.input` says it for every tool except Compare text, whose count follows its operation
+   *  (two files to compare, three to merge: original, yours, theirs). */
+  function fileList(tool: ToolSummary): { multiple: boolean; sortable: boolean; maxItems: number | undefined } {
+    if (tool.id === 'arcade.text.diff') {
+      return { multiple: true, sortable: true, maxItems: toolOptions.operation === 'merge' ? 3 : 2 };
+    }
+    const input = tool.ui?.version === 1 ? tool.ui.input : undefined;
+    return { multiple: input?.kind === 'files', sortable: input?.sortable ?? false, maxItems: input?.maxItems };
+  }
+
   function fileInputLabel(tool: ToolSummary): string {
     if (tool.id === 'arcade.text.diff') return toolOptions.operation === 'merge' ? 'Original, your version, then other version' : 'Original and changed text files';
     if (tool.id === 'arcade.pdf.watermark') {
@@ -1456,7 +1468,7 @@ export function createBox() {
       if (toolOptions.mode === 'pdf-overlay') return selectedFiles.length === 2 && selectedFiles[1].mime === 'file/pdf';
       return false;
     }
-    if (selectedTool.id === 'arcade.text.diff' && textInputMode === 'file') return selectedFiles.length === (toolOptions.operation === 'merge' ? 3 : 2);
+    if (selectedTool.id === 'arcade.text.diff' && textInputMode === 'file') return selectedFiles.length === fileList(selectedTool).maxItems;
     if (hasTextFileSwitch(selectedTool)) return textInputMode === 'text' || selectedFiles.length === 1;
     if (selectedTool.ui?.version === 1) {
       const { kind, minItems = kind === 'files' || kind === 'file' ? 1 : 0, maxItems = kind === 'file' ? 1 : undefined } = selectedTool.ui.input;
@@ -1516,8 +1528,8 @@ export function createBox() {
         fileSelectionError = '';
         return;
       }
-      const inputSpec = tool.ui?.version === 1 ? tool.ui.input : null;
-      const isMultiple = inputSpec?.kind === 'files' || tool.id === 'arcade.pdf.merge' || tool.id === 'arcade.text.diff';
+      const list = fileList(tool);
+      const isMultiple = list.multiple;
       if (isMultiple) {
         const invalid = chosen.filter((file) => !acceptsSelectedFile(tool, file));
         if (invalid.length > 0) {
@@ -1525,7 +1537,7 @@ export function createBox() {
           return;
         }
         const combined = [...selectedFiles, ...chosen.filter((file) => !selectedFiles.some((existing) => existing.token === file.token))];
-        const maximum = tool.id === 'arcade.text.diff' ? (toolOptions.operation === 'merge' ? 3 : 2) : inputSpec?.maxItems ?? 128;
+        const maximum = list.maxItems ?? 128;
         if (combined.length > maximum) {
           fileSelectionError = `Select no more than ${maximum} files.`;
           return;
@@ -1635,26 +1647,19 @@ export function createBox() {
     }
   }
 
+  /** Sizes as every Arcade app shows them (the design kit's `formatSize`, "12.4 MB"). */
   function formatBytes(value: number | string | undefined): string {
     const bytes = typeof value === 'string' ? Number(value) : value;
-    if (!Number.isFinite(bytes) || bytes === undefined || bytes < 0) return 'Size unavailable';
-    if (bytes < 1024) return `${bytes} B`;
-    const units = ['KB', 'MB', 'GB', 'TB'];
-    let amount = bytes;
-    let unit = 0;
-    do { amount /= 1024; unit += 1; } while (amount >= 1024 && unit < units.length);
-    return `${amount.toFixed(amount >= 10 ? 1 : 2)} ${units[unit - 1]}`;
+    if (bytes === undefined || !Number.isFinite(bytes) || bytes < 0) return 'Size unavailable';
+    return Format.formatSize(bytes);
   }
 
+  /** Media durations as every Arcade app shows them (the design kit's `formatDuration`, "1:05:09"). */
   function formatDuration(value: string | undefined): string {
     if (!value) return 'Unknown';
     const seconds = Number(value);
     if (!Number.isFinite(seconds) || seconds < 0) return value;
-    const whole = Math.floor(seconds);
-    const hours = Math.floor(whole / 3600);
-    const minutes = Math.floor((whole % 3600) / 60);
-    const remainder = whole % 60;
-    return hours > 0 ? `${hours}:${String(minutes).padStart(2, '0')}:${String(remainder).padStart(2, '0')}` : `${minutes}:${String(remainder).padStart(2, '0')}`;
+    return Format.formatDuration(seconds);
   }
 
   function frameRate(value: string | undefined): string {
@@ -2116,6 +2121,7 @@ export function createBox() {
     hasTextFileSwitch,
     fileWorkflowActive,
     fileInputLabel,
+    fileList,
     canSubmitSelectedTool,
     isVideoEditorTool,
     isScreenTool,

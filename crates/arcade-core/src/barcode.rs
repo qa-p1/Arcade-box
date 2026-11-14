@@ -74,16 +74,16 @@ fn generate_one(
     let symbology = if qr_only {
         BarcodeFormat::QRCode
     } else {
-        parse_symbology(option_str(request, "symbology", "Code128"))?
+        parse_symbology(crate::tool_kit::option_str(request, "symbology", "Code128"))?
     };
-    let format = output_format(option_str(request, "format", "png"))?;
+    let format = output_format(crate::tool_kit::option_str(request, "format", "png"))?;
     let scale = scale_option(request)?;
     let barcode = create_barcode(payload, symbology, request)?;
     let staging = staging_directory(runtime)?;
     let (staged_path, output_name) = render_barcode(
         &barcode,
         staging.path(),
-        option_str(
+        crate::tool_kit::option_str(
             request,
             "outputName",
             if qr_only { "qr-code" } else { "barcode" },
@@ -134,10 +134,10 @@ fn generate_batch(
             "Each barcode value must be {MAX_TEXT_BYTES} bytes or smaller"
         ));
     }
-    let symbology = parse_symbology(option_str(request, "symbology", "QRCode"))?;
-    let format = output_format(option_str(request, "format", "png"))?;
+    let symbology = parse_symbology(crate::tool_kit::option_str(request, "symbology", "QRCode"))?;
+    let format = output_format(crate::tool_kit::option_str(request, "format", "png"))?;
     let scale = scale_option(request)?;
-    let prefix = option_str(request, "prefix", "barcode");
+    let prefix = crate::tool_kit::option_str(request, "prefix", "barcode");
     if prefix.len() > 160 || prefix.trim() != prefix || prefix.is_empty() {
         return Err("Choose a short filename prefix without surrounding spaces".into());
     }
@@ -530,7 +530,7 @@ fn create_barcode(
     request: &ToolRequest,
 ) -> Result<zxingcpp::Barcode, String> {
     let options = if format == BarcodeFormat::QRCode {
-        let level = match option_str(request, "errorCorrection", "medium") {
+        let level = match crate::tool_kit::option_str(request, "errorCorrection", "medium") {
             "low" => "L",
             "medium" => "M",
             "quartile" => "Q",
@@ -740,14 +740,6 @@ fn output_directory_token(request: &ToolRequest) -> Option<&str> {
         .get("destinationGrant")
         .and_then(Value::as_str)
         .filter(|token| !token.is_empty())
-}
-
-fn option_str<'a>(request: &'a ToolRequest, key: &str, default: &'a str) -> &'a str {
-    request
-        .options
-        .get(key)
-        .and_then(Value::as_str)
-        .unwrap_or(default)
 }
 
 fn staging_directory(runtime: &Arcade) -> Result<tempfile::TempDir, String> {

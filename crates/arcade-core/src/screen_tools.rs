@@ -108,7 +108,7 @@ pub fn sample_image_pixel(
             format!("#{:02X}{:02X}{:02X}{:02X}", rgb[0], rgb[1], rgb[2], rgba[3])
         },
         rgb,
-        hsl: rgb_to_hsl(rgb),
+        hsl: crate::converter_tools::color::rgb_to_hsl(rgb),
         magnifier_data_url: png_data_url(&DynamicImage::ImageRgba8(magnifier))?,
     })
 }
@@ -206,26 +206,6 @@ fn png_data_url(image: &DynamicImage) -> Result<String, String> {
         "data:image/png;base64,{}",
         STANDARD.encode(bytes.into_inner())
     ))
-}
-
-fn rgb_to_hsl(rgb: [u8; 3]) -> [f64; 3] {
-    let [r, g, b] = rgb.map(|value| value as f64 / 255.0);
-    let max = r.max(g).max(b);
-    let min = r.min(g).min(b);
-    let delta = max - min;
-    let lightness = (max + min) / 2.0;
-    if delta == 0.0 {
-        return [0.0, 0.0, lightness * 100.0];
-    }
-    let saturation = delta / (1.0 - (2.0 * lightness - 1.0).abs());
-    let hue = if max == r {
-        60.0 * ((g - b) / delta).rem_euclid(6.0)
-    } else if max == g {
-        60.0 * ((b - r) / delta + 2.0)
-    } else {
-        60.0 * ((r - g) / delta + 4.0)
-    };
-    [hue, saturation * 100.0, lightness * 100.0]
 }
 
 #[cfg(test)]

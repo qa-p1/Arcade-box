@@ -363,12 +363,7 @@ fn default_output_name(input: &Path, suffix: &str, extension: &str) -> String {
     let source = input.file_stem().unwrap_or_default().to_string_lossy();
     let mut stem = String::new();
     for character in source.chars() {
-        if character.is_control()
-            || matches!(
-                character,
-                '/' | '\\' | '<' | '>' | ':' | '"' | '|' | '?' | '*'
-            )
-        {
+        if crate::artifacts::unsafe_in_file_name(character) {
             stem.push('_');
         } else {
             stem.push(character);

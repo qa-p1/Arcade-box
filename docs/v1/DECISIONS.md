@@ -141,6 +141,40 @@ test fixture `tests/visual.ts` that `tests/*.mjs` load; `src/design/` is vendore
 `ShortcutClash.svelte` (no importer), `runTool`/`initials`, the `run_tool` Tauri command (the frontend runs every
 tool as a job), and the `ToolStatus` type; types used only in their own file are no longer exported.
 
+## D12 — Untangle (step 2): the desktop crate's root holds only what everything shares
+
+`apps/desktop/src-tauri/src/lib.rs` was 2,542 lines with four reasons to change: the Tauri commands, the Island
+window (visibility, placement, fitting, input region, release, and the Link/tool opens that wait for it), the tray
+(native, recovery while Tools hosts the icon, and the host watcher) and the resident process (restart, predecessor,
+second instance, `--status`). Each of the last three had its own globals in the root, so a change to one meant
+reading all of it. They are now `island.rs`, `tray.rs` and `instance.rs`, each owning its state; `lib.rs` keeps the
+commands, `run()` and the few helpers every module uses (`OS_ID`, `in_box_folder`). A pure move: no behaviour
+changed (compiler-checked; desktop tests and the Island key/layout checks unchanged). The commands then moved to
+`commands/<feature>.rs` (shortcut, tools, plugins, pipelines, engines, files, screen); `run()` registers them by path.
+`lib.rs` went from 2,542 to 470 lines.
+
+Copies in `arcade-core` that had to change together but didn't say so, now one each:
+- `safe_stem` (output names after the input) existed three times. Two capped the stem at 100 characters and the
+  PDF one at 100 bytes; a 100-character CJK or emoji stem is 300–400 bytes, past the 255-byte file name limit, so
+  saving such a result could fail. One `tool_kit::safe_stem` with the byte cap (test
+  `safe_stem_caps_bytes_not_characters`).
+- `rgb_to_hsl` existed three times (colour converter, Pick screen colour, image palette): one in
+  `converter_tools::color`, the converter's rounded `to_hsl` built on it.
+- `barcode.rs` had its own copy of `tool_kit::option_str`.
+- The set of characters a file name may not contain was written out six times (output stems, media names, renames,
+  downloads, PDF names, the portable-name check). One `artifacts::unsafe_in_file_name`.
+- How many files Compare text takes (2 to compare, 3 to merge, in order) was written out four times across
+  `box.svelte.ts` and `IslandTool.svelte`, beside a `pdf.merge` special case the catalog already covered
+  (`ui.input.kind: files`). One `fileList(tool)` in `box.svelte.ts` answers it for every tool.
+- `arcade-core/src/lib.rs` kept the pipeline helpers (`validate_pipeline_id`, `humanize_id`, `pipeline_manifest`)
+  and the catalog and request preparation (`builtin_catalog`, `input_compatible`, `fill_ui_defaults`,
+  `text_options_from_numbers`) beside the `Arcade` runtime. They are in `pipeline.rs` and a new `catalog.rs`;
+  `lib.rs` 1,023 -> 767 lines. The U-1 doc comment, which had slid onto `fill_ui_defaults`, is back on
+  `text_options_from_numbers`.
+- `box.svelte.ts` had its own `formatBytes` (1024-based, two decimals: "1.18 MB") and `formatDuration` beside the
+  design kit's `formatSize`/`formatDuration`, which every app shares through `format-cases.json` ("1.2 MB"). Box's
+  now only parse their input and call the kit's, so a size reads the same in Box as in Tools or Shelf.
+
 ## D13 — CI (step 6): one package per pull request, caches that fit
 
 PR CI took about 40 minutes on Ubuntu and Windows: each PR built all three installers, and no Linux Rust cache

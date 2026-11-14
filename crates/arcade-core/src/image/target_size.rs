@@ -2,7 +2,7 @@
 //! Searches JPEG/WebP quality first and only reduces the dimensions when even
 //! low quality is too large.
 
-use super::{ImageFormat, image_bands, image_dimensions, link_or_copy, run_vips, safe_stem};
+use super::{ImageFormat, image_bands, image_dimensions, link_or_copy, run_vips};
 use crate::{
     artifacts::publish_without_overwrite,
     grants::FileGrants,
@@ -138,7 +138,7 @@ pub(super) fn compress(
     let (out_width, out_height) = image_dimensions(&provider.executable_path, &output, cancelled)?;
     let default_name = format!(
         "{}-{}kb.{}",
-        safe_stem(source),
+        crate::tool_kit::safe_stem(source, "image"),
         target_kb.round(),
         format.extension()
     );
