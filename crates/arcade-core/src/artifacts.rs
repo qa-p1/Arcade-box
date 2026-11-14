@@ -107,7 +107,7 @@ pub fn validate_portable_filename(name: &str) -> Result<(), String> {
             "Choose a filename between 1 and 240 characters without surrounding spaces".into(),
         );
     }
-    if name.chars().any(|ch| unsafe_in_file_name(ch)) || name.ends_with('.') {
+    if name.chars().any(unsafe_in_file_name) || name.ends_with('.') {
         return Err("Filename contains characters that are unsafe on desktop platforms".into());
     }
     let stem = name
