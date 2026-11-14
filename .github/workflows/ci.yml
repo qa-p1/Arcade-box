@@ -126,7 +126,7 @@ jobs:
         if: matrix.bundle == 'appimage'
         timeout-minutes: 5
         run: python3 scripts/native-notices.py --check target/release/bundle/appimage/*.AppImage
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure() && steps.native.outcome == 'failure'
         with:
           name: native-notices
@@ -157,7 +157,7 @@ jobs:
         run: scripts/verify-dmg.sh target/universal-apple-darwin/release/bundle/dmg/*.dmg 'Arcade Box' arcade-desktop arcade.box
       - name: Upload the installer
         if: env.PACKAGE == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: arcade-box-${{ matrix.bundle }}
           if-no-files-found: error
