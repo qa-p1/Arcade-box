@@ -112,9 +112,9 @@
           files={box.selectedFiles}
           disabled={box.running || Boolean(box.activeJob && box.jobIsActive(box.activeJob))}
           label={box.fileInputLabel(box.selectedTool)}
-          multiple={box.selectedTool.id === 'arcade.text.diff' || box.selectedTool.ui?.input.kind === 'files'}
-          sortable={box.selectedTool.id === 'arcade.text.diff' || (box.selectedTool.ui?.input.sortable ?? false)}
-          maxItems={box.selectedTool.id === 'arcade.text.diff' ? (box.toolOptions.operation === 'merge' ? 3 : 2) : box.selectedTool.ui?.input.maxItems}
+          multiple={box.fileList(box.selectedTool).multiple}
+          sortable={box.fileList(box.selectedTool).sortable}
+          maxItems={box.fileList(box.selectedTool).maxItems}
           onAdd={() => void box.chooseInputFile()}
           onRemove={box.removeSelectedFileToken}
           onReorder={box.reorderSelectedFiles}

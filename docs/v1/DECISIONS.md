@@ -163,3 +163,6 @@ Copies in `arcade-core` that had to change together but didn't say so, now one e
 - `barcode.rs` had its own copy of `tool_kit::option_str`.
 - The set of characters a file name may not contain was written out six times (output stems, media names, renames,
   downloads, PDF names, the portable-name check). One `artifacts::unsafe_in_file_name`.
+- How many files Compare text takes (2 to compare, 3 to merge, in order) was written out four times across
+  `box.svelte.ts` and `IslandTool.svelte`, beside a `pdf.merge` special case the catalog already covered
+  (`ui.input.kind: files`). One `fileList(tool)` in `box.svelte.ts` answers it for every tool.
