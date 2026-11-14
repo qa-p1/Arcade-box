@@ -102,3 +102,41 @@ The fixes for the converter findings had to choose a reading where an input has 
   (Close, Clear, Back), and the BR-5 check failed on the old code for the finding's reason: a search with text said
   Close.
 
+
+## D9 — The AppImage bundles GStreamer's playback plugins (BR-3)
+
+- **Problem:** WebKit plays audio and video through GStreamer. The AppImage points GStreamer at its own plugin folder,
+  which held no plugins, so no media played (`appsink not found`, B-27).
+- **Options:** stop overriding the plugin path and use the host's plugins (they link against the host's newer
+  libgstreamer, not the bundled one, and fail or skip at random by distro), or bundle the plugins.
+- **Decision:** bundle them with Tauri's `bundleMediaFramework`, from Ubuntu 24.04's `gstreamer1.0-plugins-base`,
+  `-good` and `gstreamer1.0-pipewire` (LGPL). That covers WebM/VP8/VP9, Ogg/Vorbis/Opus, MP3, WAV, FLAC, Matroska and
+  the MP4 container, with PulseAudio/PipeWire output. `gstreamer1.0-libav` (H.264/AAC) is not bundled: Ubuntu builds
+  it against a GPL FFmpeg. H.264/AAC media does not preview from the image (open item: tell the user so in the
+  preview). The screen recorder runs the host's GStreamer, clearing the image's plugin paths (BR-10: still to verify
+  under the harness). Cost: the image grows by about 15–25 MB.
+- **Test:** `scripts/verify-appimage.py` (CI and Release) fails if the image lacks any of the 12 plugins playback
+  needs.
+
+## D10 — On Hyprland the Island's window follows its card (BR-2)
+
+- **Cause:** Box already limits the Island's input region to the card (`input_shape_combine_region`), and GTK
+  3.24.41 applies it. But Hyprland 0.56 hit-tests a floating window by its window box and never consults the
+  surface's input region (`src/desktop/state/ViewHitTester.cpp`, `CViewHitTester::windowAt`). So a click anywhere in
+  the 740×740 canvas went to the Island.
+- **Decision:** on Hyprland only, the native window follows the card: it grows at once and shrinks 360 ms after
+  the card's target height drops, so a shrinking card is never clipped mid-animation. Each show restores the full
+  canvas and fits again. The card's maximum height comes from the canvas the window had when shown
+  (`--island-canvas`), not from the current viewport, so a shrunken window can't cap the card's growth. Other
+  desktops honour the input region and keep the full canvas.
+- **Test:** Tier 1 Hyprland checks the window is shorter than 400 px over the search card, and that a click where
+  the old canvas was reaches the window underneath. Both were the BR-2 known-bug check.
+
+## D11 — Dead code (step 4): how it is found and what stays
+
+Rust: `cargo machete` (clean; `md-5` and `zxing-cpp` are imported as `md5`/`zxingcpp`, listed as ignored in
+`crates/arcade-core/Cargo.toml`) plus `clippy -D warnings` for dead items. Frontend: `npx knip@5` with
+`apps/desktop/frontend/knip.json`, whose entries are the HTML pages' scripts (`src/main.ts`, `src/pin.ts`) and the
+test fixture `tests/visual.ts` that `tests/*.mjs` load; `src/design/` is vendored from Link and ignored. Removed:
+`ShortcutClash.svelte` (no importer), `runTool`/`initials`, the `run_tool` Tauri command (the frontend runs every
+tool as a job), and the `ToolStatus` type; types used only in their own file are no longer exported.

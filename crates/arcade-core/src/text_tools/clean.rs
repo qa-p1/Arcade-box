@@ -190,23 +190,33 @@ fn capitalize(word: &str) -> String {
 }
 
 fn title_case(input: &str) -> String {
-    let mut new_word = true;
+    // B-11: a word starts at its first letter or digit (`2nd`, not `2Nd`), apostrophes stay inside it (`it's`), and
+    // the rest is lower-cased as a string so a final sigma is right (`ΣΑΣ` → `Σας`).
     let mut out = String::with_capacity(input.len());
-    for character in input.chars() {
-        if character.is_alphabetic() {
-            if new_word {
-                out.extend(character.to_uppercase());
-            } else {
-                out.extend(character.to_lowercase());
-            }
-            new_word = false;
+    let mut word = String::new();
+    let flush = |word: &mut String, out: &mut String| {
+        let mut chars = word.chars();
+        if let Some(first) = chars.next() {
+            out.extend(first.to_uppercase());
+            out.push_str(&chars.as_str().to_lowercase());
+        }
+        word.clear();
+    };
+    let chars: Vec<char> = input.chars().collect();
+    for (index, &character) in chars.iter().enumerate() {
+        let inner_apostrophe = matches!(character, '\'' | '’')
+            && !word.is_empty()
+            && chars
+                .get(index + 1)
+                .is_some_and(|next| next.is_alphabetic());
+        if character.is_alphanumeric() || inner_apostrophe {
+            word.push(character);
         } else {
+            flush(&mut word, &mut out);
             out.push(character);
-            if !character.is_numeric() && character != '\'' && character != '’' {
-                new_word = true;
-            }
         }
     }
+    flush(&mut word, &mut out);
     out
 }
 
@@ -236,7 +246,17 @@ fn words(input: &str) -> Vec<String> {
     let mut parts = Vec::new();
     let mut current = String::new();
     let mut previous_lowercase = false;
-    for character in input.chars() {
+    let chars: Vec<char> = input.chars().collect();
+    for (index, &character) in chars.iter().enumerate() {
+        // B-11: a contraction is one word (`it's` → `its`, not `it_s`).
+        if matches!(character, '\'' | '’')
+            && !current.is_empty()
+            && chars
+                .get(index + 1)
+                .is_some_and(|next| next.is_alphabetic())
+        {
+            continue;
+        }
         if !character.is_alphanumeric() {
             if !current.is_empty() {
                 parts.push(current.to_lowercase());
@@ -273,6 +293,13 @@ mod tests {
             tabs: "keep",
             crlf: false,
         }
+    }
+
+    #[test]
+    fn title_case_ordinals_sigma_and_contractions() {
+        assert_eq!(title_case("the 2nd it's ΣΑΣ"), "The 2nd It's Σας");
+        assert_eq!(change_case("it's done", "camel").unwrap(), "itsDone");
+        assert_eq!(change_case("it's done", "snake").unwrap(), "its_done");
     }
 
     #[test]

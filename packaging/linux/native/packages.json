@@ -61,6 +61,30 @@
     "gsettings-desktop-schemas": {
       "source": "gsettings-desktop-schemas"
     },
+    "gstreamer1.0-gl": {
+      "source": "gst-plugins-base1.0"
+    },
+    "gstreamer1.0-pipewire": {
+      "source": "pipewire"
+    },
+    "gstreamer1.0-plugins-base": {
+      "source": "gst-plugins-base1.0"
+    },
+    "gstreamer1.0-plugins-good": {
+      "source": "gst-plugins-good1.0"
+    },
+    "gstreamer1.0-x": {
+      "source": "gst-plugins-base1.0"
+    },
+    "libaa1": {
+      "source": "aalib"
+    },
+    "libapparmor1": {
+      "source": "apparmor"
+    },
+    "libasyncns0": {
+      "source": "libasyncns"
+    },
     "libatk-bridge2.0-0t64": {
       "source": "at-spi2-core"
     },
@@ -78,6 +102,9 @@
     },
     "libavahi-common3": {
       "source": "avahi"
+    },
+    "libavc1394-0": {
+      "source": "libavc1394"
     },
     "libayatana-appindicator3-1": {
       "source": "libayatana-appindicator"
@@ -100,6 +127,9 @@
     "libbz2-1.0": {
       "source": "bzip2"
     },
+    "libcaca0": {
+      "source": "libcaca"
+    },
     "libcairo-gobject2": {
       "source": "cairo"
     },
@@ -108,6 +138,9 @@
     },
     "libcap2": {
       "source": "libcap2"
+    },
+    "libcdparanoia0": {
+      "source": "cdparanoia"
     },
     "libcolord2": {
       "source": "colord"
@@ -136,6 +169,9 @@
     "libduktape207": {
       "source": "duktape"
     },
+    "libdv4t64": {
+      "source": "libdv"
+    },
     "libdw1t64": {
       "source": "elfutils"
     },
@@ -153,6 +189,9 @@
     },
     "libffi8": {
       "source": "libffi"
+    },
+    "libflac12t64": {
+      "source": "flac"
     },
     "libgcrypt20": {
       "source": "libgcrypt20"
@@ -172,6 +211,12 @@
     "libgnutls30t64": {
       "source": "gnutls28"
     },
+    "libgpm2": {
+      "source": "gpm"
+    },
+    "libgraphene-1.0-0": {
+      "source": "graphene"
+    },
     "libgraphite2-3": {
       "source": "graphite2"
     },
@@ -183,6 +228,9 @@
     },
     "libgstreamer-plugins-base1.0-0": {
       "source": "gst-plugins-base1.0"
+    },
+    "libgstreamer-plugins-good1.0-0": {
+      "source": "gst-plugins-good1.0"
     },
     "libgstreamer1.0-0": {
       "source": "gstreamer1.0"
@@ -210,6 +258,9 @@
     },
     "libidn2-0": {
       "source": "libidn2"
+    },
+    "libiec61883-0": {
+      "source": "libiec61883"
     },
     "libjavascriptcoregtk-4.1-0": {
       "source": "webkit2gtk"
@@ -256,11 +307,29 @@
     "libmount1": {
       "source": "util-linux"
     },
+    "libmp3lame0": {
+      "source": "lame"
+    },
+    "libmpg123-0t64": {
+      "source": "mpg123"
+    },
+    "libncurses6": {
+      "source": "ncurses"
+    },
+    "libncursesw6": {
+      "source": "ncurses"
+    },
     "libnettle8t64": {
       "source": "nettle"
     },
     "libnghttp2-14": {
       "source": "nghttp2"
+    },
+    "libogg0": {
+      "source": "libogg"
+    },
+    "libopus0": {
+      "source": "opus"
     },
     "liborc-0.4-0t64": {
       "source": "orc"
@@ -295,6 +364,12 @@
     "libpsl5t64": {
       "source": "libpsl"
     },
+    "libpulse0": {
+      "source": "pulseaudio"
+    },
+    "libraw1394-11": {
+      "source": "libraw1394"
+    },
     "librsvg2-2": {
       "source": "librsvg"
     },
@@ -322,8 +397,20 @@
     "libsharpyuv0": {
       "source": "libwebp"
     },
+    "libshout3": {
+      "source": "libshout"
+    },
+    "libslang2": {
+      "source": "slang2"
+    },
+    "libsndfile1": {
+      "source": "libsndfile"
+    },
     "libsoup-3.0-0": {
       "source": "libsoup3"
+    },
+    "libspeex1": {
+      "source": "speex"
     },
     "libsqlite3-0": {
       "source": "sqlite3"
@@ -337,14 +424,26 @@
     "libsystemd0": {
       "source": "systemd"
     },
+    "libtag1v5-vanilla": {
+      "source": "taglib"
+    },
     "libtasn1-6": {
       "source": "libtasn1-6"
     },
     "libthai0": {
       "source": "libthai"
     },
+    "libtheora0": {
+      "source": "libtheora"
+    },
     "libtiff6": {
       "source": "tiff"
+    },
+    "libtinfo6": {
+      "source": "ncurses"
+    },
+    "libtwolame0": {
+      "source": "twolame"
     },
     "libudev1": {
       "source": "systemd"
@@ -354,6 +453,27 @@
     },
     "libunwind8": {
       "source": "libunwind"
+    },
+    "libv4l-0t64": {
+      "source": "v4l-utils"
+    },
+    "libv4lconvert0t64": {
+      "source": "v4l-utils"
+    },
+    "libvisual-0.4-0": {
+      "source": "libvisual"
+    },
+    "libvorbis0a": {
+      "source": "libvorbis"
+    },
+    "libvorbisenc2": {
+      "source": "libvorbis"
+    },
+    "libvpx9": {
+      "source": "libvpx"
+    },
+    "libwavpack1": {
+      "source": "wavpack"
     },
     "libwayland-cursor0": {
       "source": "wayland"
@@ -423,6 +543,12 @@
     },
     "libxslt1.1": {
       "source": "libxslt"
+    },
+    "libxtst6": {
+      "source": "libxtst"
+    },
+    "libxv1": {
+      "source": "libxv"
     },
     "libzstd1": {
       "source": "libzstd"

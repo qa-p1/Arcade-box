@@ -107,9 +107,9 @@ fn detect(input: &str) -> Result<&'static str, String> {
     if trimmed.starts_with('<') {
         return Ok("xml");
     }
-    if (trimmed.starts_with('{') || trimmed.starts_with('['))
-        && serde_json::from_str::<Value>(trimmed).is_ok()
-    {
+    let json_like = trimmed.starts_with('{') || trimmed.starts_with('[');
+    let json = json_like.then(|| serde_json::from_str::<Value>(trimmed));
+    if matches!(json, Some(Ok(_))) {
         return Ok("json");
     }
     if toml::from_str::<toml::Table>(trimmed).is_ok() {
@@ -118,13 +118,20 @@ fn detect(input: &str) -> Result<&'static str, String> {
     if yaml_rust2::YamlLoader::load_from_str(trimmed).is_ok() {
         return Ok("yaml");
     }
+    // B-11: text shaped like JSON that isn't valid gets JSON's own syntax error, not a guess.
+    if let Some(Err(error)) = json {
+        return Err(format!("JSON: {error}"));
+    }
     Err("Couldn't tell which format this is. Choose the source format.".into())
 }
 
 fn parse(input: &str, format: &str, warnings: &mut Vec<String>) -> Result<Value, String> {
     let input = input.trim_start_matches('\u{feff}');
     match format {
-        "json" => serde_json::from_str(input).map_err(|error| format!("JSON: {error}")),
+        "json" => {
+            check_json(input)?;
+            serde_json::from_str(input).map_err(|error| format!("JSON: {error}"))
+        }
         "yaml" => {
             let documents = yaml_rust2::YamlLoader::load_from_str(input)
                 .map_err(|error| format!("YAML: {error}"))?;
@@ -152,6 +159,88 @@ fn parse(input: &str, format: &str, warnings: &mut Vec<String>) -> Result<Value,
         "xml" => xml_to_json(input),
         other => Err(format!("Unsupported source format: {other}")),
     }
+}
+
+/// B-11: JSON that would change on conversion is refused: a duplicate key (one value would be dropped) or an integer
+/// too large to keep exactly (it would become a rounded float), as YAML's integers already are.
+fn check_json(input: &str) -> Result<(), String> {
+    use serde::de::{Deserialize, Deserializer, Error, MapAccess, SeqAccess, Visitor};
+    struct Checked;
+    struct Check;
+    impl<'de> Deserialize<'de> for Checked {
+        fn deserialize<D: Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
+            deserializer.deserialize_any(Check)
+        }
+    }
+    impl<'de> Visitor<'de> for Check {
+        type Value = Checked;
+        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+            formatter.write_str("JSON")
+        }
+        fn visit_bool<E>(self, _: bool) -> Result<Checked, E> {
+            Ok(Checked)
+        }
+        fn visit_i64<E>(self, _: i64) -> Result<Checked, E> {
+            Ok(Checked)
+        }
+        fn visit_u64<E>(self, _: u64) -> Result<Checked, E> {
+            Ok(Checked)
+        }
+        fn visit_f64<E>(self, _: f64) -> Result<Checked, E> {
+            Ok(Checked)
+        }
+        fn visit_str<E>(self, _: &str) -> Result<Checked, E> {
+            Ok(Checked)
+        }
+        fn visit_unit<E>(self) -> Result<Checked, E> {
+            Ok(Checked)
+        }
+        fn visit_seq<A: SeqAccess<'de>>(self, mut items: A) -> Result<Checked, A::Error> {
+            while items.next_element::<Checked>()?.is_some() {}
+            Ok(Checked)
+        }
+        fn visit_map<A: MapAccess<'de>>(self, mut entries: A) -> Result<Checked, A::Error> {
+            let mut seen = std::collections::HashSet::new();
+            while let Some(key) = entries.next_key::<String>()? {
+                if !seen.insert(key.clone()) {
+                    return Err(A::Error::custom(format!(
+                        "the key \"{key}\" appears twice, so one value would be lost"
+                    )));
+                }
+                entries.next_value::<Checked>()?;
+            }
+            Ok(Checked)
+        }
+    }
+    serde_json::from_str::<Checked>(input).map_err(|error| format!("JSON: {error}"))?;
+    // Number tokens outside strings: an integer that fits no 64-bit type would be rounded.
+    let (mut in_string, mut escaped, mut token) = (false, false, String::new());
+    for character in input.chars().chain(std::iter::once(' ')) {
+        if in_string {
+            match (escaped, character) {
+                (true, _) => escaped = false,
+                (false, '\\') => escaped = true,
+                (false, '"') => in_string = false,
+                _ => {}
+            }
+            continue;
+        }
+        if character.is_ascii_digit() || matches!(character, '-' | '+' | '.' | 'e' | 'E') {
+            token.push(character);
+            continue;
+        }
+        let integer = !token.is_empty()
+            && !token.contains(['.', 'e', 'E'])
+            && token.chars().any(|c| c.is_ascii_digit());
+        if integer && token.parse::<i64>().is_err() && token.parse::<u64>().is_err() {
+            return Err(format!(
+                "JSON: the integer {token} is too large to convert exactly; quote it to keep it as text"
+            ));
+        }
+        token.clear();
+        in_string = character == '"';
+    }
+    Ok(())
 }
 
 fn yaml_to_json(value: &yaml_rust2::Yaml, path: &str) -> Result<Value, String> {
@@ -612,6 +701,32 @@ fn valid_xml_name(name: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn lossy_or_invalid_json_is_refused_with_the_reason() {
+        let mut warnings = Vec::new();
+        let big = parse(r#"{"id": 12345678901234567890123}"#, "json", &mut warnings).unwrap_err();
+        assert!(
+            big.contains("12345678901234567890123") && big.contains("too large"),
+            "{big}"
+        );
+        let duplicate = parse(r#"{"a": 1, "a": 2}"#, "json", &mut warnings).unwrap_err();
+        assert!(duplicate.contains("\"a\" appears twice"), "{duplicate}");
+        assert_eq!(
+            parse(
+                r#"{"s": "12345678901234567890123", "n": -5, "f": 1.5e30}"#,
+                "json",
+                &mut warnings
+            )
+            .unwrap()["n"],
+            -5
+        );
+        let invalid = detect(r#"{"a": [1, 2}"#).unwrap_err();
+        assert!(
+            invalid.starts_with("JSON:") && invalid.contains("line 1"),
+            "{invalid}"
+        );
+    }
 
     fn run(input: &str, from: &str, to: &str) -> String {
         convert(input, from, to, "2").unwrap().text

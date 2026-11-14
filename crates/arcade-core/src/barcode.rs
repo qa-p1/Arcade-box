@@ -541,10 +541,90 @@ fn create_barcode(
     } else {
         String::new()
     };
+    check_retail_code(payload, format)?;
     zxingcpp::create(format)
         .options(options)
         .from_str(payload)
-        .map_err(|error| format!("ZXing could not encode this value: {error}"))
+        .map_err(|error| encode_error(&error.to_string(), format))
+}
+
+/// B-21: EAN and UPC take an exact number of digits. ZXing pads short input with
+/// zeros, which silently makes a different product code, so refuse it instead and
+/// check a supplied check digit here, with the expected one in the message.
+fn check_retail_code(payload: &str, format: BarcodeFormat) -> Result<(), String> {
+    let (name, data_digits) = match format {
+        BarcodeFormat::EAN13 => ("EAN-13", 12),
+        BarcodeFormat::EAN8 => ("EAN-8", 7),
+        BarcodeFormat::UPCA => ("UPC-A", 11),
+        // UPC-E is 6 digits; 7 adds the number system (0 or 1), 8 the check digit,
+        // which comes from the expanded UPC-A code, so ZXing checks that one.
+        BarcodeFormat::UPCE => {
+            return if payload.chars().all(|c| c.is_ascii_digit())
+                && (6..=8).contains(&payload.len())
+            {
+                Ok(())
+            } else {
+                Err("UPC-E takes 6 digits (or 8 with the number system and check digit)".into())
+            };
+        }
+        _ => return Ok(()),
+    };
+    if !payload.chars().all(|c| c.is_ascii_digit())
+        || payload.len() != data_digits && payload.len() != data_digits + 1
+    {
+        return Err(format!(
+            "{name} takes {data_digits} digits, or {} with the check digit; this is {} characters",
+            data_digits + 1,
+            payload.chars().count()
+        ));
+    }
+    if payload.len() == data_digits + 1 {
+        let expected = gs1_check_digit(&payload[..data_digits]);
+        let given = payload.as_bytes()[data_digits] - b'0';
+        if given != expected {
+            return Err(format!(
+                "The last digit of this {name} code is {given}, but the check digit should be {expected}"
+            ));
+        }
+    }
+    Ok(())
+}
+
+/// The GS1 check digit: weights 3, 1, 3, … from the rightmost data digit.
+fn gs1_check_digit(digits: &str) -> u8 {
+    let sum: u32 = digits
+        .bytes()
+        .rev()
+        .enumerate()
+        .map(|(index, digit)| u32::from(digit - b'0') * if index % 2 == 0 { 3 } else { 1 })
+        .sum();
+    ((10 - sum % 10) % 10) as u8
+}
+
+/// ZXing's encoder messages carry internal codes ("Error 567: … (retval: 6)").
+fn encode_error(raw: &str, format: BarcodeFormat) -> String {
+    let mut text = raw.trim();
+    if let Some(rest) = text.strip_prefix("Error ") {
+        let digits = rest
+            .find(|c: char| !c.is_ascii_digit())
+            .unwrap_or(rest.len());
+        if digits > 0 {
+            text = rest[digits..].trim_start_matches(':').trim();
+        }
+    }
+    if let Some(index) = text.rfind(" (retval:") {
+        text = text[..index].trim();
+    }
+    if text.to_ascii_lowercase().contains("too long") {
+        return format!(
+            "Too much content for {format}; shorten it or choose QR Code, Data Matrix or PDF417"
+        );
+    }
+    if text.is_empty() {
+        format!("This content can't be encoded as {format}")
+    } else {
+        format!("This content can't be encoded as {format}: {text}")
+    }
 }
 
 fn render_barcode(
@@ -791,6 +871,38 @@ mod tests {
                 .message
                 .unwrap()
                 .contains("Generated 200 barcode images")
+        );
+    }
+
+    #[test]
+    fn retail_codes_are_never_zero_padded_and_check_digits_are_checked() {
+        let request = ToolRequest {
+            tool_id: "arcade.barcode.barcode".into(),
+            inputs: vec![],
+            options: serde_json::json!({}),
+        };
+        let ean13 = |value: &str| create_barcode(value, BarcodeFormat::EAN13, &request).map(|_| ());
+        assert!(ean13("12345678").unwrap_err().contains("takes 12 digits"));
+        assert!(ean13("590123412345").is_ok());
+        assert!(ean13("5901234123457").is_ok());
+        assert!(
+            ean13("5901234123458")
+                .unwrap_err()
+                .contains("check digit should be 7")
+        );
+        assert!(
+            create_barcode("12345678", BarcodeFormat::EAN8, &request)
+                .map(|_| ())
+                .unwrap_err()
+                .contains("should be 0")
+        );
+        assert_eq!(gs1_check_digit("03600029145"), 2);
+        assert!(
+            !encode_error(
+                "Error 567: Input too long (retval: 6)",
+                BarcodeFormat::QRCode
+            )
+            .contains("567")
         );
     }
 

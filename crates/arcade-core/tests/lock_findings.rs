@@ -358,8 +358,7 @@ fn numeric_values_for_string_options_are_used() {
 }
 
 #[test]
-#[should_panic(expected = "KNOWN BUG BR-7")]
-fn known_bug_document_to_pdf_takes_text_and_markdown() {
+fn document_to_pdf_takes_text_and_markdown() {
     let arcade = runtime();
     let dir = tempfile::tempdir().unwrap();
     let mut failures = Vec::new();

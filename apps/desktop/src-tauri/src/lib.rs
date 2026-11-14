@@ -479,6 +479,10 @@ fn list_providers(
     providers.extend(discover_qpdf(None));
     providers.extend(discover_vips(None));
     providers.extend(arcade_core::provider::discover_tesseract());
+    // BR-8: every system engine an implemented tool calls, so a missing one shows before a tool fails.
+    providers.extend(arcade_core::provider::discover_poppler());
+    providers.extend(arcade_core::provider::discover_ytdlp());
+    providers.extend(arcade_core::provider::discover_curl());
     providers.extend(arcade_core::provider::discover_arcade(&runtime));
     // Only when the user opens Engines: re-checking every provider runs each
     // tool's `--version`, which startup must not pay for.
@@ -590,15 +594,6 @@ fn set_preference(
         .storage()
         .set_setting(&key, &value)
         .map_err(|error| error.to_string())
-}
-
-#[tauri::command(async)]
-fn run_tool(
-    request: ToolRequest,
-    runtime: tauri::State<'_, Arc<Arcade>>,
-) -> Result<ToolResult, String> {
-    validate_frontend_request(&request, &runtime)?;
-    runtime.run_tool(request).map_err(|error| error.to_string())
 }
 
 fn validate_frontend_request(request: &ToolRequest, runtime: &Arcade) -> Result<(), String> {
@@ -1161,6 +1156,68 @@ fn island_ready(window: tauri::WebviewWindow) {
     }
 }
 
+/// Bottom edge (logical px) of the Island's visible card, from the last input region.
+#[cfg(target_os = "linux")]
+static ISLAND_REGION_BOTTOM: Mutex<Option<f64>> = Mutex::new(None);
+#[cfg(target_os = "linux")]
+static ISLAND_FIT: Mutex<(u64, f64)> = Mutex::new((0, 0.0));
+/// Room below the card for its shadow.
+#[cfg(target_os = "linux")]
+const ISLAND_SHADOW_ROOM: f64 = 24.0;
+/// Longer than the card's height animation, so a shrinking card is never clipped.
+#[cfg(target_os = "linux")]
+const ISLAND_SHRINK_DELAY: std::time::Duration = std::time::Duration::from_millis(360);
+
+/// BR-2: Hyprland hit-tests a floating window by its box and ignores the surface's input region
+/// (`ViewHitTester::windowAt`, 0.56), so the transparent canvas below the card took clicks meant for the window
+/// underneath. There the window itself follows the card: it grows at once and shrinks once the animation ends.
+/// Other desktops honour the input region and keep the full canvas.
+#[cfg(target_os = "linux")]
+fn fit_island_window(window: &tauri::WebviewWindow) {
+    if !hyprland::is_hyprland() || !window.is_visible().unwrap_or(false) {
+        return;
+    }
+    let Some(bottom) = *ISLAND_REGION_BOTTOM
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner)
+    else {
+        return;
+    };
+    let canvas = *SURFACE_GEOMETRY
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
+    let target = (bottom + ISLAND_SHADOW_ROOM)
+        .ceil()
+        .clamp(1.0, canvas.height);
+    let (generation, shrink) = {
+        let mut fit = ISLAND_FIT
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        if (fit.1 - target).abs() < 1.0 {
+            return;
+        }
+        fit.0 = fit.0.wrapping_add(1);
+        let shrink = target < fit.1;
+        if !shrink {
+            fit.1 = target;
+        }
+        (fit.0, shrink)
+    };
+    std::thread::spawn(move || {
+        if shrink {
+            std::thread::sleep(ISLAND_SHRINK_DELAY);
+            let mut fit = ISLAND_FIT
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            if fit.0 != generation {
+                return;
+            }
+            fit.1 = target;
+        }
+        hyprland::place_island(canvas.width, target, false);
+    });
+}
+
 /// Restrict pointer input to the visible surface. The transparent canvas exists
 /// for the spring/resize animation; it must never block the desktop beneath it.
 #[tauri::command]
@@ -1197,6 +1254,10 @@ fn set_island_input_region(
                 }
             })
             .map_err(|error| error.to_string())?;
+        *ISLAND_REGION_BOTTOM
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner) = Some(y + height);
+        fit_island_window(&window);
     }
     #[cfg(not(target_os = "linux"))]
     let _ = window;
@@ -1226,6 +1287,8 @@ pub(crate) fn show_island(window: &tauri::WebviewWindow) {
         place_surface(&island);
         #[cfg(target_os = "linux")]
         let requested = stamp_user_time(&island);
+        #[cfg(target_os = "linux")]
+        crate::hyprland::remember_active_window();
         if let Err(error) = island.show() {
             eprintln!("Could not show Arcade Island: {error}");
             return;
@@ -1236,6 +1299,15 @@ pub(crate) fn show_island(window: &tauri::WebviewWindow) {
             native.present_with_time(time);
         }
         let _ = island.set_focus();
+        // The window was just set to the full canvas: fit it to the card again (BR-2).
+        #[cfg(target_os = "linux")]
+        {
+            ISLAND_FIT
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner)
+                .1 = height;
+            fit_island_window(&island);
+        }
         // TEMPORARY_MOTION_EVAL_START
         if std::env::var_os("ARCADE_MOTION_PROBE").is_some() {
             let _ = island.eval(include_str!("motion-probe.js"));
@@ -2333,7 +2405,6 @@ pub fn run(args: Vec<String>) {
             paste_plain::paste_plain_text,
             shortcut_status,
             set_shortcut,
-            run_tool,
             list_jobs,
             start_job,
             cancel_job,

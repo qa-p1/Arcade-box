@@ -157,6 +157,10 @@ export function createBox() {
   let inputText = $state('');
   let diffRight = $state('');
   let diffBase = $state('');
+  // B-4: the input a result was made from, so an edited input marks it stale.
+  let resultInputKey = $state('');
+  const currentInputKey = $derived(JSON.stringify([inputText, diffRight, diffBase, toolOptions, selectedFiles.map((file) => file.token)]));
+  const resultStale = $derived(Boolean(activeResult) && resultInputKey !== '' && resultInputKey !== currentInputKey);
   let loadingCatalog = $state(true);
   let loadingSearch = $state(false);
   let running = $state(false);
@@ -306,6 +310,21 @@ export function createBox() {
     queueInputRegion();
   });
 
+  // BR-2: on Hyprland the native window shrinks to the card, so the card's room comes from the full canvas the
+  // window had when it was shown, never from the (smaller) current viewport.
+  let canvasHeight = 0;
+  function islandCanvas(shown = false): void {
+    if (surface === 'dashboard') return;
+    canvasHeight = shown ? window.innerHeight : Math.max(canvasHeight, window.innerHeight);
+    document.documentElement.style.setProperty('--island-canvas', `${canvasHeight}px`);
+  }
+
+  $effect(() => {
+    const onResize = () => islandCanvas();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  });
+
   $effect(() => {
     window.addEventListener('resize', queueInputRegion);
     return () => window.removeEventListener('resize', queueInputRegion);
@@ -373,7 +392,7 @@ export function createBox() {
       }).catch((error) => (catalogError = messageOf(error)));
     } else {
       void Promise.all([
-        watchIslandShown(() => { void revealIsland(); }),
+        watchIslandShown(() => { islandCanvas(true); void revealIsland(); }),
         watchIslandHiding(() => {
           islandShell?.getAnimations().forEach((animation) => animation.cancel());
           dismissing = true;
@@ -591,6 +610,7 @@ export function createBox() {
     selectedTool = tool;
     activeJobId = '';
     activeResult = null;
+    resultInputKey = '';
     inputText = '';
     diffRight = '';
     diffBase = '';
@@ -867,6 +887,7 @@ export function createBox() {
     running = true;
     runError = '';
     activeResult = null;
+    resultInputKey = currentInputKey;
     if (tool.id === 'arcade.system.process') processTerminationRequests = {};
     const directoryToken = typeof toolOptions.destinationGrant === 'string' && toolOptions.destinationGrant
       ? toolOptions.destinationGrant
@@ -1931,6 +1952,7 @@ export function createBox() {
     get artifactActionBusy() { return artifactActionBusy; },
     set artifactActionBusy(value) { artifactActionBusy = value; },
     get inputText() { return inputText; },
+    get resultStale() { return resultStale; },
     set inputText(value) { inputText = value; },
     get diffRight() { return diffRight; },
     set diffRight(value) { diffRight = value; },
@@ -2130,7 +2152,7 @@ export function createBox() {
   };
 }
 
-export type Box = ReturnType<typeof createBox>;
+type Box = ReturnType<typeof createBox>;
 
 const KEY = Symbol('arcade-box');
 export function provideBox(box: Box): Box {

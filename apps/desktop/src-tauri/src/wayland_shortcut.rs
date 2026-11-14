@@ -69,9 +69,13 @@ pub fn register_host_app(app: &AppHandle) -> Result<(), String> {
         .await
         .map_err(|_| "The desktop portal did not answer while registering Arcade Box".to_owned())?
         .map_err(|error| {
-            format!(
-                "Could not register portal identity `{identifier}`. Ensure `{identifier}.desktop` is installed before launching: {error}"
-            )
+            // B-15: the D-Bus detail is for the log, not for people.
+            eprintln!(
+                "Could not register portal identity `{identifier}` (is `{identifier}.desktop` installed?): {error}"
+            );
+            "Arcade Box isn't in your app menu yet, so the desktop can't give it a shortcut. \
+             Install it, open it from the app menu, then set the shortcut again."
+                .to_owned()
         })
     })
 }

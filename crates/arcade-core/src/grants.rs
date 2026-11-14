@@ -767,10 +767,23 @@ fn file_mime(path: &Path, header: &[u8]) -> &'static str {
         match extension.as_str() {
             "xlsx" | "xlsm" | "xlsb" | "xls" | "ods" if container => return "file/spreadsheet",
             "docx" | "doc" | "odt" | "pptx" | "ppt" | "odp" if container => return "file/document",
+            // BR-7: plain text and Markdown files are documents (Document to PDF), when they are UTF-8 text.
+            "txt" | "text" | "md" | "markdown" if is_utf8_text(header) => return "file/document",
             _ => {}
         }
     }
     detected
+}
+
+/// UTF-8 without NUL bytes; a sniffed header may end inside a multi-byte character.
+fn is_utf8_text(header: &[u8]) -> bool {
+    if header.contains(&0) {
+        return false;
+    }
+    match std::str::from_utf8(header) {
+        Ok(_) => true,
+        Err(error) => error.error_len().is_none() && header.len() - error.valid_up_to() < 4,
+    }
 }
 
 fn is_svg(header: &[u8]) -> bool {
@@ -1000,9 +1013,10 @@ mod tests {
             "1\n00:00:01,000 --> 00:00:02,000\nHello\n",
         )
         .unwrap();
+        // Not a subtitle without a subtitle extension; as UTF-8 text it is a document (BR-7).
         assert_eq!(
             grants.grant(&unrecognized_extension).unwrap().mime,
-            "file/octet-stream"
+            "file/document"
         );
     }
 

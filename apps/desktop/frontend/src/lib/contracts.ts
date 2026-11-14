@@ -93,7 +93,7 @@ export interface Pipeline {
 
 export type PluginPermissionGrant = 'read-user-selected';
 
-export interface PluginToolManifest extends ToolSummary {
+interface PluginToolManifest extends ToolSummary {
   version: string;
   apiVersion: string;
   permissions: {
@@ -307,7 +307,6 @@ export interface ContextSuggestion {
   reason: string;
 }
 
-export type ToolStatus = 'implemented' | 'planned' | (string & {});
 
 export interface MediaStreamSummary {
   /** Position among streams of the same kind, matching the tool's track options. */

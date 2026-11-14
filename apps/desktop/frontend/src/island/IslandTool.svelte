@@ -16,7 +16,7 @@
   import ScreenRuler from '../lib/ScreenRuler.svelte';
   import ClipboardHistoryView from '../lib/ClipboardHistoryView.svelte';
   import TimerView from '../lib/TimerView.svelte';
-  import { acceptsTextInput, isRunnable, privacyLabel, usesFileInput } from '../lib/tool-utils';
+  import { acceptsTextInput, isRunnable, privacyLabel, typeLabel, usesFileInput } from '../lib/tool-utils';
   import { standardUiOptionsProblem } from '../lib/standard-ui';
   import { useBox } from '../box.svelte';
 
@@ -51,7 +51,7 @@
       <span class="notice-icon"><Icon name="file" size={18} /></span>
       <div>
         <strong>This input is not available in the current view</strong>
-        <p>This tool accepts {box.selectedTool.inputs.join(', ') || 'a non-text input'}.</p>
+        <p>This tool accepts {box.selectedTool.inputs.map(typeLabel).join(', ').toLowerCase() || 'a non-text input'}.</p>
       </div>
     </div>
   {:else}
@@ -210,7 +210,8 @@
     {/if}
 
     {#if box.activeResult && (box.activeResult.outputs.length > 0 || box.activeResult.message)}
-      <section class="result-panel" class:result-failed={box.activeResult.status !== 'success'} aria-labelledby="result-heading" aria-live="off">
+      <section class="result-panel" class:result-failed={box.activeResult.status !== 'success'} class:result-stale={box.resultStale} aria-labelledby="result-heading" aria-live="off">
+        {#if box.resultStale}<p class="result-stale-note" role="status">The input changed — run again for a new result.</p>{/if}
         <div class="result-heading" id="result-heading">
           <div class="result-label"><span class="result-check"><Icon name={box.activeResult.status === 'success' ? 'check' : 'close'} size={14} /></span><div><strong>{box.activeResult.status === 'success' ? 'Done' : 'Couldn’t finish'}</strong><span>{box.activeResult.outputs.length} {box.activeResult.outputs.length === 1 ? 'result' : 'results'}</span></div></div>
           <span class="result-mime" title="Copy result" role="status">{box.copyState === 'copied' ? 'Copied' : box.copyState === 'error' ? 'Copy failed — try again' : `${box.commandKey} Shift C`}</span>
@@ -321,7 +322,7 @@
                 {:else}
                 <div class="artifact-result-card">
                   <span class="artifact-file-icon"><Icon name={box.artifactIcon(artifact.mime)} size={20} /></span>
-                  <div class="artifact-result-copy"><strong>{box.artifactOutputName(index)}</strong><span>{#if size}{size} <span aria-hidden="true">·</span> {/if}{artifact.mime}</span></div>
+                  <div class="artifact-result-copy"><strong>{box.artifactOutputName(index)}</strong><span>{#if size}{size} <span aria-hidden="true">·</span> {/if}{typeLabel(artifact.mime)}</span></div>
                   <div class="artifact-actions"><button class="quiet-button" aria-label={`Open ${box.artifactOutputName(index)}`} disabled={box.artifactActionBusy} onclick={() => void box.showArtifact(artifact.value, false)}><Icon name="external" size={14} /><span>Open</span></button><button class="quiet-button" aria-label={`Save ${box.artifactOutputName(index)} as`} disabled={box.artifactActionBusy} onclick={() => void box.saveArtifact(artifact.value)}><Icon name="folder" size={14} /><span>Save as</span></button><button class="quiet-button" aria-label={`Reveal ${box.artifactOutputName(index)} in folder`} disabled={box.artifactActionBusy} onclick={() => void box.showArtifact(artifact.value, true)}><Icon name="folder" size={14} /><span>Reveal</span></button></div>
                 </div>
                 {/if}

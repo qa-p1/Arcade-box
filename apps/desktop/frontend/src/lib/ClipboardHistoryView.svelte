@@ -110,7 +110,10 @@
     }
   }
 
+  // BP-8: clearing every item asks first; Escape or "Keep" cancels (fleet Escape rule).
+  let confirmingClear = $state(false);
   async function clearAll(): Promise<void> {
+    confirmingClear = false;
     try {
       await clearClipboardHistory();
       items = [];
@@ -145,7 +148,17 @@
     <select id="clipboard-history-retention" value={status?.retentionDays || 7} onchange={(event) => void changeRetention((event.currentTarget as HTMLSelectElement).value)}>
       <option value="1">1 day</option><option value="7">7 days</option><option value="30">30 days</option><option value="90">90 days</option>
     </select>
-    <button class="quiet-button clipboard-clear" type="button" disabled={!items.length} onclick={() => void clearAll()}><Icon name="trash" size={14} /><span>Clear history</span></button>
+    {#if confirmingClear}
+      <!-- svelte-ignore a11y_no_noninteractive_element_interactions (Escape inside the confirmation cancels it) -->
+      <div class="clipboard-clear clipboard-clear-confirm" role="group" aria-label="Confirm clearing history" onkeydown={(event) => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); confirmingClear = false; } }}>
+        <span>Delete all {items.length} saved {items.length === 1 ? 'item' : 'items'}?</span>
+        <button class="quiet-button danger" type="button" onclick={() => void clearAll()}><Icon name="trash" size={14} /><span>Delete all</span></button>
+        <!-- svelte-ignore a11y_autofocus (the safe choice gets focus) -->
+        <button class="quiet-button" type="button" autofocus onclick={() => (confirmingClear = false)}><span>Keep</span></button>
+      </div>
+    {:else}
+      <button class="quiet-button clipboard-clear" type="button" disabled={!items.length} onclick={() => (confirmingClear = true)}><Icon name="trash" size={14} /><span>Clear history</span></button>
+    {/if}
   </div>
 
   <details class="clipboard-exclusion-settings">
@@ -200,6 +213,7 @@
   .clipboard-history-settings input { grid-column:1 / -1; width:100%; min-height:34px; padding:7px 9px; border:1px solid var(--line); border-radius:8px; background:var(--sunken); color:var(--text); font:inherit; font-size: var(--fs-caption); }
   .clipboard-history-settings select { min-width:90px; min-height:30px; border:1px solid var(--line); border-radius:7px; background:var(--sunken); color:var(--text); font:inherit; font-size: var(--fs-caption); }
   .clipboard-clear { grid-column:1 / -1; justify-self:start; }
+  .clipboard-clear-confirm { display:flex; align-items:center; gap:var(--sp-8); flex-wrap:wrap; }
   .clipboard-exclusion-settings { display:grid; gap:7px; padding:8px 9px; border:1px solid var(--line); border-radius:9px; }
   .clipboard-exclusion-settings summary { color:var(--muted); font-size: var(--fs-caption); cursor:pointer; }
   .clipboard-exclusion-settings label, .clipboard-exclusion-settings small { color:var(--muted); font-size: var(--fs-caption); }

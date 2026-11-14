@@ -1,0 +1,15 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "src/pin.ts",
+    "tests/visual.ts",
+    "tests/*.mjs"
+  ],
+  "project": [
+    "src/**/*.{ts,svelte}",
+    "tests/**/*.{ts,mjs}"
+  ],
+  "ignore": [
+    "src/design/**"
+  ]
+}

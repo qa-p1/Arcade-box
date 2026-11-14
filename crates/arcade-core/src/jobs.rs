@@ -249,7 +249,7 @@ impl ExternalJobHandle {
                 }
                 Ok(result) => {
                     entry.snapshot.status = JobStatus::Failed;
-                    entry.snapshot.message = result.message.clone();
+                    entry.snapshot.message = Some(failure_reason(&result));
                     entry.snapshot.result = Some(result);
                 }
                 Err(_) if self.is_cancellation_requested() => {
@@ -685,7 +685,7 @@ fn finish_job(
         }
         Ok(Ok(result)) => {
             entry.snapshot.status = JobStatus::Failed;
-            entry.snapshot.message = result.message.clone();
+            entry.snapshot.message = Some(failure_reason(&result));
             entry.snapshot.result = Some(result);
         }
         Ok(Err(error)) => {
@@ -746,10 +746,47 @@ fn lock_state(shared: &Shared) -> std::sync::MutexGuard<'_, QueueState> {
         .unwrap_or_else(std::sync::PoisonError::into_inner)
 }
 
+/// BR-14: a failed job always says why, even when its tool gave no message.
+fn failure_reason(result: &ToolResult) -> String {
+    result
+        .message
+        .clone()
+        .filter(|message| !message.trim().is_empty())
+        .or_else(|| {
+            result
+                .warnings
+                .iter()
+                .find(|w| !w.trim().is_empty())
+                .cloned()
+        })
+        .unwrap_or_else(|| "The tool failed without giving a reason".into())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use arcade_contract::{ToolValue, ValueKind};
+
+    #[test]
+    fn a_failed_job_always_has_a_reason() {
+        let result = |message: Option<&str>, warnings: &[&str]| ToolResult {
+            tool_id: "t".into(),
+            status: ResultStatus::Error,
+            outputs: vec![],
+            message: message.map(Into::into),
+            warnings: warnings.iter().map(|w| (*w).to_string()).collect(),
+            metadata: Default::default(),
+        };
+        assert_eq!(failure_reason(&result(Some("Disk full"), &[])), "Disk full");
+        assert_eq!(
+            failure_reason(&result(Some(" "), &["No engine"])),
+            "No engine"
+        );
+        assert_eq!(
+            failure_reason(&result(None, &[])),
+            "The tool failed without giving a reason"
+        );
+    }
     use std::{
         sync::{
             atomic::{AtomicBool as TestAtomicBool, Ordering as TestOrdering},

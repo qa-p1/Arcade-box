@@ -80,7 +80,24 @@ def main():
                 raise RuntimeError(f"{executable} {' '.join(args)} exited {result.returncode}\n{result.stdout}\n{result.stderr}")
             return result.stdout
 
+        # BR-3: WebKit plays audio and video through GStreamer, and the image points GStreamer at its own plugin
+        # folder only, so the plugins playback needs must be inside it (`bundleMediaFramework`, D9).
+        extracted = root / "extracted"
+        extracted.mkdir()
+        subprocess.run([str(download), "--appimage-extract"], cwd=extracted, env=env, check=True,
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=180)
+        plugins = {p.name for p in (extracted / "squashfs-root").rglob("libgst*.so") if "gstreamer" in str(p.parent)}
+        needed = {"libgstapp.so", "libgstcoreelements.so", "libgstplayback.so", "libgsttypefindfunctions.so",
+                  "libgstaudioconvert.so", "libgstaudioresample.so", "libgstautodetect.so", "libgstpulseaudio.so",
+                  "libgstvpx.so", "libgstmatroska.so", "libgstopus.so", "libgstvorbis.so"}
+        assert needed <= plugins, f"GStreamer plugins missing from the image: {sorted(needed - plugins)} (has {len(plugins)})"
+        shutil.rmtree(extracted)
+
         version = run(download, "--version").strip().split()[-1]
+        # ARCADE_APP.md CLI-2: an unknown argument prints usage and exits 2, before anything starts.
+        wrong = subprocess.run([str(download), "--no-such-flag"], env=env, text=True, capture_output=True, timeout=60)
+        assert wrong.returncode == 2 and "--no-such-flag" in wrong.stderr and "--background" in wrong.stderr, (
+            f"unknown argument: exit {wrong.returncode}\n{wrong.stdout}\n{wrong.stderr}")
         run(download, "--install", "--silent", "--no-launch")
         receipt_path = root / "arcade/installs" / (app_id + ".json")
         receipt = json.loads(receipt_path.read_text(encoding="utf-8"))

@@ -64,10 +64,75 @@ pub enum CoreError {
     UnknownTool(String),
     #[error("tool {0} is not implemented yet")]
     NotImplemented(String),
-    #[error("tool {tool} does not accept input type {mime}")]
+    #[error("This tool can't use {}", type_label(mime))]
     InputType { tool: String, mime: String },
     #[error("{0}")]
     Execution(String),
+}
+
+/// A data type as people say it (B-14, BP-7): `file/document` is "a document file", `text/url` "a web address".
+/// The frontend's `typeLabel` (`lib/tool-utils.ts`) uses the same table.
+pub fn type_label(mime: &str) -> String {
+    let (base, many) = match mime.strip_suffix("[]") {
+        Some(base) => (base, true),
+        None => (mime, false),
+    };
+    let known = match base {
+        "none" => Some("no input"),
+        "file/any" => Some("any file"),
+        "file/octet-stream" => Some("this kind of file"),
+        "file/document" => Some("a document file"),
+        "file/spreadsheet" => Some("a spreadsheet file"),
+        "file/pdf" => Some("a PDF file"),
+        "file/image" => Some("an image file"),
+        "file/video" => Some("a video file"),
+        "file/audio" => Some("an audio file"),
+        "file/archive" => Some("a ZIP archive"),
+        "file/csv" | "rows/csv" | "text/csv" => Some("CSV data"),
+        "file/tsv" => Some("TSV data"),
+        "file/subtitle" => Some("a subtitle file"),
+        "file/svg" => Some("an SVG image"),
+        "file/html" => Some("a web page file"),
+        "file/mhtml" => Some("a saved web page"),
+        "text/plain" => Some("text"),
+        "text/markdown" => Some("Markdown text"),
+        "text/url" | "network/url" => Some("a web address"),
+        "network/host" => Some("a host name"),
+        "clipboard/text" => Some("clipboard text"),
+        "structured/json" => Some("JSON data"),
+        "structured/yaml" => Some("YAML data"),
+        "structured/toml" => Some("TOML data"),
+        "structured/xml" => Some("XML data"),
+        _ => None,
+    };
+    let label = known.map(str::to_string).unwrap_or_else(|| {
+        let (kind, name) = base.split_once('/').unwrap_or(("", base));
+        let name = name.replace(['-', '_'], " ");
+        match kind {
+            "file" if name.starts_with(['a', 'e', 'i', 'o', 'u']) => format!("an {name} file"),
+            "file" => format!("a {name} file"),
+            "structured" => format!("{name} data"),
+            _ => name,
+        }
+    });
+    if many {
+        format!("{label} (one or more)")
+    } else {
+        label
+    }
+}
+
+#[cfg(test)]
+mod type_label_tests {
+    #[test]
+    fn data_types_read_as_words() {
+        use super::type_label;
+        assert_eq!(type_label("file/document"), "a document file");
+        assert_eq!(type_label("text/plain[]"), "text (one or more)");
+        assert_eq!(type_label("structured/json"), "JSON data");
+        assert_eq!(type_label("file/ebook"), "an ebook file");
+        assert_eq!(type_label("file/font"), "a font file");
+    }
 }
 
 type PipelineConfirmation = Arc<dyn Fn(&pipeline::Pipeline, &[String]) -> bool + Send + Sync>;
@@ -229,6 +294,7 @@ impl Arcade {
         if manifest.status == ImplementationStatus::Planned {
             return Err(CoreError::NotImplemented(request.tool_id));
         }
+        fill_ui_defaults(&manifest, &mut request.options);
         text_options_from_numbers(&manifest, &mut request.options);
         for input in &request.inputs {
             if input.kind == ValueKind::Artifact {
@@ -783,6 +849,63 @@ fn input_compatible(actual: &str, declared: &str) -> bool {
 
 /// A text, select or password option sent as a JSON number or boolean (`--option tabs=4` over Link, a script) is
 /// the same value as its text; executors read these options as strings and would otherwise ignore it (U-1).
+/// B-23: the CLI, Link and pipelines get the same defaults as the form. An
+/// option the caller leaves out takes its control's catalog default when that
+/// control would be shown, exactly as the UI serializes a fresh form
+/// (`serializeStandardUiOptions`), so "compress" means the same everywhere.
+fn fill_ui_defaults(manifest: &ToolManifest, options: &mut serde_json::Value) {
+    fn as_ui_string(value: &serde_json::Value) -> String {
+        match value {
+            serde_json::Value::String(text) => text.clone(),
+            serde_json::Value::Number(_) | serde_json::Value::Bool(_) => value.to_string(),
+            _ => String::new(),
+        }
+    }
+    let Some(ui) = manifest.ui.as_ref() else {
+        return;
+    };
+    if options.is_null() {
+        *options = serde_json::json!({});
+    }
+    let Some(map) = options.as_object_mut() else {
+        return;
+    };
+    let current = |map: &serde_json::Map<String, serde_json::Value>, key: &str| {
+        map.get(key).map(as_ui_string).or_else(|| {
+            ui.controls
+                .iter()
+                .find(|control| control.key == key)
+                .and_then(|control| control.default.as_ref().map(as_ui_string))
+        })
+    };
+    let mut fills = Vec::new();
+    for control in &ui.controls {
+        let Some(default) = control.default.as_ref() else {
+            continue;
+        };
+        if map.contains_key(&control.key) || as_ui_string(default).is_empty() {
+            continue;
+        }
+        let visible = match &control.show_when {
+            None => true,
+            Some(condition) => {
+                let value = current(map, &condition.key);
+                match &condition.equals {
+                    Some(expected) => value.as_deref() == Some(as_ui_string(expected).as_str()),
+                    None => condition
+                        .one_of
+                        .iter()
+                        .any(|expected| value.as_deref() == Some(as_ui_string(expected).as_str())),
+                }
+            }
+        };
+        if visible {
+            fills.push((control.key.clone(), default.clone()));
+        }
+    }
+    map.extend(fills);
+}
+
 fn text_options_from_numbers(manifest: &ToolManifest, options: &mut serde_json::Value) {
     use arcade_contract::UiControlKind;
     let (Some(ui), Some(map)) = (manifest.ui.as_ref(), options.as_object_mut()) else {
@@ -804,6 +927,32 @@ fn text_options_from_numbers(manifest: &ToolManifest, options: &mut serde_json::
 mod tests {
     use super::*;
     use arcade_contract::{ResultStatus, ToolValue};
+
+    #[test]
+    fn omitted_options_take_the_forms_visible_defaults() {
+        let runtime = Arcade::in_memory().unwrap();
+        let manifest = |id: &str| {
+            runtime
+                .list_tools()
+                .into_iter()
+                .find(|tool| tool.id == id)
+                .unwrap()
+        };
+        let mut options = serde_json::Value::Null;
+        fill_ui_defaults(&manifest("arcade.image.convert"), &mut options);
+        assert_eq!(options["format"], "webp");
+        let mut options = serde_json::json!({"mode": "lossless"});
+        fill_ui_defaults(&manifest("arcade.pdf.compress"), &mut options);
+        assert_eq!(options["mode"], "lossless");
+        assert!(
+            options.get("targetMb").is_none(),
+            "hidden controls stay unset"
+        );
+        let mut options = serde_json::json!({});
+        fill_ui_defaults(&manifest("arcade.pdf.compress"), &mut options);
+        assert_eq!(options["mode"], "targetSize");
+        assert_eq!(options["targetMb"], 2);
+    }
 
     #[test]
     fn catalog_loads_and_is_unique() {

@@ -35,6 +35,9 @@ chrono-tz = "0.10"
 url = "2.5"
 strsim = "0.11"
 sha2 = "0.10"
+# Legacy checksums only (B-22: download pages still publish MD5 and SHA-1).
+md-5 = "0.11"
+sha1 = "0.11"
 blake3 = "1.8"
 yaml-rust2 = "0.13"
 toml = { version = "1.1", features = ["preserve_order"] }
@@ -64,3 +67,7 @@ windows-sys = { version = "0.61", features = [
     "Win32_System_JobObjects",
     "Win32_System_Threading",
 ] }
+
+[package.metadata.cargo-machete]
+# Imported as `md5` and `zxingcpp`, which cargo-machete does not map back.
+ignored = ["md-5", "zxing-cpp"]

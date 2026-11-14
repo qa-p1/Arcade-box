@@ -37,6 +37,23 @@ pub(crate) fn option_f64(request: &ToolRequest, key: &str) -> Option<f64> {
 }
 
 /// A required number inside an inclusive range, with a readable error.
+/// `number_in` for counts: 2.5 people or 1.5 paragraphs is an error, not a
+/// silent round (B-18, B-19).
+pub(crate) fn whole_number_in(
+    request: &ToolRequest,
+    key: &str,
+    label: &str,
+    default: Option<f64>,
+    range: std::ops::RangeInclusive<f64>,
+) -> Result<f64, String> {
+    let value = number_in(request, key, label, default, range)?;
+    if value.fract() == 0.0 {
+        Ok(value)
+    } else {
+        Err(format!("{label} must be a whole number"))
+    }
+}
+
 pub(crate) fn number_in(
     request: &ToolRequest,
     key: &str,

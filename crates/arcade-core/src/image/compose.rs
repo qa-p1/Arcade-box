@@ -171,18 +171,15 @@ fn combine(context: &Context, inputs: &[Input]) -> Result<ToolResult, String> {
         "vertical" | "horizontal" => {
             let vertical = layout == "vertical";
             if same_size {
-                // Match the smallest edge so nothing is upscaled.
-                let edge = sizes
-                    .iter()
-                    .map(|(w, h)| if vertical { *w } else { *h })
-                    .min()
-                    .unwrap_or(1);
+                // B-24: the typical (median) edge; larger images shrink to it, smaller ones are never upscaled
+                // and are centred. One small image no longer shrinks all the others.
+                let edge = median(sizes.iter().map(|(w, h)| if vertical { *w } else { *h }));
                 command.extend([
                     "-resize".into(),
                     if vertical {
-                        format!("{edge}x")
+                        format!("{edge}x>")
                     } else {
-                        format!("x{edge}")
+                        format!("x{edge}>")
                     }
                     .into(),
                 ]);
@@ -222,15 +219,12 @@ fn combine(context: &Context, inputs: &[Input]) -> Result<ToolResult, String> {
         "grid" => {
             let columns =
                 number_in(request, "columns", "Columns", Some(2.0), 1.0..=20.0)?.round() as u32;
-            let cell = sizes
-                .iter()
-                .map(|(w, h)| (*w).max(*h))
-                .min()
-                .unwrap_or(1)
-                .min(2000);
+            // B-24: tiles take the typical (median) image size; larger images shrink into them, smaller ones stay
+            // as they are, centred.
+            let cell = median(sizes.iter().map(|(w, h)| (*w).max(*h))).min(2000);
             let half = spacing / 2;
             let geometry = if same_size {
-                format!("{cell}x{cell}+{half}+{half}")
+                format!("{cell}x{cell}>+{half}+{half}")
             } else {
                 format!("+{half}+{half}")
             };
@@ -657,6 +651,13 @@ fn passport(context: &Context, inputs: &[Input]) -> Result<ToolResult, String> {
     ))
 }
 
+/// The middle value (the upper one of an even count), 1 when empty.
+fn median(values: impl Iterator<Item = u32>) -> u32 {
+    let mut values: Vec<u32> = values.collect();
+    values.sort_unstable();
+    values.get(values.len() / 2).copied().unwrap_or(1)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -690,6 +691,14 @@ mod tests {
         );
         assert_eq!(base.get_pixel(0, 0)[3], 0);
         assert_eq!(base.get_pixel(512, 512)[3], 255);
+    }
+
+    #[test]
+    fn same_size_uses_the_typical_size_not_the_smallest() {
+        // B-24: one thumbnail must not shrink every photo to its size.
+        assert_eq!(median([800, 800, 64].into_iter()), 800);
+        assert_eq!(median([64, 800].into_iter()), 800);
+        assert_eq!(median(std::iter::empty()), 1);
     }
 
     #[test]

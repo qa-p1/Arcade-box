@@ -31,7 +31,7 @@
         <span class="glyph-tile sm"><Icon name={tool ? box.iconForCategory(tool.category) : 'sparkle'} size={14} /></span>
         <div class="row-main">
           <div class="row-title">{tool?.name || job.toolId}</div>
-          <div class="row-sub">{job.message || (box.jobIsActive(job) ? 'Working in the background' : 'Finished')}</div>
+          <div class="row-sub">{job.message || (box.jobIsActive(job) ? 'Working in the background' : job.status === 'failed' ? 'Failed without a reason' : job.status === 'interrupted' ? 'Stopped when Arcade Box closed' : job.status === 'cancelled' ? 'Cancelled' : 'Finished')}</div>
         </div>
         {#if box.jobIsActive(job)}
           {#if job.progress === null}

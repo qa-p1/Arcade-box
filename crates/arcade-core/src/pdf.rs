@@ -1730,6 +1730,23 @@ fn protect(
             args.extend(["--extract=y".into(), "--".into()]);
         }
         "unlock" => {
+            // B-23: don't report "removed encryption" for a PDF that had none.
+            let check = process::run(
+                &ProcessSpec {
+                    executable: provider.executable_path.clone(),
+                    args: vec!["--is-encrypted".into(), source.as_os_str().to_os_string()],
+                    current_dir: Some(temp.path().to_path_buf()),
+                    timeout: Duration::from_secs(60),
+                    output_limit: 64 * 1024,
+                },
+                cancelled,
+            )
+            .map_err(|error| error.to_string())?;
+            if check.status.code() == Some(2) {
+                return Err(
+                    "This PDF isn't password-protected, so there is nothing to unlock".into(),
+                );
+            }
             let password = required_password(request, "password")?;
             let password_file = temp.path().join("input-password");
             write_private(&password_file, password.as_bytes())?;
@@ -2730,8 +2747,27 @@ fn merge_with_provider(
     Ok(result)
 }
 
+/// One line of engine output for a message. Absolute paths (our private temp
+/// folders) become their file names (B-23), and qpdf's own name prefix goes.
 fn concise(detail: &str) -> String {
-    let condensed = detail.split_whitespace().collect::<Vec<_>>().join(" ");
+    let condensed = detail
+        .split_whitespace()
+        .map(|word| {
+            let core = word
+                .trim_start_matches(['"', '\'', '('])
+                .trim_end_matches([':', ',', '"', '\'', ')', ';']);
+            let windows =
+                core.len() > 2 && core.as_bytes()[1] == b':' && core.as_bytes()[2] == b'\\';
+            if (core.starts_with('/') && core[1..].contains('/')) || windows {
+                let name = core.rsplit(['/', '\\']).next().unwrap_or(core);
+                word.replacen(core, name, 1)
+            } else {
+                word.to_owned()
+            }
+        })
+        .collect::<Vec<_>>()
+        .join(" ");
+    let condensed = condensed.strip_prefix("qpdf: ").unwrap_or(&condensed);
     condensed.chars().take(500).collect()
 }
 
@@ -2742,6 +2778,20 @@ mod tests {
         fs,
         io::{Read, Write},
     };
+
+    #[test]
+    fn engine_messages_do_not_show_private_temp_paths() {
+        assert_eq!(
+            concise(
+                "qpdf: parsing numeric range for /tmp/.arcade-pdf-x1/multi.pdf: error at * in numeric range *0-2\n"
+            ),
+            "parsing numeric range for multi.pdf: error at * in numeric range *0-2"
+        );
+        assert_eq!(
+            concise(r"open C:\Users\a\AppData\Local\Temp\x\in.pdf failed"),
+            "open in.pdf failed"
+        );
+    }
 
     #[test]
     fn document_conversion_accepts_documents_and_spreadsheets() {

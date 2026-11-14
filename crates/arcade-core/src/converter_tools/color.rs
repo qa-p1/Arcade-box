@@ -114,6 +114,21 @@ fn parse_alpha(text: &str) -> Result<(Rgb, f64), String> {
     if let Some((_, hex_value)) = NAMED.iter().find(|(name, _)| *name == value) {
         return Ok((parse_hex(hex_value).expect("named colours are valid"), 1.0));
     }
+    // B-17: say what is wrong instead of "`…` is not a number".
+    if value == "transparent" {
+        return Ok((Rgb { r: 0, g: 0, b: 0 }, 0.0));
+    }
+    if let Some(digits) = value.strip_prefix('#') {
+        return Err(format!(
+            "`#{digits}` is not a hex colour; use 3, 4, 6 or 8 digits from 0–9 and a–f, like #ff8800"
+        ));
+    }
+    if value.chars().all(|c| c.is_ascii_alphabetic()) {
+        return Err(format!(
+            "`{}` is not a colour name we know; try a CSS name like orange, or a code like #ff8800",
+            text.trim()
+        ));
+    }
     let (function, body) = match value.split_once('(') {
         Some((name, rest)) => (name.trim(), rest.trim_end_matches(')')),
         None => ("rgb", value.as_str()),
@@ -132,6 +147,29 @@ fn parse_alpha(text: &str) -> Result<(Rgb, f64), String> {
                 .map_err(|_| format!("`{part}` is not a number"))
         })
         .collect::<Result<Vec<_>, _>>()?;
+    if function == "cmyk" {
+        if parts.len() != 4 {
+            return Err("cmyk() takes four values: cyan, magenta, yellow and black".into());
+        }
+        let fraction = |(v, percent): (f64, bool)| {
+            let v = if percent || v > 1.0 { v / 100.0 } else { v };
+            if (0.0..=1.0).contains(&v) {
+                Ok(v)
+            } else {
+                Err("CMYK values must be 0% to 100%".to_owned())
+            }
+        };
+        let k = fraction(parts[3])?;
+        let channel = |part| fraction(part).map(|c| (255.0 * (1.0 - c) * (1.0 - k)).round() as u8);
+        return Ok((
+            Rgb {
+                r: channel(parts[0])?,
+                g: channel(parts[1])?,
+                b: channel(parts[2])?,
+            },
+            1.0,
+        ));
+    }
     if parts.len() < 3 || parts.len() > 4 {
         return Err(format!("Could not read `{text}` as a colour"));
     }
@@ -165,6 +203,19 @@ fn parse_alpha(text: &str) -> Result<(Rgb, f64), String> {
         }
         "hsl" | "hsla" => check_hs(b, c).map(|_| from_hsl(a, b / 100.0, c / 100.0))?,
         "hsv" | "hsb" => check_hs(b, c).map(|_| from_hsv(a, b / 100.0, c / 100.0))?,
+        "oklch" | "oklab" => {
+            // L as 0–1 or a percentage; oklch's hue in degrees.
+            let lightness = if parts[0].1 { a / 100.0 } else { a };
+            let (ok_a, ok_b) = if function == "oklch" {
+                let chroma = if parts[1].1 { b * 0.4 / 100.0 } else { b };
+                let hue = c.to_radians();
+                (chroma * hue.cos(), chroma * hue.sin())
+            } else {
+                let scale = |(v, percent): (f64, bool)| if percent { v * 0.4 / 100.0 } else { v };
+                (scale(parts[1]), scale(parts[2]))
+            };
+            from_oklab(lightness, ok_a, ok_b)
+        }
         other => return Err(format!("Unsupported colour format `{other}`")),
     };
     Ok((color, alpha))
@@ -186,6 +237,32 @@ fn check_hs(s: f64, l: f64) -> Result<(), String> {
         Ok(())
     } else {
         Err("Saturation and lightness must be 0 to 100%".into())
+    }
+}
+
+/// OKLab to sRGB (Björn Ottosson's reference matrices), clipped to the gamut.
+fn from_oklab(l: f64, a: f64, b: f64) -> Rgb {
+    let l_ = (l + 0.396_337_777_4 * a + 0.215_803_757_3 * b).powi(3);
+    let m_ = (l - 0.105_561_345_8 * a - 0.063_854_172_8 * b).powi(3);
+    let s_ = (l - 0.089_484_177_5 * a - 1.291_485_548 * b).powi(3);
+    let linear = [
+        4.076_741_662_1 * l_ - 3.307_711_591_3 * m_ + 0.230_969_929_2 * s_,
+        -1.268_438_004_6 * l_ + 2.609_757_401_1 * m_ - 0.341_319_396_5 * s_,
+        -0.004_196_086_3 * l_ - 0.703_418_614_7 * m_ + 1.707_614_701 * s_,
+    ];
+    let encode = |v: f64| {
+        let v = v.clamp(0.0, 1.0);
+        let v = if v <= 0.003_130_8 {
+            12.92 * v
+        } else {
+            1.055 * v.powf(1.0 / 2.4) - 0.055
+        };
+        (v * 255.0).round() as u8
+    };
+    Rgb {
+        r: encode(linear[0]),
+        g: encode(linear[1]),
+        b: encode(linear[2]),
     }
 }
 
@@ -466,6 +543,28 @@ const NAMED: &[(&str, &str)] = &[
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn colour_errors_say_what_is_wrong_and_cmyk_oklch_parse() {
+        assert!(
+            parse_alpha("#gggggg")
+                .unwrap_err()
+                .contains("not a hex colour")
+        );
+        assert!(parse_alpha("#12").unwrap_err().contains("not a hex colour"));
+        assert!(
+            parse_alpha("notacolor")
+                .unwrap_err()
+                .contains("colour name")
+        );
+        assert_eq!(parse_alpha("transparent").unwrap().1, 0.0);
+        let (orange, _) = parse_alpha("cmyk(0%, 47%, 100%, 0%)").unwrap();
+        assert_eq!((orange.r, orange.g, orange.b), (255, 135, 0));
+        let (white, _) = parse_alpha("oklch(1 0 0)").unwrap();
+        assert_eq!((white.r, white.g, white.b), (255, 255, 255));
+        let (red, _) = parse_alpha("oklch(62.8% 0.2577 29.23)").unwrap();
+        assert!(red.r >= 254 && red.g <= 2 && red.b <= 2, "{red:?}");
+    }
 
     #[test]
     fn alpha_and_percent_forms_are_honoured() {

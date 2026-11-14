@@ -11,6 +11,9 @@
     { capability: 'image.vips', name: 'libvips', usedFor: 'Image tools' },
     { capability: 'pdf.merge', name: 'qpdf', usedFor: 'PDF tools' },
     { capability: 'ocr.tesseract', name: 'Tesseract', usedFor: 'Text recognition (OCR)' },
+    { capability: 'pdf.render', name: 'Poppler', usedFor: 'PDF pages to images, PDF text and details' },
+    { capability: 'media.ytdlp', name: 'yt-dlp', usedFor: 'Video and audio downloads' },
+    { capability: 'network.http', name: 'curl', usedFor: 'Web and network tools' },
   ];
   const names: Record<string, string> = {
     'image.model.background-removal': 'Background removal model',
@@ -44,7 +47,7 @@
 <header class="page-head">
   <div>
     <h1>Engines</h1>
-    <p class="sub">{box.providersLoaded ? `${foundCount} of ${engines.length} found · ` : ''}Programs Box uses for media, images, PDFs and text recognition.</p>
+    <p class="sub">{box.providersLoaded ? `${foundCount} of ${engines.length} found · ` : ''}Programs Box uses for media, images, PDFs, downloads and text recognition.</p>
   </div>
   <div class="page-actions">
     <button type="button" class="btn" class:busy={checking} disabled={checking} onclick={() => void checkAgain()}><Icon name="refresh" size={14} />Check again</button>

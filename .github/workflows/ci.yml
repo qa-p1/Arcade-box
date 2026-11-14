@@ -77,10 +77,11 @@ jobs:
       - name: Install Linux desktop dependencies
         if: runner.os == 'Linux'
         run: >-
-          sudo apt-get update && sudo apt-get install -y
+          scripts/apt-install.sh
           libwebkit2gtk-4.1-dev build-essential file libxdo-dev libssl-dev
           libayatana-appindicator3-dev librsvg2-dev qpdf ffmpeg libvips-tools lua5.4
           xvfb dbus-x11 xdotool python3-dbus python3-gi
+          gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-pipewire
       - name: Install frontend dependencies
         working-directory: Arcade-box/apps/desktop/frontend
         run: npm ci
@@ -122,7 +123,8 @@ jobs:
         if: failure() && steps.native.outcome == 'failure'
         with:
           name: native-notices
-          path: packaging/linux/native
+          # `uses` steps run from the workspace root, not the job's working directory.
+          path: Arcade-box/packaging/linux/native
       - name: Verify AppImage install, repair and uninstall in a temporary profile
         if: runner.os == 'Linux'
         shell: bash
