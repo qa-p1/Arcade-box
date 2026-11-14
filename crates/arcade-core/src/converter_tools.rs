@@ -2,7 +2,7 @@
 //! converter, which fetches indicative rates.
 
 mod calculator;
-mod color;
+pub(crate) mod color;
 mod currency;
 mod datetime;
 mod finance;

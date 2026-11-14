@@ -152,3 +152,12 @@ commands, `run()` and the few helpers every module uses (`OS_ID`, `in_box_folder
 changed (compiler-checked; desktop tests and the Island key/layout checks unchanged). The commands then moved to
 `commands/<feature>.rs` (shortcut, tools, plugins, pipelines, engines, files, screen); `run()` registers them by path.
 `lib.rs` went from 2,542 to 470 lines.
+
+Copies in `arcade-core` that had to change together but didn't say so, now one each:
+- `safe_stem` (output names after the input) existed three times. Two capped the stem at 100 characters and the
+  PDF one at 100 bytes; a 100-character CJK or emoji stem is 300–400 bytes, past the 255-byte file name limit, so
+  saving such a result could fail. One `tool_kit::safe_stem` with the byte cap (test
+  `safe_stem_caps_bytes_not_characters`).
+- `rgb_to_hsl` existed three times (colour converter, Pick screen colour, image palette): one in
+  `converter_tools::color`, the converter's rounded `to_hsl` built on it.
+- `barcode.rs` had its own copy of `tool_kit::option_str`.

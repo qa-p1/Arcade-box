@@ -312,8 +312,14 @@ fn hue(r: f64, g: f64, b: f64, max: f64, delta: f64) -> f64 {
     }
 }
 
-fn to_hsl(color: Rgb) -> (i64, i64, i64) {
-    let (r, g, b) = unit(color);
+/// Hue in degrees [0, 360), saturation and lightness in percent: the one HSL conversion (the colour converter,
+/// Pick screen colour and the image palette all report it).
+pub(crate) fn rgb_to_hsl(rgb: [u8; 3]) -> [f64; 3] {
+    let (r, g, b) = unit(Rgb {
+        r: rgb[0],
+        g: rgb[1],
+        b: rgb[2],
+    });
     let (max, min) = (r.max(g).max(b), r.min(g).min(b));
     let delta = max - min;
     let l = (max + min) / 2.0;
@@ -322,11 +328,16 @@ fn to_hsl(color: Rgb) -> (i64, i64, i64) {
     } else {
         delta / (1.0 - (2.0 * l - 1.0).abs())
     };
-    (
-        hue(r, g, b, max, delta).round() as i64 % 360,
-        (s * 100.0).round() as i64,
-        (l * 100.0).round() as i64,
-    )
+    [
+        hue(r, g, b, max, delta).rem_euclid(360.0),
+        s * 100.0,
+        l * 100.0,
+    ]
+}
+
+fn to_hsl(color: Rgb) -> (i64, i64, i64) {
+    let [h, s, l] = rgb_to_hsl([color.r, color.g, color.b]);
+    (h.round() as i64 % 360, s.round() as i64, l.round() as i64)
 }
 
 fn to_hsv(color: Rgb) -> (i64, i64, i64) {

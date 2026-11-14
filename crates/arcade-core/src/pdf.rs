@@ -355,7 +355,12 @@ fn images_to_pdf(
         .get("outputName")
         .and_then(serde_json::Value::as_str)
         .map(str::to_owned)
-        .unwrap_or_else(|| format!("{}-images.pdf", safe_stem(first)));
+        .unwrap_or_else(|| {
+            format!(
+                "{}-images.pdf",
+                crate::tool_kit::safe_stem(first, "document")
+            )
+        });
     validate_pdf_output_name(&name)?;
     let page_size_name = request
         .options
@@ -514,7 +519,12 @@ fn pdf_to_images(
         .get("outputName")
         .and_then(serde_json::Value::as_str)
         .map(str::to_owned)
-        .unwrap_or_else(|| format!("{}-page.{extension}", safe_stem(&source)));
+        .unwrap_or_else(|| {
+            format!(
+                "{}-page.{extension}",
+                crate::tool_kit::safe_stem(&source, "document")
+            )
+        });
     validate_portable_filename(&requested_name)?;
     let requested_path = Path::new(&requested_name);
     let requested_extension = requested_path
@@ -772,8 +782,11 @@ fn extract_content(
                     );
                 }
                 let extension = safe_image_extension(staged_image);
-                let output_name =
-                    format!("{}-image-{:03}.{extension}", safe_stem(&source), index + 1);
+                let output_name = format!(
+                    "{}-image-{:03}.{extension}",
+                    crate::tool_kit::safe_stem(&source, "document"),
+                    index + 1
+                );
                 let published =
                     publish_without_overwrite(staged_image, parent, &output_name, cancelled)
                         .map_err(|error| {
@@ -858,7 +871,7 @@ fn extract_content(
             }
             let output_name = format!(
                 "{}-attachment-{:03}.bin",
-                safe_stem(&source),
+                crate::tool_kit::safe_stem(&source, "document"),
                 attachment.index
             );
             let published =
@@ -2171,36 +2184,13 @@ fn output_name(request: &ToolRequest, source: &Path, suffix: &str) -> Result<Str
         .get("outputName")
         .and_then(serde_json::Value::as_str)
         .map(str::to_owned);
-    let name = explicit_name.unwrap_or_else(|| format!("{}{suffix}", safe_stem(source)));
+    let name = explicit_name
+        .unwrap_or_else(|| format!("{}{suffix}", crate::tool_kit::safe_stem(source, "document")));
     validate_portable_filename(&name)?;
     if !name.to_ascii_lowercase().ends_with(".pdf") {
         return Err("The output filename must end in .pdf".into());
     }
     Ok(name)
-}
-
-fn safe_stem(source: &Path) -> String {
-    let raw = source.file_stem().unwrap_or_default().to_string_lossy();
-    let mut stem = String::new();
-    for ch in raw.chars() {
-        let safe = if ch.is_control()
-            || matches!(ch, '/' | '\\' | '<' | '>' | ':' | '"' | '|' | '?' | '*')
-        {
-            '_'
-        } else {
-            ch
-        };
-        if stem.len() + safe.len_utf8() > 100 {
-            break;
-        }
-        stem.push(safe);
-    }
-    let stem = stem.trim_matches([' ', '.']);
-    if stem.is_empty() {
-        "document".into()
-    } else {
-        stem.into()
-    }
 }
 
 fn requested_page_range(request: &ToolRequest) -> Result<String, String> {

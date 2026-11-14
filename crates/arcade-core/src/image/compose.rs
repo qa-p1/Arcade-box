@@ -6,7 +6,7 @@
 //! `in-0.jpg`, so user paths (which ImageMagick would otherwise interpret for
 //! `[frame]`, `format:` or `@file` syntax) never reach its command line.
 
-use super::{ImageFormat, link_or_copy, rembg_cutout, safe_stem};
+use super::{ImageFormat, link_or_copy, rembg_cutout};
 use crate::{
     Arcade,
     magick::{Magick, args, literal_text},
@@ -103,7 +103,7 @@ fn stage_inputs(
                 return Ok(Input {
                     name,
                     format: ImageFormat::Png,
-                    stem: safe_stem(&source),
+                    stem: crate::tool_kit::safe_stem(&source, "image"),
                 });
             }
             let format = ImageFormat::from_file(&source)?;
@@ -112,7 +112,7 @@ fn stage_inputs(
             Ok(Input {
                 name,
                 format,
-                stem: safe_stem(&source),
+                stem: crate::tool_kit::safe_stem(&source, "image"),
             })
         })
         .collect()

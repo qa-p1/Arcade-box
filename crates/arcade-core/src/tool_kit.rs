@@ -256,19 +256,23 @@ pub(crate) fn stderr_excerpt(stderr: &[u8]) -> String {
 
 /// A file stem that is safe to reuse in an output name, or `fallback`.
 pub(crate) fn safe_stem(path: &std::path::Path, fallback: &str) -> String {
+    // Capped in bytes, not characters: a 100-character CJK or emoji stem is 300-400 bytes, past the 255-byte
+    // file name limit of most file systems once a suffix is added.
     let raw = path.file_stem().unwrap_or_default().to_string_lossy();
-    let stem = raw
-        .chars()
-        .take(100)
-        .map(|ch| {
-            if ch.is_control() || matches!(ch, '/' | '\\' | '<' | '>' | ':' | '"' | '|' | '?' | '*')
-            {
-                '_'
-            } else {
-                ch
-            }
-        })
-        .collect::<String>();
+    let mut stem = String::new();
+    for ch in raw.chars() {
+        let safe = if ch.is_control()
+            || matches!(ch, '/' | '\\' | '<' | '>' | ':' | '"' | '|' | '?' | '*')
+        {
+            '_'
+        } else {
+            ch
+        };
+        if stem.len() + safe.len_utf8() > 100 {
+            break;
+        }
+        stem.push(safe);
+    }
     match stem.trim_matches([' ', '.']) {
         "" => fallback.to_owned(),
         stem => stem.to_owned(),
@@ -284,5 +288,21 @@ pub(crate) fn input_stem(runtime: &Arcade, input: &ToolValue, fallback: &str) ->
             .map(|path| safe_stem(&path, fallback))
             .unwrap_or_else(|_| fallback.to_owned()),
         ValueKind::Text | ValueKind::Url => fallback.to_owned(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Output names stay under the file-name limit for non-Latin stems: 100 bytes, not 100 characters.
+    #[test]
+    fn safe_stem_caps_bytes_not_characters() {
+        let cjk = "報告".repeat(80); // 160 characters, 480 bytes
+        let stem = safe_stem(std::path::Path::new(&format!("/tmp/{cjk}.pdf")), "document");
+        assert!(stem.len() <= 100, "{} bytes", stem.len());
+        assert!(stem.chars().all(|c| c == '報' || c == '告'), "cut inside a character: {stem}");
+        assert_eq!(safe_stem(std::path::Path::new("/tmp/ .pdf"), "document"), "document");
+        assert_eq!(safe_stem(std::path::Path::new("/tmp/a:b?.png"), "image"), "a_b_");
     }
 }

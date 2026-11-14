@@ -556,7 +556,7 @@ fn execute_with_provider(
     };
     let default_name = format!(
         "{}-{suffix}.{}",
-        safe_stem(source),
+        crate::tool_kit::safe_stem(source, "image"),
         output_format.extension()
     );
     let output_name = request
@@ -881,7 +881,11 @@ fn metadata_tool(
         cancelled,
         "remove image metadata",
     )?;
-    let fallback = format!("{}-private.{}", safe_stem(source), format.extension());
+    let fallback = format!(
+        "{}-private.{}",
+        crate::tool_kit::safe_stem(source, "image"),
+        format.extension()
+    );
     let output_name = request
         .options
         .get("outputName")
@@ -1061,7 +1065,7 @@ fn palette(
             json!({
                 "hex":format!("#{:02X}{:02X}{:02X}",rgb[0],rgb[1],rgb[2]),
                 "rgb":rgb,
-                "hsl":rgb_to_hsl(rgb),
+                "hsl":crate::converter_tools::color::rgb_to_hsl(rgb),
                 "samples":count
             })
         })
@@ -1081,32 +1085,6 @@ fn palette(
         warnings: vec![],
         metadata: Default::default(),
     })
-}
-
-fn rgb_to_hsl(rgb: [u8; 3]) -> [f64; 3] {
-    let r = rgb[0] as f64 / 255.0;
-    let g = rgb[1] as f64 / 255.0;
-    let b = rgb[2] as f64 / 255.0;
-    let max = r.max(g).max(b);
-    let min = r.min(g).min(b);
-    let delta = max - min;
-    let lightness = (max + min) / 2.0;
-    if delta == 0.0 {
-        return [0.0, 0.0, lightness * 100.0];
-    }
-    let saturation = delta / (1.0 - (2.0 * lightness - 1.0).abs());
-    let hue = if max == r {
-        60.0 * ((g - b) / delta).rem_euclid(6.0)
-    } else if max == g {
-        60.0 * ((b - r) / delta + 2.0)
-    } else {
-        60.0 * ((r - g) / delta + 4.0)
-    };
-    [
-        (hue + 360.0).rem_euclid(360.0),
-        saturation * 100.0,
-        lightness * 100.0,
-    ]
 }
 
 fn compare_images(
@@ -1666,7 +1644,10 @@ fn image_output_name(
     suffix: &str,
     extension: &str,
 ) -> Result<String, String> {
-    let fallback = format!("{}{suffix}.{extension}", safe_stem(source));
+    let fallback = format!(
+        "{}{suffix}.{extension}",
+        crate::tool_kit::safe_stem(source, "image")
+    );
     let name = match request.options.get("outputName") {
         Some(value) if !value.is_null() && !value.is_string() => {
             return Err("Output filename must be text".into());
@@ -1960,28 +1941,6 @@ fn scaled(dimension: u32, factor: f64) -> u32 {
     (dimension as f64 * factor)
         .round()
         .clamp(1.0, u32::MAX as f64) as u32
-}
-
-fn safe_stem(source: &Path) -> String {
-    let raw = source.file_stem().unwrap_or_default().to_string_lossy();
-    let stem: String = raw
-        .chars()
-        .take(100)
-        .map(|ch| {
-            if ch.is_control() || matches!(ch, '/' | '\\' | '<' | '>' | ':' | '"' | '|' | '?' | '*')
-            {
-                '_'
-            } else {
-                ch
-            }
-        })
-        .collect();
-    let stem = stem.trim_matches([' ', '.']);
-    if stem.is_empty() {
-        "image".into()
-    } else {
-        stem.into()
-    }
 }
 
 fn concise(stderr: &str) -> String {
