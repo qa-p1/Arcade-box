@@ -174,3 +174,11 @@ Copies in `arcade-core` that had to change together but didn't say so, now one e
 - `box.svelte.ts` had its own `formatBytes` (1024-based, two decimals: "1.18 MB") and `formatDuration` beside the
   design kit's `formatSize`/`formatDuration`, which every app shares through `format-cases.json` ("1.2 MB"). Box's
   now only parse their input and call the kit's, so a size reads the same in Box as in Tools or Shelf.
+
+## D13 — CI (step 6): one package per pull request, caches that fit
+
+PR CI took about 40 minutes on Ubuntu and Windows: each PR built all three installers, and no Linux Rust cache
+existed. The repository's 10 GB of caches held Windows (5.2 GB) and two macOS entries (3.1 GB each) plus the
+Hyprland image, so Linux's was evicted and every Ubuntu run compiled from scratch. Now (Link spec §4) a pull request
+builds one Linux package; Windows and macOS run every check and build their installers on main and in the release
+workflow. On main, Windows and macOS drop their release build before the cache is saved, so the three OS caches fit.
