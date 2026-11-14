@@ -204,3 +204,14 @@ feels, and no timer runs while Box has no window (`apps/desktop/src-tauri/src/me
   not: 500 items with images of up to 8 MB of RGBA each (10.7 MB as base64), all in memory. It now also keeps at
   most 64 MiB of text and image data, oldest unpinned first (`history_stays_within_its_byte_budget`).
 - Compositing stays on (spec: the Island must stay smooth); the Island's 15 s keep-warm stays (hot re-show).
+
+## D15 — Release machinery (step 6): candidates on the test channel, promotion to stable
+
+`release.yml` ran on every pushed `v*` tag and published it as the latest stable release, so the first
+`v1.0.0-rc.1` tag would have reached every user untested (PLAN.md rule zero). It now has Tools' shape (Link spec
+§CI): `tag.yml` makes only `vX.Y.Z-rc.N` tags and starts Release; `release.yml` builds and verifies through
+`ci.yml` and publishes through Link's reusable `app-publish` on the hidden `test` channel; `promote.yml` (Link's
+`app-promote`) republishes a verified candidate's bytes as stable with a signed manifest; `nightly.yml` (Link's
+`app-nightly`) republishes main CI's tested installers each night. The artifacts keep their `arcade-box-*` names,
+which Link's real-fleet e2e picks up. Box's own `arcade-release.py` publish step and its rolling `nightly` release
+are retired (the vendored generator goes in step 4's follow-up if nothing else uses it).
