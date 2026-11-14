@@ -78,6 +78,25 @@ fn main() {
         _ => {
             let argv: Vec<String> = std::env::args().collect();
             if !arcade_desktop::installer::first_run_prompt(&argv) {
+                // U1 (AUDIT/memory.md, D14): a resident Box runs from its unpacked copy, so no FUSE helper stays
+                // resident and pages come from the real disk; $APPIMAGE still names the installed file. A copy
+                // offering to install itself kept running from its mount above. Commands that never start a
+                // resident skip the copy. The package's UI check runs to an exit code, so its launcher waits.
+                let starts_resident = !matches!(
+                    args.first().map(String::as_str),
+                    Some("--quit" | "--hide" | "--restart")
+                );
+                if starts_resident {
+                    if let Some(code) = arcade_link::runtime::relaunch_unpacked(
+                        arcade_link::ids::BOX,
+                        env!("CARGO_PKG_VERSION"),
+                        arcade_desktop::ui_check_enabled(),
+                    ) {
+                        std::process::exit(code);
+                    }
+                }
+                #[cfg(target_os = "linux")]
+                arcade_desktop::memory::preload_webkit_trimmer();
                 arcade_desktop::run(args);
             }
         }

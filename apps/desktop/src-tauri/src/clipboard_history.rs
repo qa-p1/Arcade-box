@@ -18,6 +18,10 @@ use tauri::State;
 use tauri_plugin_clipboard_manager::ClipboardExt;
 
 const MAX_ITEMS: usize = 500;
+/// BX1 (AUDIT/memory.md): the whole history stays in memory, and one image can be 8 MB of RGBA (10.7 MB as
+/// base64), so 500 items could hold gigabytes. Past this many bytes of text and image data, the oldest unpinned
+/// items go first, as they do past `MAX_ITEMS`.
+const MAX_STORED_BYTES: usize = 64 * 1024 * 1024;
 const MAX_PINNED: usize = 100;
 const MAX_TEXT_BYTES: usize = 1024 * 1024;
 const MAX_IMAGE_BYTES: usize = 8 * 1024 * 1024;
@@ -600,12 +604,18 @@ fn is_file_reference(text: &str) -> bool {
 
 fn trim_history(state: &mut StoredHistory) {
     expire_items(state);
-    while state.items.len() > MAX_ITEMS {
+    let mut stored: usize = state.items.iter().map(stored_bytes).sum();
+    while state.items.len() > MAX_ITEMS || stored > MAX_STORED_BYTES {
         let Some(index) = state.items.iter().rposition(|item| !item.pinned) else {
             break;
         };
-        state.items.remove(index);
+        stored -= stored_bytes(&state.items.remove(index));
     }
+}
+
+fn stored_bytes(item: &ClipboardHistoryItem) -> usize {
+    item.text.as_ref().map_or(0, String::len)
+        + item.image_rgba_base64.as_ref().map_or(0, String::len)
 }
 
 fn expire_items(state: &mut StoredHistory) {
@@ -874,6 +884,34 @@ pub fn copy_clipboard_history_item(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// BX1: images count against a byte budget, oldest unpinned first; pinned items stay.
+    #[test]
+    fn history_stays_within_its_byte_budget() {
+        let image = |id: usize, pinned: bool| ClipboardHistoryItem {
+            id: id.to_string(),
+            kind: "image".into(),
+            text: None,
+            image_rgba_base64: Some("A".repeat(10 * 1024 * 1024)),
+            image_width: Some(1),
+            image_height: Some(1),
+            preview: String::new(),
+            captured_at: unix_now(),
+            pinned,
+            source_application: None,
+        };
+        // Newest first, as captures insert them; the oldest one is pinned.
+        let mut state = StoredHistory {
+            enabled: true,
+            items: (0..12).rev().map(|id| image(id, id == 0)).collect(),
+            ..StoredHistory::default()
+        };
+        trim_history(&mut state);
+        let total: usize = state.items.iter().map(stored_bytes).sum();
+        assert!(total <= MAX_STORED_BYTES, "{total} bytes kept");
+        let ids: Vec<&str> = state.items.iter().map(|item| item.id.as_str()).collect();
+        assert_eq!(ids, ["11", "10", "9", "8", "7", "0"]);
+    }
 
     #[test]
     fn clipboard_history_requires_current_explicit_opt_in_and_respects_exclusions() {
