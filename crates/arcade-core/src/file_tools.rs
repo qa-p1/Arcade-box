@@ -205,9 +205,7 @@ fn sanitize_filename(name: &str, target: &str) -> String {
         .and_then(|part| part.to_str())
         .unwrap_or("");
     let forbidden = |ch: char| match target {
-        "windows" | "portable" => {
-            ch.is_control() || matches!(ch, '<' | '>' | ':' | '"' | '/' | '\\' | '|' | '?' | '*')
-        }
+        "windows" | "portable" => crate::artifacts::unsafe_in_file_name(ch),
         "macos" => ch.is_control() || matches!(ch, ':' | '/'),
         "linux" => ch == '/' || ch == '\0',
         _ => true,

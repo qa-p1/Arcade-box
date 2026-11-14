@@ -161,3 +161,5 @@ Copies in `arcade-core` that had to change together but didn't say so, now one e
 - `rgb_to_hsl` existed three times (colour converter, Pick screen colour, image palette): one in
   `converter_tools::color`, the converter's rounded `to_hsl` built on it.
 - `barcode.rs` had its own copy of `tool_kit::option_str`.
+- The set of characters a file name may not contain was written out six times (output stems, media names, renames,
+  downloads, PDF names, the portable-name check). One `artifacts::unsafe_in_file_name`.

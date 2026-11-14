@@ -261,9 +261,7 @@ pub(crate) fn safe_stem(path: &std::path::Path, fallback: &str) -> String {
     let raw = path.file_stem().unwrap_or_default().to_string_lossy();
     let mut stem = String::new();
     for ch in raw.chars() {
-        let safe = if ch.is_control()
-            || matches!(ch, '/' | '\\' | '<' | '>' | ':' | '"' | '|' | '?' | '*')
-        {
+        let safe = if crate::artifacts::unsafe_in_file_name(ch) {
             '_'
         } else {
             ch
@@ -301,8 +299,17 @@ mod tests {
         let cjk = "報告".repeat(80); // 160 characters, 480 bytes
         let stem = safe_stem(std::path::Path::new(&format!("/tmp/{cjk}.pdf")), "document");
         assert!(stem.len() <= 100, "{} bytes", stem.len());
-        assert!(stem.chars().all(|c| c == '報' || c == '告'), "cut inside a character: {stem}");
-        assert_eq!(safe_stem(std::path::Path::new("/tmp/ .pdf"), "document"), "document");
-        assert_eq!(safe_stem(std::path::Path::new("/tmp/a:b?.png"), "image"), "a_b_");
+        assert!(
+            stem.chars().all(|c| c == '報' || c == '告'),
+            "cut inside a character: {stem}"
+        );
+        assert_eq!(
+            safe_stem(std::path::Path::new("/tmp/ .pdf"), "document"),
+            "document"
+        );
+        assert_eq!(
+            safe_stem(std::path::Path::new("/tmp/a:b?.png"), "image"),
+            "a_b_"
+        );
     }
 }

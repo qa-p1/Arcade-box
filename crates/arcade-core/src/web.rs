@@ -578,12 +578,7 @@ fn sanitize_filename(raw: &str, content_type: &str) -> String {
     let mut name = raw
         .chars()
         .map(|character| {
-            if character.is_control()
-                || matches!(
-                    character,
-                    '/' | '\\' | ':' | '<' | '>' | '"' | '|' | '?' | '*'
-                )
-            {
+            if crate::artifacts::unsafe_in_file_name(character) {
                 '_'
             } else {
                 character

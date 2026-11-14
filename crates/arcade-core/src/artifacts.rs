@@ -95,16 +95,19 @@ pub fn prepare_private_artifact_root(parent_path: &Path) -> io::Result<PathBuf> 
     Ok(canonical)
 }
 
+/// A character no file name may contain on some desktop OS (Windows is the strictest): the one rule every output,
+/// download and rename name is cleaned with.
+pub fn unsafe_in_file_name(ch: char) -> bool {
+    ch.is_control() || matches!(ch, '/' | '\\' | '<' | '>' | ':' | '"' | '|' | '?' | '*')
+}
+
 pub fn validate_portable_filename(name: &str) -> Result<(), String> {
     if name.trim().is_empty() || name.len() > 240 || name != name.trim() {
         return Err(
             "Choose a filename between 1 and 240 characters without surrounding spaces".into(),
         );
     }
-    if name.chars().any(|ch| {
-        ch.is_control() || matches!(ch, '/' | '\\' | '<' | '>' | ':' | '"' | '|' | '?' | '*')
-    }) || name.ends_with('.')
-    {
+    if name.chars().any(|ch| unsafe_in_file_name(ch)) || name.ends_with('.') {
         return Err("Filename contains characters that are unsafe on desktop platforms".into());
     }
     let stem = name
