@@ -215,3 +215,7 @@ feels, and no timer runs while Box has no window (`apps/desktop/src-tauri/src/me
 `app-nightly`) republishes main CI's tested installers each night. The artifacts keep their `arcade-box-*` names,
 which Link's real-fleet e2e picks up. Box's own `arcade-release.py` publish step and its rolling `nightly` release
 are retired (the vendored generator goes in step 4's follow-up if nothing else uses it).
+
+Dependabot (same step): each merge to main made it rebase every open Dependabot pull request, and each rebase
+started a full three-OS build; on 2026-11-14 that queued 24 builds across the fleet ahead of release jobs. Box's
+updates are now grouped per ecosystem (minor and patch together, majors separate) with `rebase-strategy: disabled`.
