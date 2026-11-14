@@ -140,3 +140,11 @@ Rust: `cargo machete` (clean; `md-5` and `zxing-cpp` are imported as `md5`/`zxin
 test fixture `tests/visual.ts` that `tests/*.mjs` load; `src/design/` is vendored from Link and ignored. Removed:
 `ShortcutClash.svelte` (no importer), `runTool`/`initials`, the `run_tool` Tauri command (the frontend runs every
 tool as a job), and the `ToolStatus` type; types used only in their own file are no longer exported.
+
+## D13 — CI (step 6): one package per pull request, caches that fit
+
+PR CI took about 40 minutes on Ubuntu and Windows: each PR built all three installers, and no Linux Rust cache
+existed. The repository's 10 GB of caches held Windows (5.2 GB) and two macOS entries (3.1 GB each) plus the
+Hyprland image, so Linux's was evicted and every Ubuntu run compiled from scratch. Now (Link spec §4) a pull request
+builds one Linux package; Windows and macOS run every check and build their installers on main and in the release
+workflow. On main, Windows and macOS drop their release build before the cache is saved, so the three OS caches fit.
