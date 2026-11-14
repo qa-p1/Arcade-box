@@ -26,6 +26,10 @@ jobs:
   check:
     name: Check (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    env:
+      # Pull requests build one Linux package (Link spec §4); Windows and macOS run every check and build their
+      # installers on main and in the release workflow.
+      PACKAGE: ${{ matrix.os == 'ubuntu-24.04' || github.event_name != 'pull_request' }}
     strategy:
       fail-fast: false
       matrix:
@@ -98,10 +102,13 @@ jobs:
           ARCADE_HOME: ${{ runner.temp }}/arcade-box-ci
         run: scripts/check
       - name: Stage the CLI and trusted plugin worker
+        if: env.PACKAGE == 'true'
         run: python scripts/prepare-bundle.py ${{ matrix.sidecar-args }}
       - name: Install the pinned Tauri bundler
+        if: env.PACKAGE == 'true'
         run: npm install --prefix target/tauri-cli --cache target/npm-cache --no-audit --no-fund @tauri-apps/cli@2.12.1
       - name: Build the installer
+        if: env.PACKAGE == 'true'
         working-directory: Arcade-box/apps/desktop/src-tauri
         shell: bash
         # Tauri downloads its bundler tools (AppRun, NSIS) from GitHub releases with one attempt, which answer 504 at
@@ -141,19 +148,27 @@ jobs:
           # instead of separately compiling an unused release-profile CLI.
           /usr/bin/python3 "$GITHUB_WORKSPACE/Arcade-Link/tools/e2e.py" run -- /usr/bin/python3 tests/tray-registration.py target/release/arcade-desktop "$GITHUB_WORKSPACE/Arcade-Link/target/debug/arcade-link" box
       - name: Verify NSIS silent install and uninstall
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && env.PACKAGE == 'true'
         shell: pwsh
         run: scripts/verify-nsis.ps1 -SetupPattern 'target/release/bundle/nsis/*-setup.exe' -Id arcade.box -Name 'Arcade Box' -CliName arcade-desktop
       - name: Verify universal DMG install and uninstall in a temporary home
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && env.PACKAGE == 'true'
         shell: bash
         run: scripts/verify-dmg.sh target/universal-apple-darwin/release/bundle/dmg/*.dmg 'Arcade Box' arcade-desktop arcade.box
       - name: Upload the installer
+        if: env.PACKAGE == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: arcade-box-${{ matrix.bundle }}
           if-no-files-found: error
           path: ${{ matrix.installer }}
+      # The repository's 10 GB of caches held Windows (5.2 GB) and two macOS entries, so Linux's was evicted and every
+      # Ubuntu run compiled from scratch. Windows and macOS keep only their debug build (the PR checks); Linux keeps
+      # its release build too, which the PR package reuses.
+      - name: Keep only the debug build in the cache
+        if: always() && runner.os != 'Linux' && github.ref == 'refs/heads/main' && github.event_name == 'push'
+        shell: bash
+        run: rm -rf target/release target/*/release target/tauri-cli target/npm-cache
 
   # Tier 1: the Island on headless Hyprland (Link's desktop harness), from the AppImage built above.
   # --workspace: every crate's dependencies, not only the first member's.
