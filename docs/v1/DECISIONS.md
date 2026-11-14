@@ -149,4 +149,6 @@ window (visibility, placement, fitting, input region, release, and the Link/tool
 second instance, `--status`). Each of the last three had its own globals in the root, so a change to one meant
 reading all of it. They are now `island.rs`, `tray.rs` and `instance.rs`, each owning its state; `lib.rs` keeps the
 commands, `run()` and the few helpers every module uses (`OS_ID`, `in_box_folder`). A pure move: no behaviour
-changed (compiler-checked; desktop tests and the Island key/layout checks unchanged). Commands are next, by feature.
+changed (compiler-checked; desktop tests and the Island key/layout checks unchanged). The commands then moved to
+`commands/<feature>.rs` (shortcut, tools, plugins, pipelines, engines, files, screen); `run()` registers them by path.
+`lib.rs` went from 2,542 to 470 lines.
