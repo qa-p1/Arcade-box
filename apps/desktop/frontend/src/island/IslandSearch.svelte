@@ -75,7 +75,7 @@
             <span class="row-main"><span class="row-title"><span class="ellipsis">{tool.name}</span>{#if privacyLabel(tool.privacyClass) !== 'LOCAL'}<span class="badge warn">online</span>{/if}</span><span class="row-sub ellipsis">{tool.description}</span></span>
             {#if index === box.selectedIndex}<kbd class="key-chip" aria-hidden="true">↵</kbd>{/if}
           </button>
-          <button type="button" class="btn ghost icon-only sm favorite" class:on={box.isFavorite(tool.id)} aria-label={box.isFavorite(tool.id) ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`} aria-pressed={box.isFavorite(tool.id)} title={box.isFavorite(tool.id) ? 'Remove from favorites' : 'Add to favorites'} onclick={(event) => void box.toggleFavorite(tool, event)}><Icon name="star" size={14} /></button>
+          <button type="button" class="btn ghost icon-only sm favorite" class:on={box.isFavorite(tool.id)} tabindex="-1" aria-hidden="true" aria-label={box.isFavorite(tool.id) ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`} aria-pressed={box.isFavorite(tool.id)} title={box.isFavorite(tool.id) ? 'Remove from favorites' : 'Add to favorites'} onclick={(event) => void box.toggleFavorite(tool, event)}><Icon name="star" size={14} /></button>
         </div>
       {/each}
     {/if}

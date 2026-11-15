@@ -288,3 +288,22 @@ the published installers. Box adds its Linux checks on the published AppImage (n
 inventory, the upgrade from v0.4.3 with a user's data, Island close/reopen keeping the process, tray registration)
 and Link's desktop suites on the same file (Tier 1 Hyprland blocks on any failure; Tier 2 sway, KWin, Mutter and X11).
 `promote.yml` is run only after a green Gates run on the rc it promotes.
+
+## D21 — Accessibility pass (step 7)
+
+`tests/a11y.mjs` (in `scripts/check`, so in CI) runs axe-core's WCAG 2.1 A and AA rules on the Island (empty, search,
+tool, first run) and on every dashboard page in light and dark, checks that every control Tab reaches on a dashboard
+page looks different focused, and that nothing moves for longer than 10 ms when reduced motion is requested. Text at
+125% is covered by `tests/layout.mjs`. Contrast passed already. On the sources before this change it found 34 problems,
+all fixed:
+- **Switches, checkboxes and sliders had no focus ring.** A rule meant for text fields (which show focus with their
+  border) removed the outline from every `input`. It now applies to text-like inputs only; the others get the ring.
+- **Category buttons had no name in the narrow sidebar** (≤ 760 px hides their label). They carry the category as
+  their name and tooltip.
+- **The search listbox held buttons.** A listbox may own only options; each result row's star sat inside it. The star
+  stays as a pointer shortcut but is hidden from assistive technology and Tab; the keyboard way to change a favourite
+  is the star in the tool's own view.
+- **Names that did not contain the visible text** (WCAG 2.5.3, label in name): the footer's Esc button ("Esc Clear"
+  was named "Clear the search") and the shortcut recorder. Their names now start with the visible words, with the
+  rest in visually hidden text; the Esc button announces its key with `aria-keyshortcuts`.
+

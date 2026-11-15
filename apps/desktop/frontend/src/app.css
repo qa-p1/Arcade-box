@@ -66,7 +66,10 @@ button { color: inherit; }
 /* Keyboard focus is a quiet ring on controls. Text fields signal focus with
    their border and caret instead of a bright outline. */
 :where(button, summary, a, [role="button"], [tabindex="0"]):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-:where(input, textarea, select):focus, :where(input, textarea, select):focus-visible { outline: none; }
+:where(input:not([type="checkbox"], [type="radio"], [type="range"]), textarea, select):focus,
+:where(input:not([type="checkbox"], [type="radio"], [type="range"]), textarea, select):focus-visible { outline: none; }
+/* Switches, checkboxes and sliders have no border to signal focus: they keep the ring. */
+:where(input[type="checkbox"], input[type="radio"], input[type="range"]):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 [tabindex="-1"]:focus { outline: none; }
 .sr-only { position: absolute !important; width: 1px !important; height: 1px !important; padding: 0 !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
 ::selection { color: var(--primary-ink); background: var(--primary); }

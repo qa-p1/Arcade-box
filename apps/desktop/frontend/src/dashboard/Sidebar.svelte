@@ -52,6 +52,8 @@
         class="tab-button"
         class:active={box.catalogMode === 'all' && box.categoryFilter === category}
         aria-current={box.catalogMode === 'all' && box.categoryFilter === category ? 'page' : undefined}
+        aria-label={category}
+        title={category}
         onclick={() => box.chooseCategory(category)}
       ><Icon name={box.iconForCategory(category)} /><span class="label">{category}</span></button>
     {/each}

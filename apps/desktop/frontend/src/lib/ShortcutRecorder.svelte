@@ -85,18 +85,19 @@
     class="shortcut-recorder"
     class:recording
     class:busy
-    aria-label="{label}: {value ? chordParts(value).join(' ') : 'no shortcut'}. {recording ? 'Press the new keys, or Escape to cancel.' : 'Press Enter to change.'}"
     {disabled}
     onclick={start}
     onkeydown={(event) => void key(event)}
     onblur={() => { recording = false; }}
   >
+    <!-- The name is the visible text with the label before it and the instruction after (WCAG 2.5.3). -->
+    <span class="visually-hidden">{label}: </span>
     {#if recording}
-      Press keys…
+      Press keys…<span class="visually-hidden"> Escape cancels.</span>
     {:else if value}
-      <span class="key-chip-list">{#each chordParts(value) as part, i (`${part}-${i}`)}<kbd class="key-chip">{part}</kbd>{/each}</span>
+      <span class="key-chip-list">{#each chordParts(value) as part, i (`${part}-${i}`)}{#if i > 0}{' '}{/if}<kbd class="key-chip">{part}</kbd>{/each}</span><span class="visually-hidden">. Press Enter to change.</span>
     {:else}
-      <span class="muted">No shortcut</span>
+      <span class="muted">No shortcut</span><span class="visually-hidden">. Press Enter to change.</span>
     {/if}
   </button>
   {#if defaultValue !== undefined && normalizeChord(value) !== normalizeChord(defaultValue)}
