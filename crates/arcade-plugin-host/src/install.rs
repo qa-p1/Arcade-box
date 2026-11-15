@@ -24,6 +24,10 @@ fn default_state_schema() -> u32 {
     STATE_SCHEMA
 }
 
+fn is_first_state_schema(schema: &u32) -> bool {
+    *schema == 1
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct InstallApproval {
     /// Permissions explicitly granted during this install or update.
@@ -61,7 +65,12 @@ impl InstalledPlugin {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct InstallationState {
-    #[serde(default = "default_state_schema")]
+    // Written only once it is above 1: Box 0.4.x reads this file with deny_unknown_fields, so a v1 file stays in
+    // the released shape (no field means schema 1) and an older Box can still read it.
+    #[serde(
+        default = "default_state_schema",
+        skip_serializing_if = "is_first_state_schema"
+    )]
     schema: u32,
     plugin_id: String,
     active_version: String,
@@ -489,7 +498,7 @@ mod tests {
     }
 
     #[test]
-    fn released_v1_state_without_a_schema_field_reads_and_is_written_with_one() {
+    fn released_v1_state_reads_and_is_written_back_in_the_released_shape() {
         let directory = state_dir(RELEASED_STATE);
         let state = read_state(directory.path()).unwrap().unwrap();
         assert_eq!(state.schema, 1);
@@ -498,7 +507,10 @@ mod tests {
         write_state_atomically(directory.path(), &state).unwrap();
         let written: serde_json::Value =
             serde_json::from_slice(&fs::read(directory.path().join(STATE_FILE)).unwrap()).unwrap();
-        assert_eq!(written["schema"], 1);
+        // Box 0.4.x denies unknown fields, so a v1 file must not gain a `schema` field.
+        assert!(written.get("schema").is_none(), "{written}");
+        let released: serde_json::Value = serde_json::from_str(RELEASED_STATE).unwrap();
+        assert_eq!(written, released);
         assert!(read_state(directory.path()).unwrap().is_some());
     }
 
