@@ -235,3 +235,8 @@ D15 retired Box's own publish step and left the vendored generator for removal i
 only its tests, `VENDORED.md` and `docs/dev/packaging.md` named it. `scripts/arcade-release.py` and its test are
 deleted and `docs/dev/packaging.md` no longer documents running it; Link's `app-publish` writes the release manifests.
 `spec/arcade-release.schema.json` stays vendored.
+
+## D18 — Changelog in Keep a Changelog format
+
+`CHANGELOG.md` follows Keep a Changelog 1.1.0: `## [X.Y.Z] - date` from each release's tag, old bullets unchanged and
+grouped by their first verb, and an `[Unreleased]` section for v1 written from these decisions.
