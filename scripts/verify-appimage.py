@@ -119,6 +119,9 @@ def main():
         assert needed <= plugins, f"GStreamer plugins missing from the image: {sorted(needed - plugins)} (has {len(plugins)})"
         # OPEN1 (D14): Box preloads the trimmer into WebKit's helper processes (memory.rs).
         assert (extracted / "squashfs-root/usr/lib/libarcade-trim.so").is_file(), "AppImage lacks libarcade-trim.so"
+        # Third-party notices ship inside the image (a Tauri resource) so About can open them offline.
+        notices = list((extracted / "squashfs-root").rglob("THIRD_PARTY_NOTICES.md"))
+        assert notices and all(p.is_file() and p.stat().st_size > 0 for p in notices), "AppImage lacks THIRD_PARTY_NOTICES.md"
         shutil.rmtree(extracted)
 
         version = run(download, "--version").strip().split()[-1]

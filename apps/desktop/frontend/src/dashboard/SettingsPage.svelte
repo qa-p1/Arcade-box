@@ -7,7 +7,7 @@
   import ShortcutRecorder from '../lib/ShortcutRecorder.svelte';
   import KeyChips from '../lib/KeyChips.svelte';
   import {
-    aboutInfo, chooseSaveFolder, clearClipboardHistory, clipboardHistoryStatus, copyText, diagnostics, loginItem, openLogs,
+    aboutInfo, chooseSaveFolder, clearClipboardHistory, clipboardHistoryStatus, copyText, diagnostics, loginItem, openLogs, openNotices,
     openReviewedUrl, openTools, saveFolder, setClipboardHistoryEnabled, setClipboardHistoryExclusions, setClipboardHistoryRetention,
     setLoginItem, setShortcut, shortcutOwner, type AboutInfo, type LoginItem,
   } from '../lib/arcade';
@@ -201,6 +201,7 @@
     <div class="row"><span class="row-main"><span class="row-title">Logs</span></span><button type="button" class="btn sm" onclick={() => void act('logs', openLogs, "Couldn't open the logs.")}>Open logs folder</button></div>
     <div class="row"><span class="row-main"><span class="row-title">Diagnostics</span><span class="row-sub">Versions, desktop and connected apps, for a bug report. No files or keys.</span></span><button type="button" class="btn sm" disabled={busy === 'diagnostics'} onclick={() => void act('diagnostics', copyDiagnostics, "Couldn't copy the diagnostics.")}><Icon name={copied ? 'check' : 'copy'} size={14} />{copied ? 'Copied' : 'Copy diagnostics'}</button></div>
     <div class="row"><span class="row-main"><span class="row-title">Licences</span><span class="row-sub">GPL-3.0-or-later, with the licences of the libraries Box uses.</span></span><button type="button" class="btn sm" onclick={() => void act('licences', () => openReviewedUrl(LICENCES), "Couldn't open the licences.")}>Licences</button></div>
+    <div class="row"><span class="row-main"><span class="row-title">Third-party notices</span><span class="row-sub">The copyright notices and licence texts of everything bundled with Box.</span></span><button type="button" class="btn sm" onclick={() => void act('notices', openNotices, "Couldn't open the notices.")}>Third-party notices</button></div>
   </div>
 </section>
 

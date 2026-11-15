@@ -4,6 +4,7 @@
 use arcade_core::Arcade;
 use arcade_core::link::LinkSettings;
 use serde::Serialize;
+use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 #[derive(Debug, Clone, Serialize)]
@@ -94,6 +95,32 @@ pub fn open_logs(app: tauri::AppHandle) -> Result<(), String> {
         .map_err(|e| format!("Couldn't open the logs: {e}"))
 }
 
+const NOTICES: &str = "THIRD_PARTY_NOTICES.md";
+
+/// The notices file to open: the one bundled as a resource, else (a development
+/// build) the repository's copy at the workspace root.
+fn notices_path(resource_dir: Option<&Path>, workspace_dir: Option<&Path>) -> Option<PathBuf> {
+    [resource_dir, workspace_dir]
+        .into_iter()
+        .flatten()
+        .map(|dir| dir.join(NOTICES))
+        .find(|path| path.is_file())
+}
+
+/// About's "Third-party notices": opens the bundled file in the default app.
+#[tauri::command]
+pub fn open_notices(app: tauri::AppHandle) -> Result<(), String> {
+    use tauri::Manager as _;
+    use tauri_plugin_opener::OpenerExt;
+    let resources = app.path().resource_dir().ok();
+    let workspace = Path::new(env!("CARGO_MANIFEST_DIR")).ancestors().nth(3);
+    let path = notices_path(resources.as_deref(), workspace)
+        .ok_or("The third-party notices file isn't in this installation.")?;
+    app.opener()
+        .open_path(path.to_string_lossy(), None::<&str>)
+        .map_err(|e| format!("Couldn't open the notices: {e}"))
+}
+
 /// About's "Open Tools": Tools' manifest names its executable; a running
 /// Tools comes to the front instead of starting twice.
 #[tauri::command]
@@ -107,4 +134,34 @@ pub fn open_tools() -> Result<(), String> {
         .spawn()
         .map(|_| ())
         .map_err(|e| format!("Couldn't open Arcade Tools: {e}"))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn notices_come_from_the_bundle_then_the_workspace() {
+        let resources = tempfile::tempdir().unwrap();
+        let workspace = tempfile::tempdir().unwrap();
+        assert_eq!(
+            notices_path(Some(resources.path()), Some(workspace.path())),
+            None
+        );
+        assert_eq!(notices_path(None, None), None);
+        std::fs::write(workspace.path().join(NOTICES), "dev").unwrap();
+        assert_eq!(
+            notices_path(Some(resources.path()), Some(workspace.path())),
+            Some(workspace.path().join(NOTICES))
+        );
+        std::fs::write(resources.path().join(NOTICES), "bundled").unwrap();
+        assert_eq!(
+            notices_path(Some(resources.path()), Some(workspace.path())),
+            Some(resources.path().join(NOTICES))
+        );
+        assert_eq!(
+            notices_path(Some(resources.path()), None),
+            Some(resources.path().join(NOTICES))
+        );
+    }
 }
