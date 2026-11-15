@@ -30,34 +30,70 @@ const MAX_IMAGE_EDGE: u32 = 4096;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ClipboardHistoryItem {
+    #[serde(default)]
     pub id: String,
+    #[serde(default)]
     pub kind: String,
+    #[serde(default)]
     pub text: Option<String>,
+    #[serde(default)]
     pub image_rgba_base64: Option<String>,
+    #[serde(default)]
     pub image_width: Option<u32>,
+    #[serde(default)]
     pub image_height: Option<u32>,
+    #[serde(default)]
     pub preview: String,
+    #[serde(default)]
     pub captured_at: u64,
+    #[serde(default)]
     pub pinned: bool,
+    #[serde(default)]
     pub source_application: Option<String>,
+    /// Fields a newer Box added to an item; kept so a downgrade does not lose them (FS-2).
+    #[serde(flatten)]
+    extra: serde_json::Map<String, serde_json::Value>,
+}
+
+/// The file's schema version. A file without the field is the v1 shape every released Box wrote.
+const HISTORY_SCHEMA: u32 = 1;
+
+fn default_schema() -> u32 {
+    HISTORY_SCHEMA
+}
+
+fn default_retention_days() -> u16 {
+    7
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct StoredHistory {
+    /// Never lowered on save: a file written by a newer Box keeps its number.
+    #[serde(default = "default_schema")]
+    schema: u32,
+    #[serde(default)]
     enabled: bool,
+    #[serde(default = "default_retention_days")]
     retention_days: u16,
+    #[serde(default)]
     excluded_applications: Vec<String>,
+    #[serde(default)]
     items: Vec<ClipboardHistoryItem>,
+    /// Fields a newer Box added; kept so a downgrade does not lose them (FS-2).
+    #[serde(flatten)]
+    extra: serde_json::Map<String, serde_json::Value>,
 }
 
 impl Default for StoredHistory {
     fn default() -> Self {
         Self {
+            schema: HISTORY_SCHEMA,
             enabled: false,
-            retention_days: 7,
+            retention_days: default_retention_days(),
             excluded_applications: Vec::new(),
             items: Vec::new(),
+            extra: serde_json::Map::new(),
         }
     }
 }
@@ -84,10 +120,23 @@ pub struct ClipboardHistory {
 impl ClipboardHistory {
     pub fn open(path: PathBuf) -> Result<Self, String> {
         let history = if path.exists() {
-            let bytes = fs::read(&path)
-                .map_err(|error| format!("Could not read clipboard history: {error}"))?;
-            serde_json::from_slice::<StoredHistory>(&bytes)
-                .map_err(|error| format!("Could not decode clipboard history: {error}"))?
+            let loaded = fs::read(&path)
+                .map_err(|error| format!("could not read it: {error}"))
+                .and_then(|bytes| {
+                    serde_json::from_slice::<StoredHistory>(&bytes)
+                        .map_err(|error| format!("could not decode it: {error}"))
+                });
+            match loaded {
+                Ok(mut history) => {
+                    history.schema = history.schema.max(HISTORY_SCHEMA);
+                    history
+                }
+                Err(reason) => {
+                    // Never stop Box from starting over a history file, and never delete it (FS-2).
+                    set_unreadable_aside(&path, &reason);
+                    StoredHistory::default()
+                }
+            }
         } else {
             StoredHistory::default()
         };
@@ -440,6 +489,7 @@ impl ClipboardHistory {
                 captured_at,
                 pinned: false,
                 source_application,
+                extra: serde_json::Map::new(),
             },
         );
         trim_history(&mut state);
@@ -493,6 +543,7 @@ impl ClipboardHistory {
                 captured_at: unix_now(),
                 pinned: false,
                 source_application,
+                extra: serde_json::Map::new(),
             },
         );
         trim_history(&mut state);
@@ -623,6 +674,23 @@ fn expire_items(state: &mut StoredHistory) {
     state
         .items
         .retain(|item| item.pinned || item.captured_at >= expiry);
+}
+
+/// Move a history file Box cannot read to `<name>.unreadable-<unix seconds>` so it is kept, and say so once.
+fn set_unreadable_aside(path: &Path, reason: &str) {
+    let mut aside = path.as_os_str().to_owned();
+    aside.push(format!(".unreadable-{}", unix_now()));
+    let aside = PathBuf::from(aside);
+    let kept = fs::rename(path, &aside).or_else(|_| fs::copy(path, &aside).map(|_| ()));
+    match kept {
+        Ok(()) => eprintln!(
+            "clipboard history: {reason}; kept it as {} and started with an empty history",
+            aside.display()
+        ),
+        Err(error) => eprintln!(
+            "clipboard history: {reason}; could not keep a copy ({error}); started with an empty history"
+        ),
+    }
 }
 
 fn unix_now() -> u64 {
@@ -899,6 +967,7 @@ mod tests {
             captured_at: unix_now(),
             pinned,
             source_application: None,
+            extra: serde_json::Map::new(),
         };
         // Newest first, as captures insert them; the oldest one is pinned.
         let mut state = StoredHistory {
@@ -976,5 +1045,141 @@ mod tests {
         );
         assert!(history.capture_image(vec![0; 4], 2, 2, None).unwrap());
         assert!(history.list("").is_empty());
+    }
+
+    // ---- FS-2: schema version, tolerant reads, unknown fields -------------------------------------------
+
+    /// The exact shape Box 0.1.0 through 0.4.3 wrote: no `schema` field.
+    const V0_4_3_FILE: &str = r#"{"enabled":true,"retentionDays":30,"excludedApplications":["keepass"],"items":[{"id":"1700000000000-1","kind":"text","text":"hello world","imageRgbaBase64":null,"imageWidth":null,"imageHeight":null,"preview":"hello world","capturedAt":1700000000,"pinned":true,"sourceApplication":"Terminal"},{"id":"1700000001000-2","kind":"image","text":null,"imageRgbaBase64":"AAAAAP8AAAD/AAAA/w==","imageWidth":2,"imageHeight":2,"preview":"Image 2x2","capturedAt":4102444800,"pinned":false,"sourceApplication":null}]}"#;
+
+    fn saved_json(path: &Path) -> serde_json::Value {
+        serde_json::from_slice(&fs::read(path).unwrap()).unwrap()
+    }
+
+    #[test]
+    fn v0_4_3_file_loads_and_round_trips() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("clipboard-history.json");
+        fs::write(&path, V0_4_3_FILE).unwrap();
+        let history = ClipboardHistory::open(path.clone()).unwrap();
+        let status = history.status();
+        assert!(status.enabled);
+        assert_eq!(status.retention_days, 30);
+        assert_eq!(status.excluded_applications, ["keepass"]);
+        assert_eq!(status.item_count, 2);
+        let items = history.list("");
+        assert_eq!(items[0].text.as_deref(), Some("hello world"));
+        assert!(items[0].pinned);
+        assert_eq!(items[1].image_width, Some(2));
+        history.set_retention_days(30).unwrap();
+        let saved = saved_json(&path);
+        assert_eq!(saved["schema"], 1);
+        assert_eq!(saved["items"][1]["imageRgbaBase64"], "AAAAAP8AAAD/AAAA/w==");
+        assert_eq!(saved["items"][0]["sourceApplication"], "Terminal");
+        assert_eq!(saved["retentionDays"], 30);
+    }
+
+    #[test]
+    fn unknown_fields_survive_a_save() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("clipboard-history.json");
+        fs::write(
+            &path,
+            r#"{"schema":1,"enabled":false,"retentionDays":7,"excludedApplications":[],"items":[{"id":"a","kind":"text","text":"t","imageRgbaBase64":null,"imageWidth":null,"imageHeight":null,"preview":"t","capturedAt":4102444800,"pinned":false,"sourceApplication":null,"tags":["x"]}],"futureSetting":{"a":1}}"#,
+        )
+        .unwrap();
+        let history = ClipboardHistory::open(path.clone()).unwrap();
+        history.set_enabled(true).unwrap();
+        let saved = saved_json(&path);
+        assert_eq!(saved["futureSetting"], serde_json::json!({"a": 1}));
+        assert_eq!(saved["items"][0]["tags"], serde_json::json!(["x"]));
+        assert_eq!(saved["enabled"], true);
+        // Known fields are not swallowed into the unknown map.
+        assert_eq!(saved["items"][0]["text"], "t");
+        assert!(saved.get("extra").is_none());
+    }
+
+    #[test]
+    fn a_newer_schema_keeps_its_number() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("clipboard-history.json");
+        fs::write(
+            &path,
+            r#"{"schema":7,"enabled":true,"retentionDays":7,"excludedApplications":[],"items":[],"newer":true}"#,
+        )
+        .unwrap();
+        let history = ClipboardHistory::open(path.clone()).unwrap();
+        history.set_retention_days(30).unwrap();
+        let saved = saved_json(&path);
+        assert_eq!(saved["schema"], 7);
+        assert_eq!(saved["newer"], true);
+        assert_eq!(saved["retentionDays"], 30);
+        assert!(history.status().enabled);
+    }
+
+    #[test]
+    fn an_unreadable_file_is_moved_aside_and_box_starts_empty() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("clipboard-history.json");
+        fs::write(&path, b"{ this is not json").unwrap();
+        let history = ClipboardHistory::open(path.clone()).unwrap();
+        assert_eq!(history.status().item_count, 0);
+        let aside: Vec<_> = fs::read_dir(directory.path())
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+            .filter(|name| name.starts_with("clipboard-history.json.unreadable-"))
+            .collect();
+        assert_eq!(aside.len(), 1, "{aside:?}");
+        assert_eq!(
+            fs::read(directory.path().join(&aside[0])).unwrap(),
+            b"{ this is not json"
+        );
+        // A fresh, valid file replaces it.
+        assert_eq!(saved_json(&path)["schema"], 1);
+    }
+
+    #[test]
+    fn an_incompatible_newer_file_is_moved_aside_too() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("clipboard-history.json");
+        fs::write(
+            &path,
+            r#"{"schema":9,"enabled":"sometimes","retentionDays":7,"excludedApplications":[],"items":[]}"#,
+        )
+        .unwrap();
+        let history = ClipboardHistory::open(path).unwrap();
+        assert_eq!(history.status().item_count, 0);
+        let moved = fs::read_dir(directory.path())
+            .unwrap()
+            .filter(|entry| {
+                entry
+                    .as_ref()
+                    .unwrap()
+                    .file_name()
+                    .to_string_lossy()
+                    .contains(".unreadable-")
+            })
+            .count();
+        assert_eq!(moved, 1);
+    }
+
+    #[test]
+    fn a_file_missing_fields_loads_with_defaults() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("clipboard-history.json");
+        fs::write(
+            &path,
+            r#"{"enabled":true,"items":[{"id":"a","kind":"text","preview":"p","capturedAt":4102444800}]}"#,
+        )
+        .unwrap();
+        let history = ClipboardHistory::open(path.clone()).unwrap();
+        let status = history.status();
+        assert!(status.enabled);
+        assert_eq!(status.retention_days, 7);
+        assert!(status.excluded_applications.is_empty());
+        let items = history.list("");
+        assert_eq!(items.len(), 1);
+        assert!(!items[0].pinned && items[0].text.is_none());
+        assert_eq!(saved_json(&path)["schema"], 1);
     }
 }
