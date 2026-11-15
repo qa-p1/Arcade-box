@@ -8,7 +8,6 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 
 - The calculator has an Angles setting for degrees; angles are radians by default.
 - Audio and video previews play from the AppImage (WebM, Ogg, MP3, WAV, FLAC, Matroska and the MP4 container). H.264 and AAC media still does not preview.
-- The Island and dashboard have a content security policy.
 
 ### Changed
 
@@ -29,7 +28,6 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 
 ### Fixed
 
-- The global shortcut works on desktops with xdg-desktop-portal older than 1.19.
 - On Hyprland, clicks outside the Island's card reach the window underneath.
 - Saving a result named after an input with a long CJK or emoji name no longer fails on the 255-byte file name limit.
 
