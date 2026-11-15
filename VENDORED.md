@@ -74,13 +74,13 @@ Copied unchanged from [Arcade Link](https://github.com/qa-p1/Arcade-Link/tree/v1
 
 ## Arcade design kit
 
-Copied unchanged from [Arcade Link](https://github.com/qa-p1/Arcade-Link/tree/v0.4.15) tag `v0.4.15` (commit
-`56798545d263c104ded54877239750f9645c32a3`) by `scripts/sync-design.py`; never edit these files here.
+Copied unchanged from [Arcade Link](https://github.com/qa-p1/Arcade-Link/tree/v1.0.8) tag `v1.0.8` (commit
+`34f8030e494c0c662a5f95efd8e868c8536b9989`) by `scripts/sync-design.py`; never edit these files here.
 License: MIT OR Apache-2.0; Inter is under the SIL Open Font License 1.1
 (`apps/desktop/frontend/src/design/fonts/OFL.txt`).
 
 ```text
-38bad47bf726e131e4d1cc9b75a0c83ef52b6f40a9140aaac6b9cf045b978842  apps/desktop/frontend/src/design/arcade.css
+2af438091a5e5d8561a9ad5b4ccfb8f514d234f8ca6e74643fb6a1dc1be5e3eb  apps/desktop/frontend/src/design/arcade.css
 d0d5377d8bb3881fe82e9a20902dcbfb5960c1d660fdb0d5607eb1406d9b0cdb  apps/desktop/frontend/src/design/icons.ts
 9f30255bf79330c12e962502f92059df256c6360f9df844c334f912aff85b9d8  apps/desktop/frontend/src/design/format.ts
 693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3  apps/desktop/frontend/src/design/fonts/InterVariable.woff2
