@@ -249,3 +249,31 @@ deleted and `docs/dev/packaging.md` no longer documents running it; Link's `app-
 
 `CHANGELOG.md` follows Keep a Changelog 1.1.0: `## [X.Y.Z] - date` from each release's tag, old bullets unchanged and
 grouped by their first verb, and an `[Unreleased]` section for v1 written from these decisions.
+
+## D19 — Round 5 (step 7): data files, notices, uninstall
+
+From the Round 5 audit of Box (schema versions, downgrade, security, notices, uninstall). Link's FS-2: every data file
+carries a schema version, migrations are tested from released versions, and an older build never loses or corrupts
+a newer file.
+- **`clipboard-history.json`** gets `schema` (no field = 1, the shape every release since 0.1.0 wrote, unchanged).
+  Every field has a default, and unknown fields at the top and in each item are kept through a save. A newer schema
+  keeps its number. A file Box cannot read is moved to `clipboard-history.json.unreadable-<seconds>` and Box starts
+  with an empty history instead of failing to start. Tests: a v0.4.3 fixture round-trips, unknown fields survive,
+  a newer schema keeps its number, unreadable and incompatible files are kept aside, missing fields default.
+- **Plugin `installed.json`** keeps `deny_unknown_fields` (it records grants). A schema above 1 is refused with
+  "made by a newer Arcade Box". The field is written only once it is above 1, because Box 0.4.x denies unknown fields:
+  a v1 file stays byte-for-byte in the released shape.
+- **Turned-off apps** (`link.disabled_peers` in the settings table): an unreadable value is logged once and kept
+  until the person changes the list, instead of being overwritten with an empty one. The provider cache is a cache.
+- **SQLite:** the migrations are unchanged since 0.1.0. New tests: a database built with the released migrations and
+  real rows opens with the current code, and one with a newer migration and an extra table opens untouched.
+- **Notices:** `THIRD_PARTY_NOTICES.md` and `LICENSE` are bundled with every package (Tauri resources), and Settings →
+  About has "Third-party notices", which opens the bundled file. `verify-appimage.py` checks the image contains it.
+- **Uninstall:** Box's own unpacked copies (`arcade/runtime/box-*`, D14 U1) are removed on every uninstall; other
+  apps' copies stay. Link's `remove_unpacked_except` would remove every app's, so Box does not call it.
+  `verify-appimage.py` now compares the profile before install with what is left after `--uninstall --silent`
+  (only Box's kept data may remain) and after a second install and `--uninstall --silent --remove-data` (nothing
+  of Box's may remain; WebKit storage outside Box's folders is reported, not failed).
+- Not done here, and still open for Round 5: N-1 against the previous peers, the gates on the published rc
+  (Link `app-gates.yml`), the downloader rows in SECURITY.md, accessibility checks, and README screenshots.
+

@@ -6,11 +6,14 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 
 ### Added
 
+- Settings → About opens the third-party notices, which every package now includes.
 - The calculator has an Angles setting for degrees; angles are radians by default.
 - Audio and video previews play from the AppImage (WebM, Ogg, MP3, WAV, FLAC, Matroska and the MP4 container). H.264 and AAC media still does not preview.
 
 ### Changed
 
+- Clipboard history files carry a schema version. An unreadable history file is kept aside and Box starts with an empty history instead of failing to start; fields written by a newer Box are kept.
+- Uninstalling Box also removes its unpacked runtime copies.
 - The calculator reads `10 % 3` as a remainder, `50%` as a percentage and `100 + 10%` as 110. `!` is a factorial unless it starts `!=`.
 - Calculator results round to 15 significant digits, so `sin(pi)` is 0 and `0.1 + 0.2` is 0.3.
 - Converters read `1,000` and `12,345,678` with thousands separators and `1,5 m` as 1.5 m. Inside a calculator function a comma separates arguments.

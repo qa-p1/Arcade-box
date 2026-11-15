@@ -2,6 +2,22 @@
 
 Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
 
+## 2026-11-15 (cloud session) - step 7
+
+- **Link v1.0.8 (D16)**, the unused release manifest script removed (D17), Keep a Changelog (D18); licence inventory
+  and notices regenerated for 1.0.8.
+- **BR-17** (`998b602`): the Island shortcut binds on portals without the host Registry (xdg-desktop-portal < 1.19).
+  **BR-18** (`4245754`): one strict content security policy for the Island and dashboard (`frontend/csp.mjs`);
+  the layout and key tests run every surface under it and fail on a violation. **Pinned-image Copy** (`5f83e63`):
+  its policy blocked the fetch it copies with. Each with a test that failed before.
+- **Round 5 (D19):** schema versions and downgrade-safe reads for the clipboard history, plugin state, turned-off
+  apps and SQLite; third-party notices bundled and opened from About; uninstall removes Box's unpacked copies and
+  `verify-appimage.py` checks nothing is left.
+- Tested locally: clippy (1.88.0, workspace, all targets), `scripts/isolate.py cargo test` for arcade-core,
+  arcade-desktop and arcade-plugin-host, frontend `check`, `test`, `build`, `test:layout`, `test:keys`, and the
+  repository checks (docs, CSS vars, vendored, notices, licence inventory). Not run locally: the AppImage build and
+  `verify-appimage.py` (CI), Windows and macOS.
+
 ## 2026-11-14 (cloud session)
 
 - **Step 5, memory (D14):** U1 unpacked runtime, W1 + W3b release after the last window, W0 after startup and after
