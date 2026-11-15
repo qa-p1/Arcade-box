@@ -17,6 +17,12 @@ use crate::manifest::{
 
 const MAX_MANIFEST_BYTES: u64 = 1024 * 1024;
 const STATE_FILE: &str = "installed.json";
+/// Schema of `installed.json`. A file without the field is the v1 shape every released Box wrote.
+const STATE_SCHEMA: u32 = 1;
+
+fn default_state_schema() -> u32 {
+    STATE_SCHEMA
+}
 
 #[derive(Debug, Clone, Default)]
 pub struct InstallApproval {
@@ -55,6 +61,8 @@ impl InstalledPlugin {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct InstallationState {
+    #[serde(default = "default_state_schema")]
+    schema: u32,
     plugin_id: String,
     active_version: String,
     component_sha256: String,
@@ -158,6 +166,7 @@ impl PluginInstaller {
         }
 
         let state = InstallationState {
+            schema: STATE_SCHEMA,
             plugin_id: manifest.tool_manifest.id.clone(),
             active_version: incoming_version.to_string(),
             component_sha256: actual_hash,
@@ -305,7 +314,15 @@ fn read_state(plugin_dir: &Path) -> Result<Option<InstallationState>, InstallErr
     }
     let path = regular_file(&path)?;
     let bytes = read_bounded(&path, MAX_MANIFEST_BYTES)?;
-    Ok(Some(serde_json::from_slice(&bytes)?))
+    // Read the schema number before the strict decode: a newer file may carry fields this Box rejects, and
+    // the person should be told it is newer, not that it is corrupt. The strict decode stays as it was.
+    let value: serde_json::Value = serde_json::from_slice(&bytes)?;
+    if let Some(schema) = value.get("schema").and_then(serde_json::Value::as_u64)
+        && schema > u64::from(STATE_SCHEMA)
+    {
+        return Err(InstallError::NewerInstallationState(schema));
+    }
+    Ok(Some(serde_json::from_value(value)?))
 }
 
 fn write_state_atomically(
@@ -440,6 +457,10 @@ pub enum InstallError {
     VersionReused,
     #[error("installation state is corrupt")]
     CorruptInstallation,
+    #[error(
+        "installation state was made by a newer Arcade Box (schema {0}; this Box understands schema {STATE_SCHEMA}); update Arcade Box instead of changing plugins with this version"
+    )]
+    NewerInstallationState(u64),
     #[error("plugin requests permissions that must be acknowledged: {0:?}")]
     PermissionGrantRequired(BTreeSet<PermissionGrant>),
     #[error("plugin update escalates permissions and requires acknowledgement: {0:?}")]
@@ -448,4 +469,58 @@ pub enum InstallError {
     UnexpectedGrant,
     #[error("plugin is not installed")]
     NotInstalled,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const RELEASED_STATE: &str = r#"{
+  "pluginId": "arcade.sample.echo",
+  "activeVersion": "1.2.3",
+  "componentSha256": "abc123",
+  "grants": []
+}"#;
+
+    fn state_dir(contents: &str) -> tempfile::TempDir {
+        let directory = tempfile::tempdir().unwrap();
+        fs::write(directory.path().join(STATE_FILE), contents).unwrap();
+        directory
+    }
+
+    #[test]
+    fn released_v1_state_without_a_schema_field_reads_and_is_written_with_one() {
+        let directory = state_dir(RELEASED_STATE);
+        let state = read_state(directory.path()).unwrap().unwrap();
+        assert_eq!(state.schema, 1);
+        assert_eq!(state.plugin_id, "arcade.sample.echo");
+        assert_eq!(state.active_version, "1.2.3");
+        write_state_atomically(directory.path(), &state).unwrap();
+        let written: serde_json::Value =
+            serde_json::from_slice(&fs::read(directory.path().join(STATE_FILE)).unwrap()).unwrap();
+        assert_eq!(written["schema"], 1);
+        assert!(read_state(directory.path()).unwrap().is_some());
+    }
+
+    #[test]
+    fn a_newer_schema_is_refused_with_a_clear_message() {
+        let directory = state_dir(
+            r#"{"schema":2,"pluginId":"arcade.sample.echo","activeVersion":"1.2.3","componentSha256":"abc","grants":[],"signature":"x"}"#,
+        );
+        let error = read_state(directory.path()).unwrap_err();
+        let message = error.to_string();
+        assert!(message.contains("made by a newer Arcade Box"), "{message}");
+        assert!(message.contains("schema 2"), "{message}");
+    }
+
+    #[test]
+    fn unknown_fields_are_still_rejected_at_the_current_schema() {
+        let directory = state_dir(
+            r#"{"schema":1,"pluginId":"arcade.sample.echo","activeVersion":"1.2.3","componentSha256":"abc","grants":[],"extra":true}"#,
+        );
+        assert!(matches!(
+            read_state(directory.path()),
+            Err(InstallError::Json(_))
+        ));
+    }
 }
