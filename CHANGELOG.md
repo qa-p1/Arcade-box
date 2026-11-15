@@ -28,6 +28,7 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 
 ### Fixed
 
+- The global shortcut works on desktops with xdg-desktop-portal older than 1.19 (Ubuntu 24.04), which have no host app registry.
 - On Hyprland, clicks outside the Island's card reach the window underneath.
 - Saving a result named after an input with a long CJK or emoji name no longer fails on the 255-byte file name limit.
 
