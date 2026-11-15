@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { CONTENT_SECURITY_POLICY, contentSecurityPolicy } from '../csp.mjs';
 import config from '../vite.config.ts';
+import { readFileSync } from 'node:fs';
 
 const plugin = () => (config.plugins ?? []).flat().find((p) => p?.name === 'arcade-box-content-security-policy');
 const directives = Object.fromEntries(CONTENT_SECURITY_POLICY.split(';').map((d) => d.trim().split(/\s+/)).map(([name, ...values]) => [name, values]));
@@ -28,4 +29,12 @@ test('the policy allows nothing remote and no script outside Box\'s own files', 
       assert.ok(!/^(https?:|\*|'unsafe-eval'|'wasm-unsafe-eval')/.test(value) || value === 'http://ipc.localhost', `${name} ${value}`);
     }
   }
+});
+
+test('the pinned image can copy itself: its policy lets fetch() read the data: URL and nothing else', () => {
+  const html = readFileSync(new URL('../pin.html', import.meta.url), 'utf8');
+  const policy = /http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(html)?.[1];
+  assert.ok(policy, 'pin.html has a policy');
+  const connect = policy.split(';').map((d) => d.trim().split(/\s+/)).find(([name]) => name === 'connect-src');
+  assert.deepEqual(connect, ['connect-src', 'data:']);
 });

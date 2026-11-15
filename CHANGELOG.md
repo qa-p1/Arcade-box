@@ -28,6 +28,7 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 
 ### Fixed
 
+- Copy in a pinned image's window works: its content security policy blocked reading the image it copies.
 - The Island and dashboard run under a strict content security policy, like the pinned-image window: no remote scripts, images or connections.
 - The global shortcut works on desktops with xdg-desktop-portal older than 1.19 (Ubuntu 24.04), which have no host app registry.
 - On Hyprland, clicks outside the Island's card reach the window underneath.
