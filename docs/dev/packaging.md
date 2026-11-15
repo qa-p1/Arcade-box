@@ -44,23 +44,24 @@ The macOS adapter minimum is 14 for screen selection; recording output requires
 15. The NSIS installation is per user. Linux CI uses Ubuntu 24.04; an AppImage
 built on a newer system does not prove compatibility with older glibc versions.
 
-## Stable and nightly
+## Release candidates, stable and nightly
 
-Releases start by hand, the same way in every Arcade repo:
+Releases follow the Arcade 1.0 path (rule zero: nothing untested reaches users):
 
-1. Run **Tag a release** (`tag.yml`) with the tag (`v0.4.0`) and the full SHA
-   of a commit on `main`. It checks that the commit is on `main` and that
-   `Cargo.toml`'s `[workspace.package] version` matches the tag, then pushes
-   an annotated tag.
-2. Run **Release** (`release.yml`) on that tag with the `stable` channel. Run it
-   on `main` with `nightly` to refresh the rolling `nightly` pre-release.
+1. Run **Tag a release** (`tag.yml`) with a release-candidate tag (`v1.0.0-rc.1`) and the full SHA of a commit on
+   `main`. It checks that the commit is on `main` and that `Cargo.toml`'s `[workspace.package] version` matches
+   the tag, pushes an annotated tag and starts **Release** on it.
+2. **Release** (`release.yml`) calls `ci.yml`, so the installers it publishes are the ones CI built and installed,
+   repaired and uninstalled on each OS, and publishes them through Link's reusable publish as a hidden prerelease
+   on the `test` channel, which Arcade Tools never offers. It writes `arcade-release.json` (asset names unchanged
+   from earlier releases, so Tools 0.4.6 keeps updating) and an unsigned `manifest.json`.
+3. Every exit gate runs against those published files. Then **Promote** (`promote.yml`) with the rc tag
+   republishes the same bytes as stable `vX.Y.Z` with a signed manifest (ed25519, the
+   `ARCADE_UPDATE_SIGNING_KEY` secret), verifying the hashes, with no rebuild.
 
-`release.yml` calls `ci.yml`, so the installers it publishes are the ones CI
-built and installed, repaired and uninstalled on each OS. It then checks the
-three installer kinds, writes `arcade-release.json` and `SHA256SUMS.txt`, and
-publishes. Asset names are unchanged from earlier releases (spaces become
-`-`; nightly files carry `nightly` in place of the version). Tags are never
-pushed by hand.
+**Nightly** (`nightly.yml`) runs each night: it republishes main CI's already-tested installers as a signed
+prerelease `vX.Y.Z-nightly.YYYYMMDD.N`, and is skipped when `main` hasn't changed or its CI isn't green.
+Tags are never pushed by hand.
 
 The generator is vendored unchanged from Arcade Link `v0.3.0`, commit
 `33650a8` (see [VENDORED](../../VENDORED.md)):

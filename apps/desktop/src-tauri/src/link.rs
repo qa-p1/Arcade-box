@@ -245,6 +245,7 @@ pub fn job_update(app: &AppHandle, snapshot: &JobSnapshot) {
     };
     if let Some(link_job) = done {
         finish(app, link_job, snapshot);
+        crate::memory::trim_if_hidden(app);
     }
 }
 

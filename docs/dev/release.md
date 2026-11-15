@@ -3,13 +3,14 @@
 ## Current implementation
 
 Native CI builds and tests on Linux, Windows and macOS, then produces AppImage,
-NSIS and dmg artifacts with the CLI and trusted plugin worker. The release
-workflow runs on a version tag made by `tag.yml` and publishes the installers
-with `arcade-release.json` and `SHA256SUMS.txt`. See [packaging](packaging.md) for commands and triggers and
+NSIS and dmg artifacts with the CLI and trusted plugin worker. A
+release-candidate tag made by `tag.yml` starts `release.yml`, which publishes
+those installers as a hidden test prerelease with `arcade-release.json`;
+`promote.yml` republishes a verified candidate as stable with a signed manifest. See [packaging](packaging.md) for commands and triggers and
 [status](../STATUS.md) for the dated verification record.
 
-Merging to `main` does not publish anything; a release starts only when the
-owner runs `tag.yml` and then `release.yml`. Compilation and packaging do not establish
+Merging to `main` does not publish a release; `tag.yml` starts a candidate, and
+only `promote.yml` publishes stable. Compilation and packaging do not establish
 interactive behavior on Windows/macOS or every Wayland compositor.
 
 ## Release gates still outstanding

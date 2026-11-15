@@ -182,3 +182,40 @@ existed. The repository's 10 GB of caches held Windows (5.2 GB) and two macOS en
 Hyprland image, so Linux's was evicted and every Ubuntu run compiled from scratch. Now (Link spec §4) a pull request
 builds one Linux package; Windows and macOS run every check and build their installers on main and in the release
 workflow. On main, Windows and macOS drop their release build before the cache is saved, so the three OS caches fit.
+
+## D14 — Memory (step 5): the resident gives back what windows leave, and runs unpacked
+
+`AUDIT/memory.md` items for Box, with Tools' implementation (Tools D10, D18) as the model; nothing changes how Box
+feels, and no timer runs while Box has no window (`apps/desktop/src-tauri/src/memory.rs`).
+- **U1:** a resident start from the AppImage runs from its unpacked copy under `<data>/arcade/runtime/`
+  (`runtime::relaunch_unpacked`), so no FUSE helper stays resident and pages come from the real disk; `$APPIMAGE`
+  still names the installed file. `--quit`, `--hide` and `--restart` never start a resident and skip the copy; a
+  copy offering to install itself keeps running from its mount. The package gate's UI check runs to an exit code,
+  so its launcher waits for the copy. Package tests now follow the resident (Link endpoint, `--status`, the
+  unpacked executable) rather than the launcher, which exits 0 at once (`verify-appimage.py` checks the copy runs).
+- **W1 + W3b:** 3 s after any window is destroyed, if none is left, WebKit's network process ends (the next window
+  starts a new one) and the idle heap is paged out (free unless memory is short); with a window left, a trim. This
+  replaces the Island's trim-only release and also covers the dashboard and pinned captures.
+- **W0:** the same release 15 s after the resident starts, and a trim after a Link request served while hidden.
+- **OPEN1:** while a window is open, Box trims itself 2 s after a page loads and every 20 s; WebKit's helper
+  processes get the same from `libarcade-trim.so` (vendored from Link v1.0.7, built by `prepare-bundle.py`,
+  preloaded from `$APPDIR/usr/lib`, checked by `verify-appimage.py`).
+- **BX1:** job results were already bounded (100 finished jobs, 32 early Link updates). The clipboard history was
+  not: 500 items with images of up to 8 MB of RGBA each (10.7 MB as base64), all in memory. It now also keeps at
+  most 64 MiB of text and image data, oldest unpinned first (`history_stays_within_its_byte_budget`).
+- Compositing stays on (spec: the Island must stay smooth); the Island's 15 s keep-warm stays (hot re-show).
+
+## D15 — Release machinery (step 6): candidates on the test channel, promotion to stable
+
+`release.yml` ran on every pushed `v*` tag and published it as the latest stable release, so the first
+`v1.0.0-rc.1` tag would have reached every user untested (PLAN.md rule zero). It now has Tools' shape (Link spec
+§CI): `tag.yml` makes only `vX.Y.Z-rc.N` tags and starts Release; `release.yml` builds and verifies through
+`ci.yml` and publishes through Link's reusable `app-publish` on the hidden `test` channel; `promote.yml` (Link's
+`app-promote`) republishes a verified candidate's bytes as stable with a signed manifest; `nightly.yml` (Link's
+`app-nightly`) republishes main CI's tested installers each night. The artifacts keep their `arcade-box-*` names,
+which Link's real-fleet e2e picks up. Box's own `arcade-release.py` publish step and its rolling `nightly` release
+are retired (the vendored generator goes in step 4's follow-up if nothing else uses it).
+
+Dependabot (same step): each merge to main made it rebase every open Dependabot pull request, and each rebase
+started a full three-OS build; on 2026-11-14 that queued 24 builds across the fleet ahead of release jobs. Box's
+updates are now grouped per ecosystem (minor and patch together, majors separate) with `rebase-strategy: disabled`.

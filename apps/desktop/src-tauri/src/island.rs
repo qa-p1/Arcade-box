@@ -481,7 +481,6 @@ pub(crate) fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWind
         eprintln!("Could not attach Island WebView cleanup: {error}");
     }
     let close_window = window.clone();
-    let destroyed_app = app.clone();
     window.on_window_event(move |event| match event {
         tauri::WindowEvent::CloseRequested { api, .. } => {
             // Closing the window releases its WebView; Box stays resident.
@@ -489,14 +488,11 @@ pub(crate) fn island_window(app: &tauri::AppHandle) -> Option<tauri::WebviewWind
             request_hide_island(&close_window, std::time::Duration::ZERO);
         }
         tauri::WindowEvent::Destroyed => {
-            {
-                let mut state = ISLAND_VISIBILITY
-                    .lock()
-                    .unwrap_or_else(std::sync::PoisonError::into_inner);
-                state.ready = false;
-                state.hiding = false;
-            }
-            reclaim_island_memory(destroyed_app.clone());
+            let mut state = ISLAND_VISIBILITY
+                .lock()
+                .unwrap_or_else(std::sync::PoisonError::into_inner);
+            state.ready = false;
+            state.hiding = false;
         }
         _ => {}
     });
@@ -527,23 +523,6 @@ pub(crate) fn schedule_island_release(window: &tauri::WebviewWindow, delay: std:
                 let _ = release.destroy();
             }
         });
-    });
-}
-
-// Window closure releases WebKit resources in place; it never replaces the
-// resident process or discards the in-memory results of completed jobs.
-/// Lets GTK/WebKit finish deferred destruction, then returns freed heap pages
-/// to the system once. No periodic timer.
-pub(crate) fn reclaim_island_memory(app: tauri::AppHandle) {
-    std::thread::spawn(move || {
-        std::thread::sleep(std::time::Duration::from_millis(500));
-        if app.get_webview_window("island").is_none() {
-            #[cfg(all(target_os = "linux", target_env = "gnu"))]
-            // SAFETY: malloc_trim is thread-safe and only releases free memory.
-            unsafe {
-                libc::malloc_trim(0);
-            }
-        }
     });
 }
 

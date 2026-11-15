@@ -43,6 +43,7 @@ mod island;
 mod link;
 mod login;
 mod media_preview;
+pub mod memory;
 mod open_url;
 mod paste_plain;
 mod portable_settings;
@@ -66,7 +67,7 @@ fn profile_motion(sample: String) {
 }
 // TEMPORARY_MOTION_PROBE_END
 
-fn ui_check_enabled() -> bool {
+pub fn ui_check_enabled() -> bool {
     std::env::var("ARCADE_UI_CHECK").as_deref() == Ok("1")
         && std::env::var_os("ARCADE_HOME").is_some_and(|root| !root.is_empty())
 }
@@ -176,6 +177,11 @@ pub fn run(args: Vec<String>) {
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
+        .on_page_load(|webview, payload| {
+            if payload.event() == tauri::webview::PageLoadEvent::Finished {
+                memory::trim_while_open(webview.app_handle());
+            }
+        })
         .setup(move |app| {
             // `--quit` with nothing running: exit without starting anything.
             if first_flag.as_deref() == Some("--quit") {
@@ -201,6 +207,7 @@ pub fn run(args: Vec<String>) {
             match fs2::FileExt::try_lock_exclusive(&lock) {
                 Ok(()) => {
                     app.manage(ResidentInstance { _lock: lock });
+                    memory::reclaim_after(app.handle(), memory::RELEASE_AFTER_STARTUP);
                     // Started from the menu, at login or by Tools, stderr goes
                     // nowhere: keep it in the data folder instead.
                     if let Err(error) =
@@ -445,8 +452,13 @@ pub fn run(args: Vec<String>) {
         .build(tauri::generate_context!())
         .expect("Arcade Box desktop runtime failed to initialize");
     app.run(|handle, event| {
-        #[cfg(not(target_os = "linux"))]
-        let _ = handle;
+        if let tauri::RunEvent::WindowEvent {
+            event: tauri::WindowEvent::Destroyed,
+            ..
+        } = &event
+        {
+            memory::reclaim_after(handle, memory::RELEASE_AFTER_CLOSE);
+        }
         // Box is resident (tray, shortcut, Link): destroying its last window,
         // the Island or a pinned image, must not end the process. Explicit
         // quits pass an exit code and are not prevented.

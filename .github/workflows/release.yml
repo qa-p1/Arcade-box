@@ -1,62 +1,38 @@
-# Build, verify and publish Box. Stable: run this on a version tag made by
-# tag.yml (Actions → Release → Run workflow → the tag). Nightly: run it on
-# main; it refreshes the rolling nightly pre-release. The installers are the
-# ones CI builds and verifies on each OS (ci.yml is called here), so the
-# assets, arcade-release.json and SHA256SUMS.txt match earlier releases.
+# Builds every platform once from a release-candidate tag and publishes the files as a hidden prerelease on the test
+# channel (Link's reusable publish: arcade-release.json + an unsigned manifest.json). "Tag a release" starts it; it
+# can also be run by hand on an rc tag. The installers are the ones CI builds and verifies on each OS (ci.yml is
+# called here). Every exit gate runs against the published files; "Promote" then republishes the same bytes as
+# stable with a signed manifest. Nothing here publishes stable (PLAN.md rule zero).
 name: Release
 
 on:
-  push:
-    tags: ['v*']
   workflow_dispatch:
-    inputs:
-      channel:
-        description: Release channel (stable requires a matching version tag)
-        type: choice
-        options: [nightly, stable]
-        default: nightly
 
 permissions:
   contents: read
 
 concurrency:
-  group: release
+  group: box-release
   cancel-in-progress: false
 
 jobs:
   prepare:
     runs-on: ubuntu-24.04
+    timeout-minutes: 5
     outputs:
-      tag: ${{ steps.plan.outputs.tag }}
-      label: ${{ steps.plan.outputs.label }}
-      version: ${{ steps.plan.outputs.version }}
-      channel: ${{ steps.plan.outputs.channel }}
+      tag: ${{ steps.release.outputs.tag }}
+      version: ${{ steps.release.outputs.version }}
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-python@v7
-        with:
-          python-version: '3.13'
-      - name: Validate version and choose channel
-        id: plan
-        env:
-          INPUT_CHANNEL: ${{ inputs.channel }}
+      - name: The tag is this version's release candidate
+        id: release
         run: |
-          version="$(python3 scripts/check-version.py --print)"
-          channel="${INPUT_CHANNEL:-stable}"
-          if [ "$channel" = stable ]; then
-            [ "$GITHUB_REF" = "refs/tags/v$version" ] || { echo "A stable release must run on its tag v$version, not $GITHUB_REF"; exit 1; }
-            tag="v$version"; label="$version"
-          elif [ "$channel" = nightly ]; then
-            tag=nightly; label=nightly
-          else
-            echo "Unknown channel $channel"; exit 1
-          fi
-          {
-            echo "tag=$tag"
-            echo "label=$label"
-            echo "version=$version"
-            echo "channel=$channel"
-          } >> "$GITHUB_OUTPUT"
+          version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')
+          tag="${GITHUB_REF#refs/tags/}"
+          [[ "$GITHUB_REF" == refs/tags/* && "$tag" =~ ^v${version//./\\.}-rc\.[1-9][0-9]*$ ]] \
+            || { echo "::error::run Release on a tag v$version-rc.N (got $GITHUB_REF)"; exit 1; }
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
   ci:
     needs: prepare
@@ -64,70 +40,13 @@ jobs:
 
   publish:
     needs: [prepare, ci]
-    runs-on: ubuntu-24.04
     permissions:
       contents: write
-    env:
-      GH_TOKEN: ${{ secrets.RELEASE_TOKEN || github.token }}
-      GH_REPO: ${{ github.repository }}
-      TAG: ${{ needs.prepare.outputs.tag }}
-      LABEL: ${{ needs.prepare.outputs.label }}
-      VERSION: ${{ needs.prepare.outputs.version }}
-      CHANNEL: ${{ needs.prepare.outputs.channel }}
-    steps:
-      - uses: actions/checkout@v7
-      - name: Download the verified installers
-        uses: actions/download-artifact@v4
-        with:
-          pattern: arcade-box-*
-          merge-multiple: true
-          path: ${{ runner.temp }}/built
-      - name: Prepare manifest and checksums
-        run: |
-          mkdir "$RUNNER_TEMP/release"
-          for f in "$RUNNER_TEMP"/built/*; do
-            name="$(basename "$f")"
-            name="${name// /-}"
-            name="${name/_${VERSION}_/_${LABEL}_}"
-            cp "$f" "$RUNNER_TEMP/release/$name"
-          done
-          python3 scripts/arcade-release.py --id arcade.box --version "$VERSION" --channel "$CHANNEL" \
-            --notes "https://github.com/$GH_REPO/releases/tag/$TAG" "$RUNNER_TEMP/release"
-          python3 - "$RUNNER_TEMP/release/arcade-release.json" <<'PY'
-          import json, sys
-          assets = json.load(open(sys.argv[1]))['assets']
-          assert len(assets) == 3 and {a['kind'] for a in assets} == {'nsis', 'appimage', 'dmg'}
-          assert {a['os'] for a in assets} == {'windows', 'linux', 'macos'}
-          assert next(a for a in assets if a['os'] == 'macos')['arch'] == 'universal'
-          PY
-          (cd "$RUNNER_TEMP/release" && sha256sum -c SHA256SUMS.txt)
-      - name: Write release notes
-        run: |
-          {
-            echo "Arcade Box build $GITHUB_SHA ($TAG)."
-            echo
-            echo "Installers: Windows per-user NSIS, Linux AppImage, and macOS dmg."
-            echo "Each includes the arcade-box CLI and trusted plugin worker beside the desktop executable."
-            echo
-            echo "Verify installer downloads with SHA256SUMS.txt. Arcade Tools uses arcade-release.json."
-            echo "Native Windows/macOS interaction is build only until verified by a real run."
-            echo
-            echo "What changed: https://github.com/$GH_REPO/blob/$GITHUB_SHA/CHANGELOG.md"
-            echo "User guide: https://github.com/$GH_REPO/tree/main/docs/user"
-          } > "$RUNNER_TEMP/notes.md"
-      - name: Publish stable release
-        if: env.CHANNEL == 'stable'
-        run: |
-          gh release create "$TAG" "$RUNNER_TEMP"/release/* --verify-tag --latest \
-            --title "Arcade Box $TAG" --notes-file "$RUNNER_TEMP/notes.md"
-      - name: Refresh nightly pre-release
-        if: env.CHANNEL == 'nightly'
-        run: |
-          if gh release view nightly >/dev/null 2>&1; then
-            gh api -X PATCH "repos/$GH_REPO/git/refs/tags/nightly" -f sha="$GITHUB_SHA" -F force=true > /dev/null
-            gh release upload nightly "$RUNNER_TEMP"/release/* --clobber
-            gh release edit nightly --prerelease --latest=false --title "Arcade Box nightly" --notes-file "$RUNNER_TEMP/notes.md"
-          else
-            gh release create nightly "$RUNNER_TEMP"/release/* --target "$GITHUB_SHA" --prerelease --latest=false \
-              --title "Arcade Box nightly" --notes-file "$RUNNER_TEMP/notes.md"
-          fi
+    uses: qa-p1/Arcade-Link/.github/workflows/app-publish.yml@v1.0.7
+    with:
+      app: arcade.box
+      version: ${{ needs.prepare.outputs.version }}
+      tag: ${{ needs.prepare.outputs.tag }}
+      channel: test
+      artifacts: arcade-box-*
+      link-ref: v1.0.7

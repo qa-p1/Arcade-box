@@ -50,6 +50,16 @@ def main():
             subprocess.run(['lipo', '-create', '-output', str(staged),
                             *(str(destination / f'{name}-{triple}') for triple in targets)], check=True)
             print(f'Staged {staged.relative_to(ROOT)}')
+    if 'linux' in target:
+        # OPEN1 (D14): Box preloads this into WebKit's helper processes (memory.rs); the AppImage carries it in
+        # usr/lib through tauri.bundle.conf.json.
+        trimmer = destination / 'libarcade-trim.so'
+        if trimmer.is_symlink():
+            raise SystemExit('The generated trimmer destination is a symlink')
+        linux = ROOT / 'packaging/linux'
+        subprocess.run(['cc', '-O2', '-shared', '-fPIC', '-Wall', '-Werror', '-o', str(trimmer),
+                        str(linux / 'arcade-trim-preload.c'), f'-I{linux}', '-lpthread'], check=True)
+        print(f'Staged {trimmer.relative_to(ROOT)}')
 
 
 if __name__ == '__main__':

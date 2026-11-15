@@ -22,6 +22,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 NATIVE = ROOT / "packaging" / "linux" / "native"
 OWN = ("usr/bin/arcade-desktop", "usr/bin/arcade-box", "usr/bin/arcade-plugin-worker",
+       # The WebKit trimmer (OPEN1), built from the C vendored from Link (VENDORED.md).
+       "usr/lib/libarcade-trim.so",
        # linuxdeploy's AppRun; it and the AppImage runtime are listed by scripts/notices.py (Packaging).
        "AppRun.wrapped")
 LIB_DIRS = ("/usr/lib/x86_64-linux-gnu", "/lib/x86_64-linux-gnu", "/usr/lib", "/lib")

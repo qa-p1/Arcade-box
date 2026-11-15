@@ -60,6 +60,18 @@ The template contains local Arcade adaptations. SHA-256 inventory:
 0d542e0c8804e39aa7f37eb00da5a762149dc682d7829451287e11b938e94594  apps/desktop/src-tauri/windows/LICENSE-TAURI-APACHE-2.0
 ```
 
+## WebKit trimmer (OPEN1)
+
+Copied unchanged from [Arcade Link](https://github.com/qa-p1/Arcade-Link/tree/v1.0.7) tag `v1.0.7` (commit
+`40ec0279095f7a5082b0fbe2912d1a869b98f55d`): `packaging/linux/arcade-trim-preload.c` from the same path and
+`packaging/linux/arcade_trim.h` from `qt/arcade_trim.h`. `scripts/prepare-bundle.py` builds them into
+`libarcade-trim.so`, which Box preloads into WebKit's helper processes. License: MIT OR Apache-2.0.
+
+```text
+5460b9871e905128abe46e6c02a7ed9c4c3b3d99ac9beb6c9ea2526f733612fc  packaging/linux/arcade-trim-preload.c
+9c1d65cac63d7aa59b705c442b8840a7f9576a9bfcbeaf39e5630bb303485131  packaging/linux/arcade_trim.h
+```
+
 ## Arcade design kit
 
 Copied unchanged from [Arcade Link](https://github.com/qa-p1/Arcade-Link/tree/v0.4.15) tag `v0.4.15` (commit
