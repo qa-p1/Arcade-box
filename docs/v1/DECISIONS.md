@@ -311,3 +311,23 @@ README and user-guide screenshots (same step): they dated from 0.3 (2026-10-28) 
 footer or the current tool view. `npm run screenshots` (`tests/screenshots.mjs`) now takes all six from the visual
 fixture at 2x in light and dark, so they can be retaken after any visible change.
 
+## D22 — Link 1.0.11 for rc.2
+
+`v1.0.0-rc.1`'s Gates stopped at "Published files": Tauri names the files after the product name
+(`Arcade Box_1.0.0_amd64.AppImage`), GitHub stored them as `Arcade.Box_...`, and `SHA256SUMS.txt`, `arcade-release.json`
+and `manifest.json` named the original, so neither the gates nor Tools could have fetched them. Box's 0.x release
+workflow replaced spaces with `-`; moving to Link's `app-publish.yml` (D15) lost that. Link 1.0.11 fixes it for every
+app (spaces become `-`, other characters are refused, the published file names must equal the metadata's). rc.1 is
+not promoted; rc.2 is built from this change.
+
+Link 1.0.8 → 1.0.11, what touches Box:
+- `ARCADE_UNPACKED` now names the copy's folder, and a value that does not contain the running executable is
+  dropped (1.0.11). With 1.0.8 a Restart's successor inherited `ARCADE_UNPACKED=1` from the copy and stayed on the
+  FUSE mount. `scripts/verify-resident.py` now runs without the harness's `ARCADE_UNPACKED` and requires the
+  resident and Restart's successor to run from `<data>/arcade/runtime/box-*`.
+- `install::uninstall` removes the app's own unpacked copies (1.0.10). Box's own `remove_unpacked_copies` is gone;
+  the copies under the user's XDG data folder (not the environment's when `ARCADE_HOME` redirects the install) go
+  through Link's `runtime::remove_unpacked_of`. The installer test still checks that Box's copies go and Tools' stay.
+- 1.0.9 adds `app-gates.yml` (already used by D20) and the harness's `ARCADE_UNPACKED=1`; the design kit's web files
+  did not change (`scripts/sync-design.py` records v1.0.11 with the same hashes).
+Every Link workflow and checkout Box uses is pinned to `v1.0.11`.

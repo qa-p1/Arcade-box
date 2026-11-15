@@ -70,8 +70,8 @@ Copied unchanged from [Arcade Link](https://github.com/qa-p1/Arcade-Link/tree/v1
 
 ## Arcade design kit
 
-Copied unchanged from [Arcade Link](https://github.com/qa-p1/Arcade-Link/tree/v1.0.8) tag `v1.0.8` (commit
-`34f8030e494c0c662a5f95efd8e868c8536b9989`) by `scripts/sync-design.py`; never edit these files here.
+Copied unchanged from [Arcade Link](https://github.com/qa-p1/Arcade-Link/tree/v1.0.11) tag `v1.0.11` (commit
+`b00a1ca3c5659f8318c468be89c39c6e5ed2b30f`) by `scripts/sync-design.py`; never edit these files here.
 License: MIT OR Apache-2.0; Inter is under the SIL Open Font License 1.1
 (`apps/desktop/frontend/src/design/fonts/OFL.txt`).
 

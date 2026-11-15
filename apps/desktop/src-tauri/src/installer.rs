@@ -679,8 +679,9 @@ pub fn uninstall(environment: &Environment, remove_data: bool) -> io::Result<boo
     let cli = bundle_cli(environment)?;
     let removed = uninstall_files(environment, remove_data, &data_folders)?;
     // Link keeps its copies under the user's data folder (XDG_DATA_HOME), which
-    // is not the environment's when ARCADE_HOME redirects the installation.
-    remove_unpacked_copies(&arcade_link::runtime::unpacked_root())?;
+    // is not the environment's when ARCADE_HOME redirects the installation;
+    // install::uninstall only clears the environment's.
+    arcade_link::runtime::remove_unpacked_of(&arcade_link::runtime::unpacked_root(), ME);
     #[cfg(target_os = "macos")]
     if let Some(cli) = cli {
         remove_file(&cli)?;
@@ -688,41 +689,23 @@ pub fn uninstall(environment: &Environment, remove_data: bool) -> io::Result<boo
     Ok(removed)
 }
 
-/// Link's uninstall plus Box's unpacked runtime copies (U1): the launcher
-/// copies the image to `<data>/arcade/runtime/box-<version>-<key>/`, outside
-/// Box's data folders and the receipt, so they go whether or not the user's
-/// data does. Other apps' copies in the same folder stay.
+/// Link's uninstall, which (since Link 1.0.10) also removes Box's unpacked
+/// runtime copies (U1) `<data>/arcade/runtime/box-<version>-<key>/`: they are
+/// outside Box's data folders and the receipt, so they go whether or not the
+/// user's data does. Other apps' copies in the same folder stay.
 fn uninstall_files(
     environment: &Environment,
     remove_data: bool,
     data_folders: &[PathBuf],
 ) -> io::Result<bool> {
-    let removed = install::uninstall(
+    install::uninstall(
         environment,
         ME,
         install::UninstallOptions {
             remove_data,
             data_folders,
         },
-    )?;
-    remove_unpacked_copies(&environment.data.join("arcade/runtime"))?;
-    Ok(removed)
-}
-
-/// Removes `box-*` (and an interrupted `.box-*` copy) from Link's runtime folder.
-fn remove_unpacked_copies(runtime: &Path) -> io::Result<()> {
-    let Ok(entries) = std::fs::read_dir(runtime) else {
-        return Ok(());
-    };
-    for entry in entries.flatten() {
-        let name = entry.file_name().to_string_lossy().into_owned();
-        if (name.starts_with("box-") || name.starts_with(".box-"))
-            && entry.file_type().is_ok_and(|kind| kind.is_dir())
-        {
-            std::fs::remove_dir_all(entry.path())?;
-        }
-    }
-    Ok(())
+    )
 }
 
 pub fn tools_installed(environment: &Environment) -> bool {

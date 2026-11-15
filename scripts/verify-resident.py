@@ -98,7 +98,10 @@ def main():
         env = {k: v for k, v in os.environ.items() if k not in (
             'APPIMAGE', 'APPDIR', 'LD_LIBRARY_PATH', 'ARCADE_DEV_BUILD', 'WAYLAND_DISPLAY',
             'HYPRLAND_INSTANCE_SIGNATURE', 'SWAYSOCK', 'ARCADE_TOOLS_NO_LEAN_RESTART',
-            'ARCADE_BOX_NO_LEAN_RESTART', 'ARCADE_LOOK_NO_LEAN_RESTART')}
+            'ARCADE_BOX_NO_LEAN_RESTART', 'ARCADE_LOOK_NO_LEAN_RESTART',
+            # Link's isolated session sets ARCADE_UNPACKED=1 so a test keeps the process it started; this gate needs
+            # the real hand-over to the unpacked copy (U1), also for Restart's successor.
+            'ARCADE_UNPACKED')}
         env.update(ARCADE_HOME=str(root / 'profile'), HOME=str(root / 'home'),
                    XDG_CONFIG_HOME=str(root / 'config'), XDG_DATA_HOME=str(root / 'data'),
                    XDG_CACHE_HOME=str(root / 'cache'), XDG_RUNTIME_DIR=str(root / 'run'),
@@ -130,6 +133,14 @@ def main():
                 print(f'{" ".join(args)} exited {error.returncode}; its output:\n{error.stdout}{error.stderr}',
                       file=sys.stderr)
                 raise
+        copies = Path(env['XDG_DATA_HOME']) / 'arcade/runtime'
+        def exe(process):
+            try:
+                return os.readlink(f'/proc/{process}/exe')
+            except OSError:
+                return '?'
+        def from_copy(process):
+            return exe(process).startswith(f'{copies}/box-')
         def pid():
             try:
                 return json.loads(endpoint.read_text())['pid']
@@ -172,10 +183,14 @@ def main():
                     wait(lambda: not renderers(original), 'closed WebView releases its renderer', seconds=10)
                     assert pid() == original
                     print(f'Cycle {cycle + 1}: PID {original} stable, 0 renderers, group PSS {memory(original)} MiB', flush=True)
+                assert from_copy(original), f'The resident runs from {exe(original)}, not an unpacked copy'
                 run('--restart')
                 successor = wait(lambda: (p if (p := pid()) and p != original else None),
                                  'explicit Restart replaces the process')
                 assert successor != original
+                # The successor inherits the copy's ARCADE_UNPACKED; Link 1.0.11 drops it because the AppImage it
+                # starts from is not inside that copy, so the successor runs from a copy too, not from a FUSE mount.
+                assert from_copy(successor), f'Restart left Box on {exe(successor)}, not an unpacked copy'
                 run('--quit')
                 wait(lambda: not endpoint.exists(), 'explicit Quit stops resident')
             except Exception:

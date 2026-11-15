@@ -111,7 +111,7 @@ def main():
             if (parent / ".git").exists():
                 raise RuntimeError("AppImage verification must run outside the checkout")
         env = os.environ.copy()
-        for key in ("APPIMAGE", "APPDIR", "ARCADE_DEV_BUILD"):
+        for key in ("APPIMAGE", "APPDIR", "ARCADE_DEV_BUILD", "ARCADE_UNPACKED"):
             env.pop(key, None)
         for key, directory in (
             ("HOME", "home"), ("XDG_CONFIG_HOME", "config"), ("XDG_DATA_HOME", "data"),
