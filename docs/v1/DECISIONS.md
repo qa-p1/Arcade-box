@@ -274,6 +274,40 @@ a newer file.
   `verify-appimage.py` now compares the profile before install with what is left after `--uninstall --silent`
   (only Box's kept data may remain) and after a second install and `--uninstall --silent --remove-data` (nothing
   of Box's may remain; WebKit storage outside Box's folders is reported, not failed).
-- Not done here, and still open for Round 5: N-1 against the previous peers, the gates on the published rc
-  (Link `app-gates.yml`), the downloader rows in SECURITY.md, accessibility checks, and README screenshots.
+- Not done here, and still open for Round 5: N-1 against the previous peers and the gates on the published rc
+  (both in D20), the downloader rows in SECURITY.md, accessibility checks, and README screenshots.
+
+## D20 — Gates on the published rc
+
+`gates.yml` runs every PLAN exit gate on a published `vX.Y.Z-rc.N`, never on a local build, through Link's reusable
+`app-gates.yml@v1.0.9`: the rc and the previous stable release (v0.4.3) download and match `SHA256SUMS.txt` and the
+rc's test-channel manifest; conformance on the repository and the published AppImage; N-1 (the Link CLIs the
+released peers ship see the rc, read its status and describe it); background memory and the performance budgets;
+the delta from v0.4.3 through Tools' updater, with the signed manifest and a tampered chunk; the NSIS and DMG smoke on
+the published installers. Box adds its Linux checks on the published AppImage (notices, install/repair/uninstall
+inventory, the upgrade from v0.4.3 with a user's data, Island close/reopen keeping the process, tray registration)
+and Link's desktop suites on the same file (Tier 1 Hyprland blocks on any failure; Tier 2 sway, KWin, Mutter and X11).
+`promote.yml` is run only after a green Gates run on the rc it promotes.
+
+## D21 — Accessibility pass (step 7)
+
+`tests/a11y.mjs` (in `scripts/check`, so in CI) runs axe-core's WCAG 2.1 A and AA rules on the Island (empty, search,
+tool, first run) and on every dashboard page in light and dark, checks that every control Tab reaches on a dashboard
+page looks different focused, and that nothing moves for longer than 10 ms when reduced motion is requested. Text at
+125% is covered by `tests/layout.mjs`. Contrast passed already. On the sources before this change it found 34 problems,
+all fixed:
+- **Switches, checkboxes and sliders had no focus ring.** A rule meant for text fields (which show focus with their
+  border) removed the outline from every `input`. It now applies to text-like inputs only; the others get the ring.
+- **Category buttons had no name in the narrow sidebar** (≤ 760 px hides their label). They carry the category as
+  their name and tooltip.
+- **The search listbox held buttons.** A listbox may own only options; each result row's star sat inside it. The star
+  stays as a pointer shortcut but is hidden from assistive technology and Tab; the keyboard way to change a favourite
+  is the star in the tool's own view.
+- **Names that did not contain the visible text** (WCAG 2.5.3, label in name): the footer's Esc button ("Esc Clear"
+  was named "Clear the search") and the shortcut recorder. Their names now start with the visible words, with the
+  rest in visually hidden text; the Esc button announces its key with `aria-keyshortcuts`.
+
+README and user-guide screenshots (same step): they dated from 0.3 (2026-10-28) and no longer showed the Island's
+footer or the current tool view. `npm run screenshots` (`tests/screenshots.mjs`) now takes all six from the visual
+fixture at 2x in light and dark, so they can be retaken after any visible change.
 

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "purpose": "Locked third-party dependency inventory; human license and notice review remains required",
-  "packageCount": 1012,
+  "packageCount": 1013,
   "unresolvedLicenseMetadata": [],
   "packages": [
     {
@@ -9608,6 +9608,15 @@
       "repository": null,
       "source": "https://registry.npmjs.org/aria-query/-/aria-query-5.3.1.tgz",
       "checksum": "sha512-Z/ZeOgVl7bcSYZ/u/rh0fOpvEpq//LZmdbkXyc7syVzjPAhfOa9ebsdTSjEBDU4vs5nC98Kfduj1uFo0qyET3g=="
+    },
+    {
+      "ecosystem": "npm",
+      "name": "axe-core",
+      "version": "4.14.0",
+      "license": "MPL-2.0",
+      "repository": null,
+      "source": "https://registry.npmjs.org/axe-core/-/axe-core-4.14.0.tgz",
+      "checksum": "sha512-9WTZxEjsZ7b13TH8JPmbV2z8CHbl80/2hm3XPEG4JgNdQLK81IBRXmSxHfMAOkSqQeRxT/0dwNDz2GOm3zzpcQ=="
     },
     {
       "ecosystem": "npm",

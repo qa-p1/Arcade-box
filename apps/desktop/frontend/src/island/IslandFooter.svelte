@@ -25,7 +25,8 @@
     <span class="hint"><kbd class="key-chip">↑</kbd><kbd class="key-chip">↓</kbd>Move</span>
     <span class="hint"><kbd class="key-chip">↵</kbd>Open</span>
   {/if}
-  <button type="button" class="hint dismiss" onclick={escape} aria-label={escapeAction === 'Close' ? 'Close Arcade Box' : escapeAction === 'Clear' ? 'Clear the search' : 'Back to the search'}><kbd class="key-chip">Esc</kbd>{escapeAction}</button>
+  <!-- The name starts with the visible word (WCAG 2.5.3); the key is announced through aria-keyshortcuts. -->
+  <button type="button" class="hint dismiss" onclick={escape} aria-keyshortcuts="Escape"><kbd class="key-chip" aria-hidden="true">Esc</kbd>{escapeAction}<span class="visually-hidden">{escapeAction === 'Close' ? ' Arcade Box' : escapeAction === 'Clear' ? ' the search' : ' to the search'}</span></button>
 </footer>
 
 <style>
