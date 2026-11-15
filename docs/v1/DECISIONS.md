@@ -274,6 +274,17 @@ a newer file.
   `verify-appimage.py` now compares the profile before install with what is left after `--uninstall --silent`
   (only Box's kept data may remain) and after a second install and `--uninstall --silent --remove-data` (nothing
   of Box's may remain; WebKit storage outside Box's folders is reported, not failed).
-- Not done here, and still open for Round 5: N-1 against the previous peers, the gates on the published rc
-  (Link `app-gates.yml`), the downloader rows in SECURITY.md, accessibility checks, and README screenshots.
+- Not done here, and still open for Round 5: N-1 against the previous peers and the gates on the published rc
+  (both in D20), the downloader rows in SECURITY.md, accessibility checks, and README screenshots.
 
+## D20 — Gates on the published rc
+
+`gates.yml` runs every PLAN exit gate on a published `vX.Y.Z-rc.N`, never on a local build, through Link's reusable
+`app-gates.yml@v1.0.9`: the rc and the previous stable release (v0.4.3) download and match `SHA256SUMS.txt` and the
+rc's test-channel manifest; conformance on the repository and the published AppImage; N-1 (the Link CLIs the
+released peers ship see the rc, read its status and describe it); background memory and the performance budgets;
+the delta from v0.4.3 through Tools' updater, with the signed manifest and a tampered chunk; the NSIS and DMG smoke on
+the published installers. Box adds its Linux checks on the published AppImage (notices, install/repair/uninstall
+inventory, the upgrade from v0.4.3 with a user's data, Island close/reopen keeping the process, tray registration)
+and Link's desktop suites on the same file (Tier 1 Hyprland blocks on any failure; Tier 2 sway, KWin, Mutter and X11).
+`promote.yml` is run only after a green Gates run on the rc it promotes.
