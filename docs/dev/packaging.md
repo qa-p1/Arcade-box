@@ -63,22 +63,10 @@ Releases follow the Arcade 1.0 path (rule zero: nothing untested reaches users):
 prerelease `vX.Y.Z-nightly.YYYYMMDD.N`, and is skipped when `main` hasn't changed or its CI isn't green.
 Tags are never pushed by hand.
 
-The generator is vendored unchanged from Arcade Link `v0.3.0`, commit
-`33650a8` (see [VENDORED](../../VENDORED.md)):
-
-```sh
-python3 scripts/arcade-release.py --id arcade.box --version 0.3.5 --channel stable \
-  --notes https://github.com/qa-p1/Arcade-box/releases/tag/v0.3.5 dist/
-(cd dist && sha256sum -c SHA256SUMS.txt)
-```
-
-The schema-1 manifest includes the app ID, version, channel, Link protocol 1,
-release-notes URL, and each installer's OS, architecture, kind, byte size and
-SHA-256. NSIS silent installation uses `/S`. The checksum file covers every
-input asset; the generated manifest and checksum file are excluded from their
-own checksum input list. Local validation covers stable/nightly classification
-and checksum verification using fake NSIS/AppImage/dmg assets. It does not
-publish them or claim native installer execution.
+Link's reusable publish writes `arcade-release.json` and `manifest.json`; Box carries no generator of its own
+(see D17 in [DECISIONS](../v1/DECISIONS.md)). The schema-1 manifest includes the app ID, version, channel, Link
+protocol 1, release-notes URL, and each installer's OS, architecture, kind, byte size and SHA-256; the vendored
+[schema](../../spec/arcade-release.schema.json) describes it. NSIS silent installation uses `/S`.
 
 ## Local validation result
 
@@ -87,6 +75,5 @@ Linux. The AppImage bundler then timed out downloading
 `https://github.com/tauri-apps/binary-releases/releases/download/apprun-old/AppRun-x86_64`
 (`timeout: global`), so no local AppImage was produced. This download failure is
 a limitation of that local attempt. Native CI subsequently built all three
-installer formats successfully; fake installer manifests and checksums also
-passed for both channels. Ordinary debug/release desktop builds are rebuilt
+installer formats successfully. Ordinary debug/release desktop builds are rebuilt
 without the bundling overlay before the isolated standalone GUI checks.

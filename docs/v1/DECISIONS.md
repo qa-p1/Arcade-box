@@ -228,3 +228,10 @@ package changes in `Cargo.lock`), the reusable `app-publish`, `app-promote` and 
 from v0.4.15; the sync changes two lines of `arcade.css` (the font stack gains the colour-emoji families, and a
 tab panel keeps its focus outline for keyboard focus). 1.0.8 adds the `windows-installer` input (`nsis`, the default,
 or `inno`) to the publish and nightly workflows; Box keeps the default, which is its NSIS installer.
+
+## D17 — The release manifest script goes (untangle)
+
+D15 retired Box's own publish step and left the vendored generator for removal if nothing else used it. Nothing does:
+only its tests, `VENDORED.md` and `docs/dev/packaging.md` named it. `scripts/arcade-release.py` and its test are
+deleted and `docs/dev/packaging.md` no longer documents running it; Link's `app-publish` writes the release manifests.
+`spec/arcade-release.schema.json` stays vendored.

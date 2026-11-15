@@ -13,8 +13,6 @@ Refresh the source pin and hashes together.
 | `packaging/windows/arcade-integration.ps1` | `packaging/windows/arcade-integration.ps1` |
 | `packaging/windows/arcade.iss` | `packaging/windows/arcade.iss` |
 | `packaging/windows/arcade.nsh` | `packaging/windows/arcade.nsh` |
-| `scripts/arcade-release.py` | `tools/arcade-release.py` |
-| `scripts/test_arcade_release.py` | `tools/test_arcade_release.py` |
 | `scripts/test_validate_shortcuts.py` | `tools/test_validate_shortcuts.py` |
 | `scripts/validate_shortcuts.py` | `tools/validate_shortcuts.py` |
 | `spec/arcade-release.schema.json` | `spec/arcade-release.schema.json` |
@@ -34,8 +32,6 @@ d1f3ac5e6a854a5a46c03eb53600be4c25f698e90cdd818f2aaf3b600bb89398  spec/shortcut-
 2b2a8b699dc1e6c81c02bb9ad9be1ddf2f8a5447541eb1dfe886056aa5dc4fd6  packaging/windows/arcade-integration.ps1
 fe152028ff674fdacdef4aed8970bb0a7afeb2dd67d2a3af075d7d95683bf96b  packaging/windows/arcade.iss
 1f548b420bc08b479d6c65801a208aa67dc80fef851b5e2a49696d307562831e  packaging/windows/arcade.nsh
-8f360855419930730c486d0978acaecf7a8179cc063465c9f8324878dcf6c2fd  scripts/arcade-release.py
-58d78ac6a7b5d129bac4509e59f50fedb9db8c1fd2247431726bc8768776439a  scripts/test_arcade_release.py
 8e616c4585084906a4976b207b4cb657c26ab05388e78fc3cdd79df942689dae  scripts/test_validate_shortcuts.py
 3b5d2981ab87fdf07437daa294dce825d59b63580430e9ffa2b58e87d5d72cf0  scripts/validate_shortcuts.py
 b3f4fffd8929a6a9449947b303b9e07171de8a5820d576f2d47b002944a00624  spec/arcade-release.schema.json
