@@ -9,6 +9,7 @@
     "test:layout": "node tests/layout.mjs",
     "test:keys": "node tests/island-keys.mjs",
     "test:a11y": "node tests/a11y.mjs",
+    "screenshots": "node tests/screenshots.mjs",
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {

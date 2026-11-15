@@ -307,3 +307,7 @@ all fixed:
   was named "Clear the search") and the shortcut recorder. Their names now start with the visible words, with the
   rest in visually hidden text; the Esc button announces its key with `aria-keyshortcuts`.
 
+README and user-guide screenshots (same step): they dated from 0.3 (2026-10-28) and no longer showed the Island's
+footer or the current tool view. `npm run screenshots` (`tests/screenshots.mjs`) now takes all six from the visual
+fixture at 2x in light and dark, so they can be retaken after any visible change.
+
