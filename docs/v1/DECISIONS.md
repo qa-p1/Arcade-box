@@ -36,8 +36,17 @@ the spec asks for, which comes with the packaging change (the current AppImage h
 ## D4 — Two findings from the 1.0 work, fixed in step 3
 
 BR-17 (no shortcut on xdg-desktop-portal < 1.19) and BR-18 (no CSP in the Island and dashboard) were found after the
-audit, while moving Box to Link 1.0.6 (`docs/v1/audit/box-real.md`). They are P1, fixed in step 3 with the other
-P0/P1 fixes, each with a test that fails first; SECURITY.md says the CSP is missing until then rather than claim it.
+audit, while moving Box to Link 1.0.6 (`docs/v1/audit/box-real.md`). They are P1. Step 3 left them open, so
+they are fixed in step 7, each with a test that fails first:
+- BR-17: a portal with no host Registry (an unknown method, interface or object, or no such portal interface) is logged
+  and the shortcut is bound anyway; any other Register failure is still an error (`wayland_shortcut.rs` tests).
+- BR-18: one policy (`frontend/csp.mjs`) is injected by a Vite plugin into the built `index.html` and
+  `dashboard.html`. Nothing is remote: `default-src 'none'`, scripts from `'self'` only, images, media and fonts from
+  `'self'`, `data:` and `blob:`, connections to `'self'`, Tauri's IPC and `data:`/`blob:`. Inline styles stay allowed
+  because Svelte style attributes position the progress bars, the ruler and the colour sampler. `tests/csp.test.mjs`
+  checks the plugin and the policy, and the layout and key tests serve the visual fixture under the same policy and
+  fail on any violation Chromium logs (checked by dropping `'unsafe-inline'`: every key scenario then fails).
+  Tauri's own `app.security.csp` stays unset: the policy lives in the pages, as `pin.html`'s always has.
 
 ## D5 — Dependencies: Wasmtime 36 LTS, cargo deny over the workspace
 

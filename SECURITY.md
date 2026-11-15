@@ -13,7 +13,7 @@ installed copies to roll back.
 |---|---|---|
 | Plugins | WebAssembly components run in a separate `arcade-plugin-worker` process, against the versioned Arcade tool interface only. WASI has an empty, deny-by-default context: no preopened folders, network or inherited handles. A plugin reads only the files the user passed it, through opaque handles, and only with the permission it declared and the user granted; a permission it gains in an update needs a new grant. Fuel, a wall-clock limit and a memory limit bound every run. | `crates/arcade-plugin-host/tests/plugin_security.rs` |
 | Link IPC | Arcade Link's sockets (0600, peer UID check, per-endpoint token). | Link's own tests |
-| Windows | The pinned-image window runs under a strict Content-Security-Policy. The Island and the dashboard have none yet (BR-18, `docs/v1/audit/box-real.md`); it is fixed before 1.0.0. | `apps/desktop/frontend/pin.html` |
+| Windows | Every window runs under a strict Content-Security-Policy with nothing remote: scripts only from Box's own files, connections only to Tauri's IPC. The Island and the dashboard allow inline styles (Svelte style attributes); the pinned-image window does not. The browser tests run every Island and dashboard surface under the policy and fail on any violation (BR-18). | `apps/desktop/frontend/csp.mjs`, `apps/desktop/frontend/pin.html` |
 | Crash reports | Written locally under `arcade/box/crashes/`, never sent. Arcade Tools shows them, and the user may copy one or open a GitHub issue after reading it. | `apps/desktop/src-tauri/tests/cli.rs` |
 | Updates | Box is installed and updated by Arcade Tools, which trusts a release only through its signed `manifest.json` (see Arcade Tools' SECURITY.md). | Arcade Tools' tests |
 
