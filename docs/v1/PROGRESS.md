@@ -2,6 +2,12 @@
 
 Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
 
+## 2026-11-15 (cloud session, evening) - step 8: rc.2 on Link 1.0.11
+
+- `v1.0.0-rc.1` published, its Gates red at "Published files" (asset names changed by GitHub, D22): not promoted.
+- **Link v1.0.11 (D22):** release file names, the Restart successor's unpacked copy, uninstall through Link.
+  `verify-resident.py` now checks that the resident and Restart's successor run from the unpacked copy.
+
 ## 2026-11-15 (cloud session) - step 7
 
 - **Link v1.0.8 (D16)**, the unused release manifest script removed (D17), Keep a Changelog (D18); licence inventory

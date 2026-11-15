@@ -307,11 +307,11 @@
     {
       "ecosystem": "cargo",
       "name": "arcade-link",
-      "version": "1.0.8",
+      "version": "1.0.11",
       "license": "MIT OR Apache-2.0",
       "licenseFile": null,
       "repository": "https://github.com/qa-p1/Arcade-link",
-      "source": "git+https://github.com/qa-p1/Arcade-Link?tag=v1.0.8#34f8030e494c0c662a5f95efd8e868c8536b9989",
+      "source": "git+https://github.com/qa-p1/Arcade-Link?tag=v1.0.11#b00a1ca3c5659f8318c468be89c39c6e5ed2b30f",
       "checksum": null
     },
     {
