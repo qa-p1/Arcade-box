@@ -61,11 +61,8 @@ impl LinkSettings {
                 .ok()
                 .flatten()
                 .is_none_or(|v| v != "false"),
-            disabled_peers: storage
-                .setting(SETTING_DISABLED_PEERS)
-                .ok()
-                .flatten()
-                .and_then(|v| serde_json::from_str(&v).ok())
+            disabled_peers: stored_disabled_peers(storage)
+                .and_then(Result::ok)
                 .unwrap_or_default(),
         }
     }
@@ -75,6 +72,12 @@ impl LinkSettings {
         storage
             .set_setting(SETTING_ENABLED, if self.enabled { "true" } else { "false" })
             .map_err(|e| e.to_string())?;
+        // FS-2: a stored list Box cannot read is the person's data (a newer Box may have written it). While
+        // there is nothing to replace it with, leave it as it is; any peer the person turns off writes a list.
+        if self.disabled_peers.is_empty() && matches!(stored_disabled_peers(storage), Some(Err(())))
+        {
+            return Ok(());
+        }
         storage
             .set_setting(
                 SETTING_DISABLED_PEERS,
@@ -90,6 +93,20 @@ impl LinkSettings {
 }
 
 // ---- Provider cache ----------------------------------------------------------
+
+/// The stored disabled-peers list: `None` when unset, `Err` when the stored value cannot be read. The first
+/// unreadable read logs one line; the value itself is left in the table.
+fn stored_disabled_peers(storage: &crate::storage::Storage) -> Option<Result<Vec<String>, ()>> {
+    static REPORTED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+    let raw = storage.setting(SETTING_DISABLED_PEERS).ok().flatten()?;
+    Some(serde_json::from_str(&raw).map_err(|_| {
+        if !REPORTED.swap(true, std::sync::atomic::Ordering::Relaxed) {
+            eprintln!(
+                "link: the saved list of turned-off apps could not be read; keeping it as it is and treating no app as turned off"
+            );
+        }
+    }))
+}
 
 /// Whether one catalog provider (`media.ffmpeg`, `image.vips`, …) is usable.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -273,6 +290,7 @@ pub fn refresh_peer_providers(runtime: &Arcade) -> bool {
     save_provider_cache(runtime, &cache)
 }
 
+// A rebuildable cache (probed again at startup): an unreadable value is safe to treat as empty.
 pub fn load_provider_cache(runtime: &Arcade) -> Option<ProviderCache> {
     runtime
         .storage()
@@ -1119,6 +1137,37 @@ mod tests {
         let cache = probe_missing_providers(&previous);
         assert_eq!(cache.get("pdf.ghostscript"), Some(&kept));
         assert!(PROBED.iter().all(|id| cache.contains_key(*id)));
+    }
+
+    #[test]
+    fn an_unreadable_disabled_peers_value_is_kept_until_the_person_changes_it() {
+        let (_dir, runtime) = runtime();
+        let garbage = r#"{"newer":["arcade.clipboard"]}"#;
+        runtime
+            .storage()
+            .set_setting(SETTING_DISABLED_PEERS, garbage)
+            .unwrap();
+        let mut settings = LinkSettings::load(&runtime);
+        assert!(settings.disabled_peers.is_empty());
+        // Turning the whole feature off rewrites the other setting, not the list.
+        settings.enabled = false;
+        settings.save(&runtime).unwrap();
+        assert_eq!(
+            runtime
+                .storage()
+                .setting(SETTING_DISABLED_PEERS)
+                .unwrap()
+                .as_deref(),
+            Some(garbage)
+        );
+        assert!(!LinkSettings::load(&runtime).enabled);
+        // Turning an app off is the person's change: it replaces the value.
+        settings.disabled_peers = vec!["arcade.clipboard".into()];
+        settings.save(&runtime).unwrap();
+        assert_eq!(
+            LinkSettings::load(&runtime).disabled_peers,
+            vec!["arcade.clipboard".to_string()]
+        );
     }
 
     fn runtime() -> (tempfile::TempDir, Arcade) {
