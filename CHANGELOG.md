@@ -4,6 +4,8 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-15
+
 ### Added
 
 - Settings → About opens the third-party notices, which every package now includes.
@@ -217,7 +219,8 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 
 - Use the shared per-user Windows installer integration and release tools from Link v0.3.0.
 
-[Unreleased]: https://github.com/qa-p1/Arcade-box/compare/v0.4.3...HEAD
+[Unreleased]: https://github.com/qa-p1/Arcade-box/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/qa-p1/Arcade-box/compare/v0.4.3...v1.0.0
 [0.4.3]: https://github.com/qa-p1/Arcade-box/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/qa-p1/Arcade-box/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/qa-p1/Arcade-box/compare/v0.4.0...v0.4.1
