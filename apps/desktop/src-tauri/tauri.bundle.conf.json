@@ -4,6 +4,10 @@
       "binaries/arcade-box",
       "binaries/arcade-plugin-worker"
     ],
+    "resources": {
+      "../../../THIRD_PARTY_NOTICES.md": "THIRD_PARTY_NOTICES.md",
+      "../../../LICENSE": "LICENSE"
+    },
     "linux": {
       "appimage": {
         "files": {

@@ -19,11 +19,11 @@ jobs:
         run: echo "version=$(python3 -c 'import tomllib; print(tomllib.load(open("Cargo.toml", "rb"))["workspace"]["package"]["version"])')" >> "$GITHUB_OUTPUT"
   nightly:
     needs: version
-    uses: qa-p1/Arcade-Link/.github/workflows/app-nightly.yml@v1.0.7
+    uses: qa-p1/Arcade-Link/.github/workflows/app-nightly.yml@v1.0.8
     with:
       app: arcade.box
       version: ${{ needs.version.outputs.version }}
       artifacts: arcade-box-*
-      link-ref: v1.0.7
+      link-ref: v1.0.8
     secrets:
       ARCADE_UPDATE_SIGNING_KEY: ${{ secrets.ARCADE_UPDATE_SIGNING_KEY }}

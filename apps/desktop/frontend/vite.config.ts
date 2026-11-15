@@ -3,6 +3,7 @@ import { svelte, vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readFileSync } from 'node:fs';
+import { contentSecurityPolicy } from './csp.mjs';
 
 const frontendRoot = fileURLToPath(new URL('.', import.meta.url));
 // Box's one version lives in the workspace Cargo.toml.
@@ -11,7 +12,7 @@ const version = /^\[workspace\.package\][^[]*?^version = "([^"]+)"/ms.exec(works
 if (!version) throw new Error('No [workspace.package] version in Cargo.toml');
 
 export default defineConfig({
-  plugins: [svelte({ preprocess: vitePreprocess() })],
+  plugins: [svelte({ preprocess: vitePreprocess() }), contentSecurityPolicy()],
   clearScreen: false,
   define: { __BOX_VERSION__: JSON.stringify(version) },
   server: {

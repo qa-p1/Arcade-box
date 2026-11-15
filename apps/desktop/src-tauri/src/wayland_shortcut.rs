@@ -56,6 +56,23 @@ pub fn is_wayland_session() -> bool {
 /// Register this process with the host portal before any other ashpd portal
 /// call is made. The portal registry expects this application's desktop-file
 /// ID, which matches Tauri's configured application identifier.
+/// The portal has no host Registry (BR-17): it first shipped in
+/// xdg-desktop-portal 1.19, and older portals (Ubuntu 24.04 has 1.18) have
+/// GlobalShortcuts without it. They derive the app ID themselves, so this is
+/// not a reason to give up on the shortcut.
+fn registry_unavailable(error: &ashpd::Error) -> bool {
+    match error {
+        ashpd::Error::PortalNotFound(_) => true,
+        ashpd::Error::Zbus(ashpd::zbus::Error::MethodError(name, _, _)) => matches!(
+            name.as_str(),
+            "org.freedesktop.DBus.Error.UnknownMethod"
+                | "org.freedesktop.DBus.Error.UnknownInterface"
+                | "org.freedesktop.DBus.Error.UnknownObject"
+        ),
+        _ => false,
+    }
+}
+
 pub fn register_host_app(app: &AppHandle) -> Result<(), String> {
     let identifier = app.config().identifier.as_str();
     let app_id = ashpd::AppID::try_from(identifier)
@@ -68,14 +85,18 @@ pub fn register_host_app(app: &AppHandle) -> Result<(), String> {
         )
         .await
         .map_err(|_| "The desktop portal did not answer while registering Arcade Box".to_owned())?
-        .map_err(|error| {
+        .or_else(|error| {
+            if registry_unavailable(&error) {
+                eprintln!("The desktop portal has no host app registry ({error}); it identifies Arcade Box itself");
+                return Ok(());
+            }
             // B-15: the D-Bus detail is for the log, not for people.
             eprintln!(
                 "Could not register portal identity `{identifier}` (is `{identifier}.desktop` installed?): {error}"
             );
-            "Arcade Box isn't in your app menu yet, so the desktop can't give it a shortcut. \
+            Err("Arcade Box isn't in your app menu yet, so the desktop can't give it a shortcut. \
              Install it, open it from the app menu, then set the shortcut again."
-                .to_owned()
+                .to_owned())
         })
     })
 }
@@ -516,6 +537,45 @@ async fn register_and_listen(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn method_error(name: &str) -> ashpd::Error {
+        let message =
+            ashpd::zbus::Message::method_call("/org/freedesktop/portal/desktop", "Register")
+                .unwrap()
+                .build(&())
+                .unwrap();
+        ashpd::Error::Zbus(ashpd::zbus::Error::MethodError(
+            name.try_into().unwrap(),
+            None,
+            message,
+        ))
+    }
+
+    #[test]
+    fn a_portal_without_the_host_registry_still_binds_the_shortcut() {
+        // BR-17: xdg-desktop-portal < 1.19 (Ubuntu 24.04) has GlobalShortcuts but no Registry.
+        for error in [
+            method_error("org.freedesktop.DBus.Error.UnknownMethod"),
+            method_error("org.freedesktop.DBus.Error.UnknownInterface"),
+            method_error("org.freedesktop.DBus.Error.UnknownObject"),
+            ashpd::Error::PortalNotFound(
+                "org.freedesktop.host.portal.Registry".try_into().unwrap(),
+            ),
+        ] {
+            assert!(registry_unavailable(&error), "{error}");
+        }
+    }
+
+    #[test]
+    fn a_registry_that_refuses_the_app_is_still_an_error() {
+        assert!(!registry_unavailable(&method_error(
+            "org.freedesktop.portal.Error.Failed"
+        )));
+        assert!(!registry_unavailable(&method_error(
+            "org.freedesktop.DBus.Error.AccessDenied"
+        )));
+        assert!(!registry_unavailable(&ashpd::Error::NoResponse));
+    }
 
     #[test]
     fn a_held_key_toggles_once() {

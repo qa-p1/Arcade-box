@@ -677,19 +677,52 @@ pub fn uninstall(environment: &Environment, remove_data: bool) -> io::Result<boo
     let data_folders = arcade_core::dirs::all_folders();
     #[cfg(target_os = "macos")]
     let cli = bundle_cli(environment)?;
-    let removed = install::uninstall(
-        environment,
-        ME,
-        install::UninstallOptions {
-            remove_data,
-            data_folders: &data_folders,
-        },
-    )?;
+    let removed = uninstall_files(environment, remove_data, &data_folders)?;
+    // Link keeps its copies under the user's data folder (XDG_DATA_HOME), which
+    // is not the environment's when ARCADE_HOME redirects the installation.
+    remove_unpacked_copies(&arcade_link::runtime::unpacked_root())?;
     #[cfg(target_os = "macos")]
     if let Some(cli) = cli {
         remove_file(&cli)?;
     }
     Ok(removed)
+}
+
+/// Link's uninstall plus Box's unpacked runtime copies (U1): the launcher
+/// copies the image to `<data>/arcade/runtime/box-<version>-<key>/`, outside
+/// Box's data folders and the receipt, so they go whether or not the user's
+/// data does. Other apps' copies in the same folder stay.
+fn uninstall_files(
+    environment: &Environment,
+    remove_data: bool,
+    data_folders: &[PathBuf],
+) -> io::Result<bool> {
+    let removed = install::uninstall(
+        environment,
+        ME,
+        install::UninstallOptions {
+            remove_data,
+            data_folders,
+        },
+    )?;
+    remove_unpacked_copies(&environment.data.join("arcade/runtime"))?;
+    Ok(removed)
+}
+
+/// Removes `box-*` (and an interrupted `.box-*` copy) from Link's runtime folder.
+fn remove_unpacked_copies(runtime: &Path) -> io::Result<()> {
+    let Ok(entries) = std::fs::read_dir(runtime) else {
+        return Ok(());
+    };
+    for entry in entries.flatten() {
+        let name = entry.file_name().to_string_lossy().into_owned();
+        if (name.starts_with("box-") || name.starts_with(".box-"))
+            && entry.file_type().is_ok_and(|kind| kind.is_dir())
+        {
+            std::fs::remove_dir_all(entry.path())?;
+        }
+    }
+    Ok(())
 }
 
 pub fn tools_installed(environment: &Environment) -> bool {
@@ -1134,20 +1167,31 @@ mod tests {
         );
         let repaired = install::repair(&env, &app_info(), None).unwrap();
         assert_eq!(repaired.path, receipt.path);
-        assert!(
-            install::uninstall(
-                &env,
-                ME,
-                install::UninstallOptions {
-                    remove_data: false,
-                    data_folders: &[]
-                }
-            )
-            .unwrap()
-        );
+        // Box's data survives a plain uninstall; Box's unpacked copies (and only
+        // Box's) are cache and always go.
+        let data = env.data.join("arcade/box");
+        let folders = vec![data.clone()];
+        let unpacked = env.data.join("arcade/runtime");
+        let mine = unpacked.join("box-0.4.3-0123456789abcdef");
+        let interrupted = unpacked.join(".box-0.4.3-0123456789abcdef.tmp-1");
+        let tools = unpacked.join("tools-1.0.0-0123456789abcdef");
+        for dir in [&data, &mine, &interrupted, &tools] {
+            fs::create_dir_all(dir).unwrap();
+            fs::write(dir.join("file"), b"x").unwrap();
+        }
+        assert!(uninstall_files(&env, false, &folders).unwrap());
         assert!(env.receipts().read(ME).unwrap().is_none());
         assert!(!receipt.path.exists());
         assert!(fs::symlink_metadata(&terminal).is_err());
+        assert!(data.join("file").is_file());
+        assert!(!mine.exists() && !interrupted.exists());
+        assert!(tools.join("file").is_file());
+        // "Remove my data" takes the data folder too.
+        install_copy(&env, &runtime, &opts).unwrap();
+        fs::create_dir_all(&mine).unwrap();
+        assert!(uninstall_files(&env, true, &folders).unwrap());
+        assert!(!data.exists() && !mine.exists());
+        assert!(tools.join("file").is_file());
         // Someone else's `arcade-box` is neither replaced nor recorded.
         fs::write(&terminal, b"#!/bin/sh\n").unwrap();
         let receipt = install_copy(&env, &runtime, &opts).unwrap();

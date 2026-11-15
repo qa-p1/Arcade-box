@@ -36,8 +36,17 @@ the spec asks for, which comes with the packaging change (the current AppImage h
 ## D4 — Two findings from the 1.0 work, fixed in step 3
 
 BR-17 (no shortcut on xdg-desktop-portal < 1.19) and BR-18 (no CSP in the Island and dashboard) were found after the
-audit, while moving Box to Link 1.0.6 (`docs/v1/audit/box-real.md`). They are P1, fixed in step 3 with the other
-P0/P1 fixes, each with a test that fails first; SECURITY.md says the CSP is missing until then rather than claim it.
+audit, while moving Box to Link 1.0.6 (`docs/v1/audit/box-real.md`). They are P1. Step 3 left them open, so
+they are fixed in step 7, each with a test that fails first:
+- BR-17: a portal with no host Registry (an unknown method, interface or object, or no such portal interface) is logged
+  and the shortcut is bound anyway; any other Register failure is still an error (`wayland_shortcut.rs` tests).
+- BR-18: one policy (`frontend/csp.mjs`) is injected by a Vite plugin into the built `index.html` and
+  `dashboard.html`. Nothing is remote: `default-src 'none'`, scripts from `'self'` only, images, media and fonts from
+  `'self'`, `data:` and `blob:`, connections to `'self'`, Tauri's IPC and `data:`/`blob:`. Inline styles stay allowed
+  because Svelte style attributes position the progress bars, the ruler and the colour sampler. `tests/csp.test.mjs`
+  checks the plugin and the policy, and the layout and key tests serve the visual fixture under the same policy and
+  fail on any violation Chromium logs (checked by dropping `'unsafe-inline'`: every key scenario then fails).
+  Tauri's own `app.security.csp` stays unset: the policy lives in the pages, as `pin.html`'s always has.
 
 ## D5 — Dependencies: Wasmtime 36 LTS, cargo deny over the workspace
 
@@ -219,3 +228,52 @@ are retired (the vendored generator goes in step 4's follow-up if nothing else u
 Dependabot (same step): each merge to main made it rebase every open Dependabot pull request, and each rebase
 started a full three-OS build; on 2026-11-14 that queued 24 builds across the fleet ahead of release jobs. Box's
 updates are now grouped per ecosystem (minor and patch together, majors separate) with `rebase-strategy: disabled`.
+
+## D16 — Link v1.0.8
+
+Box moves from Link v1.0.7 to v1.0.8 so the fleet runs one Link version: the `arcade-link` crate pin (only that
+package changes in `Cargo.lock`), the reusable `app-publish`, `app-promote` and `app-nightly` workflows with their
+`link-ref`, and the Link runner that `ci.yml` checks out for the tray gate (was v0.4.0). The design kit, last synced at
+v0.4.15, is re-synced at v1.0.8; the sync changes two lines of `arcade.css` (the font stack gains the colour-emoji families, and a
+tab panel keeps its focus outline for keyboard focus). 1.0.8 adds the `windows-installer` input (`nsis`, the default,
+or `inno`) to the publish and nightly workflows; Box keeps the default, which is its NSIS installer.
+
+## D17 — The release manifest script goes (untangle)
+
+D15 retired Box's own publish step and left the vendored generator for removal if nothing else used it. Nothing does:
+only its tests, `VENDORED.md` and `docs/dev/packaging.md` named it. `scripts/arcade-release.py` and its test are
+deleted and `docs/dev/packaging.md` no longer documents running it; Link's `app-publish` writes the release manifests.
+`spec/arcade-release.schema.json` stays vendored.
+
+## D18 — Changelog in Keep a Changelog format
+
+`CHANGELOG.md` follows Keep a Changelog 1.1.0: `## [X.Y.Z] - date` from each release's tag, old bullets unchanged and
+grouped by their first verb, and an `[Unreleased]` section for v1 written from these decisions.
+
+## D19 — Round 5 (step 7): data files, notices, uninstall
+
+From the Round 5 audit of Box (schema versions, downgrade, security, notices, uninstall). Link's FS-2: every data file
+carries a schema version, migrations are tested from released versions, and an older build never loses or corrupts
+a newer file.
+- **`clipboard-history.json`** gets `schema` (no field = 1, the shape every release since 0.1.0 wrote, unchanged).
+  Every field has a default, and unknown fields at the top and in each item are kept through a save. A newer schema
+  keeps its number. A file Box cannot read is moved to `clipboard-history.json.unreadable-<seconds>` and Box starts
+  with an empty history instead of failing to start. Tests: a v0.4.3 fixture round-trips, unknown fields survive,
+  a newer schema keeps its number, unreadable and incompatible files are kept aside, missing fields default.
+- **Plugin `installed.json`** keeps `deny_unknown_fields` (it records grants). A schema above 1 is refused with
+  "made by a newer Arcade Box". The field is written only once it is above 1, because Box 0.4.x denies unknown fields:
+  a v1 file stays byte-for-byte in the released shape.
+- **Turned-off apps** (`link.disabled_peers` in the settings table): an unreadable value is logged once and kept
+  until the person changes the list, instead of being overwritten with an empty one. The provider cache is a cache.
+- **SQLite:** the migrations are unchanged since 0.1.0. New tests: a database built with the released migrations and
+  real rows opens with the current code, and one with a newer migration and an extra table opens untouched.
+- **Notices:** `THIRD_PARTY_NOTICES.md` and `LICENSE` are bundled with every package (Tauri resources), and Settings →
+  About has "Third-party notices", which opens the bundled file. `verify-appimage.py` checks the image contains it.
+- **Uninstall:** Box's own unpacked copies (`arcade/runtime/box-*`, D14 U1) are removed on every uninstall; other
+  apps' copies stay. Link's `remove_unpacked_except` would remove every app's, so Box does not call it.
+  `verify-appimage.py` now compares the profile before install with what is left after `--uninstall --silent`
+  (only Box's kept data may remain) and after a second install and `--uninstall --silent --remove-data` (nothing
+  of Box's may remain; WebKit storage outside Box's folders is reported, not failed).
+- Not done here, and still open for Round 5: N-1 against the previous peers, the gates on the published rc
+  (Link `app-gates.yml`), the downloader rows in SECURITY.md, accessibility checks, and README screenshots.
+

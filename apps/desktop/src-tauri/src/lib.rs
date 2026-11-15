@@ -356,6 +356,7 @@ pub fn run(args: Vec<String>) {
             about::about_info,
             about::diagnostics,
             about::open_logs,
+            about::open_notices,
             about::open_tools,
             login::login_item,
             login::set_login_item,

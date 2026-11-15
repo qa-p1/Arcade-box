@@ -2,6 +2,7 @@
 // pins a bug that is not fixed yet: it must FAIL (reported XFAIL); once it passes (XPASS) the fix has landed and the
 // marker has to go (docs/v1/DECISIONS.md D3). Runs the visual fixture in Chromium: node tests/island-keys.mjs
 import { chromium } from 'playwright';
+import { underPolicy } from './csp-page.mjs';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
@@ -139,6 +140,7 @@ try {
       const page = await browser.newPage({ viewport: { width: 740, height: 740 } });
       const errors = [];
       page.on('pageerror', (error) => errors.push(error.message));
+      await underPolicy(page, (text) => errors.push(text));
       try {
         await page.goto(base);
         await page.waitForSelector('.island-shell');

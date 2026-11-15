@@ -480,6 +480,11 @@ export async function openLogs(): Promise<void> {
   await invoke<void>('open_logs');
 }
 
+export async function openNotices(): Promise<void> {
+  requireDesktopRuntime();
+  await invoke<void>('open_notices');
+}
+
 export interface OpenToolRequest { tool: string; job: string | null }
 
 export async function watchOpenTool(handler: (request: OpenToolRequest) => void): Promise<() => void> {

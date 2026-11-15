@@ -7,6 +7,7 @@
 import { chromium } from 'playwright';
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { underPolicy } from './csp-page.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const port = process.env.LAYOUT_PORT ?? '5231';
@@ -81,6 +82,7 @@ try {
         const size = `${width}×${height}`;
         const page = await browser.newPage({ viewport: { width, height } });
         page.on('pageerror', (error) => failures.push(`Island ${size}: ${error.message}`));
+        await underPolicy(page, (text) => failures.push(`Island ${size}: ${text}`));
         await page.goto(base);
         await page.waitForSelector('.island-shell');
         await check(page, `Island compact ${size}`, theme);
@@ -98,6 +100,7 @@ try {
       for (const [width, height] of [[720, 520], [1100, 760], [1600, 1000]]) {
         const size = `${width}×${height}`;
         const page = await browser.newPage({ viewport: { width, height } });
+        await underPolicy(page, (text) => failures.push(`Dashboard ${size} ${theme}: ${text}`));
         page.on('pageerror', (error) => failures.push(`Dashboard ${size}: ${error.message}`));
         await page.goto(`${base}?surface=dashboard`);
         await page.waitForSelector('.dashboard-sidebar');
