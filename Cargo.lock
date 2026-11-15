@@ -391,7 +391,7 @@ dependencies = [
 
 [[package]]
 name = "arcade-desktop"
-version = "0.4.3"
+version = "1.0.0"
 dependencies = [
  "arcade-contract",
  "arcade-core",
@@ -459,7 +459,7 @@ dependencies = [
 
 [[package]]
 name = "arcadebox"
-version = "0.4.3"
+version = "1.0.0"
 dependencies = [
  "arcade-contract",
  "arcade-core",
