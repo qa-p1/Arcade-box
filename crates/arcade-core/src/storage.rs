@@ -396,6 +396,94 @@ mod tests {
         );
     }
 
+    /// The two migrations Box 0.1.0 through 0.4.3 shipped, copied here so this fixture never moves when
+    /// later migrations are added to `MIGRATIONS`.
+    const V0_4_3_MIGRATIONS: [&str; 2] = [
+        "CREATE TABLE IF NOT EXISTS favorites (tool_id TEXT PRIMARY KEY);\
+     CREATE TABLE IF NOT EXISTS usage (tool_id TEXT PRIMARY KEY, uses INTEGER NOT NULL DEFAULT 0, last_used TEXT NOT NULL);\
+     CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY, tool_id TEXT NOT NULL, status TEXT NOT NULL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);\
+     CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT NOT NULL);\
+     CREATE TABLE IF NOT EXISTS custom_aliases (alias TEXT PRIMARY KEY, tool_id TEXT NOT NULL);\
+     CREATE TABLE IF NOT EXISTS pipelines (id TEXT PRIMARY KEY, version INTEGER NOT NULL, definition_json TEXT NOT NULL, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);\
+     CREATE TABLE IF NOT EXISTS jobs (id TEXT PRIMARY KEY, tool_id TEXT NOT NULL, status TEXT NOT NULL, progress REAL, created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);\
+     CREATE TABLE IF NOT EXISTS provider_choices (capability TEXT PRIMARY KEY, executable_path TEXT NOT NULL);",
+        "CREATE INDEX IF NOT EXISTS jobs_updated_at_idx ON jobs(updated_at DESC, created_at DESC);",
+    ];
+
+    #[test]
+    fn a_v0_4_3_database_opens_with_its_data_intact() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("arcade.sqlite3");
+        {
+            let connection = Connection::open(&path).unwrap();
+            connection
+                .execute_batch(
+                    "PRAGMA journal_mode = WAL; CREATE TABLE schema_migrations (version INTEGER PRIMARY KEY);",
+                )
+                .unwrap();
+            for (index, migration) in V0_4_3_MIGRATIONS.iter().enumerate() {
+                connection.execute_batch(migration).unwrap();
+                connection
+                    .execute(
+                        "INSERT INTO schema_migrations (version) VALUES (?1)",
+                        [index as i64 + 1],
+                    )
+                    .unwrap();
+            }
+            connection
+                .execute_batch(
+                    "INSERT INTO favorites (tool_id) VALUES ('arcade.text.case');\
+                     INSERT INTO history (tool_id, status) VALUES ('arcade.text.case', 'success');\
+                     INSERT INTO settings (key, value) VALUES ('theme', 'dark');",
+                )
+                .unwrap();
+        }
+        let db = Storage::open(&path).unwrap();
+        assert_eq!(db.favorites().unwrap(), ["arcade.text.case"]);
+        assert_eq!(db.history_count().unwrap(), 1);
+        let entry = &db.recent_history(10).unwrap()[0];
+        assert_eq!(
+            (entry.tool_id.as_str(), entry.status.as_str()),
+            ("arcade.text.case", "success")
+        );
+        assert_eq!(db.setting("theme").unwrap().as_deref(), Some("dark"));
+    }
+
+    #[test]
+    fn a_database_from_a_newer_box_opens_untouched() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("arcade.sqlite3");
+        drop(Storage::open(&path).unwrap());
+        {
+            let connection = Connection::open(&path).unwrap();
+            connection
+                .execute_batch(
+                    "INSERT INTO schema_migrations (version) VALUES (99);\
+                     CREATE TABLE future_things (id INTEGER PRIMARY KEY, note TEXT NOT NULL);\
+                     INSERT INTO future_things (id, note) VALUES (1, 'from a newer Box');",
+                )
+                .unwrap();
+        }
+        let db = Storage::open(&path).unwrap();
+        db.set_favorite("arcade.text.case", true).unwrap();
+        drop(db);
+        let connection = Connection::open(&path).unwrap();
+        let versions: Vec<i64> = connection
+            .prepare("SELECT version FROM schema_migrations ORDER BY version")
+            .unwrap()
+            .query_map([], |row| row.get(0))
+            .unwrap()
+            .collect::<Result<_, _>>()
+            .unwrap();
+        assert_eq!(versions, [1, 2, 99]);
+        let note: String = connection
+            .query_row("SELECT note FROM future_things WHERE id = 1", [], |row| {
+                row.get(0)
+            })
+            .unwrap();
+        assert_eq!(note, "from a newer Box");
+    }
+
     #[test]
     fn portable_import_replaces_allowlisted_data_without_touching_history() {
         let db = Storage::in_memory().unwrap();
