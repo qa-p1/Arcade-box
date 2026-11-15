@@ -224,8 +224,8 @@ updates are now grouped per ecosystem (minor and patch together, majors separate
 
 Box moves from Link v1.0.7 to v1.0.8 so the fleet runs one Link version: the `arcade-link` crate pin (only that
 package changes in `Cargo.lock`), the reusable `app-publish`, `app-promote` and `app-nightly` workflows with their
-`link-ref`, and the Link runner that `ci.yml` checks out for the tray gate (was v0.4.0). The design kit is re-synced
-from v0.4.15; the sync changes two lines of `arcade.css` (the font stack gains the colour-emoji families, and a
+`link-ref`, and the Link runner that `ci.yml` checks out for the tray gate (was v0.4.0). The design kit, last synced at
+v0.4.15, is re-synced at v1.0.8; the sync changes two lines of `arcade.css` (the font stack gains the colour-emoji families, and a
 tab panel keeps its focus outline for keyboard focus). 1.0.8 adds the `windows-installer` input (`nsis`, the default,
 or `inno`) to the publish and nightly workflows; Box keeps the default, which is its NSIS installer.
 

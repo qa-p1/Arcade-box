@@ -25,7 +25,7 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 - The plugin sandbox runs on Wasmtime 36 LTS, which has the fixes for the security advisories found in the previous version. The zip, calamine and XLSX export libraries are updated for the same reason.
 - Releases start as release candidates on a hidden test channel that Arcade Tools never offers, and are promoted to stable only after every check passes. A signed prerelease is published each night from `main`.
 - Promotion to stable refuses to run without the update signing key, so nothing is published unsigned.
-- Box moves to Arcade Link 1.0.8 and the shared design kit v0.4.15: the font stack gains the colour-emoji fonts, and a tab panel keeps its focus outline for keyboard focus.
+- Box moves to Arcade Link 1.0.8 and its shared design kit: the font stack gains the colour-emoji fonts, and a tab panel keeps its focus outline for keyboard focus.
 
 ### Fixed
 
