@@ -9,7 +9,7 @@ Copyright: 2013-2014, 2019, 2021 Red Hat, Inc.
 License: MIT
 
 Files: debian/*
-Copyright: 2013-2023 Stephen Kitt <skitt@debian.org>
+Copyright: 2013-2021 Stephen Kitt <skitt@debian.org>
 License: MIT
 
 Files: doc/style/bootstrap.css

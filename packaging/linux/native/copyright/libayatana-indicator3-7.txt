@@ -43,9 +43,7 @@ Comment:
  Assuming same license and copyright holdership as found
  in other files in this project.
 
-Files: src/indicator-ng.c
- src/indicator-service.c
- tests/dummy-indicator-blank.c
+Files: tests/dummy-indicator-blank.c
  tests/dummy-indicator-entry-func.h
  tests/dummy-indicator-null.c
  tests/dummy-indicator-signaler.c
@@ -67,10 +65,7 @@ Files: src/indicator-ng.c
  tools/indicator-loader.c
 Copyright: 2009, Canonical Ltd.
   2012, Canonical Ltd.
-  2013, Canonical Ltd.
   2021, Robert Tari
-  2021-2022, Robert Tari
-  2022, Robert Tari
 License: GPL-3
 
 Files: src/dbus-shared.h
@@ -83,6 +78,7 @@ Files: src/dbus-shared.h
  src/indicator-object.h
  src/indicator-service-manager.c
  src/indicator-service-manager.h
+ src/indicator-service.c
  src/indicator-service.h
  src/indicator.h
  tests/dummy-indicator-entry-func.c
@@ -93,9 +89,14 @@ Copyright: 2009, Canonical Ltd.
   2013, Canonical Ltd.
 License: GPL-3
 
+Files: src/indicator-ng.c
+Copyright: 2013, Canonical Ltd.
+  2021, Robert tari
+License: GPL-3
+
 Files: debian/*
 Copyright: 2010-2013, Canonical Ltd.
-           2015-2024, Mike Gabriel <mike.gabriel@das-netzwerkteam.de>
+           2015-2017, Mike Gabriel <mike.gabriel@das-netzwerkteam.de>
 License: GPL-3
 
 License: GPL-3

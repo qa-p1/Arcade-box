@@ -8,55 +8,29 @@ Comment:
 
 Files: *
 Copyright:
- © 1994-2020 dbus contributors, see source code for details
- © 1991-1993 The Regents of the University of California
- © 1994 Sun Microsystems, Inc
  © 1994 A.M. Kuchling
- © 2002-2011 Red Hat, Inc
+ © 2002-2008 Red Hat, Inc
  © 2002-2003 CodeFactory AB
  © 2002 Michael Meeks
- © 2003-2004 Imendio HB
- © 2003 Mark McLoughlin
- © 2003 Joe Shaw
- © 2004 Michael Meeks
- © 2005-2009 Lennart Poettering
+ © 2004 Imendio HB
+ © 2005 Lennart Poettering
  © 2005 Novell, Inc
  © 2005 David A. Wheeler
- © 2006-2023 Ralf Habacker
+ © 2006-2013 Ralf Habacker
  © 2006 Mandriva
  © 2006 Peter Kümmel
  © 2006 Christian Ehrlicher
  © 2006 Thiago Macieira
- © 2006 Julio M. Merino Vidal
- © 2005-2006 Sjoerd Simons
- © 2007 Allison Lortie
- © 2007 Tanner Lovelace
- © 2008-2009 Benjamin Reed
- © 2002-2008 Colin Walters
+ © 2008 Colin Walters
  © 2009 Klaralvdalens Datakonsult AB, a KDAB Group company
- © 2009 Jonas Bähr
- © 2008-2012 Nokia Corporation
- © 2007-2022 Collabora Ltd.
- © 2009 Scott James Remnant / Canonical Ltd.
- © 2009 William Lachance
- © 2010 Christian Dywan / Lanedo
- © 2010 Fridrich Štrba
- © 2011 Roberto Guido
+ © 2011-2012 Nokia Corporation
+ © 2012-2018 Collabora Ltd.
  © 2013 Intel Corporation
- © 2013 Chengwei Yang / Intel
- © 2013 Vasiliy Balyasnyy / Samsung
- © 2016 Yiyang Fei
- © 2017-2018 Laurent Bigonville
- © 2017 Shin-ichi MORITA
- © 2017 Endless Mobile, Inc.
- © 2017 Thomas Zimmermann
+ © 2017 Laurent Bigonville
  © 2018 KPIT Technologies Ltd.
  © 2018 Manish Narang
  "modified code from libassuan, (C) FSF"
-License: GPL-2+ or AFL-2.1, and Expat and Tcl-BSDish
-Comment:
- The permissive licenses appear to be compatible with either the GPL-2+
- or the AFL-2.1, so the effective license is "GPL-2+ or AFL-2.1".
+License: GPL-2+ or AFL-2.1
 
 Files:
  doc/dbus-test-tool.1.xml.in
@@ -76,54 +50,63 @@ Copyright:
 License: GPL-2+
 
 Files:
- cmake/modules/FindDocBookXSL.cmake
- cmake/modules/FindGLIB2.cmake
- tools/strto*ll.c
+ dbus/dbus-server-launchd.?
+ doc/dbus-update-activation-environment.1.xml.in
+ test/test-apparmor-activation.sh
+ test/corrupt.c
+ test/data/dbus-installed-tests.aaprofile.in
+ test/dbus-daemon-eavesdrop.c
+ test/dbus-daemon.c
+ test/fdpass.c
+ test/internals/printf.c
+ test/internals/refs.c
+ test/internals/syslog.c
+ test/loopback.c
+ test/manual-authz.c
+ test/marshal.c
+ test/monitor.c
+ test/relay.c
+ test/sd-activation.c
+ test/syntax.c
+ test/uid-permissions.c
+ test/test-utils-glib.?
+ tools/dbus-update-activation-environment.c
 Copyright:
- © 1991-1993 The Regents of the University of California
+ © 2007 Tanner Lovelace
+ © 2008-2009 Benjamin Reed
+ © 2008 Colin Walters
+ © 2009 Jonas Bähr
+ © 2008-2012 Nokia Corporation
+ © 2008-2018 Collabora Ltd
+ © 2013 Intel Corporation
+ © 2017 Shin-ichi MORITA
+License: Expat
+
+Files: tools/strto*ll.c
+Copyright: © 1991-1993 The Regents of the University of California
+License: BSD-3-clause
+
+Files:
+ cmake/modules/FindGLib2.cmake
+ cmake/modules/FindGObject.cmake
+Copyright:
  © 2008 Laurent Montel
- © 2010 Luigi Toscano
  © 2011 Raphael Kubo da Costa
  © 2013 Ralf Habacker
-License: BSD-3-clause and BSD-3-clause-generic
-
-Files:
- m4/as-ac-expand.m4
- m4/ax_ac_append_to_file.m4
- m4/ax_ac_print_to_file.m4
- m4/ax_add_am_macro_static.m4
- m4/ax_am_macros_static.m4
- m4/ax_file_escapes.m4
-Copyright:
- © 2003-2005 Thomas Vander Stichele
- © 2008-2009 Tom Howard
- © 2009 Allan Caffee
-License: autoconf-archive-permissive
+License: BSD-3-clause-generic
 Comment:
- Some files lack the second sentence (the warranty disclaimer).
+ BSD-3-clause with more generic terms for the authors and copyright holders
 
 Files:
- m4/ld-version-script.m4
- m4/libtool.m4
- m4/ltoptions.m4
- m4/ltsugar.m4
- m4/ltversion.m4
- m4/lt~obsolete.m4
- m4/visibility.m4
+ dbus/dbus-hash.c
 Copyright:
- © 1996-2015 Free Software Foundation, Inc.
-License: FSF-unlimited-permission
-
-Files:
- m4/ax_code_coverage.m4
-Copyright:
- © 2012-2016 Philip Withnall
- © 2012 Xan Lopez
- © 2012 Christian Persch
- © 2012 Paolo Borelli
- © 2012 Dan Winship
- © 2015-2018 Bastien ROUCARIES
-License: LGPL-2.1+
+ © 1991-1993 The Regents of the University of California
+ © 1994 Sun Microsystems, Inc
+ © 2002 Red Hat, Inc.
+License: GPL-2+ or AFL-2.1, and Tcl-BSDish
+Comment:
+ The Tcl license appears to be compatible with either the GPL-2+
+ or the AFL-2.1, so the effective license is "GPL-2+ or AFL-2.1".
 
 Files: dbus/versioninfo.rc.in
 Copyright: © 2005 g10 Code GmbH
@@ -154,20 +137,6 @@ Comment:
  On Debian systems, see /usr/share/common-licenses/GPL-2 for the full
  text of the GPL version 2.
 
-License: LGPL-2.1+
- This library is free software; you can redistribute it and/or modify
- it under the terms of the GNU Lesser General Public License as published by
- the Free Software Foundation; either version 2.1 of the License, or (at
- your option) any later version.
- .
- This library is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser
- General Public License for more details.
-Comment:
- On Debian systems, see /usr/share/common-licenses/LGPL-2.1 for the full
- text of the LGPL version 2.1.
-
 License: Expat
  Permission is hereby granted, free of charge, to any person
  obtaining a copy of this software and associated documentation
@@ -188,17 +157,6 @@ License: Expat
  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  DEALINGS IN THE SOFTWARE.
-
-License: autoconf-archive-permissive
- Copying and distribution of this file, with or without modification, are
- permitted in any medium without royalty provided the copyright notice
- and this notice are preserved. This file is offered as-is, without any
- warranty.
-
-License: FSF-unlimited-permission
- This file is free software; the Free Software Foundation
- gives unlimited permission to copy and/or distribute it,
- with or without modifications, as long as this notice is preserved.
 
 License: Tcl-BSDish
  This software is copyrighted by the Regents of the University of

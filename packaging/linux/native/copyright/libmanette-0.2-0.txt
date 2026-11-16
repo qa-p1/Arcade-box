@@ -1,7 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: libmanette
 Source: https://download.gnome.org/sources/libmanette/
-Upstream-Contact: Adrien Plazas <kekun.plazas@laposte.net>
 
 Files: *
 Copyright: 2017 Adrien Plaza

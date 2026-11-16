@@ -1,14 +1,14 @@
 {
-  "host": "Ubuntu 24.04",
+  "host": "Ubuntu 22.04",
   "packages": {
     "dconf-gsettings-backend": {
       "source": "dconf"
     },
-    "gcc-14-base": {
-      "source": "gcc-14"
+    "gcc-12-base": {
+      "source": "gcc-12"
     },
     "gir1.2-atk-1.0": {
-      "source": "at-spi2-core"
+      "source": "atk1.0"
     },
     "gir1.2-atspi-2.0": {
       "source": "at-spi2-core"
@@ -19,6 +19,9 @@
     "gir1.2-ayatanaido3-0.4": {
       "source": "ayatana-ido"
     },
+    "gir1.2-dazzle-1.0": {
+      "source": "libdazzle"
+    },
     "gir1.2-dbusmenu-glib-0.4": {
       "source": "libdbusmenu"
     },
@@ -28,11 +31,8 @@
     "gir1.2-gdkpixbuf-2.0": {
       "source": "gdk-pixbuf"
     },
-    "gir1.2-girepository-2.0": {
-      "source": "gobject-introspection"
-    },
     "gir1.2-glib-2.0": {
-      "source": "glib2.0"
+      "source": "gobject-introspection"
     },
     "gir1.2-gtk-3.0": {
       "source": "gtk+3.0"
@@ -40,20 +40,23 @@
     "gir1.2-harfbuzz-0.0": {
       "source": "harfbuzz"
     },
-    "gir1.2-javascriptcoregtk-4.1": {
-      "source": "webkit2gtk"
+    "gir1.2-json-1.0": {
+      "source": "json-glib"
     },
     "gir1.2-pango-1.0": {
       "source": "pango1.0"
     },
+    "gir1.2-polkit-1.0": {
+      "source": "policykit-1"
+    },
     "gir1.2-rsvg-2.0": {
       "source": "librsvg"
     },
+    "gir1.2-secret-1": {
+      "source": "libsecret"
+    },
     "gir1.2-soup-3.0": {
       "source": "libsoup3"
-    },
-    "gir1.2-webkit2-4.1": {
-      "source": "webkit2gtk"
     },
     "glib-networking": {
       "source": "glib-networking"
@@ -85,16 +88,16 @@
     "libasyncns0": {
       "source": "libasyncns"
     },
-    "libatk-bridge2.0-0t64": {
-      "source": "at-spi2-core"
+    "libatk-bridge2.0-0": {
+      "source": "at-spi2-atk"
     },
-    "libatk1.0-0t64": {
-      "source": "at-spi2-core"
+    "libatk1.0-0": {
+      "source": "atk1.0"
     },
     "libatomic1": {
-      "source": "gcc-14"
+      "source": "gcc-12"
     },
-    "libatspi2.0-0t64": {
+    "libatspi2.0-0": {
       "source": "at-spi2-core"
     },
     "libavahi-client3": {
@@ -145,14 +148,14 @@
     "libcolord2": {
       "source": "colord"
     },
-    "libcups2t64": {
+    "libcups2": {
       "source": "cups"
-    },
-    "libcurl3t64-gnutls": {
-      "source": "curl"
     },
     "libdatrie1": {
       "source": "libdatrie"
+    },
+    "libdb5.3": {
+      "source": "db5.3"
     },
     "libdbus-1-3": {
       "source": "dbus"
@@ -166,16 +169,13 @@
     "libdeflate0": {
       "source": "libdeflate"
     },
-    "libduktape207": {
-      "source": "duktape"
-    },
-    "libdv4t64": {
+    "libdv4": {
       "source": "libdv"
     },
-    "libdw1t64": {
+    "libdw1": {
       "source": "elfutils"
     },
-    "libelf1t64": {
+    "libelf1": {
       "source": "elfutils"
     },
     "libenchant-2-2": {
@@ -190,7 +190,7 @@
     "libffi8": {
       "source": "libffi"
     },
-    "libflac12t64": {
+    "libflac8": {
       "source": "flac"
     },
     "libgcrypt20": {
@@ -202,13 +202,13 @@
     "libgdk-pixbuf-2.0-dev": {
       "source": "gdk-pixbuf"
     },
-    "libglib2.0-0t64": {
+    "libglib2.0-0": {
       "source": "glib2.0"
     },
     "libglib2.0-dev": {
       "source": "glib2.0"
     },
-    "libgnutls30t64": {
+    "libgnutls30": {
       "source": "gnutls28"
     },
     "libgpm2": {
@@ -235,7 +235,7 @@
     "libgstreamer1.0-0": {
       "source": "gstreamer1.0"
     },
-    "libgtk-3-0t64": {
+    "libgtk-3-0": {
       "source": "gtk+3.0"
     },
     "libgtk-3-common": {
@@ -247,13 +247,13 @@
     "libharfbuzz-icu0": {
       "source": "harfbuzz"
     },
-    "libhogweed6t64": {
+    "libhogweed6": {
       "source": "nettle"
     },
     "libhyphen0": {
       "source": "hyphen"
     },
-    "libicu74": {
+    "libicu70": {
       "source": "icu"
     },
     "libidn2-0": {
@@ -286,12 +286,6 @@
     "liblcms2-2": {
       "source": "lcms2"
     },
-    "libldap2": {
-      "source": "openldap"
-    },
-    "liblerc4": {
-      "source": "lerc"
-    },
     "liblz4-1": {
       "source": "lz4"
     },
@@ -310,7 +304,7 @@
     "libmp3lame0": {
       "source": "lame"
     },
-    "libmpg123-0t64": {
+    "libmpg123-0": {
       "source": "mpg123"
     },
     "libncurses6": {
@@ -319,7 +313,7 @@
     "libncursesw6": {
       "source": "ncurses"
     },
-    "libnettle8t64": {
+    "libnettle8": {
       "source": "nettle"
     },
     "libnghttp2-14": {
@@ -331,7 +325,7 @@
     "libopus0": {
       "source": "opus"
     },
-    "liborc-0.4-0t64": {
+    "liborc-0.4-0": {
       "source": "orc"
     },
     "libp11-kit0": {
@@ -352,16 +346,19 @@
     "libpcre2-8-0": {
       "source": "pcre2"
     },
+    "libpcre3": {
+      "source": "pcre3"
+    },
     "libpixman-1-0": {
       "source": "pixman"
     },
-    "libpng16-16t64": {
+    "libpng16-16": {
       "source": "libpng1.6"
     },
     "libproxy1v5": {
       "source": "libproxy"
     },
-    "libpsl5t64": {
+    "libpsl5": {
       "source": "libpsl"
     },
     "libpulse0": {
@@ -379,12 +376,6 @@
     "librsvg2-dev": {
       "source": "librsvg"
     },
-    "librtmp1": {
-      "source": "rtmpdump"
-    },
-    "libsasl2-2": {
-      "source": "cyrus-sasl2"
-    },
     "libseccomp2": {
       "source": "libseccomp"
     },
@@ -393,9 +384,6 @@
     },
     "libselinux1": {
       "source": "libselinux"
-    },
-    "libsharpyuv0": {
-      "source": "libwebp"
     },
     "libshout3": {
       "source": "libshout"
@@ -415,10 +403,7 @@
     "libsqlite3-0": {
       "source": "sqlite3"
     },
-    "libssh-4": {
-      "source": "libssh"
-    },
-    "libssl3t64": {
+    "libssl3": {
       "source": "openssl"
     },
     "libsystemd0": {
@@ -436,7 +421,7 @@
     "libtheora0": {
       "source": "libtheora"
     },
-    "libtiff6": {
+    "libtiff5": {
       "source": "tiff"
     },
     "libtinfo6": {
@@ -448,16 +433,16 @@
     "libudev1": {
       "source": "systemd"
     },
-    "libunistring5": {
+    "libunistring2": {
       "source": "libunistring"
     },
     "libunwind8": {
       "source": "libunwind"
     },
-    "libv4l-0t64": {
+    "libv4l-0": {
       "source": "v4l-utils"
     },
-    "libv4lconvert0t64": {
+    "libv4lconvert0": {
       "source": "v4l-utils"
     },
     "libvisual-0.4-0": {
@@ -469,7 +454,7 @@
     "libvorbisenc2": {
       "source": "libvorbis"
     },
-    "libvpx9": {
+    "libvpx7": {
       "source": "libvpx"
     },
     "libwavpack1": {
@@ -496,8 +481,17 @@
     "libwebpmux3": {
       "source": "libwebp"
     },
+    "libwmf-dev": {
+      "source": "libwmf"
+    },
+    "libwoff1": {
+      "source": "woff2"
+    },
     "libxau6": {
       "source": "libxau"
+    },
+    "libxcb-randr0": {
+      "source": "libxcb"
     },
     "libxcb-render0": {
       "source": "libxcb"
@@ -543,9 +537,6 @@
     },
     "libxslt1.1": {
       "source": "libxslt"
-    },
-    "libxtst6": {
-      "source": "libxtst"
     },
     "libxv1": {
       "source": "libxv"

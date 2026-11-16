@@ -20,8 +20,19 @@ License: Abstyles
  manual provided the copyright notice and this permission notice are
  preserved on all copies.
 
+Files: man/aalib-config.1
+Copyright: 1998 Owen Taylor
+Comment: The below license is the old-style MIT license, not
+         the newer, Expat variation.
+License: MIT
+ Permission to use, copy, modify, and distribute this software and its
+ documentation for any purpose and without fee is hereby granted,
+ provided that the above copyright notice appear in all copies and that
+ both that copyright notice and this permission notice appear in
+ supporting documentation.
+
 Files: debian/*
-Copyright: 2019-2021 Jonathan Carter <jcc@debian.org>
+Copyright: 2019-2020 Jonathan Carter <jcc@debian.org>
            2012-2015 Gergely Nagy <algernon@madhouse-project.org>
            2008-2011 Bart Martens <bartm@debian.org>
            1997-2008 Joey Hess <joeyh@debian.org>

@@ -13,7 +13,6 @@ License: Expat
 
 Files: debian/*
 Copyright: © 2018 Michael R. Crusoe <michael.crusoe@gmail.com>
-           2023 Lance Lin <lq27267@gmail.com>
 License: Expat
 
 License: Expat
