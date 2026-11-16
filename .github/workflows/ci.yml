@@ -185,10 +185,10 @@ jobs:
 
   desktop:
     needs: check
-    uses: qa-p1/Arcade-Link/.github/workflows/desktop-e2e.yml@v1.0.11
+    uses: qa-p1/Arcade-Link/.github/workflows/desktop-e2e.yml@v1.0.12
     with:
       name: box
       test: tests/desktop/island_desktop.py
       args: '"$APP"'
       artifact: arcade-box-appimage
-      link-ref: v1.0.11
+      link-ref: v1.0.12
