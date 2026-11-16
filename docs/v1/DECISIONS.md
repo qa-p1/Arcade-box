@@ -331,3 +331,17 @@ Link 1.0.8 → 1.0.11, what touches Box:
 - 1.0.9 adds `app-gates.yml` (already used by D20) and the harness's `ARCADE_UNPACKED=1`; the design kit's web files
   did not change (`scripts/sync-design.py` records v1.0.11 with the same hashes).
 Every Link workflow and checkout Box uses is pinned to `v1.0.11`.
+
+## D23 — Link 1.0.12's workflows for rc.3
+
+`v1.0.0-rc.2`'s [Gates](https://github.com/qa-p1/Arcade-box/actions/runs/43921442645) passed every job on the
+published files (files and manifest, budgets, delta, N-1, Windows and macOS smoke) except "Linux (conformance)":
+`arcade-link: /lib/x86_64-linux-gnu/libc.so.6: version 'GLIBC_2.39' not found`. Link's `setup-arcade-link` cached the
+CLI under `runner.os` and Link's commit only, so the ubuntu-22.04 gates job restored the CLI that Box's CI on main had
+built on ubuntu-24.04. Box's code and the rc.2 files were not at fault, but the gates run from the rc tag's own
+workflow file, so the fix needs a new rc. Link 1.0.12 keys the cache by runner image (and its harness accepts a
+one-pixel cursor difference).
+
+Every reusable Link workflow and `link-ref` Box uses is pinned to `v1.0.12`. The `arcade-link` crate, the build's Link
+checkout and the vendored design kit stay at `v1.0.11`: 1.0.12 changes no Rust code and no design file, so the app
+built for rc.3 is the rc.2 app. rc.2 is not promoted.

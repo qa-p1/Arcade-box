@@ -2,6 +2,12 @@
 
 Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
 
+## 2026-11-16 (cloud session) - step 8, rc.3
+
+- rc.2's Gates were green on every job except Linux conformance, where a CLI cached from ubuntu-24.04 needed glibc 2.39
+  on ubuntu-22.04 (Link's cache key, fixed in Link 1.0.12). Workflows pinned to Link v1.0.12 (D23); app code
+  unchanged. Next: rc.3 → Gates → Promote.
+
 ## 2026-11-15 (cloud session, evening) - step 8: rc.2 on Link 1.0.11
 
 - `v1.0.0-rc.1` published, its Gates red at "Published files" (asset names changed by GitHub, D22): not promoted.
