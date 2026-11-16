@@ -26,7 +26,21 @@ const HELP: &str = "Arcade Box
 
 Terminal tools: arcade-box (alias arcadebox) --help";
 
+// GTK, WebKitGTK and tao already link libX11.
+#[cfg(target_os = "linux")]
+#[link(name = "X11")]
+unsafe extern "C" {
+    fn XInitThreads() -> std::os::raw::c_int;
+}
+
 fn main() {
+    // Before any thread or X connection: libX11 1.8 (Ubuntu 24.04) makes Xlib thread-safe by default, 1.7 (Ubuntu
+    // 22.04) does not, and the Island aborted there with "[xcb] Too much data requested from _XRead" (D24).
+    #[cfg(target_os = "linux")]
+    // SAFETY: called first in main, while Box has one thread and no X connection; it only enables Xlib's locking.
+    unsafe {
+        XInitThreads();
+    }
     // First, while Box has one thread: WebKit's processes inherit it (Link D13, Tools D18).
     arcade_link::runtime::cap_malloc_arenas();
     arcade_link::childenv::on_startup();

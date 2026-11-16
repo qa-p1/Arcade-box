@@ -370,3 +370,7 @@ on 22.04 the tests that run the real `vips` skip, as they do wherever no compati
 it failed on 22.04's incompatible one ("libvips isn't installed"). It now skips without a compatible one, like the
 image tests.
 
+The AppImage built on 22.04 then aborted in CI as the Island showed: `[xcb] Too much data requested from _XRead`,
+Xlib's sign of a connection used from two threads. libX11 1.8 (Ubuntu 24.04) turns Xlib's locking on by default; 1.7
+(Ubuntu 22.04) does not. Box now calls `XInitThreads()` first thing in `main` on Linux (a no-op on 1.8).
+
