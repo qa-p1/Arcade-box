@@ -1078,7 +1078,12 @@ mod tests {
             {"id":"resize","toolId":"arcade.image.resize","inputs":[{"kind":"external","index":0}],"options":{"mode":"percentage","percentage":50}},
             {"id":"convert","toolId":"arcade.image.convert","inputs":[{"kind":"node","nodeId":"resize","outputIndex":0}],"options":{"format":"webp"}}
         ],"outputNodes":["convert"]})).unwrap();
-        if crate::provider::discover_vips(None).is_empty() {
+        // Skips without a usable libvips (8.14+), like the image tests: Ubuntu 22.04's 8.12 is found but not
+        // compatible, and the run then fails with "libvips isn't installed" (D24).
+        if !crate::provider::discover_vips(None)
+            .iter()
+            .any(|provider| provider.compatible)
+        {
             return;
         }
         let result = pipeline

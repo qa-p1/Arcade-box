@@ -364,3 +364,9 @@ AppImage come from the oldest Ubuntu Arcade supports. The Rust cache is keyed by
 GStreamer libraries (D9) now come from Ubuntu 22.04's packages, and CI's `--check` asks for the regenerated record,
 which is committed. rc.3 is not promoted; rc.4 is built from this.
 
+The checks also run on ubuntu-24.04, with no package. Box needs libvips 8.14 or newer and Ubuntu 22.04 ships 8.12, so
+on 22.04 the tests that run the real `vips` skip, as they do wherever no compatible libvips is found. They run on
+24.04. `pipeline_files_stay_private_and_only_final_files_survive` skipped only when no libvips was found at all, so
+it failed on 22.04's incompatible one ("libvips isn't installed"). It now skips without a compatible one, like the
+image tests.
+

@@ -29,7 +29,7 @@ jobs:
     env:
       # Pull requests build one Linux package (Link spec §4); Windows and macOS run every check and build their
       # installers on main and in the release workflow.
-      PACKAGE: ${{ matrix.os == 'ubuntu-22.04' || github.event_name != 'pull_request' }}
+      PACKAGE: ${{ matrix.bundle && (matrix.os == 'ubuntu-22.04' || github.event_name != 'pull_request') && 'true' || 'false' }}
     strategy:
       fail-fast: false
       matrix:
@@ -38,6 +38,9 @@ jobs:
           # Ubuntu Arcade supports, like the other apps (D24); Link's gates run it on ubuntu-22.04.
           - os: ubuntu-22.04
             bundle: appimage
+          # The same checks on a current Ubuntu, without a package: the tests that run real tools need them at the
+          # versions Box supports (libvips 8.14+; Ubuntu 22.04 has 8.12), so they run here and skip on 22.04 (D24).
+          - os: ubuntu-24.04
             installer: Arcade-box/target/release/bundle/appimage/*.AppImage
           # windows-latest now resolves Visual Studio 2026 without a C/C++
           # toolchain, so zxing-cpp cannot configure; stay on the 2022 image.
@@ -140,15 +143,15 @@ jobs:
           # `uses` steps run from the workspace root, not the job's working directory.
           path: Arcade-box/packaging/linux/native
       - name: Verify AppImage install, repair and uninstall in a temporary profile
-        if: runner.os == 'Linux'
+        if: matrix.bundle == 'appimage'
         shell: bash
         run: |
           dbus-run-session -- xvfb-run -a python3 scripts/verify-appimage.py target/release/bundle/appimage/*.AppImage arcade.box Arcade-Box.AppImage arcade-desktop
       - name: Verify Island close/reopen keeps the resident process
-        if: runner.os == 'Linux'
+        if: matrix.bundle == 'appimage'
         run: dbus-run-session -- xvfb-run -a python3 scripts/verify-resident.py target/release/bundle/appimage/*.AppImage arcade.box
       - name: Tray icon registration (real StatusNotifierWatcher, isolated)
-        if: runner.os == 'Linux'
+        if: matrix.bundle == 'appimage'
         shell: bash
         run: |
           # The runner builds its debug CLI before executing the gate. Reuse it
