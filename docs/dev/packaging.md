@@ -41,8 +41,8 @@ It runs Rust/frontend checks, builds installers, and uploads one artifact
 per platform. Linux, Windows and macOS jobs passed on 2026-10-08; interactive
 Windows/macOS behavior is still unverified (see [status](../STATUS.md)).
 The macOS adapter minimum is 14 for screen selection; recording output requires
-15. The NSIS installation is per user. Linux CI uses Ubuntu 24.04; an AppImage
-built on a newer system does not prove compatibility with older glibc versions.
+15. The NSIS installation is per user. Linux CI builds the AppImage on Ubuntu 22.04,
+the oldest Ubuntu Arcade supports: an AppImage needs the glibc and libstdc++ it was built against or newer (D24).
 
 ## Release candidates, stable and nightly
 

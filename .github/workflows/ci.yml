@@ -29,12 +29,14 @@ jobs:
     env:
       # Pull requests build one Linux package (Link spec §4); Windows and macOS run every check and build their
       # installers on main and in the release workflow.
-      PACKAGE: ${{ matrix.os == 'ubuntu-24.04' || github.event_name != 'pull_request' }}
+      PACKAGE: ${{ matrix.os == 'ubuntu-22.04' || github.event_name != 'pull_request' }}
     strategy:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-24.04
+          # The AppImage runs on the glibc and libstdc++ it was built against or newer, so it is built on the oldest
+          # Ubuntu Arcade supports, like the other apps (D24); Link's gates run it on ubuntu-22.04.
+          - os: ubuntu-22.04
             bundle: appimage
             installer: Arcade-box/target/release/bundle/appimage/*.AppImage
           # windows-latest now resolves Visual Studio 2026 without a C/C++
@@ -76,6 +78,8 @@ jobs:
           workspaces: |
             Arcade-box -> target
             ${{ runner.os == 'Linux' && 'Arcade-Link -> target' || '' }}
+          # Keyed by image: a target built on another Ubuntu links against a newer glibc (D24).
+          key: ${{ matrix.os }}
           # Restore on every ref; only main can warm future PRs and tags.
           save-if: ${{ github.ref == 'refs/heads/main' && github.event_name == 'push' }}
       - name: Install Linux desktop dependencies
@@ -87,10 +91,12 @@ jobs:
           xvfb dbus-x11 xdotool python3-dbus python3-gi
           gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-pipewire
       - name: Install frontend dependencies
+        timeout-minutes: 10
         working-directory: Arcade-box/apps/desktop/frontend
         run: npm ci
       - name: Install Chromium for the layout check
         if: runner.os == 'Linux'
+        timeout-minutes: 10
         working-directory: Arcade-box/apps/desktop/frontend
         run: npx playwright install --with-deps chromium
       # Types, unit and layout tests, frontend build, CSS variables, the one
@@ -106,6 +112,7 @@ jobs:
         run: python scripts/prepare-bundle.py ${{ matrix.sidecar-args }}
       - name: Install the pinned Tauri bundler
         if: env.PACKAGE == 'true'
+        timeout-minutes: 10
         run: npm install --prefix target/tauri-cli --cache target/npm-cache --no-audit --no-fund @tauri-apps/cli@2.12.1
       - name: Build the installer
         if: env.PACKAGE == 'true'

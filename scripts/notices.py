@@ -138,7 +138,9 @@ def native_packages():
     folder = ROOT / "packaging" / "linux" / "native"
     if not (folder / "packages.json").is_file():
         return []
-    record = json.loads((folder / "packages.json").read_text(encoding="utf-8"))["packages"]
+    recorded = json.loads((folder / "packages.json").read_text(encoding="utf-8"))
+    record = recorded["packages"]
+    native_packages.host = recorded.get("host", "Ubuntu")
     return [{
         "label": f"{name} (Ubuntu package)",
         "home": f"https://launchpad.net/ubuntu/+source/{info['source']}",
@@ -185,7 +187,7 @@ def render():
         lines += [
             "## Native libraries in the Linux AppImage",
             "",
-            "The Linux AppImage bundles these Ubuntu 24.04 packages' libraries (WebKitGTK, GTK and their",
+            f"The Linux AppImage bundles these {native_packages.host} packages' libraries (WebKitGTK, GTK and their",
             "dependencies). They are dynamically linked and stored as separate files under `usr/lib` in the image: to",
             "use a modified version of an LGPL library, run the AppImage with `--appimage-extract`, replace the library",
             "in `squashfs-root/usr/lib`, and start `squashfs-root/AppRun`. The source of every version of each package",
