@@ -16,7 +16,9 @@ addEventListener('DOMContentLoaded', async () => {
   };
   const scrollContent = async (description) => {
     const pane = await wait(() => document.querySelector('.shell-main'), description);
-    if (!['auto', 'scroll'].includes(getComputedStyle(pane).overflowY)) throw new Error(`${description}: content has no vertical scroller`);
+    // The stylesheet can apply after the first card renders (the AppImage serves it from its mount, slower on a busy
+    // runner), so wait for the scroller as for the layout below, and fail only if it never comes.
+    await wait(() => ['auto', 'scroll'].includes(getComputedStyle(pane).overflowY), `${description}: content has no vertical scroller`);
     const rect = pane.getBoundingClientRect();
     if (rect.bottom > innerHeight + 1 || rect.top < -1) throw new Error(`${description}: content extends outside window`);
     // Catalog mounting and native window mapping are asynchronous. Wait for
