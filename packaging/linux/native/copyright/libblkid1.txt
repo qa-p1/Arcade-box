@@ -122,12 +122,16 @@ License: MIT
 
 Files: text-utils/pg.c
 Copyright: 2000-2001 Gunnar Ritter
-License: BSD-3-clause
+License: BSD-2-clause
 
 Files: login-utils/login.c
 Copyright: 1980, 1987, 1988 The Regents of the University of California.
            2011 Karel Zak <kzak@redhat.com>
-License: BSLA
+License: BSD-2-clause
+
+Files: login-utils/logindefs.c
+Copyright: 2003, 2004, 2005 Thorsten Kukuk
+License: BSD-3-clause
 
 Files: libuuid/*
        libuuid/src/*
@@ -136,9 +140,9 @@ Copyright: 1996, 1997, 1998, 1999, 2007 Theodore Ts'o.
            1999 Andreas Dilger (adilger@enel.ucalgary.ca)
 License: BSD-3-clause
 
-Files: include/xalloc.h
-Copyright: 2010 Davidlohr Bueso <dave@gnu.org>
-           2010-2022 Karel Zak <kzak@redhat.com>
+Files: lib/procutils.c
+       include/xalloc.h
+Copyright: 2010, 2011 Davidlohr Bueso <dave@gnu.org>
 License: LGPL-2+
 
 Files: */colors.*
@@ -388,6 +392,16 @@ License: GPL-3+
  On Debian systems, the complete text of the GNU General Public
  License version 3 can be found in `/usr/share/common-licenses/GPL-3'.
 
+License: BSD-2-clause
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+
 License: BSD-3-clause
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that the following conditions are met:
@@ -443,19 +457,6 @@ License: BSD-4-clause
  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  SUCH DAMAGE.
-
-License: BSLA
- Redistribution and use in source and binary forms are permitted
- provided that the above copyright notice and this paragraph are
- duplicated in all such forms and that any documentation,
- advertising materials, and other materials related to such
- distribution and use acknowledge that the software was developed
- by the University of California, Berkeley.  The name of the
- University may not be used to endorse or promote products derived
- from this software without specific prior written permission.
- THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR
- IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
- WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
 License: LGPL
  This file may be redistributed under the terms of the

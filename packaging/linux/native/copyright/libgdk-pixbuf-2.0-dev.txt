@@ -2,12 +2,11 @@ Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: gdk-pixbuf
 Source: https://download.gnome.org/sources/gdk-pixbuf/
 Files-Excluded:
- docs/gdk-pixbuf
- docs/gdk-pixdata
+ subprojects/gi-docgen*
  tests/bug753605-atsize.jpg
 Comment:
- The documentation is rebuilt from source.
- For the test see <https://gitlab.gnome.org/GNOME/gdk-pixbuf/issues/84>.
+ We use the distro copy of gi-docgen
+ tests: see https://gitlab.gnome.org/GNOME/gdk-pixbuf/issues/84
 
 Files: *
 Copyright:

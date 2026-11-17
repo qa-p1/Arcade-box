@@ -66,7 +66,8 @@ Files: cmake/FindVala.cmake
 Copyright: 2011, Přemysl Janouch
 License: BSD-2-clause
 
-Files: bindings/mono/TestAyatanaIndicator.cs
+Files: bindings/mono/AssemblyInfo.cs
+ bindings/mono/TestAyatanaIndicator.cs
  bindings/mono/examples/AyatanaIndicatorExample.cs
  bindings/vala/examples/ayatana-indicator-example.vala
  example/simple-client-vala.vala
@@ -104,20 +105,13 @@ Files: cmake/FindGObjectIntrospection.cmake
 Copyright: 2010, Pino Toscano, <pino@kde.org>
 License: BSD-3-clause
 
-Files: bindings/mono/AssemblyInfo.cs
-Copyright: 2010, Canonical Ltd.
-  2010, Canonical, Ltd.
-  2015, Mike Gabriel
-  2021, Robert Tari
-License: GPL-3
-
 Files: debian/*
 Copyright: 2009-2011, Canonical Ltd.
-  2015-2023, Mike Gabriel <mike.gabriel@das-netzwerkteam.de>
+  2015-2017, Mike Gabriel <mike.gabriel@das-netzwerkteam.de>
 License: GPL-3
 
 Files: debian/patches/*
-Copyright: 2023, Mike Gabriel <mike.gabriel@das-netzwerkteam.de>
+Copyright: 2017, Mike Gabriel <mike.gabriel@das-netzwerkteam.de>
 License: GPL-3 or LGPL-2.1 or LGPL-3
 
 License: GPL-3

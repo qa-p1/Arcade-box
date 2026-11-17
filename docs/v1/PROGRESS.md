@@ -2,6 +2,13 @@
 
 Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
 
+## 2026-11-16 (cloud session) - step 8, rc.4: built on Ubuntu 22.04
+
+- rc.3's files matched their SHA256SUMS. Its Gates passed every job but Linux conformance: Box's own binary needs
+  libstdc++ from Ubuntu 24.04 (`GLIBCXX_3.4.31`), because the AppImage was built there, and two CI network steps
+  had no timeout (REL-1). The Linux package is now built on ubuntu-22.04 like the other apps (D24). Next: rc.4 →
+  Gates → Promote.
+
 ## 2026-11-16 (cloud session) - step 8, rc.3
 
 - rc.2's Gates were green on every job except Linux conformance, where a CLI cached from ubuntu-24.04 needed glibc 2.39

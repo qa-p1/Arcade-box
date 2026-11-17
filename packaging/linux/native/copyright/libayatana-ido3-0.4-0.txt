@@ -18,8 +18,10 @@ Files: src/ayatanamenuitemfactory.c
  src/idolocationmenuitem.h
  src/idomediaplayermenuitem.c
  src/idomediaplayermenuitem.h
+ src/idomenuitemfactory.c
  src/idoplaybackmenuitem.c
  src/idoplaybackmenuitem.h
+ src/idoprogressmenuitem.c
  src/idoprogressmenuitem.h
  src/idoremovablemenuitem.c
  src/idosourcemenuitem.c
@@ -39,17 +41,8 @@ License: GPL-3
 Files: src/idoappointmentmenuitem.c
  src/idobasicmenuitem.c
  src/idobasicmenuitem.h
- src/idomenuitemfactory.c
 Copyright: 2013, Canonical Ltd.
   2021, Robert Tari
-  2021-2022, Robert Tari
-  2023, Robert Tari
-License: GPL-3
-
-Files: src/idolevelmenuitem.c
- src/idolevelmenuitem.h
- src/idoprogressmenuitem.c
-Copyright: 2023, Robert Tari
 License: GPL-3
 
 Files: src/idoscalemenuitem.c
@@ -78,7 +71,6 @@ Files: .build.yml
  tests/CMakeLists.txt
  tests/gtest-menuitems.cpp
 Copyright: 2010-2013, Canonical Ltd.
-  2021-2022, Robert Tari
 License: GPL-3 or LGPL-2.1 or LGPL-3
 Comment:
  Assuming same copyright holdership as the majority of the other code files.
@@ -117,7 +109,7 @@ Copyright: 2010, Canonical Ltd.
 License: GPL-3
 
 Files: debian/patches/*
-Copyright: 2017-2023, Mike Gabriel <mike.gabriel@das-netzwerkteam.de>
+Copyright: 2017, Mike Gabriel <mike.gabriel@das-netzwerkteam.de>
 License: GPL-3 or LGPL-3 or LGPL-2.1
 
 License: GPL-3

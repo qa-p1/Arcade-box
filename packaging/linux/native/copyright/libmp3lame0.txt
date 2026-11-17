@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: LAME
 Upstream-Contact: lame-dev@lists.sourceforge.net
-Source: https://lame.sourceforge.io/
+Source: http://lame.sourceforge.net/
 
 Files: *
 Copyright: © 1998, Michael Cheng

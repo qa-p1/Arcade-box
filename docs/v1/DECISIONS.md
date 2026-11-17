@@ -345,3 +345,32 @@ one-pixel cursor difference).
 Every reusable Link workflow and `link-ref` Box uses is pinned to `v1.0.12`. The `arcade-link` crate, the build's Link
 checkout and the vendored design kit stay at `v1.0.11`: 1.0.12 changes no Rust code and no design file, so the app
 built for rc.3 is the rc.2 app. rc.2 is not promoted.
+
+## D24 — The Linux package is built on Ubuntu 22.04 (rc.4)
+
+`v1.0.0-rc.3`'s [Gates](https://github.com/qa-p1/Arcade-box/actions/runs/43943952502) passed the published files,
+N-1, budgets and the Windows and macOS smoke tests, and failed "Linux (conformance)" on ubuntu-22.04 for two reasons:
+- **CLI-1 to CLI-4:** the rc's own binary would not start: `libstdc++.so.6: version 'GLIBCXX_3.4.31' not found`. Box
+  built its AppImage on ubuntu-24.04 (0.4.3 did too), and an AppImage needs the glibc and libstdc++ it was built
+  against or newer, which the image doesn't bundle. So Box's AppImage never ran on Ubuntu 22.04 or another system of
+  that age; the gates hadn't reached this check before (rc.2 stopped at Link's own CLI). Tools, Look and Lens build
+  their AppImage on ubuntu-22.04, and Link's gates check it there.
+- **REL-1:** two network steps in `ci.yml` had no timeout.
+
+**Decision:** the Linux job of `ci.yml` (which Release calls) runs on ubuntu-22.04, so CI, Release and the published
+AppImage come from the oldest Ubuntu Arcade supports. The Rust cache is keyed by `matrix.os`, so a target built on
+24.04 is never restored there. `npm ci`, the Chromium install and the Tauri bundler install have a 10-minute timeout.
+`native-notices.py` records the host it ran on (as Look's does), and the notices name it: the bundled WebKitGTK, GTK and
+GStreamer libraries (D9) now come from Ubuntu 22.04's packages, and CI's `--check` asks for the regenerated record,
+which is committed. rc.3 is not promoted; rc.4 is built from this.
+
+The checks also run on ubuntu-24.04, with no package. Box needs libvips 8.14 or newer and Ubuntu 22.04 ships 8.12, so
+on 22.04 the tests that run the real `vips` skip, as they do wherever no compatible libvips is found. They run on
+24.04. `pipeline_files_stay_private_and_only_final_files_survive` skipped only when no libvips was found at all, so
+it failed on 22.04's incompatible one ("libvips isn't installed"). It now skips without a compatible one, like the
+image tests.
+
+The AppImage built on 22.04 then aborted in CI as the Island showed: `[xcb] Too much data requested from _XRead`,
+Xlib's sign of a connection used from two threads. libX11 1.8 (Ubuntu 24.04) turns Xlib's locking on by default; 1.7
+(Ubuntu 22.04) does not. Box now calls `XInitThreads()` first thing in `main` on Linux (a no-op on 1.8).
+

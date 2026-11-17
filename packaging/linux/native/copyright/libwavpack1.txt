@@ -4,7 +4,7 @@ Upstream-Source: http://www.wavpack.org
 
 Files: *
 Copyright: 1998-2015, Conifer Software
-           1998-2022, David Bryant
+           1998-2017, David Bryant
            2006, Joachim Henke
            2004-2012, LoRd_MuldeR
            2005, Sebastian Dröge
@@ -12,7 +12,7 @@ License: BSD-3-clause
 
 Files: debian/*
 Copyright: 2005-2013, Sebastian Dröge
-           2016-2022, Sebastian Ramacher
+           2016-2018, Sebastian Ramacher
 License: BSD-3-clause
 
 Files: cli/win32_unicode_support.c

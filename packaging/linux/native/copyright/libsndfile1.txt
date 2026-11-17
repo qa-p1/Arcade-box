@@ -4,10 +4,11 @@ Upstream-Contact: Erik de Castro Lopo <erikd@mega-nerd.com>
 Source: https://github.com/erikd/libsndfile/
 
 Files: *
-Copyright: 1999-2022, Erik de Castro Lopo <erikd@mega-nerd.com>
- 2021-2022, David Seifert
- 2021-2022, Arthur Taylor
- 2021-2022, evpobr
+Copyright: 1999-2017 Erik de Castro Lopo <erikd@mega-nerd.com>
+License: LGPL-2.1+
+
+Files: src/*
+Copyright: 1999-2017 Erik de Castro Lopo <erikd@mega-nerd.com>
 License: LGPL-2.1+
 
 Files: src/GSM610/*
@@ -75,41 +76,24 @@ Copyright: 1999-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
   2004-2005, David Viens <davidv@plogue.com>
 License: LGPL-2.1+
 
+Files: src/*.py
+Copyright: 2003-2017, Erik de Castro Lopo <erikd@mega-nerd.com>
+License: BSD-3-clause
+
 Files: include/sndfile.hh
 Copyright: 2005-2012, Erik de Castro Lopo <erikd@mega-nerd.com>
 License: BSD-3-clause
-
-Files: src/id3.h
- src/mpeg*
- src/nms_adpcm.c
- src/ogg.h
- src/ogg_vcomment.*
-Copyright: 1999-2019, Erik de Castro Lopo <erikd@mega-nerd.com>
-  2017-2021, Arthur Taylor <art@ified.ca>
-License: LGPL-2.1+
-
-
-Files: src/ogg.c
-Copyright: 1994-2013, Xiph.Org Foundation and contributors
-  2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
-  2007, John ffitch
-  2018, Arthur Taylor <art@ified.ca>
-License: BSD-3-clause and LGPL-2.1+
-
-Files: src/ogg_opus.c
-Copyright: 1994-2013, Xiph.Org Foundation and contributors
-  2013-2020, Erik de Castro Lopo <erikd@mega-nerd.com>
-  2018, Arthur Taylor <art@ified.ca>
-License: BSD-3-clause and LGPL-2.1+
 
 Files: src/ogg_vorbis.c
 Copyright: 2002-2005, Michael Smith <msmith@xiph.org>
   2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
   2007, John ffitch
-  2018-2021, Arthur Taylor <art@ified.ca>
 License: BSD-3-clause and LGPL-2.1+
 
-
+Files: src/ogg.c
+Copyright: 2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+  2007, John ffitch
+License: LGPL-2.1+
 
 Files: src/flac.c
 Copyright: 2004, Tobias Gehrig <tgehrig@ira.uka.de>
@@ -142,11 +126,6 @@ Copyright: 2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
   2007, Reuben Thomas
 License: LGPL-2.1+
 
-Files: src/dwvw.c
-Copyright: 1993, NuEdge Development".
-  2002-2014, Erik de Castro Lopo <erikd@mega-nerd.com>
-License: LGPL-2.1+
-
 Files: src/file_io.c
 Copyright: 2002-2014, Erik de Castro Lopo <erikd@mega-nerd.com>
   2003, Ross Bencina <rbencina@iprimus.com.au>
@@ -157,13 +136,8 @@ Copyright: 2008-2017, Erik de Castro Lopo <erikd@mega-nerd.com>
   2009, Uli Franke <cls@nebadje.org>
 License: LGPL-2.1+
 
-Files: src/test_nms_adpcm.c
-Copyright: 2007-2018, Erik de Castro Lopo <erikd@mega-nerd.com>
-  2017-2018, Arthur Taylor <art@ified.ca>
-License: LGPL-2+
-
 Files: programs/*
-Copyright: 1999-2019, Erik de Castro Lopo <erikd@mega-nerd.com>
+Copyright: 1999-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
 License: BSD-3-clause
 
 Files: programs/common.c
@@ -178,12 +152,8 @@ Copyright: 2008, Conrad Parker <conrad@metadecks.org>
 License: BSD-3-clause
 
 Files: examples/*
-Copyright: 1999-2019, Erik de Castro Lopo <erikd@mega-nerd.com>
+Copyright: 1999-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
 License: BSD-3-clause
-
-Files: examples/generate.cs
-Copyright: 2004, James Robson, http://www.arbingersys.com
-License: GPL-2+
 
 Files: examples/sndfilehandle.cc
 Copyright: 2007-2011, Erik de Castro Lopo <erikd@mega-nerd.com>
@@ -196,76 +166,41 @@ Copyright: 2002-2011, Erik de Castro Lopo
 License: GPL-2+
 
 Files: tests/*
- regtest/*
-Copyright:  1999-2019 Erik de Castro Lopo <erikd@mega-nerd.com>
+Copyright:  1999-2017 Erik de Castro Lopo <erikd@mega-nerd.com>
 License: GPL-2+
 
 Files: tests/*.sh.in
- src/*.py
-Copyright: 2003-2017, Erik de Castro Lopo <erikd@mega-nerd.com>
+Copyright: 2008-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
 License: BSD-3-clause
 
-Files: tests/mpeg_test.c
-Copyright: 2007-2019, Erik de Castro Lopo <erikd@mega-nerd.com>
-  2019, John ffitch <jpff@codemist.co.uk>
+Files: regtest/*
+Copyright: 2005-2011, Erik de Castro Lopo
 License: GPL-2+
 
 Files: Scripts/android-configure.sh
 Copyright: 2013-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
 License: BSD-3-clause
 
-Files: Scripts/cstyle.py
-Copyright: 2013-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
-License: BSD-2-clause
+Files: m4/stack_protect.m4
+Copyright: 2013, Xiph.org Foundation
+License: BSD-3-clause
 
 Files: m4/ax_add_fortify_source.m4
 Copyright: 2017, David Seifert <soap@gentoo.org>
-  2019, Reini Urban <rurban@cpan.org>
 License: FSFAP
-
-Files: m4/ax_append_flag.m4
- m4/ax_check_compile_flag*.m4
- m4/ax_check_link_flag*.m4
-Copyright: 2008, Guido U. Draheim <guidod@gmx.de>
-  2011, Maarten Bosmans <mkbosmans@gmail.com>
-License: GPL-3+
-
-Files: m4/ax_recursive_eval.m4
-Copyright: 2008, Alexandre Duret-Lutz <adl@gnu.org>
-License: GPL-2+
-
-Files: m4/ax_compiler_vendor.m4
-Copyright: 2008, Matteo Frigo
-  2008, Steven G. Johnson <stevenj@alum.mit.edu>
-License: GPL-3+
-
-Files: m4/ax_compiler_version.m4
-Copyright: 2014, Bastien ROUCARIES <roucaries.bastien+autoconf@gmail.com>
-License: FSFAP
+  Copying and distribution of this file, with or without modification, are
+  permitted in any medium without royalty provided the copyright notice
+  and this notice are preserved.  This file is offered as-is, without any
+  warranty.
 
 Files: m4/extra_pkg.m4
 Copyright: 2004, Scott James Remnant <scott@netsplit.com>.
   2008-2012, Erik de Castro Lopo <erikd@mega-nerd.com>
 License: GPL-2+
 
-Files: m4/ax_require_defined.m4
-Copyright: 2014, Mike Frysinger <vapier@gentoo.org>
-License: FSFAP
-
-Files: m4/clip_mode.m4
- m4/flexible_array.m4
- m4/mkoctfile_version.m4
- m4/octave.m4
-Copyright: 2007, Erik de Castro Lopo <erikd@mega-nerd.com>
-License: NTP
-
-Files: cmake/CMakeAutoGen*
-Copyright: 2017, Anonymous Maarten <anonymous.maarten@gmail.com>
-License: LGPL-2.1+
-
 Files: debian/*
 Copyright: 2016-2017, Erik de Castro Lopo <erikd@mega-nerd.com>
-  2016-2022, IOhannes m zmölnig <umlaeute@debian.org>
+  2016-2020, IOhannes m zmölnig <umlaeute@debian.org>
 License: LGPL-2.1+
 
 
@@ -321,24 +256,6 @@ Comment:
   On Debian systems, the complete text of the GNU General Public License
   (GPL) version 2 can be found in "/usr/share/common-licenses/GPL-2".
 
-License: GPL-3+
-  This program is free software; you can redistribute it and/or modify it
-  under the terms of the GNU General Public License as published by the
-  Free Software Foundation; either version 3, or (at your option) any
-  later version.
-  .
-  This program is distributed in the hope that it will be useful, but
-  WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  General Public License for more details.
-  .
-  You should have received a copy of the GNU General Public License along
-  with this program.  If not, see <http://www.gnu.org/licenses/>.
-Comment:
-  On Debian systems, the complete text of the GNU General Public License
-  (GPL) version 3 can be found in "/usr/share/common-licenses/GPL-3".
-
-
 License: BSD-3-clause
   All rights reserved.
   .
@@ -369,33 +286,6 @@ License: BSD-3-clause
   IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
   THE POSSIBILITY OF SUCH DAMAGE.
 
-License: BSD-2-clause
-  All rights reserved.
-  .
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions are
-  met:
-  .
-  1. Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-  2. Redistributions in binary form must reproduce the above
-    copyright notice, this list of conditions and the following
-    disclaimer in the documentation and/or other materials provided
-    with the distribution.
-  .
-  THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY
-  EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-  THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
-  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR
-  BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
-  TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-  LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
-  IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
-  THE POSSIBILITY OF SUCH DAMAGE.
-
 License: Apache-2.0
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -411,16 +301,3 @@ License: Apache-2.0
 Comment:
   On Debian systems, the complete text of the Apache 2.0 License
   can be found in /usr/share/common-licenses/Apache-2.0 file.
-
-License: FSFAP
-  Copying and distribution of this file, with or without modification, are
-  permitted in any medium without royalty provided the copyright notice
-  and this notice are preserved.  This file is offered as-is, without any
-  warranty.
-
-License: NTP
-  Permission to use, copy, modify, distribute, and sell this file for any
-  purpose is hereby granted without fee, provided that the above copyright
-  and this permission notice appear in all copies.  No representations are
-  made about the suitability of this software for any purpose.  It is
-  provided "as is" without express or implied warranty.
