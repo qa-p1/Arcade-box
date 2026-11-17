@@ -35,6 +35,7 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 ### Fixed
 
 - Linux: the AppImage starts on Ubuntu 22.04 and other systems of that age. It was built on Ubuntu 24.04 and needed its newer C++ library.
+- Linux: Restart, and any start from the installed AppImage, could hang without opening Box when the desktop did not report its colour scheme. The unpacked copy inherited settings that pointed into the AppImage's mount, which closes as the copy starts (Arcade Link 1.0.13).
 - Copy in a pinned image's window works: its content security policy blocked reading the image it copies.
 - The Island and dashboard run under a strict content security policy, like the pinned-image window: no remote scripts, images or connections.
 - The global shortcut works on desktops with xdg-desktop-portal older than 1.19 (Ubuntu 24.04), which have no host app registry.
