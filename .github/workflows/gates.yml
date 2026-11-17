@@ -27,9 +27,12 @@ jobs:
       name: box
       previous: ${{ inputs.previous }}
       link-ref: v1.0.13
+      # native-notices.py maps each bundled file to the package that installed it, so this runner needs every
+      # package the build host bundled from: gstreamer1.0-pipewire, and libpango1.0-dev, whose unversioned
+      # libpango*.so links linuxdeploy copied (ci.yml installs both, through libwebkit2gtk-4.1-dev).
       linux-packages: >-
         libwebkit2gtk-4.1-0 libayatana-appindicator3-1 python3-dbus
-        gstreamer1.0-plugins-base gstreamer1.0-plugins-good
+        gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-pipewire libpango1.0-dev
       linux-checks: |
         python3 scripts/native-notices.py --check "$RC"
         dbus-run-session -- xvfb-run -a python3 scripts/verify-appimage.py "$RC" arcade.box Arcade-Box.AppImage arcade-desktop

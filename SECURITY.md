@@ -24,7 +24,9 @@ installed copies to roll back.
 `cargo deny check` (advisories, licences, bans, sources) runs in CI; Dependabot watches Cargo, npm and GitHub
 Actions. Accepted advisories are listed with a reason in `deny.toml`: a timing issue in crypto-bigint 0.5, which
 only age's P-256 recipients use (Box encrypts with X25519 and scrypt only), and "unmaintained" notices (no known
-vulnerability) for crates that come through Tauri, gtk-rs, zbus 5, rav1e and age with no maintained replacement yet.
+vulnerability) for crates that come through Tauri, gtk-rs, zbus 5, rav1e and age with no maintained replacement yet,
+and for chrono and chrono-tz, which Box's date tools and calamine's spreadsheet dates use; moving those to jiff is a
+change for after 1.0.
 The bundled SQLite (3.53) can return stale memory when it opens a crafted database together with a `-wal` file of a
 different page size (RUSTSEC-2026-0459). Box opens only its own `arcade.sqlite3` in its data folder, never a database
 it was given, so only someone who can already write Box's data could plant such a pair. The fixed SQLite needs
