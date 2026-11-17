@@ -2294,7 +2294,7 @@ Redistribution and use in source and binary forms, with or without modification,
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ```
 
-### 22. Used by allocator-api2 0.2.21, anyhow 1.0.104, arcade-link 1.0.11, async-trait 0.1.92, basic-toml 0.1.10, constant_time_eq 0.4.2, constant_time_eq 0.6.1, dtoa 1.0.11, dyn-clone 1.0.20, erased-serde 0.4.11, itoa 1.0.19, libc 0.2.191, mach2 0.4.3, num_enum 0.7.6, num_enum_derive 0.7.6, paste 1.0.15, pastey 0.1.1, pastey 0.2.3, proc-macro2 1.0.107, proc-macro2-diagnostics 0.10.1, quote 1.0.47, ref-cast 1.0.27, ref-cast-impl 1.0.27, rustc-hash 2.1.3, rustversion 1.0.23, ryu 1.0.23, semver 1.0.28, serde 1.0.229, serde-untagged 0.1.9, serde_core 1.0.229, serde_derive 1.0.229, serde_derive_internals 0.29.1, serde_json 1.0.154, serde_repr 0.1.21, syn 2.0.119, syn 3.0.10, thiserror 1.0.69, thiserror 2.0.21, thiserror-impl 1.0.69, thiserror-impl 2.0.21, typed-path 0.13.0, typeid 1.0.3, unicode-ident 1.0.27, utf8parse 0.2.2, wasm-streams 0.5.0
+### 22. Used by allocator-api2 0.2.21, anyhow 1.0.104, arcade-link 1.0.13, async-trait 0.1.92, basic-toml 0.1.10, constant_time_eq 0.4.2, constant_time_eq 0.6.1, dtoa 1.0.11, dyn-clone 1.0.20, erased-serde 0.4.11, itoa 1.0.19, libc 0.2.191, mach2 0.4.3, num_enum 0.7.6, num_enum_derive 0.7.6, paste 1.0.15, pastey 0.1.1, pastey 0.2.3, proc-macro2 1.0.107, proc-macro2-diagnostics 0.10.1, quote 1.0.47, ref-cast 1.0.27, ref-cast-impl 1.0.27, rustc-hash 2.1.3, rustversion 1.0.23, ryu 1.0.23, semver 1.0.28, serde 1.0.229, serde-untagged 0.1.9, serde_core 1.0.229, serde_derive 1.0.229, serde_derive_internals 0.29.1, serde_json 1.0.154, serde_repr 0.1.21, syn 2.0.119, syn 3.0.10, thiserror 1.0.69, thiserror 2.0.21, thiserror-impl 1.0.69, thiserror-impl 2.0.21, typed-path 0.13.0, typeid 1.0.3, unicode-ident 1.0.27, utf8parse 0.2.2, wasm-streams 0.5.0
 
 ```text
                               Apache License
@@ -3348,7 +3348,7 @@ IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 ```
 
-### 35. Used by arcade-link 1.0.11
+### 35. Used by arcade-link 1.0.13
 
 ```text
 MIT License
