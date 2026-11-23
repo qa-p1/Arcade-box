@@ -89,5 +89,9 @@ jobs:
     uses: qa-p1/Arcade-Link/.github/workflows/desktop-tier2.yml@v1.1.0
     with:
       artifact: gate-appimage
-      show: --dashboard
+      # smoke.py installs Box, then starts the downloaded AppImage: a window-opening argument such as --dashboard
+      # shows the "Open installed Arcade Box" dialog first, which waits for a click (gates run 45130498450). Like
+      # Lens, start in the background, which skips that dialog by contract; the dashboard window is covered by the
+      # Hyprland suite above. Back to --dashboard once Link's smoke.py sets ARCADE_NO_INSTALL_PROMPT itself.
+      show: --background
       link-ref: v1.1.0
