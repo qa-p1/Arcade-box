@@ -4,7 +4,11 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 
 ## [Unreleased]
 
-## [1.0.0] - 2026-11-15
+### Changed
+
+- The cookie library is updated to 0.18.3 for RUSTSEC-2026-0594 (private cookie nonces could repeat in processes that fork). Box doesn't use private cookies; the update keeps the dependency check clean.
+
+## [1.0.0] - 2026-11-23
 
 ### Added
 
