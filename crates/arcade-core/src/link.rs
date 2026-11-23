@@ -799,7 +799,7 @@ pub fn pipelines(
 
 pub fn pipeline_actions(runtime: &Arcade, cache: Option<&ProviderCache>) -> Vec<Action> {
     let offers = pipelines(runtime, cache).unwrap_or_default();
-    let list =
+    let mut list =
         Action::new("box.pipelines", "Saved pipelines", "list").produces(&["structured/pipelines"]);
     let mut run = Action::new("box.pipeline.run", "Run a saved pipeline", "run");
     for offer in &offers {
@@ -819,6 +819,11 @@ pub fn pipeline_actions(runtime: &Arcade, cache: Option<&ProviderCache>) -> Vec<
     if offers.is_empty() {
         run.available = false;
         run.reason = Some("No saved pipelines are available".into());
+    }
+    // The list and the generic runner are for callers that store a pipeline by id (Wheel slots, Box's own
+    // peers): no menu, palette or extension offers them, since a pipeline is chosen through its own action.
+    for action in [&mut list, &mut run] {
+        action.surfaces = vec!["internal".into()];
     }
     let tools = runtime.list_tools();
     let mut out = vec![list, run];
@@ -1698,6 +1703,18 @@ mod tests {
         assert_eq!(own.title, offer.name);
         assert_eq!(own.accepts, offer.accepts);
         assert_eq!(own.group.as_deref(), Some("Pipelines"));
+        // Only the per-pipeline actions reach menus; the list and the generic runner are offered nowhere.
+        for generic in &all[..2] {
+            for surface in [
+                "file-menu",
+                "palette",
+                "browser-selection",
+                "browser-download",
+            ] {
+                assert!(!generic.on_surface(surface), "{} on {surface}", generic.id);
+            }
+        }
+        assert!(own.on_surface("file-menu") && own.on_surface("palette"));
         let routed = pipeline_request(
             InvokeRequest::new("box.pipeline:image-webp", "t").options(json!({"x": 1})),
         );
