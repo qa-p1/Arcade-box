@@ -361,17 +361,23 @@ fn link_accepts_one(box_type: &str) -> Vec<&'static str> {
         "text/plain" | "text/markdown" | "network/host" | "network/ip" | "rows/csv" => {
             &["text/plain"]
         }
+        "text/csv" => &["text/plain"],
         "text/url" | "network/url" => &["text/url"],
         "folder/reference" => &["folder/reference"],
         "file/image" => &["file/image"],
+        "file/svg" => &["file/svg"],
         "file/video" => &["file/video"],
         "file/audio" => &["file/audio"],
         "file/pdf" => &["file/pdf"],
         "file/document" => &["file/document"],
-        "file/spreadsheet" | "file/csv" | "file/tsv" => &["file/spreadsheet"],
-        "file/json" => &["file/code"],
+        "file/spreadsheet" => &["file/spreadsheet"],
+        // Link 1.1 knows these exactly (a .tsv is a file/csv too); older callers send the broader type, which a
+        // refined pattern doesn't take, so Box still checks what arrives.
+        "file/csv" | "file/tsv" => &["file/csv"],
+        "file/json" => &["file/json"],
+        "file/subtitle" => &["file/subtitle"],
         "file/media" => &["file/video", "file/audio"],
-        "file/any" | "file/subtitle" => &["file/any"],
+        "file/any" => &["file/any"],
         s if s.starts_with("structured/") => return vec![leak_structured(s, array)],
         _ => &[],
     };
@@ -390,6 +396,10 @@ fn array_of(t: &'static str) -> &'static str {
         "file/document" => "file/document[]",
         "file/spreadsheet" => "file/spreadsheet[]",
         "file/code" => "file/code[]",
+        "file/csv" => "file/csv[]",
+        "file/json" => "file/json[]",
+        "file/svg" => "file/svg[]",
+        "file/subtitle" => "file/subtitle[]",
         "file/any" => "file/any[]",
         // Text and folders travel one at a time.
         other => other,
@@ -429,11 +439,10 @@ pub fn link_accepts(tool: &ToolManifest) -> Vec<String> {
 pub(crate) fn link_type_of_output(box_type: &str) -> String {
     let base = box_type.trim_end_matches("[]");
     match base {
-        "text/markdown" | "rows/csv" | "network/host" | "network/ip" => "text/plain".into(),
+        "rows/csv" | "network/host" | "network/ip" => "text/plain".into(),
         "network/url" => "text/url".into(),
-        "file/csv" | "file/tsv" => "file/spreadsheet".into(),
-        "file/json" => "file/code".into(),
-        "file/media" | "file/subtitle" | "file/octet-stream" => "file/any".into(),
+        "file/tsv" => "file/csv".into(),
+        "file/media" | "file/octet-stream" => "file/any".into(),
         other => other.to_string(),
     }
 }
@@ -497,6 +506,121 @@ fn verb(tool: &ToolManifest) -> String {
         .to_string()
 }
 
+// ---- Link 1.1 card fields -------------------------------------------------------------------------------------
+
+/// The tool's form as the card's `options` (Link takes Box's form format as is). A preset's options become the
+/// defaults, so running the preset from a menu with the form's defaults does what the preset says.
+fn options_form(
+    tool: &ToolManifest,
+    preset: Option<&serde_json::Map<String, Value>>,
+) -> Option<arcade_link::form::Form> {
+    let mut form = serde_json::to_value(tool.ui.as_ref()?).ok()?;
+    if let (Some(values), Some(controls)) = (
+        preset,
+        form.get_mut("controls").and_then(Value::as_array_mut),
+    ) {
+        for control in controls {
+            let value = control
+                .get("key")
+                .and_then(Value::as_str)
+                .and_then(|key| values.get(key))
+                .cloned();
+            if let Some(value) = value {
+                control["default"] = value;
+            }
+        }
+    }
+    serde_json::from_value(form).ok()
+}
+
+/// The Arcade engine (Tools' Engines page, `engine:<id>`) behind a provider, for providers someone can install.
+fn engine_of(provider: &str) -> Option<&'static str> {
+    Some(match provider {
+        "media.ffmpeg" | "media.probe" => "ffmpeg",
+        "image.vips" => "libvips",
+        "image.imagemagick" => "imagemagick",
+        "pdf.qpdf" => "qpdf",
+        "pdf.info" | "pdf.render" => "poppler",
+        "pdf.ghostscript" => "ghostscript",
+        "ocr.tesseract" => "tesseract",
+        "media.ytdlp" | "web.yt-dlp" => "yt-dlp",
+        _ => return None,
+    })
+}
+
+/// What the tool needs that may be missing, so callers can offer "Install …" instead of hiding it.
+fn requires(tool: &ToolManifest) -> Vec<String> {
+    let mut out: Vec<String> = Vec::new();
+    for provider in &tool.providers {
+        // Arcade Lens reads text for Box too, except to build a PDF's text layer (see `missing_provider`).
+        if provider == "ocr.tesseract" && tool.id != "arcade.pdf.ocr" {
+            continue;
+        }
+        if let Some(engine) = engine_of(provider) {
+            let need = format!("engine:{engine}");
+            if !out.contains(&need) {
+                out.push(need);
+            }
+        }
+    }
+    out
+}
+
+/// Where results go: beside the input for files made from files, Downloads for files fetched from the web, none for
+/// answers (text and data the caller shows).
+fn output(tool: &ToolManifest) -> &'static str {
+    use arcade_link::manifest::output;
+    if !tool.outputs.iter().any(|o| o.starts_with("file/")) {
+        output::NONE
+    } else if tool
+        .inputs
+        .iter()
+        .all(|i| matches!(i.trim_end_matches("[]"), "network/url" | "text/url"))
+        && !tool.inputs.is_empty()
+    {
+        output::DOWNLOADS
+    } else {
+        output::BESIDE
+    }
+}
+
+/// A shared name for jobs another Arcade app also does, so a caller shows both until the user picks one.
+fn job(tool: &ToolManifest) -> Option<String> {
+    Some(
+        match tool.id.as_str() {
+            "arcade.image.ocr" => "image.read-text",
+            "arcade.barcode.decode" => "image.read-code",
+            _ => return None,
+        }
+        .into(),
+    )
+}
+
+/// How strongly Box suggests the action for each type it takes (0–100): every tool gets a rank, featured types
+/// (`link.featuredFor`) higher, and a preset (one click, the common case) above its tool's form.
+fn rank(tool: &ToolManifest, accepts: &[String], preset: bool) -> BTreeMap<String, u8> {
+    let featured = tool
+        .link
+        .as_ref()
+        .map(|l| l.featured_for.as_slice())
+        .unwrap_or_default();
+    accepts
+        .iter()
+        .map(|t| {
+            let is_featured = featured.iter().any(|f| {
+                arcade_link::content::type_matches(f, t) || arcade_link::content::type_matches(t, f)
+            });
+            let value = match (is_featured, preset) {
+                (true, true) => 70,
+                (true, false) => 50,
+                (false, true) => 45,
+                (false, false) => 30,
+            };
+            (t.clone(), value)
+        })
+        .collect()
+}
+
 /// Every action Box offers peers, from the catalog and the provider cache.
 pub fn actions(tools: &[ToolManifest], cache: Option<&ProviderCache>) -> Vec<Action> {
     let mut out = Vec::new();
@@ -525,6 +649,16 @@ pub fn actions(tools: &[ToolManifest], cache: Option<&ProviderCache>) -> Vec<Act
         base.privacy = privacy(tool).into();
         base.platforms = platforms(tool);
         base.group = Some(tool.category.clone());
+        base.options = options_form(tool, None);
+        base.keywords = tool.aliases.clone();
+        base.requires = requires(tool);
+        base.output = Some(output(tool).into());
+        base.max_items = tool.ui.as_ref().and_then(|ui| ui.input.max_items);
+        base.job = job(tool);
+        base.rank = rank(tool, &base.accepts, false);
+        // A tool with nothing to choose runs as is; the rest open their form (their presets are the one-click
+        // entries).
+        base.one_click = tool.ui.as_ref().is_none_or(|ui| ui.controls.is_empty());
         if let Some(reason) = missing_provider(tool, cache) {
             base.available = false;
             base.reason = Some(reason);
@@ -540,6 +674,9 @@ pub fn actions(tools: &[ToolManifest], cache: Option<&ProviderCache>) -> Vec<Act
             a.title = preset.name.clone();
             a.preset = Some(preset.id.clone());
             a.featured_for = featured.clone();
+            a.options = options_form(tool, Some(&preset.options));
+            a.rank = rank(tool, &a.accepts, true);
+            a.one_click = true;
             out.push(a);
         }
         out.push(base);
@@ -548,9 +685,10 @@ pub fn actions(tools: &[ToolManifest], cache: Option<&ProviderCache>) -> Vec<Act
     out
 }
 
-/// "More in Arcade Box…": the Island, pre-filled with the input.
+/// "More in Arcade Box…": the Island, pre-filled with the input. Ranked just below featured presets, so a caller
+/// that shows a few Box actions keeps the way to the rest.
 pub fn open_action() -> Action {
-    Action::new("box.open", "More in Arcade Box…", "open")
+    let mut action = Action::new("box.open", "More in Arcade Box…", "open")
         .accepts(&[
             "file/*",
             "file/*[]",
@@ -559,7 +697,9 @@ pub fn open_action() -> Action {
             "structured/*",
         ])
         .effects(&["opens-ui"])
-        .interactive(true)
+        .interactive(true);
+    action.rank = action.accepts.iter().map(|t| (t.clone(), 65)).collect();
+    action
 }
 
 /// SPEC §5.4: a saved pipeline reference, independent of the node runtime.
@@ -680,7 +820,51 @@ pub fn pipeline_actions(runtime: &Arcade, cache: Option<&ProviderCache>) -> Vec<
         run.available = false;
         run.reason = Some("No saved pipelines are available".into());
     }
-    vec![list, run]
+    let tools = runtime.list_tools();
+    let mut out = vec![list, run];
+    // Each saved pipeline is also an action of its own, so menus and the extension list it by name.
+    for offer in &offers {
+        let mut action = Action::new(
+            &format!("{PIPELINE_ACTION}{}", offer.id),
+            &offer.name,
+            "run",
+        );
+        action.accepts = offer.accepts.clone();
+        action.produces = offer.produces.clone();
+        action.effects = offer.effects.clone();
+        action.interactive = offer.interactive;
+        action.group = Some("Pipelines".into());
+        // Its form describes what it takes; a pipeline runs with the settings saved in it.
+        action.options = tools
+            .iter()
+            .find(|t| t.id == format!("arcade.pipeline.{}", offer.id))
+            .and_then(|tool| options_form(tool, None));
+        action.output = Some(arcade_link::manifest::output::BESIDE.into());
+        action.one_click = true;
+        out.push(action);
+    }
+    out
+}
+
+/// The prefix of a saved pipeline's own action (`box.pipeline:<id>`).
+pub const PIPELINE_ACTION: &str = "box.pipeline:";
+
+/// A saved pipeline's own action as the `box.pipeline.run` request it stands for; other requests unchanged.
+pub fn pipeline_request(request: InvokeRequest) -> InvokeRequest {
+    let Some(id) = request
+        .action
+        .strip_prefix(PIPELINE_ACTION)
+        .map(str::to_owned)
+    else {
+        return request;
+    };
+    let mut options = request.options.as_object().cloned().unwrap_or_default();
+    options.insert("pipeline".into(), Value::String(id));
+    InvokeRequest {
+        action: "box.pipeline.run".into(),
+        options: Value::Object(options),
+        ..request
+    }
 }
 
 /// Resolve the stable pipeline action to its existing saved-tool executor.
@@ -1017,6 +1201,7 @@ pub fn run_blocking(
         return Err(LinkError::denied(arcade_link::error::reason::DISABLED));
     }
     let tools = runtime.list_tools();
+    let request = &pipeline_request(request.clone());
     if request.action == "box.pipelines" {
         return pipelines_result(runtime);
     }
@@ -1079,6 +1264,7 @@ impl Handler for OneshotHandler {
     }
 
     fn invoke(&self, request: InvokeRequest, ctx: &InvokeContext) -> Result<Reply, LinkError> {
+        let request = pipeline_request(request);
         if request.action == "box.open" {
             return Err(LinkError::unavailable("Arcade Box isn't running"));
         }
@@ -1123,6 +1309,151 @@ impl Handler for OneshotHandler {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn cards() -> Vec<Action> {
+        let catalog = crate::catalog::builtin_catalog().unwrap();
+        // Everything available, so the cards are what a fully set-up Box publishes.
+        let cache: ProviderCache = PROBED
+            .iter()
+            .chain(["ocr.lens"].iter())
+            .map(|id| {
+                (
+                    id.to_string(),
+                    ProviderState {
+                        available: true,
+                        reason: None,
+                    },
+                )
+            })
+            .collect();
+        actions(&catalog.tools, Some(&cache))
+    }
+
+    fn card<'a>(cards: &'a [Action], id: &str) -> &'a Action {
+        cards
+            .iter()
+            .find(|a| a.id == id)
+            .unwrap_or_else(|| panic!("no card {id}"))
+    }
+
+    #[test]
+    fn every_card_reads_back_whole_through_link_with_its_form_and_a_rank() {
+        let catalog = crate::catalog::builtin_catalog().unwrap();
+        let cards = cards();
+        for action in cards.iter().filter(|a| a.id.starts_with("box:")) {
+            // Link reads a malformed optional field as absent: a form that didn't convert would vanish here.
+            let read: Action =
+                serde_json::from_value(serde_json::to_value(action).unwrap()).unwrap();
+            assert_eq!(
+                &read, action,
+                "{} changes on the way through Link",
+                action.id
+            );
+            let tool_id = action.id["box:".len()..].split('#').next().unwrap();
+            let tool = catalog.tools.iter().find(|t| t.id == tool_id).unwrap();
+            assert_eq!(
+                read.options.is_some(),
+                tool.ui.is_some(),
+                "{}: form",
+                action.id
+            );
+            // Every tool that takes something is ranked for each type it takes (not only the featured ones).
+            assert_eq!(
+                read.rank.len(),
+                read.accepts.len(),
+                "{}: rank {:?}",
+                action.id,
+                read.rank
+            );
+            assert!(read.output.is_some(), "{}: output", action.id);
+        }
+        assert!(cards.iter().filter(|a| a.id.starts_with("box:")).count() > 80);
+    }
+
+    #[test]
+    fn a_preset_runs_in_one_click_with_its_options_as_the_form_defaults() {
+        let cards = cards();
+        let webp = card(&cards, "box:arcade.image.convert#webp");
+        assert!(webp.is_one_click());
+        let defaults: BTreeMap<_, _> = webp
+            .options
+            .as_ref()
+            .unwrap()
+            .controls
+            .iter()
+            .map(|c| (c.key.as_str(), c.default.clone()))
+            .collect();
+        assert_eq!(defaults["format"], Some(json!("webp")));
+        let png = card(&cards, "box:arcade.image.convert#png");
+        assert_eq!(
+            png.options
+                .as_ref()
+                .unwrap()
+                .controls
+                .iter()
+                .find(|c| c.key == "format")
+                .unwrap()
+                .default,
+            Some(json!("png"))
+        );
+        // The tool itself opens its form; a featured preset outranks it.
+        let form = card(&cards, "box:arcade.image.convert");
+        assert!(!form.is_one_click());
+        assert!(webp.rank_for("file/image") > form.rank_for("file/image"));
+        assert_eq!(webp.requires, ["engine:libvips"]);
+        assert_eq!(webp.output.as_deref(), Some("beside"));
+        assert!(webp.keywords.iter().any(|k| k == "heic to jpg"));
+    }
+
+    #[test]
+    fn cards_name_exact_types_engines_jobs_and_where_results_go() {
+        let cards = cards();
+        assert!(
+            card(&cards, "box:arcade.video.subtitles")
+                .accepts
+                .iter()
+                .any(|t| t == "file/subtitle")
+        );
+        assert!(
+            card(&cards, "box:arcade.text.csv")
+                .accepts
+                .iter()
+                .any(|t| t == "file/csv")
+        );
+        assert!(
+            card(&cards, "box:arcade.text.csv")
+                .accepts
+                .iter()
+                .any(|t| t == "file/json")
+        );
+        assert!(
+            card(&cards, "box:arcade.image.convert")
+                .accepts
+                .iter()
+                .any(|t| t == "file/svg")
+        );
+        assert_eq!(
+            card(&cards, "box:arcade.web.downloader").output.as_deref(),
+            Some("downloads")
+        );
+        assert_eq!(
+            card(&cards, "box:arcade.text.statistics").output.as_deref(),
+            Some("none")
+        );
+        assert_eq!(
+            card(&cards, "box:arcade.video.compress").requires,
+            ["engine:ffmpeg"]
+        );
+        // Lens reads text for Box, so image OCR needs no engine; a PDF's text layer needs Tesseract.
+        let ocr = card(&cards, "box:arcade.image.ocr");
+        assert!(ocr.requires.is_empty());
+        assert_eq!(ocr.job.as_deref(), Some("image.read-text"));
+        assert_eq!(
+            card(&cards, "box:arcade.pdf.ocr").requires,
+            ["engine:tesseract", "engine:poppler", "engine:qpdf"]
+        );
+        assert_eq!(card(&cards, "box:arcade.pdf.merge").max_items, Some(128));
+    }
 
     #[test]
     fn startup_keeps_available_providers_without_reprobing() {
@@ -1359,6 +1690,23 @@ mod tests {
         assert_eq!(offer.effects, vec!["writes-files"]);
         let all = pipeline_actions(&runtime, Some(&cache));
         assert!(all[1].effects.contains(&"writes-files".into()));
+        // Each runnable pipeline is its own action too, and runs as `box.pipeline.run`.
+        let own = all
+            .iter()
+            .find(|a| a.id == "box.pipeline:image-webp")
+            .expect("the pipeline's own action");
+        assert_eq!(own.title, offer.name);
+        assert_eq!(own.accepts, offer.accepts);
+        assert_eq!(own.group.as_deref(), Some("Pipelines"));
+        let routed = pipeline_request(
+            InvokeRequest::new("box.pipeline:image-webp", "t").options(json!({"x": 1})),
+        );
+        assert_eq!(routed.action, "box.pipeline.run");
+        assert_eq!(routed.options, json!({"x": 1, "pipeline": "image-webp"}));
+        assert_eq!(
+            pipeline_request(InvokeRequest::new("box:arcade.image.convert", "t")).action,
+            "box:arcade.image.convert"
+        );
         runtime.delete_pipeline("upper-clean").unwrap();
         runtime.delete_pipeline("image-webp").unwrap();
         assert!(!pipeline_actions(&runtime, Some(&cache))[1].available);

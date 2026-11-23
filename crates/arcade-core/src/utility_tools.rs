@@ -6,7 +6,7 @@ use crate::tool_kit::{
 };
 use arcade_contract::{ToolManifest, ToolRequest, ToolResult};
 use emojis::Group;
-use rand::{Rng, seq::SliceRandom};
+use rand::{RngExt, seq::SliceRandom};
 use serde_json::{Value, json};
 use std::sync::atomic::AtomicBool;
 

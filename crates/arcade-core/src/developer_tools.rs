@@ -15,7 +15,7 @@ use base64::{
 use chrono::{DateTime, Datelike, Timelike, Utc};
 use chrono_tz::Tz;
 use data_encoding::BASE32_NOPAD;
-use rand::RngCore;
+use rand::Rng;
 use regex::RegexBuilder;
 use serde_json::{Value, json};
 use sha2::{Digest as _, Sha256, Sha512};

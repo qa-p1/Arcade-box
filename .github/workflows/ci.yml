@@ -61,7 +61,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: qa-p1/Arcade-Link
-          ref: v1.0.13
+          ref: v1.1.0
           path: Arcade-Link
       - uses: actions/setup-node@v7
         with:
@@ -136,7 +136,7 @@ jobs:
         if: matrix.bundle == 'appimage'
         timeout-minutes: 5
         run: python3 scripts/native-notices.py --check target/release/bundle/appimage/*.AppImage
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure() && steps.native.outcome == 'failure'
         with:
           name: native-notices
@@ -167,7 +167,7 @@ jobs:
         run: scripts/verify-dmg.sh target/universal-apple-darwin/release/bundle/dmg/*.dmg 'Arcade Box' arcade-desktop arcade.box
       - name: Upload the installer
         if: env.PACKAGE == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: arcade-box-${{ matrix.bundle }}
           if-no-files-found: error
@@ -187,7 +187,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: EmbarkStudios/cargo-deny-action@v2
         with:
           arguments: --workspace --all-features
@@ -195,10 +195,10 @@ jobs:
 
   desktop:
     needs: check
-    uses: qa-p1/Arcade-Link/.github/workflows/desktop-e2e.yml@v1.0.13
+    uses: qa-p1/Arcade-Link/.github/workflows/desktop-e2e.yml@v1.1.0
     with:
       name: box
       test: tests/desktop/island_desktop.py
       args: '"$APP"'
       artifact: arcade-box-appimage
-      link-ref: v1.0.13
+      link-ref: v1.1.0

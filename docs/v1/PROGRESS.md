@@ -2,6 +2,34 @@
 
 Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
 
+## 2026-11-22 (cloud session) - Arcade everywhere, stage 3: Box 1.0.0
+
+- rc.4 → rc.7 were Gates fixes only, no product change: rc.5 accepted chrono and chrono-tz as unmaintained
+  (RUSTSEC-2026-0543, -0555) and installed the packages the AppImage bundles so native-notices can map them; rc.6
+  waited for the content pane's scroller style in the UI check; rc.7 installed the GObject typelib packages. After
+  rc.7, `33f133d` runs the upgrade test on Ubuntu 24.04, where the previous release (0.4.3) starts.
+- Box 1.0.0 now ships on Arcade Link 1.1 (Catalog `dev/everywhere/PLAN.md` stage 3) with full action cards: every
+  tool's form as `options` (a preset's values as its defaults), aliases as `keywords`, `requires` from its
+  providers (`engine:ffmpeg`, `engine:libvips`, …), `output` (beside the input, Downloads for web downloads, none
+  for answers), `maxItems`, a `rank` for every type it takes (not only the featured ones), one-click presets,
+  shared `job` names where Lens does the same job, and exact types (`file/csv`, `file/json`, `file/svg`,
+  `file/subtitle`). `url` 2.5.9.
+- Plan item 4: the buttons under a result come from Link's `offers` (installed cards, the catalog's `rules`, the
+  user's `offers.json`), keyed `<app>/<action>`; Box's list of Look/Clipboard/Wheel/Shelf/Lens actions is gone. An
+  action with an outbound effect (`sends-to-device`, `uploads-content`) asks first; one that takes the tool itself
+  (`structured/arcade-action`, Wheel) shows the preset choice. Box's own delegations (`lens.capture` for screen
+  tools, `clipboard.pick`, `lens.recognize` for OCR) stay: they are Box's tools calling the app that owns the
+  feature (SPEC §1 rule 6), not a choice of which other apps to show.
+- Plan item 3: each runnable saved pipeline is also its own action (`box.pipeline:<id>`, routed to
+  `box.pipeline.run`), with its input form and group "Pipelines".
+- Plan item 5: the downloader's form already had media, quality, formats, subtitles, thumbnail, metadata, name and
+  folder. It now names each file as it starts in the job's progress line (`jobs::note`), and the card requires
+  `engine:yt-dlp`.
+- Findings check (plan item 6): every P0/P1 row in `SPEC.md` "Findings to fix" was pinned as a known bug and every
+  pin has flipped (no `known_bug_*` test or `KNOWN BUG` check remains); the P2 rows are fixed in PR #35 (2026-11-13
+  below). Backlog with reasons: BP-1 (PDF output folder), BP-5 (one long-lived Island window), non-ASCII
+  watermarks (B-23).
+
 ## 2026-11-16 (cloud session) - step 8, rc.4: built on Ubuntu 22.04
 
 - rc.3's files matched their SHA256SUMS. Its Gates passed every job but Linux conformance: Box's own binary needs

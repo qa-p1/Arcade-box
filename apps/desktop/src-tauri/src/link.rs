@@ -446,6 +446,7 @@ impl Handler for BoxHandler {
     }
 
     fn invoke(&self, request: InvokeRequest, ctx: &InvokeContext) -> Result<Reply, LinkError> {
+        let request = core_link::pipeline_request(request);
         if request.action == "box.open" {
             return self.open(request, &ctx.peer().id);
         }
@@ -802,8 +803,14 @@ pub fn result_link_actions(
         .into_iter()
         .find(|t| t.id == tool_id)
         .ok_or("Unknown tool")?;
-    consumer::result_offers(&runtime, &outputs, &tool, preset.as_deref())
-        .map_err(|e| e.user_message("Arcade Box"))
+    consumer::result_offers(
+        &runtime,
+        &Locations::discover(),
+        &outputs,
+        &tool,
+        preset.as_deref(),
+    )
+    .map_err(|e| e.user_message("Arcade Box"))
 }
 
 #[tauri::command(async)]
@@ -820,12 +827,17 @@ pub fn invoke_result_link_action(
         .into_iter()
         .find(|t| t.id == tool_id)
         .ok_or("Unknown tool")?;
-    let (.., app, request) =
-        consumer::result_requests(&runtime, &outputs, &tool, preset.as_deref())
-            .map_err(|e| e.user_message("Arcade Box"))?
-            .into_iter()
-            .find(|(k, _, _)| k == &key)
-            .ok_or("Unknown result action")?;
+    let (.., app, request) = consumer::result_requests(
+        &runtime,
+        &Locations::discover(),
+        &outputs,
+        &tool,
+        preset.as_deref(),
+    )
+    .map_err(|e| e.user_message("Arcade Box"))?
+    .into_iter()
+    .find(|(k, _, _)| k == &key)
+    .ok_or("Unknown result action")?;
     let active = OutboundRequest::begin(request_id)?;
     let result = consumer::invoke(&runtime, &app, request, &active.cancelled);
     result.map_err(|e| e.user_message(arcade_link::manifest::app_name(&app)))

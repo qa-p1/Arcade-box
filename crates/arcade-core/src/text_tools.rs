@@ -152,10 +152,14 @@ fn text_diff(
 
 fn render_side_by_side_diff(left: &str, right: &str) -> String {
     let diff = TextDiff::from_lines(left, right);
+    let (olds, news): (Vec<&str>, Vec<&str>) = (
+        diff.iter_old_slices().collect(),
+        diff.iter_new_slices().collect(),
+    );
     let mut rendered = String::from("LEFT | RIGHT\n");
     for operation in diff.ops() {
-        let old = &diff.old_slices()[operation.old_range()];
-        let new = &diff.new_slices()[operation.new_range()];
+        let old = &olds[operation.old_range()];
+        let new = &news[operation.new_range()];
         let equal = operation.tag() == similar::DiffTag::Equal;
         for index in 0..old.len().max(new.len()) {
             let old_line = old.get(index).copied().unwrap_or("");
@@ -180,10 +184,14 @@ fn render_side_by_side_diff(left: &str, right: &str) -> String {
 
 fn render_inline_diff(left: &str, right: &str) -> String {
     let diff = TextDiff::from_lines(left, right);
+    let (olds, news): (Vec<&str>, Vec<&str>) = (
+        diff.iter_old_slices().collect(),
+        diff.iter_new_slices().collect(),
+    );
     let mut rendered = String::new();
     for operation in diff.ops() {
-        let old = &diff.old_slices()[operation.old_range()];
-        let new = &diff.new_slices()[operation.new_range()];
+        let old = &olds[operation.old_range()];
+        let new = &news[operation.new_range()];
         let equal = operation.tag() == similar::DiffTag::Equal;
         for index in 0..old.len().max(new.len()) {
             let old_line = old
@@ -391,9 +399,8 @@ fn text_edits(base: &str, variant: &str) -> Vec<TextEdit> {
             TextEdit {
                 start: old.start,
                 end: old.end,
-                replacement: diff.new_slices()[new]
-                    .iter()
-                    .map(|line| (*line).to_owned())
+                replacement: new
+                    .map(|index| diff.new_slice(index).unwrap_or_default().to_owned())
                     .collect(),
             }
         })

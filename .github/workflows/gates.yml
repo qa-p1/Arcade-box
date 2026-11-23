@@ -21,12 +21,12 @@ concurrency:
 
 jobs:
   gates:
-    uses: qa-p1/Arcade-Link/.github/workflows/app-gates.yml@v1.0.13
+    uses: qa-p1/Arcade-Link/.github/workflows/app-gates.yml@v1.1.0
     with:
       app: arcade.box
       name: box
       previous: ${{ inputs.previous }}
-      link-ref: v1.0.13
+      link-ref: v1.1.0
       # native-notices.py maps each bundled file to the package that installed it, so this runner needs every
       # package the build host bundled from: gstreamer1.0-pipewire, libpango1.0-dev, whose unversioned
       # libpango*.so links linuxdeploy copied, and the GObject typelibs (gir1.2-*) the GTK plugin copies from
@@ -59,15 +59,15 @@ jobs:
     env:
       PYTHONUTF8: '1'
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Linux packages
         timeout-minutes: 20
         run: >-
           scripts/apt-install.sh xvfb dbus-x11 libfuse2t64 python3-gi python3-dbus
           libwebkit2gtk-4.1-0 libayatana-appindicator3-1 gstreamer1.0-plugins-base gstreamer1.0-plugins-good
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with: { name: gate-rc, path: rc }
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with: { name: gate-previous, path: previous }
       - name: Upgrade, keeping the user's data
         run: |
@@ -77,17 +77,17 @@ jobs:
   # Tier 1 (headless Hyprland) blocks on any failure; Tier 2 (sway, KWin, Mutter, X11) on a crash or data loss.
   desktop:
     needs: gates
-    uses: qa-p1/Arcade-Link/.github/workflows/desktop-e2e.yml@v1.0.13
+    uses: qa-p1/Arcade-Link/.github/workflows/desktop-e2e.yml@v1.1.0
     with:
       name: box
       test: tests/desktop/island_desktop.py
       args: '"$APP"'
       artifact: gate-appimage
-      link-ref: v1.0.13
+      link-ref: v1.1.0
   desktop-tier2:
     needs: gates
-    uses: qa-p1/Arcade-Link/.github/workflows/desktop-tier2.yml@v1.0.13
+    uses: qa-p1/Arcade-Link/.github/workflows/desktop-tier2.yml@v1.1.0
     with:
       artifact: gate-appimage
       show: --dashboard
-      link-ref: v1.0.13
+      link-ref: v1.1.0

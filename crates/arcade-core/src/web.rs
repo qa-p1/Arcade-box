@@ -854,6 +854,7 @@ fn run_with_directory_progress(
     thread::scope(|scope| {
         let handle = scope.spawn(|| process::run(&spec, cancelled));
         let mut previous = 0u64;
+        let mut seen: Vec<String> = Vec::new();
         loop {
             if handle.is_finished() {
                 return handle
@@ -877,9 +878,60 @@ fn run_with_directory_progress(
                 progress(0.05);
                 previous = current;
             }
+            // Say which file is downloading (the video, its audio, subtitles, each item of a playlist).
+            let mut names: Vec<String> = fs::read_dir(directory)
+                .ok()
+                .into_iter()
+                .flatten()
+                .filter_map(Result::ok)
+                .filter_map(|entry| entry.file_name().into_string().ok())
+                .collect();
+            names.sort();
+            for name in names {
+                let shown = download_name(&name);
+                if !shown.is_empty() && !seen.contains(&shown) {
+                    seen.push(shown);
+                    crate::jobs::note(&download_note(&seen));
+                }
+            }
             thread::sleep(Duration::from_millis(350));
         }
     })
+}
+
+/// The file a yt-dlp working name stands for: without `.part`/`.ytdl`/`.temp` and the format code it downloads
+/// separately (`clip.f137.mp4.part` → `clip.mp4`). Empty for yt-dlp's own bookkeeping files.
+fn download_name(name: &str) -> String {
+    if name.ends_with(".ytdl") {
+        return String::new();
+    }
+    let mut name = name;
+    for suffix in [".part", ".temp"] {
+        name = name.strip_suffix(suffix).unwrap_or(name);
+    }
+    let mut parts: Vec<&str> = name.split('.').collect();
+    if parts.len() > 2 {
+        let code = parts[parts.len() - 2];
+        if code.len() > 1
+            && code.starts_with('f')
+            && code[1..]
+                .chars()
+                .all(|c| c.is_ascii_alphanumeric() || c == '-')
+            && code[1..].chars().any(|c| c.is_ascii_digit())
+        {
+            parts.remove(parts.len() - 2);
+        }
+    }
+    parts.join(".")
+}
+
+/// "Downloading clip.mp4", then "Downloading file 2: clip.en.vtt" as more files start.
+fn download_note(seen: &[String]) -> String {
+    match seen {
+        [] => "Downloading".into(),
+        [one] => format!("Downloading {one}"),
+        _ => format!("Downloading file {}: {}", seen.len(), seen[seen.len() - 1]),
+    }
 }
 
 fn list_stage_outputs(directory: &Path) -> Result<Vec<(PathBuf, String)>, String> {
@@ -1304,6 +1356,21 @@ mod tests {
         assert_eq!(
             download_filename("https://example.com/file", "", "application/pdf"),
             "file.pdf"
+        );
+    }
+
+    #[test]
+    fn media_download_progress_names_each_file() {
+        assert_eq!(download_name("clip.f137.mp4.part"), "clip.mp4");
+        assert_eq!(download_name("clip.f140.m4a"), "clip.m4a");
+        assert_eq!(download_name("clip.en.vtt"), "clip.en.vtt");
+        assert_eq!(download_name("clip.mp4"), "clip.mp4");
+        assert_eq!(download_name("final.fix.mp4"), "final.fix.mp4");
+        assert_eq!(download_name("clip.mp4.ytdl"), "");
+        assert_eq!(download_note(&["clip.mp4".into()]), "Downloading clip.mp4");
+        assert_eq!(
+            download_note(&["clip.mp4".into(), "clip.en.vtt".into()]),
+            "Downloading file 2: clip.en.vtt"
         );
     }
 

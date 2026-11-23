@@ -1,5 +1,12 @@
 # Arcade Box: status
 
+## 1.0.0 on Arcade Link 1.1 (2026-11-22)
+
+Box 1.0.0 builds on the 1.0 release candidates (rc.7 and the Ubuntu 24.04 upgrade test) and moves to Arcade Link 1.1.
+Its action cards describe every tool in full, so the Arcade helper (file-manager menus, and the browser extension
+later) can offer Box's tools with their forms, presets, engines and where results go. The v1 work, its findings
+and decisions are in `docs/v1/` (`PROGRESS.md` newest first); this file's older entries describe 0.4.x.
+
 ## 0.4.3 dashboard usability follow-up (2026-11-06)
 
 The dashboard clips its outer frame, but the main content pane had no scroll
