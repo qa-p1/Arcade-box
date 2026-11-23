@@ -1,6 +1,8 @@
 # Arcade Box: status
 
-## 1.0.0 on Arcade Link 1.1 (2026-11-22)
+## 1.0.0 on Arcade Link 1.1 (released 2026-11-23)
+
+Box 1.0.0 is released, promoted from 1.0.0-rc.10 after every gate passed and checked byte for byte against it.
 
 Box 1.0.0 builds on the 1.0 release candidates (rc.7 and the Ubuntu 24.04 upgrade test) and moves to Arcade Link 1.1.
 Its action cards describe every tool in full, so the Arcade helper (file-manager menus, and the browser extension

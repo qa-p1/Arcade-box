@@ -2,6 +2,19 @@
 
 Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
 
+## 2026-11-23 (cloud session) - 1.0.0 promoted from rc.10
+
+- rc.8 (`e49e483`) was the first candidate on Arcade Link 1.1 (full action cards, offers-based result actions,
+  Wasmtime 36.0.23, the macOS capture fix). Its tier-2 smoke waited for a window that a background start never
+  opens; rc.9 (`4934927`) starts Box in the background there, as Lens does, and passed every gate.
+- Before promoting rc.9, a check of what the Arcade helper would show found "Saved pipelines" and "Run a saved
+  pipeline" in menus and the palette, where the runner has no pipeline to run. rc.10 (`9c11bc6`, PR #55) limits
+  both to the `internal` surface; Wheel's slots still call them by id, and each saved pipeline stays its own
+  action.
+- rc.10 passed Gates (upgrade from 0.4.3 on Ubuntu 24.04, Tools' delta updater with signature and tampered-chunk
+  checks, conformance, memory budgets, N-1, Windows and macOS installer smoke, Hyprland and tier-2 smoke) and was
+  promoted to 1.0.0; the stable files match rc.10 byte for byte (`verify-promote.sh`).
+
 ## 2026-11-22 (cloud session) - Arcade everywhere, stage 3: Box 1.0.0
 
 - rc.4 → rc.7 were Gates fixes only, no product change: rc.5 accepted chrono and chrono-tz as unmaintained

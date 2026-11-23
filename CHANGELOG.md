@@ -4,7 +4,7 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 
 ## [Unreleased]
 
-## [1.0.0] - 2026-11-15
+## [1.0.0] - 2026-11-23
 
 ### Added
 
