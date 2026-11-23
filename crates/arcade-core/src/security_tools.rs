@@ -13,7 +13,7 @@ use age::{
     secrecy::SecretString,
 };
 use arcade_contract::{ToolManifest, ToolRequest, ToolResult, ToolValue, ValueKind};
-use rand::Rng;
+use rand::RngExt;
 use serde_json::{Value, json};
 use std::{
     fs::OpenOptions,

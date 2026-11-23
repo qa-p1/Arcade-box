@@ -1698,7 +1698,7 @@ fn protect(
             {
                 Some(value) if !value.is_empty() => required_password(request, "ownerPassword")?,
                 _ => {
-                    use rand::{Rng, distr::Alphanumeric};
+                    use rand::{RngExt, distr::Alphanumeric};
                     generated = rand::rng()
                         .sample_iter(&Alphanumeric)
                         .take(40)

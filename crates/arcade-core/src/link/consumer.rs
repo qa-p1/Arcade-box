@@ -3,9 +3,10 @@
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use arcade_contract::{ToolManifest, ToolValue};
+use arcade_link::manifest::surface;
 use arcade_link::{
     Action, Client, Content, ErrorCode, InvokeRequest, InvokeResult, LinkError, Locations,
-    Manifest, PeerInfo, Registry, SharedRegistry, ids,
+    Manifest, PeerInfo, Registry, SharedRegistry, content, ids, offers,
 };
 use serde::Serialize;
 use serde_json::json;
@@ -420,110 +421,209 @@ pub struct ResultOffer {
     pub enabled: bool,
     pub reason: Option<String>,
     pub preview: String,
+    /// Takes the tool itself (Box's action reference), so a preset can be chosen.
+    pub for_tool: bool,
+    /// Sends the result off this computer: show the preview and ask first.
+    pub confirm: bool,
 }
 
-pub fn result_requests(
+/// How many other apps' actions a result shows at most (best first).
+const RESULT_OFFERS: usize = 8;
+/// Effects that send the result off this computer: the user confirms first (SPEC §1 rule 8).
+const OUTBOUND: [&str; 2] = ["sends-to-device", "uploads-content"];
+
+/// One thing another app can do with a result: Link's offer for it and the request that runs it.
+struct Candidate {
+    offer: offers::Offer,
+    request: InvokeRequest,
+    for_tool: bool,
+    confirm: bool,
+}
+
+/// What other apps can do with a tool's results, from Link's shared `offers` (the installed cards, the catalog's
+/// rules and the user's choices), so Box keeps no list of other apps' actions. Files travel as themselves (one
+/// file) or as one batch of paths; text as its own type or as plain text. A second pass offers the tool itself
+/// (`structured/arcade-action`, e.g. Wheel's "Add to Wheel").
+fn result_candidates(
     runtime: &Arcade,
+    locations: &Locations,
     outputs: &[ToolValue],
     tool: &ToolManifest,
     preset: Option<&str>,
-) -> Result<Vec<(String, String, InvokeRequest)>, LinkError> {
+) -> Result<Vec<Candidate>, LinkError> {
     let contents = outputs
         .iter()
         .map(|o| output_content(runtime, o))
         .collect::<Result<Vec<_>, _>>()?;
-    let files: Vec<_> = contents
+    let settings = LinkSettings::load(runtime);
+    let registry = registry(runtime).snapshot();
+    let cards: Vec<Manifest> = registry
+        .apps()
         .iter()
-        .filter(|c| c.kind.starts_with("file/"))
+        .filter(|m| m.id != ids::BOX && settings.uses(&m.id))
         .cloned()
         .collect();
-    let mut requests = Vec::new();
-    if !files.is_empty() {
-        let mut request = InvokeRequest::new("look.preview", ids::BOX);
-        request.inputs = files.clone();
-        requests.push(("preview".into(), ids::LOOK.into(), request));
-    }
-    if !contents.is_empty() {
-        let mut request = InvokeRequest::new("clipboard.add", ids::BOX);
-        let mut paths = Vec::new();
-        for file in &files {
-            paths.extend(file.all_paths().into_iter().map(std::path::PathBuf::from));
-        }
-        if !paths.is_empty() {
-            let mut batch = Content::files(&paths.iter().map(|p| p.as_path()).collect::<Vec<_>>());
-            batch.kind = "file/any[]".into();
-            request.inputs.push(batch);
-        }
-        request.inputs.extend(
-            contents
-                .iter()
-                .filter(|c| !c.kind.starts_with("file/"))
-                .map(|c| {
-                    if let Some(data) = &c.data {
-                        Content::plain(data.to_string())
-                    } else {
-                        c.clone()
-                    }
-                }),
-        );
-        requests.push(("send".into(), ids::CLIPBOARD.into(), request));
-    }
-    requests.push((
-        "wheel".into(),
-        ids::WHEEL.into(),
-        InvokeRequest::new("wheel.add_action", ids::BOX).input(action_reference(tool, preset)),
-    ));
-    let shelved = shelf_inputs(&contents);
-    if !shelved.is_empty() {
-        let mut request = InvokeRequest::new("shelf.add", ids::BOX);
-        request.inputs = shelved;
-        requests.push(("shelf".into(), ids::SHELF.into(), request));
-    }
-    if files.len() == 1 && files[0].kind == "file/image" {
-        requests.push((
-            "pin".into(),
-            ids::LENS.into(),
-            InvokeRequest::new("lens.pin", ids::BOX).input(files[0].clone()),
-        ));
-    }
-    Ok(requests)
-}
-
-/// Shelf keeps references, so files travel by path as one `file/any[]` batch
-/// (Shelf types each path itself) and folders as their own references. Text
-/// Shelf can't store natively becomes plain text; structured values are
-/// skipped because they are data, not something a person shelves.
-fn shelf_inputs(contents: &[Content]) -> Vec<Content> {
-    let mut inputs = Vec::new();
-    let paths: Vec<_> = contents
+    let rules = arcade_link::catalog::Catalog::load(locations).rules;
+    let prefs = offers::Prefs::load(locations);
+    // Results are saved where the user asked, so they are the user's files, not Box's hand-off files.
+    let files: Vec<Content> = contents
         .iter()
         .filter(|c| c.kind.starts_with("file/"))
+        .map(|c| Content {
+            owner: None,
+            ..c.clone()
+        })
+        .collect();
+    let values: Vec<Content> = if files.is_empty() {
+        contents.iter().filter_map(sendable_value).collect()
+    } else {
+        Vec::new()
+    };
+    let items: Vec<offers::Item> = if !files.is_empty() {
+        files
+            .iter()
+            .map(|c| offers::Item {
+                kind: c.kind.clone(),
+                size: None,
+                hints: c.hints.clone(),
+            })
+            .collect()
+    } else if let Some(first) = values.first() {
+        // Several values are offered as one: their shared type, else plain text.
+        let kind = if values.iter().all(|v| v.kind == first.kind) {
+            first.kind.clone()
+        } else {
+            "text/plain".into()
+        };
+        vec![offers::Item::new(&kind)]
+    } else {
+        Vec::new()
+    };
+    let mut out: Vec<Candidate> = Vec::new();
+    let mut add =
+        |offer: offers::Offer, inputs: &dyn Fn(&Action) -> Vec<Content>, for_tool: bool| {
+            if out.iter().any(|c| c.offer.reference() == offer.reference()) {
+                return;
+            }
+            let Some(action) = registry
+                .get(&offer.app)
+                .and_then(|m| m.actions.iter().find(|a| a.id == offer.action))
+            else {
+                return;
+            };
+            let mut request = InvokeRequest::new(&offer.action, ids::BOX);
+            request.inputs = inputs(action);
+            let confirm = action
+                .effects
+                .iter()
+                .any(|e| OUTBOUND.contains(&e.as_str()));
+            out.push(Candidate {
+                offer,
+                request,
+                for_tool,
+                confirm,
+            });
+        };
+    if !items.is_empty() {
+        for offer in offers::offers(&items, surface::PALETTE, &cards, &rules, &prefs)
+            .into_iter()
+            .take(RESULT_OFFERS)
+        {
+            if files.is_empty() {
+                add(
+                    offer,
+                    &|a: &Action| values.iter().map(|v| as_accepted(v, &a.accepts)).collect(),
+                    false,
+                );
+            } else {
+                add(offer, &|a: &Action| file_inputs(&files, &a.accepts), false);
+            }
+        }
+    }
+    let reference = action_reference(tool, preset);
+    for offer in offers::offers(
+        &[offers::Item::new(&reference.kind)],
+        surface::PALETTE,
+        &cards,
+        &rules,
+        &prefs,
+    ) {
+        add(offer, &|_: &Action| vec![reference.clone()], true);
+    }
+    Ok(out)
+}
+
+/// A non-file result as another app takes it: folders as references, text as itself, structured values as their
+/// JSON text. Nothing else travels.
+fn sendable_value(content: &Content) -> Option<Content> {
+    match content.kind.as_str() {
+        "folder/reference" => Some(Content {
+            owner: None,
+            ..content.clone()
+        }),
+        kind if kind.starts_with("text/") => Some(content.clone()),
+        kind if kind.starts_with("structured/") => content
+            .data
+            .as_ref()
+            .map(|data| Content::plain(data.to_string())),
+        _ => None,
+    }
+}
+
+/// `value` typed as `accepts` names it, or as plain text when the action takes plain text but not its type.
+fn as_accepted(value: &Content, accepts: &[String]) -> Content {
+    if accepts.iter().any(|a| content::content_matches(a, value)) {
+        return Content {
+            kind: content::type_for(accepts, &value.kind),
+            ..value.clone()
+        };
+    }
+    match &value.text {
+        Some(text) if value.kind.starts_with("text/") => Content::plain(text.clone()),
+        _ => value.clone(),
+    }
+}
+
+/// One file as itself when the action takes it; otherwise (or for several) one batch of their paths.
+fn file_inputs(files: &[Content], accepts: &[String]) -> Vec<Content> {
+    if let [one] = files {
+        if accepts.iter().any(|a| content::content_matches(a, one)) {
+            return vec![Content {
+                kind: content::type_for(accepts, &one.kind),
+                ..one.clone()
+            }];
+        }
+    }
+    let paths: Vec<_> = files
+        .iter()
         .flat_map(|c| c.all_paths())
         .map(std::path::Path::new)
         .collect();
-    if !paths.is_empty() {
-        let mut batch = Content::files(&paths);
-        batch.kind = "file/any[]".into();
-        inputs.push(batch);
-    }
-    for content in contents {
-        match content.kind.as_str() {
-            "folder/reference" => inputs.push(Content {
-                owner: None,
-                ..content.clone()
-            }),
-            "text/plain" | "text/url" | "text/rich" => inputs.push(content.clone()),
-            kind if kind.starts_with("text/") => {
-                inputs.push(Content::plain(content.text.clone().unwrap_or_default()))
-            }
-            _ => {}
-        }
-    }
-    inputs
+    let mut batch = Content::files(&paths);
+    batch.kind = content::type_for(accepts, &batch.kind);
+    vec![batch]
+}
+
+/// The requests behind a result's offers: `(<app>/<action>, app, request)`.
+pub fn result_requests(
+    runtime: &Arcade,
+    locations: &Locations,
+    outputs: &[ToolValue],
+    tool: &ToolManifest,
+    preset: Option<&str>,
+) -> Result<Vec<(String, String, InvokeRequest)>, LinkError> {
+    Ok(
+        result_candidates(runtime, locations, outputs, tool, preset)?
+            .into_iter()
+            .filter(|c| c.offer.enabled)
+            .map(|c| (c.offer.reference(), c.offer.app, c.request))
+            .collect(),
+    )
 }
 
 pub fn result_offers(
     runtime: &Arcade,
+    locations: &Locations,
     outputs: &[ToolValue],
     tool: &ToolManifest,
     preset: Option<&str>,
@@ -531,25 +631,33 @@ pub fn result_offers(
     let settings = LinkSettings::load(runtime);
     let registry = registry(runtime).snapshot();
     let mut offers = Vec::new();
-    for (key, app, request) in result_requests(runtime, outputs, tool, preset)? {
-        // Only available actions contribute a row. Payload size is checked
-        // separately so an oversized device send can explain its limit.
-        if !settings.uses(&app)
-            || !registry.get(&app).is_some_and(|m| {
-                m.settings.link_enabled
-                    && m.action(&request.action)
-                        .is_some_and(|a| a.available && a.on_this_platform())
-            })
-        {
-            continue;
-        }
-        let outcome = check_request(&settings, &registry, &app, &request);
-        if outcome
-            .as_ref()
-            .is_err_and(|e| e.code == ErrorCode::UnsupportedInput)
-        {
-            continue;
-        }
+    for Candidate {
+        offer,
+        request,
+        for_tool,
+        confirm,
+    } in result_candidates(runtime, locations, outputs, tool, preset)?
+    {
+        let app_name = arcade_link::manifest::app_name(&offer.app);
+        // Never a broken entry: greyed out with Link's reason (an install it needs, a limit), or with Box's own
+        // check of the payload (so an oversized device send explains its limit).
+        let (enabled, reason) = if !offer.enabled {
+            let reason = offer.reason.clone().or_else(|| {
+                offer.install.as_ref().map(|need| {
+                    format!(
+                        "Needs {}",
+                        need.split_once(':').map_or(need.as_str(), |x| x.1)
+                    )
+                })
+            });
+            (false, reason)
+        } else {
+            match check_request(&settings, &registry, &offer.app, &request) {
+                Err(e) if e.code == ErrorCode::UnsupportedInput => continue,
+                Err(e) => (false, Some(e.user_message(app_name))),
+                Ok(_) => (true, None),
+            }
+        };
         let preview = request
             .inputs
             .iter()
@@ -578,21 +686,14 @@ pub fn result_offers(
             .collect::<Vec<_>>()
             .join(" · ");
         offers.push(ResultOffer {
-            title: match key.as_str() {
-                "preview" => "Preview",
-                "send" => "Send to my devices ↗",
-                "wheel" => "Add to Wheel",
-                "shelf" => "Add to Shelf",
-                _ => "Pin",
-            }
-            .into(),
-            key,
-            app: app.clone(),
-            enabled: outcome.is_ok(),
-            reason: outcome
-                .err()
-                .map(|e| e.user_message(arcade_link::manifest::app_name(&app))),
+            key: offer.reference(),
+            title: offer.title.clone(),
+            app: offer.app.clone(),
+            enabled,
+            reason,
             preview,
+            for_tool,
+            confirm,
         });
     }
     Ok(offers)
@@ -620,7 +721,8 @@ mod tests {
         );
         manifest.settings.link_enabled = enabled;
         let mut action = Action::new("clipboard.add", "Send to my devices", "send")
-            .accepts(&["text/*", "file/any[]"]);
+            .accepts(&["text/*", "file/any[]"])
+            .effects(&["sends-to-device"]);
         action.available = available;
         action.reason = (!available).then(|| "Private mode".into());
         action.max_bytes = Some(DEVICE_LIMIT);
@@ -645,6 +747,12 @@ mod tests {
         action.available = available;
         action.reason = (!available).then(|| "Shelf is busy".into());
         manifest.actions.push(action);
+        arcade_link::manifest::write_manifest(loc, &manifest).unwrap();
+    }
+    fn write_card(loc: &Locations, app: &str, actions: Vec<Action>) {
+        let mut manifest =
+            Manifest::new(app, "1", std::env::current_exe().unwrap().to_str().unwrap());
+        manifest.actions = actions;
         arcade_link::manifest::write_manifest(loc, &manifest).unwrap();
     }
     #[test]
@@ -736,17 +844,18 @@ mod tests {
             .unwrap();
         let output = ToolValue::text("hello", "text/plain");
         assert!(
-            result_offers(&runtime, std::slice::from_ref(&output), &tool, None)
+            result_offers(&runtime, &loc, std::slice::from_ref(&output), &tool, None)
                 .unwrap()
                 .is_empty()
         );
         write_peer(&loc, true, true);
         registry(&runtime).refresh();
-        let offers = result_offers(&runtime, std::slice::from_ref(&output), &tool, None).unwrap();
+        let offers =
+            result_offers(&runtime, &loc, std::slice::from_ref(&output), &tool, None).unwrap();
         assert_eq!(offers.len(), 1);
         assert!(offers[0].enabled);
         let oversized = ToolValue::text("x".repeat(DEVICE_LIMIT as usize + 1), "text/plain");
-        let offer = result_offers(&runtime, &[oversized], &tool, None)
+        let offer = result_offers(&runtime, &loc, &[oversized], &tool, None)
             .unwrap()
             .remove(0);
         assert!(!offer.enabled);
@@ -761,7 +870,7 @@ mod tests {
         .save(&runtime)
         .unwrap();
         assert!(
-            result_offers(&runtime, std::slice::from_ref(&output), &tool, None)
+            result_offers(&runtime, &loc, std::slice::from_ref(&output), &tool, None)
                 .unwrap()
                 .is_empty()
         );
@@ -769,14 +878,14 @@ mod tests {
         write_peer(&loc, true, false);
         registry(&runtime).refresh();
         assert!(
-            result_offers(&runtime, std::slice::from_ref(&output), &tool, None)
+            result_offers(&runtime, &loc, std::slice::from_ref(&output), &tool, None)
                 .unwrap()
                 .is_empty()
         );
         write_peer(&loc, false, true);
         registry(&runtime).refresh();
         assert!(
-            result_offers(&runtime, &[output], &tool, None)
+            result_offers(&runtime, &loc, &[output], &tool, None)
                 .unwrap()
                 .is_empty()
         );
@@ -795,8 +904,15 @@ mod tests {
     }
 
     #[test]
-    fn result_file_payloads_keep_originals_and_share_as_an_array() {
-        let (dir, _loc, runtime) = peers();
+    fn result_files_travel_by_path_with_their_own_type() {
+        let (dir, loc, runtime) = peers();
+        write_peer(&loc, true, true);
+        write_card(
+            &loc,
+            ids::LENS,
+            vec![Action::new("lens.pin", "Pin to screen", "pin").accepts(&["file/image"])],
+        );
+        registry(&runtime).refresh();
         let path = dir.path().join("result.png");
         image::RgbImage::new(3, 2).save(&path).unwrap();
         let selected = runtime.grants().grant(&path).unwrap();
@@ -805,26 +921,35 @@ mod tests {
             .into_iter()
             .find(|t| t.id == "arcade.image.convert")
             .unwrap();
-        let requests =
-            result_requests(&runtime, &[selected.as_tool_value()], &tool, Some("webp")).unwrap();
+        let requests = result_requests(
+            &runtime,
+            &loc,
+            &[selected.as_tool_value()],
+            &tool,
+            Some("webp"),
+        )
+        .unwrap();
         let sent = &requests
             .iter()
-            .find(|(key, _, _)| key == "send")
+            .find(|(key, _, _)| key == "arcade.clipboard/clipboard.add")
             .unwrap()
             .2
             .inputs[0];
-        assert_eq!(sent.kind, "file/any[]");
+        // `file/any[]` takes one file too (SPEC §5.1): it travels as itself, with its own type.
+        assert_eq!(sent.kind, "file/image");
+        assert!(sent.owner.is_none());
         // Grants hold canonical paths (macOS: /var is /private/var).
         let path = path.canonicalize().unwrap();
         assert_eq!(sent.all_paths(), vec![path.to_str().unwrap()]);
         assert_eq!(
             requests
                 .iter()
-                .find(|(key, _, _)| key == "pin")
+                .find(|(key, _, _)| key == "arcade.lens/lens.pin")
                 .unwrap()
                 .2
-                .action,
-            "lens.pin"
+                .inputs[0]
+                .kind,
+            "file/image"
         );
         assert!(path.is_file());
     }
@@ -846,10 +971,10 @@ mod tests {
             .find(|t| t.id == "arcade.image.convert")
             .unwrap();
         let shelf = |outputs: &[ToolValue]| {
-            result_offers(&runtime, outputs, &tool, None)
+            result_offers(&runtime, &loc, outputs, &tool, None)
                 .unwrap()
                 .into_iter()
-                .find(|o| o.key == "shelf")
+                .find(|o| o.key == "arcade.shelf/shelf.add")
         };
         // Missing Shelf: no row.
         assert!(shelf(&outputs).is_none());
@@ -863,8 +988,11 @@ mod tests {
         assert_eq!(offer.preview, "result.png, notes.pdf");
 
         // Files go as one reference batch: originals stay where they are.
-        let requests = result_requests(&runtime, &outputs, &tool, None).unwrap();
-        let (_, app, request) = requests.iter().find(|(key, ..)| key == "shelf").unwrap();
+        let requests = result_requests(&runtime, &loc, &outputs, &tool, None).unwrap();
+        let (_, app, request) = requests
+            .iter()
+            .find(|(key, ..)| key == "arcade.shelf/shelf.add")
+            .unwrap();
         assert_eq!(app, ids::SHELF);
         assert_eq!(request.action, "shelf.add");
         assert_eq!(request.inputs.len(), 1);
@@ -884,8 +1012,8 @@ mod tests {
         );
         assert!(first.is_file() && second.is_file());
 
-        // Text Shelf stores natively passes through; other text becomes plain
-        // text; structured values are not shelved.
+        // Text Shelf stores natively passes through; other text, and structured
+        // values (as their JSON), become plain text.
         let text_tool = runtime
             .list_tools()
             .into_iter()
@@ -896,10 +1024,10 @@ mod tests {
             ToolValue::text("<b>hi</b>", "text/html"),
             ToolValue::text("{\"a\":1}", "structured/json"),
         ];
-        let requests = result_requests(&runtime, &texts, &text_tool, None).unwrap();
+        let requests = result_requests(&runtime, &loc, &texts, &text_tool, None).unwrap();
         let inputs = &requests
             .iter()
-            .find(|(key, ..)| key == "shelf")
+            .find(|(key, ..)| key == "arcade.shelf/shelf.add")
             .unwrap()
             .2
             .inputs;
@@ -908,14 +1036,11 @@ mod tests {
                 .iter()
                 .map(|c| (c.kind.as_str(), c.text.as_deref().unwrap()))
                 .collect::<Vec<_>>(),
-            vec![("text/plain", "hello"), ("text/plain", "<b>hi</b>")]
-        );
-        let structured = [ToolValue::text("{\"a\":1}", "structured/json")];
-        assert!(
-            !result_requests(&runtime, &structured, &text_tool, None)
-                .unwrap()
-                .iter()
-                .any(|(key, ..)| key == "shelf")
+            vec![
+                ("text/plain", "hello"),
+                ("text/plain", "<b>hi</b>"),
+                ("text/plain", "{\"a\":1}")
+            ]
         );
 
         // Turned off in Box, disabled in Shelf, or unavailable: no row.
@@ -934,5 +1059,97 @@ mod tests {
         write_shelf(&loc, true, false);
         registry(&runtime).refresh();
         assert!(shelf(&outputs).is_none());
+    }
+
+    #[test]
+    fn result_offers_come_from_the_cards_not_a_list_of_apps() {
+        let (dir, loc, runtime) = peers();
+        let path = dir.path().join("result.png");
+        image::RgbImage::new(3, 2).save(&path).unwrap();
+        let outputs = [runtime.grants().grant(&path).unwrap().as_tool_value()];
+        let tool = runtime
+            .list_tools()
+            .into_iter()
+            .find(|t| t.id == "arcade.image.convert")
+            .unwrap();
+        write_peer(&loc, true, true);
+        // An app Box has never heard of is offered from its card alone.
+        let mut ocr = Action::new("notes.keep", "Keep in Notes", "keep").accepts(&["file/image"]);
+        ocr.rank = [("file/image".to_string(), 90u8)].into_iter().collect();
+        let mut needs = Action::new("notes.read", "Read the text", "read").accepts(&["file/image"]);
+        needs.available = false;
+        needs.reason = Some("Tesseract isn't installed".into());
+        needs.requires = vec!["engine:tesseract".into()];
+        write_card(&loc, "arcade.notes", vec![ocr, needs]);
+        write_card(
+            &loc,
+            ids::WHEEL,
+            vec![
+                Action::new("wheel.add_action", "Add to Wheel", "add")
+                    .accepts(&["structured/arcade-action"]),
+            ],
+        );
+        // Box's own card never offers Box's tools back to it.
+        write_card(
+            &loc,
+            ids::BOX,
+            vec![
+                Action::new("box:arcade.image.resize", "Resize", "resize").accepts(&["file/image"]),
+            ],
+        );
+        registry(&runtime).refresh();
+        let offers = result_offers(&runtime, &loc, &outputs, &tool, Some("webp")).unwrap();
+        let keys: Vec<&str> = offers.iter().map(|o| o.key.as_str()).collect();
+        assert_eq!(
+            keys,
+            [
+                "arcade.notes/notes.keep",
+                "arcade.clipboard/clipboard.add",
+                "arcade.notes/notes.read",
+                "arcade.wheel/wheel.add_action"
+            ]
+        );
+        let notes = &offers[0];
+        assert!(notes.enabled && !notes.confirm && !notes.for_tool);
+        assert_eq!(notes.title, "Keep in Notes");
+        // Sending off this computer asks first.
+        assert!(offers[1].confirm);
+        // An action that needs an engine shows why instead of disappearing.
+        assert!(!offers[2].enabled);
+        assert_eq!(
+            offers[2].reason.as_deref(),
+            Some("Tesseract isn't installed")
+        );
+        assert!(
+            !result_requests(&runtime, &loc, &outputs, &tool, Some("webp"))
+                .unwrap()
+                .iter()
+                .any(|(key, ..)| key == "arcade.notes/notes.read")
+        );
+        // Wheel takes the tool itself, with the chosen preset.
+        let wheel = &offers[3];
+        assert!(wheel.for_tool && wheel.enabled);
+        let requests = result_requests(&runtime, &loc, &outputs, &tool, Some("webp")).unwrap();
+        let (_, app, request) = requests
+            .iter()
+            .find(|(key, ..)| key == "arcade.wheel/wheel.add_action")
+            .unwrap();
+        assert_eq!(app, ids::WHEEL);
+        assert_eq!(request.inputs[0].data.as_ref().unwrap()["preset"], "webp");
+        // The user's hidden actions and the catalog's renames apply.
+        arcade_link::offers::Prefs {
+            hidden: vec!["arcade.notes/notes.keep".into()],
+            ..Default::default()
+        }
+        .save(&loc)
+        .unwrap();
+        std::fs::write(
+            loc.catalog(),
+            r#"{"schema":1,"apps":[],"rules":{"rename":{"arcade.clipboard/clipboard.add":"Send to phone"}}}"#,
+        )
+        .unwrap();
+        let offers = result_offers(&runtime, &loc, &outputs, &tool, None).unwrap();
+        assert!(!offers.iter().any(|o| o.key == "arcade.notes/notes.keep"));
+        assert_eq!(offers[0].title, "Send to phone");
     }
 }

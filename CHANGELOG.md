@@ -27,10 +27,14 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 - Box uses less memory while it runs in the background: a few seconds after the last window closes it ends WebKit's network process and pages out idle memory, and while a window is open it trims itself periodically.
 - A background start from the AppImage runs from an unpacked copy under `<data>/arcade/runtime/`, so no FUSE helper stays running.
 - Clipboard history keeps at most 64 MiB of text and image data, dropping the oldest unpinned items first.
-- The plugin sandbox runs on Wasmtime 36 LTS, which has the fixes for the security advisories found in the previous version. The zip, calamine and XLSX export libraries are updated for the same reason.
+- The plugin sandbox runs on Wasmtime 36 LTS (36.0.23), which has the fixes for the security advisories found in the previous version and in 36.0.20 (RUSTSEC-2026-0566, -0569, -0571, -0587). The zip, calamine and XLSX export libraries are updated for the same reason.
 - Releases start as release candidates on a hidden test channel that Arcade Tools never offers, and are promoted to stable only after every check passes. A signed prerelease is published each night from `main`.
 - Promotion to stable refuses to run without the update signing key, so nothing is published unsigned.
-- Box moves to Arcade Link 1.0.11 and its shared design kit: the font stack gains the colour-emoji fonts, and a tab panel keeps its focus outline for keyboard focus.
+- Box moves to Arcade Link 1.1.0 and its shared design kit: the font stack gains the colour-emoji fonts, and a tab panel keeps its focus outline for keyboard focus.
+- Other Arcade apps and the Arcade helper (Arcade's actions in your file manager) see every Box tool in full: its form, its presets as one-click actions, the engines it needs (so they can offer to install a missing one), where its results go, and search words. Box names file types exactly (CSV, JSON, SVG and subtitle files), so a subtitle file is offered the subtitle tools rather than every file tool.
+- The buttons under a result ("Send to my devices", "Add to Shelf", "Add to Wheel" and the rest) come from Arcade Link's shared list of what each installed app can do, not a list built into Box: any Arcade app that takes the result is offered, best match first, the actions you hid elsewhere stay hidden, and one that needs a missing engine says so instead of disappearing. Anything that sends the result off this computer still shows it to you first.
+- Each saved pipeline is offered to other apps by its own name (as well as through "Run a saved pipeline"), so it can appear in your file manager's menu like any tool.
+- The Media Downloader says which file it is downloading (the video, its audio, subtitles, each item of a playlist) in Box's Jobs page and in the app that asked for the download, and other apps learn that it needs yt-dlp.
 
 ### Fixed
 

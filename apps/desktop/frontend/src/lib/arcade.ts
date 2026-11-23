@@ -515,7 +515,9 @@ export async function watchTheme(handler: (theme: string) => void): Promise<() =
 export interface LinkSettings { enabled: boolean; disabledPeers: string[] }
 export interface ConnectedApp { id: string; name: string; state: string; version: string | null; enabled: boolean; pitch: string; endpoint: string }
 export interface ConnectedAppsState { settings: LinkSettings; apps: ConnectedApp[]; registryPath: string; endpointState: string; lastError: string | null }
-export interface ResultLinkAction { key: string; app: string; title: string; enabled: boolean; reason: string | null; preview: string }
+/** One thing another app can do with a result, from Link's offers. `key` is `<app>/<action>`; `forTool` takes the tool
+ * itself (a preset can be chosen); `confirm` sends the result off this computer, so the user sees it first. */
+export interface ResultLinkAction { key: string; app: string; title: string; enabled: boolean; reason: string | null; preview: string; forTool: boolean; confirm: boolean }
 
 export async function connectedApps(): Promise<ConnectedAppsState | null> {
   if (!isDesktopRuntime()) return null;

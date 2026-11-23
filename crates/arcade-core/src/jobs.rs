@@ -6,6 +6,7 @@
 use arcade_contract::{ResultStatus, ToolRequest, ToolResult};
 use serde::{Deserialize, Serialize};
 use std::{
+    cell::RefCell,
     collections::{HashMap, VecDeque},
     panic::{AssertUnwindSafe, catch_unwind},
     sync::{
@@ -615,13 +616,50 @@ fn worker_loop(shared: Arc<Shared>) {
             );
             continue;
         }
+        CURRENT.with(|current| *current.borrow_mut() = Some((Arc::downgrade(&shared), id.clone())));
         let execution = catch_unwind(AssertUnwindSafe(|| {
             shared
                 .runtime
                 .run_tool_with_progress(request, &cancellation, progress)
         }));
+        CURRENT.with(|current| *current.borrow_mut() = None);
         finish_job(&shared, &id, &cancellation, execution);
     }
+}
+
+thread_local! {
+    /// The job this worker thread is running, so the tool can say what it is doing ([`note`]).
+    static CURRENT: RefCell<Option<(Weak<Shared>, String)>> = const { RefCell::new(None) };
+}
+
+/// Tells the job running on this thread what it is doing now ("Downloading video.mp4"), for its progress line
+/// in Box and in the app that asked for it. Does nothing outside a background job.
+pub fn note(message: &str) {
+    CURRENT.with(|current| {
+        if let Some((shared, id)) = current.borrow().as_ref() {
+            if let Some(shared) = shared.upgrade() {
+                publish_note(&shared, id, message);
+            }
+        }
+    });
+}
+
+fn publish_note(shared: &Shared, id: &str, message: &str) {
+    let snapshot = {
+        let mut state = lock_state(shared);
+        let Some(entry) = state.jobs.get_mut(id) else {
+            return;
+        };
+        if entry.snapshot.status != JobStatus::Running
+            || entry.snapshot.message.as_deref() == Some(message)
+        {
+            return;
+        }
+        entry.snapshot.message = Some(message.to_owned());
+        entry.last_progress_event = Instant::now();
+        entry.snapshot.clone()
+    };
+    emit_update(shared, snapshot);
 }
 
 fn publish_progress(shared: &Shared, id: &str, progress: f64) {

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "purpose": "Locked third-party dependency inventory; human license and notice review remains required",
-  "packageCount": 1013,
+  "packageCount": 1020,
   "unresolvedLicenseMetadata": [],
   "packages": [
     {
@@ -257,22 +257,22 @@
     {
       "ecosystem": "cargo",
       "name": "apple-cf",
-      "version": "0.10.0",
+      "version": "0.11.7",
       "license": "MIT OR Apache-2.0",
       "licenseFile": null,
       "repository": "https://github.com/doom-fish/apple-cf-rs",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "ae3bd5e625b0ddf7228c93f0e68859b6381697e98c824d1acaf10d78289a3972"
+      "checksum": "5a47effd5b5e7afd1c51ef8d1bacf86060565461c1fb6cf67aae433417c4048c"
     },
     {
       "ecosystem": "cargo",
       "name": "apple-metal",
-      "version": "0.9.0",
+      "version": "0.10.4",
       "license": "MIT OR Apache-2.0",
       "licenseFile": null,
       "repository": "https://github.com/doom-fish/apple-metal-rs",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "0d9d69a493f77b6e46d0cfa3ceee063d415109472eddec46bf1211d5faa7871f"
+      "checksum": "2e5ecd43c9a8443c6ea515108326330313d6390a0383152e6c2db7b776123974"
     },
     {
       "ecosystem": "cargo",
@@ -307,11 +307,11 @@
     {
       "ecosystem": "cargo",
       "name": "arcade-link",
-      "version": "1.0.13",
+      "version": "1.1.0",
       "license": "MIT OR Apache-2.0",
       "licenseFile": null,
       "repository": "https://github.com/qa-p1/Arcade-link",
-      "source": "git+https://github.com/qa-p1/Arcade-Link?tag=v1.0.13#a24146fd87ff77ed362f518a414eaf266512f839",
+      "source": "git+https://github.com/qa-p1/Arcade-Link?tag=v1.1.0#b79b89d6229608cada1d1172fb239efd982a3617",
       "checksum": null
     },
     {
@@ -793,6 +793,16 @@
       "repository": "https://github.com/Nullus157/bs58-rs",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "bf88ba1141d185c399bee5288d850d63b8369520c1eafc32a0430b5b6c287bf4"
+    },
+    {
+      "ecosystem": "cargo",
+      "name": "bstr",
+      "version": "1.14.0",
+      "license": "MIT OR Apache-2.0",
+      "licenseFile": null,
+      "repository": "https://github.com/BurntSushi/bstr",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "a680398c10c7bc0488067c4612226ea905a85f607134b69f3068d505d58c4214"
     },
     {
       "ecosystem": "cargo",
@@ -1427,132 +1437,132 @@
     {
       "ecosystem": "cargo",
       "name": "cranelift-assembler-x64",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": null,
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "40d4018626c25bb153a72738b261bdfed97ad6b7f21b100d556c0b8457fa9b3b"
+      "checksum": "f059af2e8458d7d7711d19d69e86f987610818bd46b5647b488a61d49142cdab"
     },
     {
       "ecosystem": "cargo",
       "name": "cranelift-assembler-x64-meta",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": null,
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "c69b47b7ffbd42f8d162ee958886e685b374b102b3bd116b0470c911153428b4"
+      "checksum": "02f75f03a4c08abcd1b5a2f175842520125f37c2163b2aa1c4b1220a96e20a3b"
     },
     {
       "ecosystem": "cargo",
       "name": "cranelift-bforest",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "6d1994514a2e498d42a7173804fb0618472c94176b72c54ef8d64acdada05d0f"
+      "checksum": "28aa268fc210c46a030a28a21b6c0b0e218f5b0fad1f13b9e6468a1a98cf3027"
     },
     {
       "ecosystem": "cargo",
       "name": "cranelift-bitset",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "019bfe57e970cf56fd9ad9ea45e4290457eb1ceb9bea954646abbe9d657a4a61"
+      "checksum": "1606b8fffb6345a18d96e6ad384a0c60ba30c8142979a74aa1fd7e6d2892397b"
     },
     {
       "ecosystem": "cargo",
       "name": "cranelift-codegen",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "397c0a3cc8a67f9f85dbe47fbba2c1e88430293b130f91f3c98411f6ae4e0e80"
+      "checksum": "ebe5667a6f9e0bada499a1f874267f8d4d1a429b62346c6652c191762ecdf8d5"
     },
     {
       "ecosystem": "cargo",
       "name": "cranelift-codegen-meta",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "a5bc504c51980615d594a685367584d1fa95d36c32c14a15b0eb4b1d9cc0dc2e"
+      "checksum": "efada320dcb45f22d8552547dfde773fa965b582bb4a2895e8e678cfedb0c85e"
     },
     {
       "ecosystem": "cargo",
       "name": "cranelift-codegen-shared",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "bc8ae2c52ca44f49719cd78e48480c076e115a490b4e51ae28a89535ec4d76df"
+      "checksum": "0776090a12a07b211fa8f26d274b04a6e8454d7d7df057ebb0ecede53159d6b1"
     },
     {
       "ecosystem": "cargo",
       "name": "cranelift-control",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "d94159e930a391bb589c8c4832769c3e2f9c81d8f1cd1266083a33a1787d41a9"
+      "checksum": "6fe8b55c020a50fcabc67563395ea8afa27cc862045e486dc947d271e1f7da17"
     },
     {
       "ecosystem": "cargo",
       "name": "cranelift-entity",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "5cc0257dc68c7d282dabc1b3c9effec3f5d00fff56a964a80e7c08af7a3aa4dc"
+      "checksum": "da7bf7d00a780909ef584af51080a661fbd568e33b44440725c4672044eeb002"
     },
     {
       "ecosystem": "cargo",
       "name": "cranelift-frontend",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "5a60aa092dbffc0b8e501845afc3f67a3c987d780d22dd302829aa9f0255738e"
+      "checksum": "bdbeb97775f6f5b398c7b65f321175b94157bc2d61dc05ceb14f7bf08d43d0d6"
     },
     {
       "ecosystem": "cargo",
       "name": "cranelift-isle",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime/tree/main/cranelift/isle",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "e62bea43dd7767887c6b7861021846b0f0a03d9cc72bafddd0827e79b5f5deb5"
+      "checksum": "5556937e08e45a1e6b4cdf9a051deb8072a81c07cf7824043e0d42d8c1663a70"
     },
     {
       "ecosystem": "cargo",
       "name": "cranelift-native",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "f410a5e75d4758d0564106931a1809d50d17681385ea1686518d029593a06b2a"
+      "checksum": "028470273cdc58affb82b94bbb9ae10bcd77abb1d15c8f9dbbb3855ea71adf4a"
     },
     {
       "ecosystem": "cargo",
       "name": "cranelift-srcgen",
-      "version": "0.123.20",
+      "version": "0.123.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "d5f98d0e96c17d2654a95820c77403050754561f2b2cd737dbf59462c64896f3"
+      "checksum": "cb3e5ca8a6d793f5c56aaa3a52a57e4d3da953293724d47f56562e0684136450"
     },
     {
       "ecosystem": "cargo",
@@ -2547,12 +2557,12 @@
     {
       "ecosystem": "cargo",
       "name": "form_urlencoded",
-      "version": "1.2.2",
+      "version": "1.2.3",
       "license": "MIT OR Apache-2.0",
       "licenseFile": null,
       "repository": "https://github.com/servo/rust-url",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "cb4cb245038516f5f85277875cdaa4f7d2c9a0fa0468de06ed190163b1581fcf"
+      "checksum": "afa489199eaffb1211795df1c6236ce1ad0d41a6fa45250add73e3b02420f06e"
     },
     {
       "ecosystem": "cargo",
@@ -3387,12 +3397,12 @@
     {
       "ecosystem": "cargo",
       "name": "imagesize",
-      "version": "0.13.0",
+      "version": "0.15.0",
       "license": "MIT",
       "licenseFile": null,
       "repository": "https://github.com/Roughsketch/imagesize",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "edcd27d72f2f071c64249075f42e205ff93c9a4c5f6c6da53e79ed9f9832c285"
+      "checksum": "65b27460c2c92b037f3f94c538ed9a3342f3fdf923606781629ccb35f82d042a"
     },
     {
       "ecosystem": "cargo",
@@ -3867,12 +3877,12 @@
     {
       "ecosystem": "cargo",
       "name": "kurbo",
-      "version": "0.11.3",
+      "version": "0.13.1",
       "license": "Apache-2.0 OR MIT",
       "licenseFile": null,
       "repository": "https://github.com/linebender/kurbo",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "c62026ae44756f8a599ba21140f350303d4f08dcdcc71b5ad9c9bb8128c13c62"
+      "checksum": "4b60dfc32f652b926df6192e55525b16d186c69d47876c3ead4da5cc9f8450e2"
     },
     {
       "ecosystem": "cargo",
@@ -5106,6 +5116,16 @@
     },
     {
       "ecosystem": "cargo",
+      "name": "polycool",
+      "version": "0.4.0",
+      "license": "MIT OR Apache-2.0",
+      "licenseFile": null,
+      "repository": "https://github.com/linebender/kurbo",
+      "source": "registry+https://github.com/rust-lang/crates.io-index",
+      "checksum": "50596ddc09eb5ad5f75cacd40209568e66df71baf86e1499a0e99c4cff12a5a6"
+    },
+    {
+      "ecosystem": "cargo",
       "name": "polyval",
       "version": "0.6.2",
       "license": "Apache-2.0 OR MIT",
@@ -5337,22 +5357,22 @@
     {
       "ecosystem": "cargo",
       "name": "pulley-interpreter",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime/tree/main/pulley",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "4f6a7699ba3c24456c4235f6578a5f182386a1a9230653e8783f165ea1085bbe"
+      "checksum": "3897ec6f561af55029e36987aa84d805679ae459d28966bfb1e6a266db811259"
     },
     {
       "ecosystem": "cargo",
       "name": "pulley-macros",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime/tree/main/pulley/macros",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "1efdd17eb6ed2d844c29350fffb7230c550ddb0cbe93e1fd2b9cfcc345d77450"
+      "checksum": "4645332efe32c01e952d3e3135dac1ccbb671bb8bf7779e322d401dc6978ceb9"
     },
     {
       "ecosystem": "cargo",
@@ -5677,12 +5697,12 @@
     {
       "ecosystem": "cargo",
       "name": "resvg",
-      "version": "0.45.1",
+      "version": "0.50.0",
       "license": "Apache-2.0 OR MIT",
       "licenseFile": null,
       "repository": "https://github.com/linebender/resvg",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "a8928798c0a55e03c9ca6c4c6846f76377427d2c1e1f7e6de3c06ae57942df43"
+      "checksum": "77bb4b284cf8a5c8ae721594af53387fb755d2196fddb32b2acfb4fa9251fa0c"
     },
     {
       "ecosystem": "cargo",
@@ -5703,16 +5723,6 @@
       "repository": "https://github.com/kornelski/rust-rgb",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
       "checksum": "47b34b781b31e5d73e9fbc8689c70551fd1ade9a19e3e28cfec8580a79290cc4"
-    },
-    {
-      "ecosystem": "cargo",
-      "name": "roxmltree",
-      "version": "0.20.0",
-      "license": "MIT OR Apache-2.0",
-      "licenseFile": null,
-      "repository": "https://github.com/RazrFalcon/roxmltree",
-      "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "6c20b6793b5c2fa6553b250154b78d6d0db37e72700ae35fad9387a46f487c97"
     },
     {
       "ecosystem": "cargo",
@@ -5947,12 +5957,12 @@
     {
       "ecosystem": "cargo",
       "name": "screencapturekit",
-      "version": "10.0.3",
+      "version": "11.1.2",
       "license": "MIT OR Apache-2.0",
       "licenseFile": null,
       "repository": "https://github.com/doom-fish/screencapturekit-rs",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "09255cea2d4770d186260741235874b0d71f2781094188bdfc29cbddbaff7023"
+      "checksum": "da7669c5c60db0a577c464ddfd111e9823c4572a7966a25b31688bbf7cff3d58"
     },
     {
       "ecosystem": "cargo",
@@ -6247,12 +6257,12 @@
     {
       "ecosystem": "cargo",
       "name": "similar",
-      "version": "2.7.0",
+      "version": "3.2.1",
       "license": "Apache-2.0",
       "licenseFile": null,
       "repository": "https://github.com/mitsuhiko/similar",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "bbbb5d9659141646ae647b42fe094daf6c6192d1620870b449d9557f748b2daa"
+      "checksum": "d2f8bec09ae8fae0f4f265a4559a9334be3929d8504e9b536df0a41302bd1733"
     },
     {
       "ecosystem": "cargo",
@@ -6467,12 +6477,12 @@
     {
       "ecosystem": "cargo",
       "name": "svgtypes",
-      "version": "0.15.3",
+      "version": "0.16.2",
       "license": "Apache-2.0 OR MIT",
       "licenseFile": null,
       "repository": "https://github.com/linebender/svgtypes",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "68c7541fff44b35860c1a7a47a7cadf3e4a304c457b58f9870d9706ece028afc"
+      "checksum": "9f12b12995e3638c70618c1facb1ce65302f6a6f706b675f07c58a5d7391120e"
     },
     {
       "ecosystem": "cargo",
@@ -6897,22 +6907,22 @@
     {
       "ecosystem": "cargo",
       "name": "tiny-skia",
-      "version": "0.11.4",
+      "version": "0.12.0",
       "license": "BSD-3-Clause",
       "licenseFile": null,
-      "repository": "https://github.com/RazrFalcon/tiny-skia",
+      "repository": "https://github.com/linebender/tiny-skia",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "83d13394d44dae3207b52a326c0c85a8bf87f1541f23b0d143811088497b09ab"
+      "checksum": "47ffee5eaaf5527f630fb0e356b90ebdec84d5d18d937c5e440350f88c5a91ea"
     },
     {
       "ecosystem": "cargo",
       "name": "tiny-skia-path",
-      "version": "0.11.4",
+      "version": "0.12.0",
       "license": "BSD-3-Clause",
       "licenseFile": null,
-      "repository": "https://github.com/RazrFalcon/tiny-skia/tree/master/path",
+      "repository": "https://github.com/linebender/tiny-skia/tree/master/path",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "9c9e7fc0c2e86a30b117d0462aa261b72b7a99b7ebd7deb3a14ceda95c5bdc93"
+      "checksum": "edca365c3faccca67d06593c5980fa6c57687de727a03131735bb85f01fdeeb9"
     },
     {
       "ecosystem": "cargo",
@@ -7457,12 +7467,12 @@
     {
       "ecosystem": "cargo",
       "name": "url",
-      "version": "2.5.8",
+      "version": "2.5.9",
       "license": "MIT OR Apache-2.0",
       "licenseFile": null,
       "repository": "https://github.com/servo/rust-url",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "ff67a8a4397373c3ef660812acab3268222035010ab8680ec4215f38ba3d0eed"
+      "checksum": "f00cd2407bb42c0ef17be88d4cf020f5cceffd121665bac9b8b9493a369b3b1a"
     },
     {
       "ecosystem": "cargo",
@@ -7487,12 +7497,12 @@
     {
       "ecosystem": "cargo",
       "name": "usvg",
-      "version": "0.45.1",
+      "version": "0.50.0",
       "license": "Apache-2.0 OR MIT",
       "licenseFile": null,
       "repository": "https://github.com/linebender/resvg",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "80be9b06fbae3b8b303400ab20778c80bbaf338f563afe567cf3c9eea17b47ef"
+      "checksum": "bdb896f04730b97805bbc3191fc57e4bf03face0f14577dd42e783c4d8c98802"
     },
     {
       "ecosystem": "cargo",
@@ -7727,172 +7737,172 @@
     {
       "ecosystem": "cargo",
       "name": "wasmtime",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "a32143e651d97f1b8d749713d242f70a72c9a0d7e16fd498a7e5a3f5574ed10b"
+      "checksum": "ac421e68f25e93eda1f5d977fab839f030da3d13bbb2e80392f487809e44e6e4"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-environ",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "f0501ad47df09ae57fbb76e3bdc6513b1f6d9dd0eadf3a115bb39360798890c7"
+      "checksum": "3d73c145a50af3f8695592c4f9b708496cc6ece5ad2c0f3779c9d14e34af0b8b"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-asm-macros",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "de4c70c3fb098b9b28b73f7fc2b0147c5624621fb017a5354cdedb660f273e07"
+      "checksum": "3a9c18f7190716a028036b0e36bd491258b3760d81af82c3ddc2c75b05cf30ae"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-component-macro",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "28729d33f5731506bcfe774a4b9eaf9e7e713449e1e3d848748f7de9978bea53"
+      "checksum": "96d90fbe8941f59927db80ccf926caaf27addc906435afbefcb50c5f3e98ebbf"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-component-util",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "91abf6b751d0f135cab1e78448f402af00a0f3e0638be858d18cc93170ab1009"
+      "checksum": "997779d92d220639b36265cb8f429663cdd4df550b21374b6bb6dcefd195fd99"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-cranelift",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "c3840e7bb2d2593f3178b13a6717f215ad63e233ef54b61892f3cee80582f098"
+      "checksum": "01294d7a391d60b5d156a9b601c9682ae6a38495f1d068db262383a8ec189ad9"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-fiber",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "458d24ab006050e9b5fcf79f2d83ccc236f69846685fb27a7bf4c50a1583f1ea"
+      "checksum": "af65880e9122ea5f746c144f0a1edae9c0c5d6f32c0527620db4f7e499e22abc"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-jit-debug",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "eca1ce583227e82e6370939f48395ae902acdcd4c91ca32ea1ae7abbc86232a7"
+      "checksum": "74bbcf971a0d8bac92608e7749d5ced9eee8846c9f637bcadb8b09bdb3d71386"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-jit-icache-coherence",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "5c110f07b222a8eb29d957eabf90dce38f41461f883099ab28dc50861913ba17"
+      "checksum": "7c4a9719db54c6b7ace5b5b02c591cf6b435b5894cd8ebf0026dbe5cc121cd87"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-math",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "a273dd4ec37457d435538c00b30f3ec9ae99e04a4f6ba89a737048e8de6095df"
+      "checksum": "97ddd17fc03e6c11b07e6836d4b4d7b6fda0db449367cf21815898db50223140"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-slab",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "3d12c7b3ae65639ab90d8d29135348dfd16de6d96eb36ab5b63861f3e12cf8e0"
+      "checksum": "638a2cff31ff9f6aab12dfed712518af4974f6264d92e84c6b69c49895217916"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-unwinder",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "6da6131cb87700e06ffb7a83cc933658f521176f04d6d73511f1ee60db58c515"
+      "checksum": "be397e4b6f5e08547a387d382d6cc6b3cc008254f8f07009865d456fa70792d7"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-versioned-export-macros",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "71efc44d34bb86408d7f620d308dad19457f34543e5c44ace680bdbe2d819917"
+      "checksum": "9a404dcbf507b7b371283a0b77052c67c520dd0b2b9f3d42015aa6a74e6ceeca"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-winch",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "af4da8c46ddb215374f023c0e3ec8917185b878b3d9874fbfaaefdc2d2df38e0"
+      "checksum": "726ced70eb0d1f6eabd2381ad306afd2c5ed314d76ef44eab9c96bf9feccb252"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-internal-wit-bindgen",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "356a1ae3cfc0534a84df35d9df214a241ca454983c0d311f8169b1674b4979a3"
+      "checksum": "27c906fb941d8334ffb42bd3ad4bc8bda65e91a04abfecff0bb8ebc84efcdaf4"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-wasi",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "40e4a022237ea8896014ab1ee3fd4be3a37782c05db06a1a638cf3ed31fadeb3"
+      "checksum": "3ec6ba88d8f86ced66b6e3cf002c4c2a28d6ced362ba6115c6804c8646b3fccd"
     },
     {
       "ecosystem": "cargo",
       "name": "wasmtime-wasi-io",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "9a6f67fc9f40fc549a5f74dfd5bdcbab12ff079a69b4f92a06a5eea787e76730"
+      "checksum": "4af58b2332c2bff2007f24f99a32e009ca4bc9df348d20539b27fbf62d0ce378"
     },
     {
       "ecosystem": "cargo",
@@ -8107,12 +8117,12 @@
     {
       "ecosystem": "cargo",
       "name": "winch-codegen",
-      "version": "36.0.20",
+      "version": "36.0.23",
       "license": "Apache-2.0 WITH LLVM-exception",
       "licenseFile": null,
       "repository": "https://github.com/bytecodealliance/wasmtime",
       "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "09aff830750e48ca9828e9df5ba4589688f49f2748e4a1d43fd543d6a673d272"
+      "checksum": "8372e9942acc32775282d0a1818f22e28411823d4158fedb2bf60b21e8657b64"
     },
     {
       "ecosystem": "cargo",
@@ -8806,16 +8816,6 @@
     },
     {
       "ecosystem": "cargo",
-      "name": "xmlwriter",
-      "version": "0.1.0",
-      "license": "MIT",
-      "licenseFile": null,
-      "repository": "https://github.com/RazrFalcon/xmlwriter",
-      "source": "registry+https://github.com/rust-lang/crates.io-index",
-      "checksum": "ec7a2a501ed189703dba8b08142f057e887dfc4b2cc4db2d343ac6376ba3e0b9"
-    },
-    {
-      "ecosystem": "cargo",
       "name": "y4m",
       "version": "0.8.0",
       "license": "MIT",
@@ -9116,6 +9116,33 @@
     },
     {
       "ecosystem": "npm",
+      "name": "@emnapi/core",
+      "version": "2.0.0-beta.2",
+      "license": "MIT",
+      "repository": null,
+      "source": "https://registry.npmjs.org/@emnapi/core/-/core-2.0.0-beta.2.tgz",
+      "checksum": "sha512-MzCVoWtcg4Pm2B3je5mMvYMvj3MmBKw+fU7vbsJc9/iT8ip6/eYIHo/Dsm/mr+wsHB6SEyJDuxB09Yy6r/8+4A=="
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@emnapi/runtime",
+      "version": "2.0.0-beta.2",
+      "license": "MIT",
+      "repository": null,
+      "source": "https://registry.npmjs.org/@emnapi/runtime/-/runtime-2.0.0-beta.2.tgz",
+      "checksum": "sha512-JcrSPzPvZuNZvJqPTF9Fw25LbOJ8avzFVlaf2grmH4Cku0oGP47tRgqPZadcfj3YoZMHkFVnCYFbQM8I+i5QEw=="
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@emnapi/wasi-threads",
+      "version": "2.2.0",
+      "license": "MIT",
+      "repository": null,
+      "source": "https://registry.npmjs.org/@emnapi/wasi-threads/-/wasi-threads-2.2.0.tgz",
+      "checksum": "sha512-JP7OYH38Q7+pyTAe14raZHLQIK7BDKbdwji+Xi3pcd/6QkJYQH3SX4wu6EplGrGJWRepoNzedfm0G3B9Z4e9Rw=="
+    },
+    {
+      "ecosystem": "npm",
       "name": "@esbuild/aix-ppc64",
       "version": "0.28.2",
       "license": "MIT",
@@ -9395,156 +9422,174 @@
     },
     {
       "ecosystem": "npm",
-      "name": "@oxc-project/types",
-      "version": "0.151.0",
+      "name": "@napi-rs/wasm-runtime",
+      "version": "1.2.6",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@oxc-project/types/-/types-0.151.0.tgz",
-      "checksum": "sha512-J1yXrIlNDZVzE3ada310xeAw7nH8yCAyLPuUIsjKatFPmfn5bS1oW+cM+QsGOtVWd5nhSpbwZWx/rue+r5Z+PA=="
+      "source": "https://registry.npmjs.org/@napi-rs/wasm-runtime/-/wasm-runtime-1.2.6.tgz",
+      "checksum": "sha512-mRyDmEw9/fCDXCGfL1sbgIw/GUK0PVxRW4YwgPN61F3LQ+fSyoBFarJVzgGyhF6kRzEQZ0FejDqm4WLXSeqQmw=="
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@oxc-project/types",
+      "version": "0.156.0",
+      "license": "MIT",
+      "repository": null,
+      "source": "https://registry.npmjs.org/@oxc-project/types/-/types-0.156.0.tgz",
+      "checksum": "sha512-1Duyg48TdJNdyhEB8Xn1L36bT9Pv6GUtlKjHxOys8xkaF/rQq3XJE+bAurSK/AgIz5mGFsb77cn9Pb20+WCScw=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-android-arm-eabi",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-android-arm-eabi/-/binding-android-arm-eabi-1.2.10.tgz",
-      "checksum": "sha512-bp9svZb+QurZeh+8H4BhrZkifEB0YBNvTVzNSJnJQkj4NrRwmQoDUCGP0vSN7PbvLeM7l1tK6GXL8mrTiH2myg=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-android-arm-eabi/-/binding-android-arm-eabi-1.2.19.tgz",
+      "checksum": "sha512-e+Ebe0WT+9tbXmNKPIiC8YrWAHYwug3m6i4p3rZGGulfZri1jtI4HslT+OZnFf/OIHowWF71DTlHwXBP2SiA7A=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-android-arm64",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.2.10.tgz",
-      "checksum": "sha512-wm6Dld3RXUAZ/gRWKyUy+4W1B5CB5UeFaOzsSWJWEdxZXHH8rCYiZ5dGe6oJmhsunAPWzL7FZV+VtvmN5Ye2eA=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-android-arm64/-/binding-android-arm64-1.2.19.tgz",
+      "checksum": "sha512-hOombrTJ+szt2ciEzS7oCA78lMPBgF5UMQWCJIyNfnrI7GLl8HYoFqCnpL2gcPOaXMqryGCU5ExdQKyDDcC+yA=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-darwin-arm64",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.2.10.tgz",
-      "checksum": "sha512-UbEfXq/AqGNgRTV3ik+X/iR6mUxu2QdYAadwRxJWquUGnW6gDqdP1FtLtFXRow7RJx0ssRwi80XAPr4r+4DtsA=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-darwin-arm64/-/binding-darwin-arm64-1.2.19.tgz",
+      "checksum": "sha512-XoMA2pwCKGTQzUjPgtRwkedH4WmXhdIPKT6l6oOxd1PUbNodGI6DcBekgN7EC//+x3pfBYX/qL1gNmZAqivw5g=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-darwin-x64",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.2.10.tgz",
-      "checksum": "sha512-7f5h17q5KZVx/ji1vb8OTq31ch1O2I7K8NPIr44GkyWTApXMIsmhWqZfgpOH10xeauqghDAvGlZktasCkcF6Eg=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-darwin-x64/-/binding-darwin-x64-1.2.19.tgz",
+      "checksum": "sha512-zo8EsSSwMZCY/e+fRnGaX02YGgvJD0yvhNi/9hpGPA2MJ9ZF8dPCw75UGfpI6OpQ/myR/dIYmogRvqiZD0TrXg=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-freebsd-x64",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.2.10.tgz",
-      "checksum": "sha512-ynOk/eEYhC6ZB2xCGvKrEOwE58oBy9LnrAqtkrDF9Fz1VTaNdGZTsV0VarJdhPwb+sOJTGjCLwcuyRJZ1dnMcQ=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-freebsd-x64/-/binding-freebsd-x64-1.2.19.tgz",
+      "checksum": "sha512-O8ISAOfI1nj7AuBPd30FSF47z7f7lzlk5poQVGgiikvQuGEBFYvW8ki+UEnT+YJPnNGjQzn304klt4O9FUE7mA=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-linux-arm-gnueabihf",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.2.10.tgz",
-      "checksum": "sha512-ERrAs185meZZhGan7a4l3RiiJK1ArSDlHdST++uvSxe+FDbR4TwUPahT/cbZJvaG6fIpDpF78surN+tX708Y4Q=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-linux-arm-gnueabihf/-/binding-linux-arm-gnueabihf-1.2.19.tgz",
+      "checksum": "sha512-/lYCba5NO0yq4S0jGMH8QTBtkvQxoXjoQWzF5BcWp9MjB9jxVRD1GQDNofkVjcOj30DWyhLIN/4Oe60JKzaONw=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-linux-arm64-gnu",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.2.10.tgz",
-      "checksum": "sha512-KN7OHKD0J3jy1UzBwZWPxpwhODf9IARUIJcrH+yLYKOcmegZ8luEUM38lDP1bDVj40yP6PsSzCqOJF76vljFnQ=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-gnu/-/binding-linux-arm64-gnu-1.2.19.tgz",
+      "checksum": "sha512-pm/apFMBnSbFb3O6nG5pHO1iqHhZrjGDFEjSm+ot9J17XXPvH9L90y5h+jgfHCE+Qdlsvy8qKEcU4VKxgjD+vA=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-linux-arm64-musl",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.2.10.tgz",
-      "checksum": "sha512-8l9wP8O+wa8zD6iw6egSfzVtu7oZVfH3hlUsMM4MwbLMhxleqeoXbZzjddyK3YyNlwLhqznq3tF7PkNJ8T/V2w=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-linux-arm64-musl/-/binding-linux-arm64-musl-1.2.19.tgz",
+      "checksum": "sha512-K1SmQp3FFichn8oqrNIwvFoZ5wcvjC7goBzpaMNvLf9FZc+QB/QvLmnpJZgAAGHiD980tP8FZZnXk2K94rvlxg=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-linux-ppc64-gnu",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.2.10.tgz",
-      "checksum": "sha512-SeXNKeQzA5kLhz/J0CH6ZP0/HJ3v1xm/0YbiYpE0kK7emfRC2OIGGIaE14xzkISEGv2aYuUSpiLiU5Gbq+OI0A=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-linux-ppc64-gnu/-/binding-linux-ppc64-gnu-1.2.19.tgz",
+      "checksum": "sha512-I0xwD57jP/3A7+5UPZin2w8Y7XHEmEM5zqpYZOcQ45MlNW6tUJUziymV3yRr7rL4vwyfEcRsRksC4a7Kc08p5Q=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-linux-s390x-gnu",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.2.10.tgz",
-      "checksum": "sha512-mtht0nR+y8/hart4175Ll15w7lY8dg7CtQ+j2FDNTsDRspOWTK/2V3l0aj9sIj7XmvqxT8Yli/wq22e7feTTWg=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-linux-s390x-gnu/-/binding-linux-s390x-gnu-1.2.19.tgz",
+      "checksum": "sha512-BrtEHT24SNXj9HiXqy+s/kXiSiQGt6EKCPUlRirAoIioVxKGnbXBUEkbZASAei7iZJB0/Ynm+0JP00Ipx7AnSw=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-linux-x64-gnu",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.2.10.tgz",
-      "checksum": "sha512-FSM94nGd55NYo48usCyM/nHfUKRnqc9+b0vJNuKV0oCCpIp/OGims7rO1Nv/DkFkt0S/s2rxsJ2kkS8J3HcpeA=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-linux-x64-gnu/-/binding-linux-x64-gnu-1.2.19.tgz",
+      "checksum": "sha512-rm75/9DkHKeU2WnA8w4X94WGYgLlDCFCfkQC+4bguVJmC/jvDRv2B+2wLOYhyE0fVuv7//Ckk39OoOufyCu76Q=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-linux-x64-musl",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.2.10.tgz",
-      "checksum": "sha512-C3YxNB16myRLs7o+B+6PnQ6jBsdIS4+AE4Ah8glVGhDpEv9AOvxhZ/1duAb4B0UGczEK/lBbccksd8VI+p6zfw=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-linux-x64-musl/-/binding-linux-x64-musl-1.2.19.tgz",
+      "checksum": "sha512-irh/4+iYFM4GAzpluDErgjz89bj6NDtqqMAG/6O1LG38Ed3NpyebzCpcVNkFW8uhy+/3/BocUvnXDR33CXWe9A=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-openharmony-arm64",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.2.10.tgz",
-      "checksum": "sha512-571TlE/F1eeTjjdjYAMMMPs1Mfv3MtX6s3+ZKVU6HiUjZ5Njc6c/qzNy/8K3zALTZnaw3JQVYrHxvNfjm43KAg=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-openharmony-arm64/-/binding-openharmony-arm64-1.2.19.tgz",
+      "checksum": "sha512-+KWTWNoPt+CfSq94CiceWu3yPE+QzkaG+phPyz9G60tmZLwfQkcA4AeksafzvJAw4pvg1mcd5a1TkUqVv0s4JA=="
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@rolldown/binding-wasm32-wasi",
+      "version": "1.2.19",
+      "license": "MIT",
+      "repository": null,
+      "source": "https://registry.npmjs.org/@rolldown/binding-wasm32-wasi/-/binding-wasm32-wasi-1.2.19.tgz",
+      "checksum": "sha512-7EH+skOsl5qpWnK0vzamgJFhOv1cwxQpsxm8tI883K9fur5c27p8q87fzEO6BbBPabA2/+s/zR63/pLc137iOg=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-win32-arm64-msvc",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.2.10.tgz",
-      "checksum": "sha512-QXW+ZWaiqs2c7Fi++D/SsW07LTPcUrncxcskJGfGNBoaLik1IU6fJymz4HsqwEO0u5Iq11yTO0B/mc4cPk7jrQ=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-win32-arm64-msvc/-/binding-win32-arm64-msvc-1.2.19.tgz",
+      "checksum": "sha512-3Q1Yg1Q7tEvBWoZf5rFvG/GKZQPgwfru+p4wBajDfJFBs0SHCpL++dfTjW9gyAKd1T7ZpIYvdaUax7Pa/IhFVQ=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/binding-win32-x64-msvc",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.2.10.tgz",
-      "checksum": "sha512-5FQFGgah17YeMtG1Yd5a+rMxQpTksyNXxRtKz06FVTaQw3RKYUJQbUoKk0/5jrXBpDo+7makNP7UHA2LQyH64A=="
+      "source": "https://registry.npmjs.org/@rolldown/binding-win32-x64-msvc/-/binding-win32-x64-msvc-1.2.19.tgz",
+      "checksum": "sha512-y/sqRRc6d7hECzOFc5n3LSeqctmIp9mMjY1Kq4s14uLPd/LZ4z7i1zrW6fMtp2mPeuQIC4e6ULMcwQzMomqQag=="
     },
     {
       "ecosystem": "npm",
       "name": "@rolldown/pluginutils",
-      "version": "1.0.1",
+      "version": "1.1.1",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.0.1.tgz",
-      "checksum": "sha512-2j9bGt5Jh8hj+vPtgzPtl72j0yRxHAyumoo6TNfAjsLB04UtpSvPbPcDcBMxz7n+9CYB0c1GxQFxYRg2jimqGw=="
+      "source": "https://registry.npmjs.org/@rolldown/pluginutils/-/pluginutils-1.1.1.tgz",
+      "checksum": "sha512-glFIJDvLNDtJhT9qrMFWLPbvS+skxgt4L0K8Ei2YtnhPysAJnsI7nyxSJxKj4ADeKX0OLjC4ntRkwpLOoS3rwA=="
     },
     {
       "ecosystem": "npm",
@@ -9581,6 +9626,15 @@
       "repository": null,
       "source": "https://registry.npmjs.org/@tauri-apps/api/-/api-2.11.1.tgz",
       "checksum": "sha512-M2FPuYND2m+wh5hfW9ZpSdxMPdEJovPBWwoHJmwUpysTYNHaOkVFN419m/K0LIgjb/7KU2vBgsUepJWugQCvAA=="
+    },
+    {
+      "ecosystem": "npm",
+      "name": "@tybys/wasm-util",
+      "version": "0.10.5",
+      "license": "MIT",
+      "repository": null,
+      "source": "https://registry.npmjs.org/@tybys/wasm-util/-/wasm-util-0.10.5.tgz",
+      "checksum": "sha512-dOGOPxlaNV+G046mZzN+9C0dAcQZeSKcXiVaM0TYy/LM4ttTmgSBDxYfovcYI8Em3+eAbiAYpvWLOv8+ZVRJKA=="
     },
     {
       "ecosystem": "npm",
@@ -9693,11 +9747,11 @@
     {
       "ecosystem": "npm",
       "name": "esrap",
-      "version": "2.3.10",
+      "version": "2.4.2",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/esrap/-/esrap-2.3.10.tgz",
-      "checksum": "sha512-U57Y4yS8udsPP22QKK6dhbGQl6JeQXYYWGDPPfA8YAU1jMaqZ8ogVazTqoPl3WYtRj84c2TCeNhhep8NKaNX5w=="
+      "source": "https://registry.npmjs.org/esrap/-/esrap-2.4.2.tgz",
+      "checksum": "sha512-WpVZsWnSheHBy+fGrO/0duwnbe6ODZH1QyBbjupreSCJGojaBWRncrq+HVeIJ8eHQjEwSJg9hC4yPJyNVOrpqg=="
     },
     {
       "ecosystem": "npm",
@@ -9873,11 +9927,11 @@
     {
       "ecosystem": "npm",
       "name": "nanoid",
-      "version": "3.3.19",
+      "version": "3.3.20",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.19.tgz",
-      "checksum": "sha512-Y2tUNy4ouw6tq5oDSKeQYGOyhkUBhNOcGV/02KC+6kd9eDGqdZd++mjMiIDilrBYvjEnCYvVtsuHCuP+okSfug=="
+      "source": "https://registry.npmjs.org/nanoid/-/nanoid-3.3.20.tgz",
+      "checksum": "sha512-uKdg2G3GNCKQn9byYOpxbGqrT2fGO5KRt5J/8b3pok8rT6qxGWF6hxMyJiEYtAf+FVyYuD9hRaDqX5uPFYJ4ZQ=="
     },
     {
       "ecosystem": "npm",
@@ -9909,29 +9963,29 @@
     {
       "ecosystem": "npm",
       "name": "playwright",
-      "version": "1.63.0",
+      "version": "1.65.1",
       "license": "Apache-2.0",
       "repository": null,
-      "source": "https://registry.npmjs.org/playwright/-/playwright-1.63.0.tgz",
-      "checksum": "sha512-+7ziBLidS4NaNCdt57SUDT+wYmmd5fmiQejUic/kb+YsYSCPyOOE9sebzMjNmQrsnNpDJqd4WHvV/8lfKfUDUg=="
+      "source": "https://registry.npmjs.org/playwright/-/playwright-1.65.1.tgz",
+      "checksum": "sha512-vJ1FuoOrNwOKHUIVEvSt3jT1L+wjjDpwhwIstKtfvTh8XIG4FG4bIFuvNdMxi81LGfAhUgUZleVFaOLY4RIUUw=="
     },
     {
       "ecosystem": "npm",
       "name": "playwright-core",
-      "version": "1.63.0",
+      "version": "1.65.1",
       "license": "Apache-2.0",
       "repository": null,
-      "source": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.63.0.tgz",
-      "checksum": "sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg=="
+      "source": "https://registry.npmjs.org/playwright-core/-/playwright-core-1.65.1.tgz",
+      "checksum": "sha512-hqPpz7blSMPxWVdoeE1yiBSzXsKiVOd2k+kjCvmUywD2GPO2Dd9HfcWnq9NN0GHbNZDFgZ9JfBFr+X5/BLo0qw=="
     },
     {
       "ecosystem": "npm",
       "name": "postcss",
-      "version": "8.5.28",
+      "version": "8.5.33",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/postcss/-/postcss-8.5.28.tgz",
-      "checksum": "sha512-RRuzqDtt5Y9h3quz5hWhK+TPnsmVs6WwSU6LkJMeY4HstUEDuYTG8UJSdawMRzmzAtV+KEoG8N3Qg2qLy5vM/A=="
+      "source": "https://registry.npmjs.org/postcss/-/postcss-8.5.33.tgz",
+      "checksum": "sha512-RVHEU9/Pp1Fnjr/MpAJsZoADukCKhfIi15OunEYiGktIkYLkPVvC1sioWolGDS7XByMTx9m/IGbro0Js13zhnQ=="
     },
     {
       "ecosystem": "npm",
@@ -9945,11 +9999,11 @@
     {
       "ecosystem": "npm",
       "name": "rolldown",
-      "version": "1.2.10",
+      "version": "1.2.19",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/rolldown/-/rolldown-1.2.10.tgz",
-      "checksum": "sha512-OxkA08pSryMK7B3XiFA09B4OJ1xJMPgIYCBMY2xchzpqgBGsV1o0DetPAE+Sl3N3L4oCPiEzmHVSOj7iR04Zog=="
+      "source": "https://registry.npmjs.org/rolldown/-/rolldown-1.2.19.tgz",
+      "checksum": "sha512-QIiV1J9d0pzN4jeeTH4sjPy0AZ6cAy2cG0ExeoE1+U8Rvj+hR3gYkokx0YbeUNGlZqiQJJ2utcETe0oKXwzsuA=="
     },
     {
       "ecosystem": "npm",
@@ -9963,29 +10017,29 @@
     {
       "ecosystem": "npm",
       "name": "source-map-js",
-      "version": "1.2.1",
+      "version": "1.2.4",
       "license": "BSD-3-Clause",
       "repository": null,
-      "source": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.1.tgz",
-      "checksum": "sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA=="
+      "source": "https://registry.npmjs.org/source-map-js/-/source-map-js-1.2.4.tgz",
+      "checksum": "sha512-J7ZjMvHd9O1fcT/5V09QWaaSl2BbWx3F6O08spde82Namf9UB0GxRVIPiNbVsdKkoizHiSpTodo3vp2bAy91MA=="
     },
     {
       "ecosystem": "npm",
       "name": "svelte",
-      "version": "5.57.1",
+      "version": "5.59.1",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/svelte/-/svelte-5.57.1.tgz",
-      "checksum": "sha512-Uqj49lWKB+iSSnneuwiYYJ7MZgkB+eXr0LXBhv4uDuAkXqnWmq65Sxflfvp0Lc6MdKjMUxGaeOKWJqz5SNiVIA=="
+      "source": "https://registry.npmjs.org/svelte/-/svelte-5.59.1.tgz",
+      "checksum": "sha512-ADG20W/jYSQut/79AavRRfbXQYebFKMVWT/xAbjVVZfZA4XzIoFfcpanEfYTyN+uWQUaPP+nstFx4qVKwEVnQQ=="
     },
     {
       "ecosystem": "npm",
       "name": "svelte-check",
-      "version": "4.7.6",
+      "version": "4.7.8",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/svelte-check/-/svelte-check-4.7.6.tgz",
-      "checksum": "sha512-t2scM//ZuVbSY/T2w6FSBw1v9s2NEmh/g+sy1lqtosW5ylBV5AF4wFb1Ts9Kf3MbfPDUDJDZ9L436YT0SPTdvw=="
+      "source": "https://registry.npmjs.org/svelte-check/-/svelte-check-4.7.8.tgz",
+      "checksum": "sha512-laZ49GFHZ3b0z2PWinJWL0syehc/PTR8aHaUaTiBkWJ+4Y38nhxjmXsSz7CbGa3VdKopViVbrBH3bGNqIAI0bQ=="
     },
     {
       "ecosystem": "npm",
@@ -9995,6 +10049,15 @@
       "repository": null,
       "source": "https://registry.npmjs.org/tinyglobby/-/tinyglobby-0.2.17.tgz",
       "checksum": "sha512-wXR/dYpcqKmfWpEdZjiKJOwCNFndD0DMnrW/cYjVGttEkBfVgcLFHoNrlj47mjOVic9yyNu65alsgF4NQyTa2g=="
+    },
+    {
+      "ecosystem": "npm",
+      "name": "tslib",
+      "version": "2.9.1",
+      "license": "0BSD",
+      "repository": null,
+      "source": "https://registry.npmjs.org/tslib/-/tslib-2.9.1.tgz",
+      "checksum": "sha512-a4Ux9VKuIMHsOS7ENbEq6hK2ZGYIT27Rtl0E4eD9KqwxhKiQeMZE/9xb3IdYwWaSOyIBQLExhQgXDTYoiCxnWA=="
     },
     {
       "ecosystem": "npm",
@@ -10008,11 +10071,11 @@
     {
       "ecosystem": "npm",
       "name": "vite",
-      "version": "8.3.0",
+      "version": "8.3.8",
       "license": "MIT",
       "repository": null,
-      "source": "https://registry.npmjs.org/vite/-/vite-8.3.0.tgz",
-      "checksum": "sha512-lhZBVvEHefgE+HQZC9O7EBJgCU/nVzFNl7vkS4RE0APtWLP02/8QVIkQtzBxPquh7lq5/78NHipTj7ODQ6XuyQ=="
+      "source": "https://registry.npmjs.org/vite/-/vite-8.3.8.tgz",
+      "checksum": "sha512-LzOn3h9rG/0vhLdXrV4yJ4QFA9eEoqCl+Yx+kGJd7aB9w6nfNgVHKSYwLPZUHrz4ZGa+t+kXjV9itvcHDLQouA=="
     },
     {
       "ecosystem": "npm",

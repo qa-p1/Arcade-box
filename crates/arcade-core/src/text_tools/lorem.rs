@@ -2,7 +2,7 @@
 
 use crate::tool_kit::{option_bool, option_str, whole_number_in};
 use arcade_contract::ToolRequest;
-use rand::{Rng, seq::IndexedRandom};
+use rand::{RngExt, seq::IndexedRandom};
 
 const OPENING: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit";
 const WORDS: &[&str] = &[
