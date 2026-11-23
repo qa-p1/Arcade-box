@@ -27,7 +27,7 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 - Box uses less memory while it runs in the background: a few seconds after the last window closes it ends WebKit's network process and pages out idle memory, and while a window is open it trims itself periodically.
 - A background start from the AppImage runs from an unpacked copy under `<data>/arcade/runtime/`, so no FUSE helper stays running.
 - Clipboard history keeps at most 64 MiB of text and image data, dropping the oldest unpinned items first.
-- The plugin sandbox runs on Wasmtime 36 LTS, which has the fixes for the security advisories found in the previous version. The zip, calamine and XLSX export libraries are updated for the same reason.
+- The plugin sandbox runs on Wasmtime 36 LTS (36.0.23), which has the fixes for the security advisories found in the previous version and in 36.0.20 (RUSTSEC-2026-0566, -0569, -0571, -0587). The zip, calamine and XLSX export libraries are updated for the same reason.
 - Releases start as release candidates on a hidden test channel that Arcade Tools never offers, and are promoted to stable only after every check passes. A signed prerelease is published each night from `main`.
 - Promotion to stable refuses to run without the update signing key, so nothing is published unsigned.
 - Box moves to Arcade Link 1.1.0 and its shared design kit: the font stack gains the colour-emoji fonts, and a tab panel keeps its focus outline for keyboard focus.
