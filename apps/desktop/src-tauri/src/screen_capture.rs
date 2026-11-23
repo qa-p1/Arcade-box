@@ -859,11 +859,9 @@ async fn start_macos_recording(
     if !SCContentSharingPicker::is_available() {
         return Err("The macOS system content picker is unavailable. This feature requires macOS 14 or later.".into());
     }
-    let selected = match AsyncSCContentSharingPicker::show(
-        &SCContentSharingPickerConfiguration::new(),
-    )
-    .await
-    {
+    let picker_config = SCContentSharingPickerConfiguration::new()
+        .map_err(|error| format!("Could not open the macOS screen picker: {error}"))?;
+    let selected = match AsyncSCContentSharingPicker::show(&picker_config).await {
         SCPickerOutcome::Picked(selected) => selected,
         SCPickerOutcome::Cancelled => return Ok(None),
         SCPickerOutcome::Error(error) => {
@@ -879,7 +877,14 @@ async fn start_macos_recording(
         .with_width(width)
         .with_height(height);
     let recording_config = SCRecordingOutputConfiguration::new()
+        .map_err(|error| format!("ScreenCaptureKit could not set up the recording: {error}"))?
         .with_output_url(&output_path)
+        .map_err(|error| {
+            format!(
+                "ScreenCaptureKit cannot record to {}: {error}",
+                output_path.display()
+            )
+        })?
         .with_video_codec(SCRecordingOutputCodec::H264)
         .with_output_file_type(SCRecordingOutputFileType::MP4);
 
@@ -887,7 +892,8 @@ async fn start_macos_recording(
         let output = SCRecordingOutput::new(&recording_config).ok_or_else(|| {
             "ScreenCaptureKit could not create an H.264/MP4 recording output. Check macOS version and Screen Recording permission.".to_owned()
         })?;
-        let stream = SCStream::new(&filter, &config);
+        let stream = SCStream::new(&filter, &config)
+            .map_err(|error| format!("ScreenCaptureKit could not create the capture stream: {error}"))?;
         stream
             .add_recording_output(&output)
             .map_err(|error| format!("Could not attach the recording output: {error}"))?;
@@ -2419,7 +2425,8 @@ async fn capture_macos_area(runtime: &Arcade) -> Result<Option<SelectedFile>, St
         return Err("The macOS content picker is unavailable. This capture flow requires macOS 14 or later.".into());
     }
 
-    let picker_config = SCContentSharingPickerConfiguration::new();
+    let picker_config = SCContentSharingPickerConfiguration::new()
+        .map_err(|error| format!("Could not open the macOS screen picker: {error}"))?;
     let selected = match AsyncSCContentSharingPicker::show(&picker_config).await {
         SCPickerOutcome::Picked(selected) => selected,
         SCPickerOutcome::Cancelled => return Ok(None),
