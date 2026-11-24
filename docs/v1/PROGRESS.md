@@ -2,6 +2,14 @@
 
 Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
 
+## 2026-11-24 (cloud session) - 1.0.1 promoted from rc.1
+
+- 1.0.1 has real progress for every long action (#57), 4 concurrent pieces for HLS/DASH downloads (#58) and
+  cookie 0.18.3 (#56). Version bump #59 (`d152544`).
+- rc.1: Release run 45395939019 and Gates run 45402136017 (previous v1.0.0) passed every job; Promote run
+  45403566359. The AppImage, dmg, Windows installer and SHA256SUMS are byte-identical to rc.1; only the channel,
+  tag and notes link differ in arcade-release.json and manifest.json, and the stable manifest is signed.
+
 ## 2026-11-23 (cloud session) - 1.0.0 promoted from rc.10
 
 - rc.8 (`e49e483`) was the first candidate on Arcade Link 1.1 (full action cards, offers-based result actions,
