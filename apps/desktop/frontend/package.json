@@ -13,12 +13,12 @@
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2.11.1",
+    "@tauri-apps/api": "^2.12.5",
     "svelte": "^5.59.1"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.3.0",
-    "axe-core": "4.14.0",
+    "axe-core": "4.14.1",
     "esbuild": "^0.28.2",
     "playwright": "1.65.1",
     "svelte-check": "^4.7.8",
