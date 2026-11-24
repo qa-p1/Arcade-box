@@ -91,6 +91,33 @@ impl YtDlp {
         }
     }
 
+    /// [`Self::run`], with yt-dlp's own progress on the job's bar from `from` to `from + span`.
+    fn run_tracked(
+        &self,
+        mut args: Vec<OsString>,
+        dir: &Path,
+        url: &str,
+        cancelled: &AtomicBool,
+        progress: &Arc<dyn Fn(f64) + Send + Sync>,
+        (from, span): (f64, f64),
+    ) -> Result<(), String> {
+        // Before the URL (`--`), like every other option.
+        let at = args.iter().position(|a| a == "--").unwrap_or(args.len());
+        args.splice(at..at, super::ytdlp_progress::args().map(OsString::from));
+        let output = super::run_with_ytdlp_progress(
+            self.spec(args, dir),
+            cancelled,
+            progress.clone(),
+            from,
+            span,
+        )?;
+        if output.status.success() {
+            Ok(())
+        } else {
+            Err(failure(&output.stderr, url))
+        }
+    }
+
     pub(super) fn runtime_warning(&self) -> Option<String> {
         self.js_runtime.is_none().then(|| {
             "No Deno or Node.js runtime was found. Some sites, including YouTube, may offer fewer formats.".into()
@@ -320,9 +347,11 @@ pub(super) fn transcript(
         ]
         .map(OsString::from),
     );
-    progress(0.1);
+    crate::jobs::note("Looking for captions");
     let mut warnings = Vec::new();
-    if let Err(error) = ytdlp.run(args, stage.path(), &url, cancelled) {
+    if let Err(error) =
+        ytdlp.run_tracked(args, stage.path(), &url, cancelled, &progress, (0.0, 0.3))
+    {
         if !whisper {
             return Err(error);
         }
@@ -344,10 +373,10 @@ pub(super) fn transcript(
         }
         None if whisper => {
             // No captions: download the audio and transcribe it with Whisper.
-            progress(0.2);
+            crate::jobs::note("No captions: downloading the audio to transcribe it");
             let mut args = ytdlp.base_args("%(title).90B.%(ext)s");
             args.extend(["--format", "bestaudio/best", "--", &url].map(OsString::from));
-            ytdlp.run(args, stage.path(), &url, cancelled)?;
+            ytdlp.run_tracked(args, stage.path(), &url, cancelled, &progress, (0.0, 0.3))?;
             let (audio, name) = list_stage_outputs(stage.path())?
                 .into_iter()
                 .next()

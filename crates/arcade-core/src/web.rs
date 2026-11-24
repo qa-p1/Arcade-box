@@ -31,6 +31,7 @@ mod snapshot;
 
 pub(crate) use snapshot::browser_available;
 mod ytdlp;
+mod ytdlp_progress;
 
 const TEXT_LIMIT: u64 = 5 * 1024 * 1024;
 const PROCESS_TIMEOUT: Duration = Duration::from_secs(24 * 60 * 60);
@@ -95,7 +96,7 @@ fn download_file(
     let mut resume_attempts = 0u32;
     let mut transferred_bytes = 0u64;
     let mut resumed_file = false;
-    progress(0.01);
+    crate::jobs::note("Connecting");
     // Retry at most twice. Resume is attempted only after a failed response
     // with a strong entity tag and known complete length. The resumed response
     // is verified before any staged bytes can be published.
@@ -492,17 +493,27 @@ fn run_with_file_progress(
                 // The process runner observes the same cancellation flag and
                 // terminates the complete provider process tree.
             }
+            // The bar is the bytes on disk of the size the server gave; with no size, it shows work without a
+            // number and the note says how much has come so far.
             if let Ok(metadata) = fs::metadata(path) {
-                let fraction = if total > 0 {
-                    (0.03 + 0.94 * (metadata.len().min(total) as f64 / total as f64)).min(0.97)
-                } else if metadata.len() > 0 {
-                    0.1
-                } else {
-                    0.02
-                };
-                if fraction > last {
-                    progress(fraction);
-                    last = fraction;
+                let size = metadata.len();
+                if size > 0 {
+                    crate::jobs::note(&match total {
+                        0 => format!("Downloading · {}", ytdlp_progress::bytes(size as f64)),
+                        total => format!(
+                            "Downloading · {}% · {} of {}",
+                            100 * size.min(total) / total,
+                            ytdlp_progress::bytes(size as f64),
+                            ytdlp_progress::bytes(total as f64)
+                        ),
+                    });
+                }
+                if total > 0 {
+                    let fraction = 0.97 * (size.min(total) as f64 / total as f64);
+                    if fraction > last {
+                        progress(fraction);
+                        last = fraction;
+                    }
                 }
             }
             thread::sleep(Duration::from_millis(250));
@@ -678,11 +689,10 @@ fn download_media(
             "--no-overwrites",
             "--no-continue",
             "--abort-on-unavailable-fragments",
-            "--newline",
-            "--progress",
         ]
         .map(OsString::from),
     );
+    args.extend(ytdlp_progress::args().map(OsString::from));
     if audio {
         args.extend([
             OsString::from("--extract-audio"),
@@ -730,12 +740,13 @@ fn download_media(
         args.push(OsString::from("--embed-metadata"));
     }
     args.extend([OsString::from("--"), OsString::from(&url)]);
-    progress(0.02);
-    let output = run_with_directory_progress(
+    crate::jobs::note("Looking up the video");
+    let output = run_with_ytdlp_progress(
         ytdlp.spec(args, stage.path()),
-        stage.path(),
         cancelled,
         progress.clone(),
+        0.0,
+        1.0,
     )?;
     if !output.status.success() {
         return Err(ytdlp::failure(&output.stderr, &url));
@@ -845,58 +856,38 @@ fn audio_format(format: &str) -> Result<&'static str, String> {
     }
 }
 
-fn run_with_directory_progress(
+/// Runs yt-dlp with its own progress on the job: the bar from `from` to `from + span`, and what it is doing
+/// ("Downloading clip.mp4 · 36% · 1.0 MB of 2.9 MB · 1.4 MB/s · 1 s left", "Joining video and audio").
+pub(super) fn run_with_ytdlp_progress(
     spec: ProcessSpec,
-    directory: &Path,
     cancelled: &AtomicBool,
     progress: Arc<dyn Fn(f64) + Send + Sync>,
+    from: f64,
+    span: f64,
 ) -> Result<process::ProcessOutput, String> {
-    thread::scope(|scope| {
-        let handle = scope.spawn(|| process::run(&spec, cancelled));
-        let mut previous = 0u64;
-        let mut seen: Vec<String> = Vec::new();
-        loop {
-            if handle.is_finished() {
-                return handle
-                    .join()
-                    .map_err(|_| "Download worker failed".to_owned())?
-                    .map_err(|error| error.to_string());
-            }
-            let current = fs::read_dir(directory)
-                .ok()
-                .into_iter()
-                .flatten()
-                .filter_map(Result::ok)
-                .filter_map(|entry| entry.metadata().ok())
-                .filter(|meta| meta.is_file())
-                .map(|meta| meta.len())
-                .sum::<u64>();
-            if current > previous {
-                // yt-dlp's progress template is not guaranteed to flush from
-                // a redirected non-TTY; disk growth gives a conservative
-                // active signal without inventing an ETA or total percentage.
-                progress(0.05);
-                previous = current;
-            }
-            // Say which file is downloading (the video, its audio, subtitles, each item of a playlist).
-            let mut names: Vec<String> = fs::read_dir(directory)
-                .ok()
-                .into_iter()
-                .flatten()
-                .filter_map(Result::ok)
-                .filter_map(|entry| entry.file_name().into_string().ok())
-                .collect();
-            names.sort();
-            for name in names {
-                let shown = download_name(&name);
-                if !shown.is_empty() && !seen.contains(&shown) {
-                    seen.push(shown);
-                    crate::jobs::note(&download_note(&seen));
+    let tracker = std::sync::Mutex::new(ytdlp_progress::Tracker::new());
+    // yt-dlp's output is read on another thread, so the job's note goes along.
+    let note = crate::jobs::note_handle();
+    process::run_with_stdout_lines(
+        &spec,
+        cancelled,
+        Arc::new(move |line| {
+            let update = tracker.lock().unwrap_or_else(|e| e.into_inner()).line(line);
+            match update {
+                Some(ytdlp_progress::Update::Fraction(fraction, text)) => {
+                    note(&text);
+                    progress(from + fraction * span);
                 }
+                // Joining, converting, or a download of unknown size: no number, so the bar moves without one.
+                Some(ytdlp_progress::Update::Step(text)) => {
+                    note(&text);
+                    progress(crate::jobs::UNKNOWN);
+                }
+                None => {}
             }
-            thread::sleep(Duration::from_millis(350));
-        }
-    })
+        }),
+    )
+    .map_err(|error| error.to_string())
 }
 
 /// The file a yt-dlp working name stands for: without `.part`/`.ytdl`/`.temp` and the format code it downloads
@@ -923,15 +914,6 @@ fn download_name(name: &str) -> String {
         }
     }
     parts.join(".")
-}
-
-/// "Downloading clip.mp4", then "Downloading file 2: clip.en.vtt" as more files start.
-fn download_note(seen: &[String]) -> String {
-    match seen {
-        [] => "Downloading".into(),
-        [one] => format!("Downloading {one}"),
-        _ => format!("Downloading file {}: {}", seen.len(), seen[seen.len() - 1]),
-    }
 }
 
 fn list_stage_outputs(directory: &Path) -> Result<Vec<(PathBuf, String)>, String> {
@@ -1367,11 +1349,6 @@ mod tests {
         assert_eq!(download_name("clip.mp4"), "clip.mp4");
         assert_eq!(download_name("final.fix.mp4"), "final.fix.mp4");
         assert_eq!(download_name("clip.mp4.ytdl"), "");
-        assert_eq!(download_note(&["clip.mp4".into()]), "Downloading clip.mp4");
-        assert_eq!(
-            download_note(&["clip.mp4".into(), "clip.en.vtt".into()]),
-            "Downloading file 2: clip.en.vtt"
-        );
     }
 
     #[test]
