@@ -1,5 +1,12 @@
 # Arcade Box: status
 
+## 1.0.1 (release candidate, 2026-11-24)
+
+Progress is real for every long action: media downloads follow yt-dlp's own progress (bytes, speed, time left, each
+part, then the steps after), file downloads show bytes of the total, page images count up, and steps with no measure
+show a moving bar with a note instead of a fixed number. Streams that come in pieces (HLS/DASH) download 4 pieces at a
+time, up to about 3x faster where servers limit each connection. Also cookie 0.18.3 (RUSTSEC-2026-0594).
+
 ## 1.0.0 on Arcade Link 1.1 (released 2026-11-23)
 
 Box 1.0.0 is released, promoted from 1.0.0-rc.10 after every gate passed and checked byte for byte against it.

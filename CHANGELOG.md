@@ -4,6 +4,8 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-24
+
 ### Changed
 
 - Media downloads fetch streams that come in pieces (HLS/DASH: X, Twitch, Reddit, many news sites) 4 pieces at a time instead of 1. Servers often limit each connection, so these are up to about 3x faster. Single-file downloads, most of YouTube, are unchanged.
