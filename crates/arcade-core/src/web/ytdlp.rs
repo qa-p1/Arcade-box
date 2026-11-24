@@ -45,6 +45,11 @@ impl YtDlp {
             "--no-mtime",
             "--no-warnings",
             "--no-js-runtimes",
+            // Streams that come in pieces (HLS/DASH: X, Twitch, Reddit, news sites) download 4 pieces at a time
+            // instead of 1. Servers often limit each connection, so this is up to 3-4x faster there. Single-file
+            // downloads (most of YouTube) are unaffected.
+            "--concurrent-fragments",
+            "4",
             "--output",
             output_template,
         ]

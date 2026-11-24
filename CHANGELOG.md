@@ -6,6 +6,7 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 
 ### Changed
 
+- Media downloads fetch streams that come in pieces (HLS/DASH: X, Twitch, Reddit, many news sites) 4 pieces at a time instead of 1. Servers often limit each connection, so these are up to about 3x faster. Single-file downloads, most of YouTube, are unchanged.
 - Progress is real for every long action. Media downloads follow yt-dlp's own progress: bytes of the total, speed and time left, which part (video, then audio) and the steps after (joining, converting). They no longer sit at a fixed number until the end. File downloads say how much has come. Captions and page images count what is done. When nothing can be measured (looking up a video, the steps of a page capture), the bar keeps moving and the note says what Box is doing.
 - Download output past the output limit is no longer a failure. A long download prints more progress than the limit; only the first part is kept.
 - The cookie library is updated to 0.18.3 for RUSTSEC-2026-0594 (private cookie nonces could repeat in processes that fork). Box doesn't use private cookies; the update keeps the dependency check clean.
