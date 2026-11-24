@@ -44,7 +44,8 @@ pub(super) fn download(
     if urls.is_empty() {
         return Err("No images were found in this page's HTML. Images loaded later by JavaScript can't be seen.".into());
     }
-    progress(0.05);
+    crate::jobs::note(&format!("Downloading {} images", urls.len()));
+    let note = crate::jobs::note_handle();
     let curl = network::curl_provider()?;
     let queue = Mutex::new(urls.iter().enumerate().collect::<Vec<_>>());
     let done = Mutex::new(Vec::new());
@@ -65,7 +66,8 @@ pub(super) fn download(
                         fetch_image(&curl.executable_path, url, &staged, stage.path(), cancelled);
                     let mut done = done.lock().unwrap_or_else(|e| e.into_inner());
                     done.push((index, url.clone(), staged, fetched));
-                    progress(0.05 + 0.85 * done.len() as f64 / total as f64);
+                    progress(0.95 * done.len() as f64 / total as f64);
+                    note(&format!("Downloaded {} of {total} images", done.len()));
                 }
             });
         }

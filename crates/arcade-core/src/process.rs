@@ -82,6 +82,8 @@ pub fn run_with_input(
 /// Observe bounded text lines from stdout while retaining the same process
 /// lifetime, cancellation, and capture limits as `run`. Providers can use
 /// this for structured progress without putting log parsing in the UI.
+/// Stdout past the output limit still reaches `on_line` and isn't an error
+/// (progress lines add up over a long run); only the first part is kept.
 pub fn run_with_stdout_lines(
     spec: &ProcessSpec,
     cancelled: &AtomicBool,
@@ -289,7 +291,9 @@ fn collect_bounded_with_lines(
         }
         let remaining = limit.saturating_sub(data.len());
         data.extend_from_slice(&buffer[..count.min(remaining)]);
-        if count > remaining {
+        // Output read line by line is progress (FFmpeg's, yt-dlp's): a long run prints more than the limit, and
+        // that is not a failure. It reaches the handler whole; only the first `limit` bytes are kept.
+        if count > remaining && on_line.is_none() {
             overflow = true;
         }
         if let Some(callback) = &on_line {
@@ -491,6 +495,39 @@ mod tests {
         assert!(matches!(
             run(&spec, &AtomicBool::new(false)),
             Err(ProcessError::RelativeExecutable)
+        ));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn progress_read_line_by_line_may_pass_the_output_limit() {
+        let spec = ProcessSpec {
+            executable: "/bin/sh".into(),
+            args: vec![
+                "-c".into(),
+                "i=0; while [ $i -lt 400 ]; do echo progress-line-$i; i=$((i+1)); done".into(),
+            ],
+            current_dir: None,
+            timeout: Duration::from_secs(5),
+            output_limit: 1024,
+        };
+        let seen = Arc::new(std::sync::Mutex::new(Vec::<String>::new()));
+        let lines = seen.clone();
+        let output = run_with_stdout_lines(
+            &spec,
+            &AtomicBool::new(false),
+            Arc::new(move |line| lines.lock().unwrap().push(line.to_owned())),
+        )
+        .unwrap();
+        assert!(output.status.success());
+        assert_eq!(output.stdout.len(), 1024);
+        let seen = seen.lock().unwrap();
+        assert_eq!(seen.len(), 400);
+        assert_eq!(seen[399], "progress-line-399");
+        // Plain output past the limit is still refused.
+        assert!(matches!(
+            run(&spec, &AtomicBool::new(false)),
+            Err(ProcessError::OutputLimit)
         ));
     }
 

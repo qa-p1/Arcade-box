@@ -340,6 +340,9 @@ button { color: inherit; }
 .shortcut-status .runtime-dot { width: 6px; height: 6px; margin-top: 2px; flex: 0 0 auto; }
 .job-progress-track { height: 3px; overflow: hidden; margin-top: 2px; border-radius: 3px; background: var(--hover); }
 .job-progress-track > span { display: block; height: 100%; border-radius: inherit; background: var(--ink-2); transition: width .24s ease; }
+/* No number yet (looking up, a step with no measure): a bar that keeps moving, so working never looks stuck. */
+.job-progress-track.indeterminate > span { width: 35%; animation: job-progress-slide 1.2s ease-in-out infinite; }
+@keyframes job-progress-slide { from { transform: translateX(-100%); } to { transform: translateX(290%); } }
 .active-job-card { display: flex; align-items: center; gap: 10px; margin: 13px 0 2px; padding: 10px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--surface-1); }
 .active-job-symbol { display: grid; place-items: center; width: 31px; height: 31px; flex: 0 0 auto; border-radius: 9px; color: var(--text); background: var(--hover); }
 .active-job-copy { display: grid; min-width: 0; flex: 1; gap: 4px; }

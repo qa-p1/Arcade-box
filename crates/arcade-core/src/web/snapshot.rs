@@ -67,7 +67,9 @@ pub(super) fn capture(
     request: &ToolRequest,
     runtime: &Arcade,
     cancelled: &AtomicBool,
-    progress: Arc<dyn Fn(f64) + Send + Sync>,
+    // A browser's steps (start, load, scroll, print) have no measure: the job shows work without a number and
+    // the note says which step it is on.
+    _progress: Arc<dyn Fn(f64) + Send + Sync>,
 ) -> Result<ToolResult, String> {
     let url = url_input(request)?;
     let output = option_str(request, "output", "pdf");
@@ -80,6 +82,7 @@ pub(super) fn capture(
     )?
     .round();
     let stage = stage_dir(runtime.artifact_staging_root())?;
+    crate::jobs::note("Opening the browser");
     let (bytes, extension, title, mut warnings) =
         match BROWSERS.into_iter().find_map(find_system_executable) {
             Some(executable) => chromium(
@@ -90,7 +93,6 @@ pub(super) fn capture(
                 width,
                 stage.path(),
                 cancelled,
-                &progress,
             )?,
             None => {
                 let executable = FIREFOXES
@@ -110,7 +112,7 @@ pub(super) fn capture(
                 )?
             }
         };
-    progress(0.9);
+    crate::jobs::note("Saving");
     let staged = stage.path().join(format!("capture.{extension}"));
     std::fs::write(&staged, &bytes).map_err(|error| error.to_string())?;
     let stem = safe_title(&title);
@@ -139,10 +141,9 @@ fn chromium(
     width: f64,
     stage: &Path,
     cancelled: &AtomicBool,
-    progress: &Arc<dyn Fn(f64) + Send + Sync>,
 ) -> Result<Capture, String> {
     let browser = Browser::launch(executable, stage)?;
-    progress(0.1);
+    crate::jobs::note("Loading the page");
     let mut session = browser.session(cancelled)?;
     session.call("Page.enable", json!({}))?;
     session.call(
@@ -160,7 +161,7 @@ fn chromium(
         return Err(format!("The page could not be opened: {error}"));
     }
     session.wait_for_event("Page.loadEventFired", Duration::from_secs(45))?;
-    progress(0.5);
+    crate::jobs::note("Scrolling through the page");
     // Scroll through once so lazy-loaded images appear, then settle.
     session.call(
         "Runtime.evaluate",
@@ -174,7 +175,11 @@ fn chromium(
         .as_str()
         .unwrap_or_default()
         .to_owned();
-    progress(0.7);
+    crate::jobs::note(if output == "pdf" {
+        "Making the PDF"
+    } else {
+        "Taking the picture"
+    });
     let (bytes, extension, warnings) = match output {
         "pdf" => {
             let (paper_width, paper_height) = match option_str(request, "paper", "a4") {

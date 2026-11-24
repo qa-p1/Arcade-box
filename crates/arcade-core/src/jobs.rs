@@ -644,6 +644,18 @@ pub fn note(message: &str) {
     });
 }
 
+/// [`note`] for work this job hands to another thread (a program's output, read as it comes): call it there.
+pub fn note_handle() -> Arc<dyn Fn(&str) + Send + Sync> {
+    let current = CURRENT.with(|current| current.borrow().clone());
+    Arc::new(move |message| {
+        if let Some((shared, id)) = &current {
+            if let Some(shared) = shared.upgrade() {
+                publish_note(&shared, id, message);
+            }
+        }
+    })
+}
+
 fn publish_note(shared: &Shared, id: &str, message: &str) {
     let snapshot = {
         let mut state = lock_state(shared);
@@ -662,7 +674,15 @@ fn publish_note(shared: &Shared, id: &str, message: &str) {
     emit_update(shared, snapshot);
 }
 
+/// What a tool reports through its progress callback when it can't say how far it is for a while (a step with
+/// no measure): the job shows work going on, without a number, until the next real fraction.
+pub const UNKNOWN: f64 = f64::NAN;
+
 fn publish_progress(shared: &Shared, id: &str, progress: f64) {
+    if progress.is_nan() {
+        publish_unknown(shared, id);
+        return;
+    }
     if !progress.is_finite() {
         return;
     }
@@ -684,6 +704,23 @@ fn publish_progress(shared: &Shared, id: &str, progress: f64) {
         if !should_emit {
             return;
         }
+        entry.last_progress_event = Instant::now();
+        persist_snapshot(shared, entry);
+        entry.snapshot.clone()
+    };
+    emit_update(shared, snapshot);
+}
+
+fn publish_unknown(shared: &Shared, id: &str) {
+    let snapshot = {
+        let mut state = lock_state(shared);
+        let Some(entry) = state.jobs.get_mut(id) else {
+            return;
+        };
+        if entry.snapshot.status != JobStatus::Running || entry.snapshot.progress.is_none() {
+            return;
+        }
+        entry.snapshot.progress = None;
         entry.last_progress_event = Instant::now();
         persist_snapshot(shared, entry);
         entry.snapshot.clone()
