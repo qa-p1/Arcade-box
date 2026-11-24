@@ -1,6 +1,9 @@
 # Arcade Box: status
 
-## 1.0.1 (release candidate, 2026-11-24)
+## 1.0.1 (released 2026-11-24)
+
+Box 1.0.1 is released, promoted from 1.0.1-rc.1 after every gate passed (upgrade from 1.0.0, Linux, Windows,
+macOS, budgets, N-1, published files, updater delta) and checked byte for byte against it.
 
 Progress is real for every long action: media downloads follow yt-dlp's own progress (bytes, speed, time left, each
 part, then the steps after), file downloads show bytes of the total, page images count up, and steps with no measure
