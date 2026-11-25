@@ -7,6 +7,7 @@
   import { useBox } from '../box.svelte';
 
   const box = useBox();
+  const groupLabels = { clipboard: 'From your clipboard', favorite: 'Favorites', recent: 'Recent' } as const;
   const shortcut = $derived(box.shortcutInfo?.triggerDescription || box.shortcutInfo?.trigger_description || '');
 </script>
 {#if box.pendingLink}
@@ -81,12 +82,14 @@
     {/if}
   </div>
 {:else if box.focused && box.runnableContextSuggestions.length > 0}
-  <div class="overlay-body context-panel" id="context-list" role="listbox" aria-label="Suggestions for the clipboard">
-    <div class="t-caption group-label">From your clipboard</div>
+  <div class="overlay-body context-panel" id="context-list" role="listbox" aria-label="Suggestions">
     {#each box.runnableContextSuggestions as suggestion, index}
       {@const suggestedTool = box.toolById.get(suggestion.toolId)}
+      {#if index === 0 || box.runnableContextSuggestions[index - 1].group !== suggestion.group}
+        <div class="t-caption group-label">{groupLabels[suggestion.group]}</div>
+      {/if}
       {#if suggestedTool}
-        <button type="button" id={`context-${suggestion.toolId}`} role="option" class="overlay-row" aria-selected={index === box.selectedIndex} onclick={() => box.selectContextSuggestion(suggestion)} onpointermove={(event) => box.hoverRow(event, index)}>
+        <button type="button" id={`context-${suggestion.group}-${suggestion.toolId}`} role="option" class="overlay-row" aria-selected={index === box.selectedIndex} onclick={() => box.selectContextSuggestion(suggestion)} onpointermove={(event) => box.hoverRow(event, index)}>
           <span class="glyph-tile sm"><Icon name={box.iconForCategory(suggestedTool.category)} size={14} /></span>
           <span class="row-main"><span class="row-title ellipsis">{suggestedTool.name}</span></span>
           <span class="row-sub ellipsis suggestion-reason">{suggestion.reason}</span>

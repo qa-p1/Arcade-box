@@ -115,6 +115,27 @@ const scenarios = {
     await sleep(100);
     assert(await row.getAttribute('aria-selected') === 'true', 'the hovered row is not highlighted');
   },
+  async 'a copied video link is offered first and opens the downloader with the link filled in'(page) {
+    const link = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+    await page.goto(`${base}?clipboard=${encodeURIComponent(link)}`);
+    await page.waitForSelector('#context-list .overlay-row');
+    const first = await page.locator('#context-list .overlay-row').first().innerText();
+    assert(first.includes('Media Downloader'), `the first suggestion is ${first}`);
+    await page.keyboard.press('Enter');
+    await page.waitForSelector('.tool-view');
+    assert(await commands(page, 'run_context_action') === 0, 'the link ran a tool instead of opening it');
+    const value = await page.locator('.tool-view input[type="url"], .tool-view input[type="text"], .tool-view textarea').first().inputValue();
+    assert(value === link, `the link field holds "${value}"`);
+  },
+  async 'favorites show when the search is empty'(page) {
+    await page.goto(`${base}?favorites=arcade.text.case`);
+    await page.waitForSelector('#context-list .overlay-row');
+    const text = await page.locator('#context-list').innerText();
+    assert(text.includes('Favorites') && text.includes('Change Case'), `the empty Island shows ${text}`);
+    await page.keyboard.press('Enter');
+    await page.waitForSelector('.tool-view');
+    assert(await commands(page, 'run_context_action') === 0, 'a favorite ran instead of opening');
+  },
   async 'a re-show opens a fresh search with focus'(page) {
     await openTool(page);
     await page.evaluate(async () => {

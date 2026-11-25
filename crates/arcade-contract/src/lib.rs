@@ -253,6 +253,9 @@ pub enum ResultStatus {
 pub struct ContextSuggestion {
     pub tool_id: String,
     pub reason: String,
+    /// When set, the tool opens with this as its input instead of running at once.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub input: Option<String>,
 }
 
 #[derive(Debug, Error)]

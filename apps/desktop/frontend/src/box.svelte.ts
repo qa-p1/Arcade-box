@@ -6,7 +6,7 @@ import { onMount, tick } from 'svelte';
 import { cancelResultLinkAction, overlapState, pickPeerClipboard, watchLinkChanged, type OverlapState } from './lib/arcade';
 import type { IconName } from './lib/icon-names';
 import { cancelJob, cancelScreenRecording, detectContext, downloadTesseract, getHistory, getPreference, hideIsland, listFavorites, listJobs, listProviders, listTools, openArtifact, openReviewedUrl, pastePlainStatus, pastePlainText, pinScreenCapture, revokeInputFolder, revokeOutputDirectory, revealArtifact, runContextAction, runScreenTool, saveArtifactAs, screenCaptureStatus, screenRecordingStatus, searchTools, selectFiles, setAlias, setFavorite, setPreference, setSurfaceMode, setWindowPin, shortcutStatus, startJob, startScreenRecording, stopScreenRecording, tesseractDownloadSize, terminateProcess, watchIslandFocus, watchJobUpdates, watchShortcutStatus, windowPinStatus } from './lib/arcade';
-import type { ContextSuggestion, HistoryEntry, JobSnapshot, PastePlainStatus, ProcessInfo, ProcessList, ProviderInfo, ScreenCaptureStatus, ScreenRecordingSnapshot, SelectedDirectory, SelectedFile, ShortcutStatus, SystemWindowPinStatus, ToolInput, ToolResult, ToolSummary } from './lib/contracts';
+import type { ContextSuggestion, HistoryEntry, QuickSuggestion, JobSnapshot, PastePlainStatus, ProcessInfo, ProcessList, ProviderInfo, ScreenCaptureStatus, ScreenRecordingSnapshot, SelectedDirectory, SelectedFile, ShortcutStatus, SystemWindowPinStatus, ToolInput, ToolResult, ToolSummary } from './lib/contracts';
 import { acceptsSelectedFile, acceptsTextInput, fileInputMime, inputMime, isRunnable, privacyHint, usesFileInput } from './lib/tool-utils';
 import { defaultUiValues, serializeStandardUiOptions, standardUiOptionsProblem } from './lib/standard-ui';
 import { getContext, setContext } from 'svelte';
@@ -204,7 +204,25 @@ export function createBox() {
     }
     return [...groups.values()].flat();
   });
-  const runnableContextSuggestions = $derived(contextSuggestions.filter((suggestion) => Boolean(toolById.get(suggestion.toolId) && isRunnable(toolById.get(suggestion.toolId)!))));
+  // The empty Island offers what is on the clipboard first, then favourites, then tools used lately.
+  const runnableContextSuggestions = $derived.by((): QuickSuggestion[] => {
+    const runnable = (toolId: string) => { const tool = toolById.get(toolId); return Boolean(tool && isRunnable(tool)); };
+    const rows: QuickSuggestion[] = contextSuggestions.filter((suggestion) => runnable(suggestion.toolId)).map((suggestion) => ({ ...suggestion, group: 'clipboard' }));
+    const shown = new Set(rows.map((row) => row.toolId));
+    for (const toolId of favorites.filter((id) => runnable(id) && !shown.has(id)).slice(0, 4)) {
+      rows.push({ toolId, reason: 'Favorite', group: 'favorite' });
+      shown.add(toolId);
+    }
+    for (const toolId of recentToolIds.filter((id) => runnable(id) && !shown.has(id)).slice(0, 4)) {
+      rows.push({ toolId, reason: 'Used recently', group: 'recent' });
+      shown.add(toolId);
+    }
+    return rows;
+  });
+  // A copied link fills the link field of the tools it was suggested for.
+  function clipboardInputFor(toolId: string): string {
+    return contextSuggestions.find((suggestion) => suggestion.toolId === toolId && suggestion.input)?.input ?? '';
+  }
   // Categories keep the catalog's order, which groups the most-used tools first.
   const categories = $derived([...new Set(tools.map((tool) => tool.category))]);
   const implementedTools = $derived(tools.filter((tool) => tool.status === 'implemented'));
@@ -447,7 +465,7 @@ export function createBox() {
       loadingSearch = false;
       selectedIndex = 0;
       searchAnnouncement = runnableContextSuggestions.length
-        ? `${runnableContextSuggestions.length} clipboard ${runnableContextSuggestions.length === 1 ? 'action is' : 'actions are'} available. Use the arrow keys to choose one, then press Enter.`
+        ? `${runnableContextSuggestions.length} ${runnableContextSuggestions.length === 1 ? 'suggestion is' : 'suggestions are'} available. Use the arrow keys to choose one, then press Enter.`
         : '';
       return;
     }
@@ -564,10 +582,11 @@ export function createBox() {
     const suggestions = await detectContext().catch(() => []);
     if (requestId !== contextRequestId) return;
     contextSuggestions = suggestions;
+    if (selectedTool && !pendingLink && !inputText && !running && !activeResult) inputText = clipboardInputFor(selectedTool.id);
     if (!query.trim()) {
       selectedIndex = 0;
-      searchAnnouncement = contextSuggestions.length
-        ? `${contextSuggestions.length} clipboard ${contextSuggestions.length === 1 ? 'action is' : 'actions are'} available. Use the arrow keys to choose one, then press Enter.`
+      searchAnnouncement = runnableContextSuggestions.length
+        ? `${runnableContextSuggestions.length} ${runnableContextSuggestions.length === 1 ? 'suggestion is' : 'suggestions are'} available. Use the arrow keys to choose one, then press Enter.`
         : '';
     }
   }
@@ -619,6 +638,7 @@ export function createBox() {
     selectedFiles = [];
     selectedInputFolders = [];
     textInputMode = 'text';
+    if (!pendingLink) inputText = clipboardInputFor(tool.id);
     fileSelectionError = '';
     screenCaptureBusy = false;
     artifactActionError = '';
@@ -739,7 +759,7 @@ export function createBox() {
     }
     const suggestion = runnableContextSuggestions[selectedIndex];
     const tool = suggestion && tools.find((item) => item.id === suggestion.toolId);
-    if (tool && suggestion) searchAnnouncement = `${tool.name}. ${suggestion.reason}. Press Enter to run this action.`;
+    if (tool && suggestion) searchAnnouncement = `${tool.name}. ${suggestion.reason}. Press Enter to ${suggestion.group === 'clipboard' && !suggestion.input ? 'run this action' : 'open it'}.`;
   }
 
   // The pointer takes the highlight only when it really moves (BR-11): WebKitGTK sends enter and move events when a
@@ -1130,14 +1150,16 @@ export function createBox() {
     return 'Planned';
   }
 
-  function selectContextSuggestion(suggestion: ContextSuggestion): void {
+  function selectContextSuggestion(suggestion: QuickSuggestion): void {
     void executeContextAction(suggestion);
   }
 
-  async function executeContextAction(suggestion: ContextSuggestion): Promise<void> {
+  async function executeContextAction(suggestion: QuickSuggestion): Promise<void> {
     const tool = tools.find((item) => item.id === suggestion.toolId);
     if (!tool || !isRunnable(tool) || running) return;
     openTool(tool);
+    // Favourites, recent tools and copied links open the tool; the person still chooses what to run.
+    if (suggestion.group !== 'clipboard' || suggestion.input) return;
     const generation = viewGeneration;
     running = true;
     runError = '';
