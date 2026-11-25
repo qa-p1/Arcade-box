@@ -1,5 +1,15 @@
 # Arcade Box: status
 
+## 1.0.2 (released 2026-11-25)
+
+Box 1.0.2 is released, promoted from 1.0.2-rc.1 after every gate passed (upgrade from 1.0.1, Linux, Windows,
+macOS, budgets, N-1, published files, updater delta, all desktop smokes) and checked byte for byte against it.
+
+The Island knows what you copied: a video link offers Download video, Get transcript and Get thumbnail (a file link
+offers Download file, any other page Save page and Markdown), and opening one fills in the link without running it.
+With nothing typed, the Island lists your favourites and recent tools. In the browser, right-clicking a video or audio
+offers the downloader, transcript and thumbnail tools.
+
 ## 1.0.1 (released 2026-11-24)
 
 Box 1.0.1 is released, promoted from 1.0.1-rc.1 after every gate passed (upgrade from 1.0.0, Linux, Windows,

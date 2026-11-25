@@ -2,6 +2,16 @@
 
 Detail for `qa-p1/Arcade-catalog` › `dev/v1/PROGRESS.md`. Newest first.
 
+## 2026-11-25 (cloud session) - 1.0.2 promoted from rc.1
+
+- 1.0.2 (#67, `6277dbc`): link-aware clipboard suggestions with the link prefilled, favourites and recents in the
+  empty Island, and the media tools on browser video and audio.
+- rc.1: Release run 45602565369 and Gates run 45610446993 (previous v1.0.1) passed every job; Promote run
+  45611738344. The AppImage, dmg, Windows installer and SHA256SUMS are byte-identical to rc.1; only the channel,
+  tag and notes link differ in arcade-release.json and manifest.json, and the stable manifest is signed.
+- Not checked here: the browser right-click entries in a real browser with Box 1.0.2 installed (the extension's own
+  e2e still runs on Box 1.0.1).
+
 ## 2026-11-24 (cloud session) - 1.0.1 promoted from rc.1
 
 - 1.0.1 has real progress for every long action (#57), 4 concurrent pieces for HLS/DASH downloads (#58) and
