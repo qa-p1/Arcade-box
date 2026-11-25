@@ -663,6 +663,7 @@ pub fn actions(tools: &[ToolManifest], cache: Option<&ProviderCache>) -> Vec<Act
             base.available = false;
             base.reason = Some(reason);
         }
+        add_media_surfaces(&tool.id, &mut base);
         let featured = tool
             .link
             .as_ref()
@@ -683,6 +684,26 @@ pub fn actions(tools: &[ToolManifest], cache: Option<&ProviderCache>) -> Vec<Act
     }
     out.push(open_action());
     out
+}
+
+/// The link tools that work on a page's video or audio are also offered when a video or audio element is
+/// right-clicked in the browser, not only on links and pages.
+fn add_media_surfaces(tool_id: &str, action: &mut Action) {
+    use arcade_link::manifest::surface;
+    let extra: &[&str] = match tool_id {
+        "arcade.web.downloader" | "arcade.web.transcript" => {
+            &[surface::BROWSER_VIDEO, surface::BROWSER_AUDIO]
+        }
+        "arcade.web.thumbnail" => &[surface::BROWSER_VIDEO],
+        _ => return,
+    };
+    let mut surfaces: Vec<String> = action.surfaces().into_iter().map(str::to_owned).collect();
+    for name in extra {
+        if !surfaces.iter().any(|known| known == name) {
+            surfaces.push((*name).to_owned());
+        }
+    }
+    action.surfaces = surfaces;
 }
 
 /// "More in Arcade Box…": the Island, pre-filled with the input. Ranked just below featured presets, so a caller
@@ -1373,6 +1394,47 @@ mod tests {
             assert!(read.output.is_some(), "{}: output", action.id);
         }
         assert!(cards.iter().filter(|a| a.id.starts_with("box:")).count() > 80);
+    }
+
+    #[test]
+    fn media_link_tools_are_offered_on_browser_video_and_audio() {
+        use arcade_link::manifest::surface;
+        let cards = cards();
+        for (id, audio) in [
+            ("box:arcade.web.downloader", true),
+            ("box:arcade.web.transcript", true),
+            ("box:arcade.web.thumbnail", false),
+        ] {
+            let action = card(&cards, id);
+            let surfaces = action.surfaces();
+            assert!(
+                surfaces.contains(&surface::BROWSER_VIDEO),
+                "{id}: {surfaces:?}"
+            );
+            assert_eq!(
+                surfaces.contains(&surface::BROWSER_AUDIO),
+                audio,
+                "{id}: {surfaces:?}"
+            );
+            // The link and page entries stay.
+            assert!(
+                surfaces.contains(&surface::BROWSER_LINK),
+                "{id}: {surfaces:?}"
+            );
+            assert!(surfaces.contains(&surface::PALETTE), "{id}: {surfaces:?}");
+        }
+        // Presets carry the same surfaces as their tool.
+        for action in cards
+            .iter()
+            .filter(|a| a.id.starts_with("box:arcade.web.downloader#"))
+        {
+            assert!(
+                action.surfaces().contains(&surface::BROWSER_VIDEO),
+                "{}",
+                action.id
+            );
+        }
+        assert!(card(&cards, "box:arcade.web.snapshot").surfaces.is_empty());
     }
 
     #[test]

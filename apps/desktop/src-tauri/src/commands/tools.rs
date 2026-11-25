@@ -213,24 +213,213 @@ pub(crate) fn detect_context(app: tauri::AppHandle) -> Vec<ContextSuggestion> {
     if text.len() > 16 * 1024 * 1024 {
         return vec![];
     }
-    let mut suggestions = Vec::new();
-    if serde_json::from_str::<serde_json::Value>(&text).is_ok() {
-        suggestions.push(ContextSuggestion {
-            tool_id: "arcade.text.structured".into(),
-            reason: "Clipboard contains JSON".into(),
-        });
+    context_suggestions(&text)
+}
+
+fn suggestion(tool_id: &str, reason: &str, input: Option<&str>) -> ContextSuggestion {
+    ContextSuggestion {
+        tool_id: tool_id.into(),
+        reason: reason.into(),
+        input: input.map(str::to_owned),
     }
-    if text.starts_with("https://") || text.starts_with("http://") {
-        suggestions.push(ContextSuggestion {
-            tool_id: "arcade.barcode.qr-generate".into(),
-            reason: "Clipboard contains a URL".into(),
-        });
+}
+
+/// Sites whose pages yt-dlp downloads as video or audio.
+const MEDIA_HOSTS: &[&str] = &[
+    "youtube.com",
+    "youtu.be",
+    "vimeo.com",
+    "dailymotion.com",
+    "twitch.tv",
+    "tiktok.com",
+    "instagram.com",
+    "facebook.com",
+    "fb.watch",
+    "x.com",
+    "twitter.com",
+    "reddit.com",
+    "soundcloud.com",
+    "bandcamp.com",
+    "bilibili.com",
+    "streamable.com",
+    "rumble.com",
+];
+
+/// Hosts whose videos have captions that the transcript tool can read.
+const TRANSCRIPT_HOSTS: &[&str] = &["youtube.com", "youtu.be", "vimeo.com", "dailymotion.com"];
+
+const MEDIA_EXTENSIONS: &[&str] = &[
+    "mp4", "webm", "mkv", "mov", "m4v", "m3u8", "mpd", "mp3", "m4a", "ogg", "opus", "wav", "flac",
+];
+
+const FILE_EXTENSIONS: &[&str] = &[
+    "zip", "7z", "tar", "gz", "xz", "rar", "pdf", "exe", "msi", "dmg", "deb", "rpm", "appimage",
+    "iso", "png", "jpg", "jpeg", "gif", "webp", "svg", "csv", "json", "txt", "epub", "docx",
+    "xlsx", "pptx",
+];
+
+fn host_matches(host: &str, list: &[&str]) -> bool {
+    list.iter()
+        .any(|known| host == *known || host.ends_with(&format!(".{known}")))
+}
+
+/// A copied link gets the tools that use links first, with the link already filled in.
+pub(crate) fn context_suggestions(text: &str) -> Vec<ContextSuggestion> {
+    let trimmed = text.trim();
+    let mut suggestions = Vec::new();
+    let link = (!trimmed.contains(char::is_whitespace) && trimmed.len() <= 8 * 1024)
+        .then(|| url::Url::parse(trimmed).ok())
+        .flatten()
+        .filter(|url| matches!(url.scheme(), "http" | "https"))
+        .and_then(|url| Some((url.host_str()?.to_ascii_lowercase(), url)));
+    if let Some((host, url)) = &link {
+        let host = host.strip_prefix("www.").unwrap_or(host);
+        let extension = url
+            .path()
+            .rsplit('/')
+            .next()
+            .and_then(|name| name.rsplit_once('.'))
+            .map(|(_, extension)| extension.to_ascii_lowercase())
+            .unwrap_or_default();
+        let input = Some(trimmed);
+        if host_matches(host, MEDIA_HOSTS) || MEDIA_EXTENSIONS.contains(&extension.as_str()) {
+            suggestions.push(suggestion(
+                "arcade.web.downloader",
+                "Download this video or audio",
+                input,
+            ));
+            if host_matches(host, TRANSCRIPT_HOSTS) {
+                suggestions.push(suggestion(
+                    "arcade.web.transcript",
+                    "Get the transcript",
+                    input,
+                ));
+            }
+            if host_matches(host, MEDIA_HOSTS) {
+                suggestions.push(suggestion(
+                    "arcade.web.thumbnail",
+                    "Save the thumbnail",
+                    input,
+                ));
+            }
+        } else if FILE_EXTENSIONS.contains(&extension.as_str()) {
+            suggestions.push(suggestion(
+                "arcade.web.file-downloader",
+                "Download this file",
+                input,
+            ));
+        } else {
+            suggestions.push(suggestion(
+                "arcade.web.snapshot",
+                "Save this page as a PDF or picture",
+                input,
+            ));
+            suggestions.push(suggestion(
+                "arcade.web.markdown",
+                "Save this page as Markdown",
+                input,
+            ));
+        }
+        suggestions.push(suggestion(
+            "arcade.barcode.qr-generate",
+            "Make a QR code for this link",
+            None,
+        ));
+        return suggestions;
+    }
+    if serde_json::from_str::<serde_json::Value>(text).is_ok() {
+        suggestions.push(suggestion(
+            "arcade.text.structured",
+            "Clipboard contains JSON",
+            None,
+        ));
     }
     if !text.is_empty() {
-        suggestions.push(ContextSuggestion {
-            tool_id: "arcade.text.case".into(),
-            reason: "Clipboard contains text".into(),
-        });
+        suggestions.push(suggestion(
+            "arcade.text.case",
+            "Clipboard contains text",
+            None,
+        ));
     }
     suggestions
+}
+
+#[cfg(test)]
+mod context_tests {
+    use super::context_suggestions;
+
+    fn ids(text: &str) -> Vec<(String, bool)> {
+        context_suggestions(text)
+            .into_iter()
+            .map(|s| (s.tool_id, s.input.is_some()))
+            .collect()
+    }
+
+    #[test]
+    fn a_video_link_suggests_download_transcript_and_thumbnail_first() {
+        let found = ids(" https://www.youtube.com/watch?v=dQw4w9WgXcQ\n");
+        assert_eq!(
+            found,
+            vec![
+                ("arcade.web.downloader".into(), true),
+                ("arcade.web.transcript".into(), true),
+                ("arcade.web.thumbnail".into(), true),
+                ("arcade.barcode.qr-generate".into(), false),
+            ]
+        );
+        let first = context_suggestions("https://youtu.be/dQw4w9WgXcQ").remove(0);
+        assert_eq!(first.input.as_deref(), Some("https://youtu.be/dQw4w9WgXcQ"));
+    }
+
+    #[test]
+    fn subdomains_and_media_files_count_as_media() {
+        assert_eq!(
+            ids("https://m.youtube.com/shorts/abc")[0].0,
+            "arcade.web.downloader"
+        );
+        assert_eq!(
+            ids("https://music.youtube.com/watch?v=x")[1].0,
+            "arcade.web.transcript"
+        );
+        let stream = ids("https://cdn.example.com/live/index.m3u8");
+        assert_eq!(stream[0].0, "arcade.web.downloader");
+        assert_eq!(stream[1].0, "arcade.barcode.qr-generate");
+        // Look-alike hosts are not media sites.
+        assert_eq!(
+            ids("https://notyoutube.com/watch")[0].0,
+            "arcade.web.snapshot"
+        );
+    }
+
+    #[test]
+    fn file_and_page_links_get_their_own_tools() {
+        assert_eq!(
+            ids("https://example.com/release/app.zip")[0].0,
+            "arcade.web.file-downloader"
+        );
+        let page = ids("https://example.com/article");
+        assert_eq!(page[0], ("arcade.web.snapshot".into(), true));
+        assert_eq!(page[1], ("arcade.web.markdown".into(), true));
+    }
+
+    #[test]
+    fn other_text_keeps_the_text_tools() {
+        assert_eq!(
+            ids("{\"a\": 1}"),
+            vec![
+                ("arcade.text.structured".into(), false),
+                ("arcade.text.case".into(), false)
+            ]
+        );
+        assert_eq!(ids("hello there"), vec![("arcade.text.case".into(), false)]);
+        assert_eq!(
+            ids("ftp://example.com/file.zip"),
+            vec![("arcade.text.case".into(), false)]
+        );
+        assert_eq!(
+            ids("see https://example.com"),
+            vec![("arcade.text.case".into(), false)]
+        );
+        assert!(ids("").is_empty());
+    }
 }

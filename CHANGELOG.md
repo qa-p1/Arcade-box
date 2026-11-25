@@ -4,6 +4,15 @@ All notable changes to Arcade Box. The format follows [Keep a Changelog](https:/
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-25
+
+### Added
+
+- A copied link gets the tools that use links. With a video or audio link copied (YouTube, Vimeo, TikTok, X, Reddit, SoundCloud and more, or a direct .mp4/.m3u8 link), the empty Island offers Download, Transcript and Thumbnail first; a page link offers Save as PDF or picture and Markdown; a file link offers Download file. Choosing one opens the tool with the link already filled in. It doesn't run until you press Run. Before, a link only offered QR code and Change case.
+- Opening Media Downloader, Transcript, Thumbnail, Page capture, Markdown or File downloader while a matching link is copied fills in the link.
+- The empty Island lists your favorites and the tools you used lately, so the usual tool is one arrow key away.
+- Right-clicking a video or audio on a web page (with the Arcade browser extension) offers Download, Transcript and Thumbnail, not only on links and pages.
+
 ## [1.0.1] - 2026-11-24
 
 ### Changed

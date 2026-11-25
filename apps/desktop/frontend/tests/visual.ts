@@ -107,8 +107,13 @@ mockIPC((command, args) => {
     case 'shortcut_status': return { backend: 'visual-fixture', state: 'registered', triggerDescription: 'Ctrl+Alt+Space', message: 'Visual fixture only' };
     case 'list_providers': return fixture.providers;
     case 'list_jobs': return fixture.jobs;
-    case 'get_history': case 'list_favorites':
-    case 'detect_context': case 'list_pipelines': case 'list_plugins': return [];
+    // ?clipboard=<link> puts a copied video link on the clipboard; ?favorites=<id,id> stars tools.
+    case 'detect_context': {
+      const link = new URLSearchParams(location.search).get('clipboard');
+      return link ? [{ toolId: 'arcade.web.downloader', reason: 'Download this video or audio', input: link }, { toolId: 'arcade.barcode.qr-generate', reason: 'Make a QR code for this link' }] : [];
+    }
+    case 'list_favorites': return (new URLSearchParams(location.search).get('favorites') ?? '').split(',').filter(Boolean);
+    case 'get_history': case 'list_pipelines': case 'list_plugins': return [];
     case 'screen_capture_status': return { captureAvailable: false, recordingAvailable: false, message: 'Use the native app for capture.' };
     case 'screen_recording_status': return { recording: false };
     case 'paste_plain_status': case 'window_pin_status': return { available: false };

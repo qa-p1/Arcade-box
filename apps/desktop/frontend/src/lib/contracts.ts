@@ -305,6 +305,13 @@ export interface ToolResult {
 export interface ContextSuggestion {
   toolId: string;
   reason: string;
+  /** When set, the tool opens with this as its input instead of running at once. */
+  input?: string;
+}
+
+/** A row in the empty Island: something on the clipboard, a favourite, or a tool used lately. */
+export interface QuickSuggestion extends ContextSuggestion {
+  group: 'clipboard' | 'favorite' | 'recent';
 }
 
 
